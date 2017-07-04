@@ -1,0 +1,5 @@
+{
+    "disk": "/dev/sdb",
+    "appName": "MochaTest",
+    "gitAppURL": "https://github.com/alexandrosm/hello-python"
+}
