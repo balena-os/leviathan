@@ -1,4 +1,5 @@
 'use strict';
+const fs = require('fs');
 
 const configs = {
     ethernet: { network: 'ethernet'},
@@ -6,8 +7,8 @@ const configs = {
 }
 
 // Create our asset directory
-if (!fs.existsSync(assetDir)){
-    fs.mkdirSync(assetDir);
+if (!fs.existsSync('assetDir')){
+    fs.mkdirSync('assetDir');
 }
 
 // Create dashboard application
