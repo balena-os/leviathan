@@ -7,7 +7,7 @@ module.exports = function (opt) {
             const device = resin.models.device
 
             before (function() {
-                return image.provision(options.appName, options.deviceType, options.version, options.disk, opt.network);
+                return image.provision(options.appName, options.deviceType, options.version, options.disk, opt);
             });
 
             it('Device should become online', function(){
