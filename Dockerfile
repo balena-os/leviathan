@@ -1,16 +1,19 @@
+# Pull base image
 FROM node:boron
 
+# Set environment variables
 ENV INITSYSTEM on
 
+# Update and install
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        bc \
-        vim \
-    && rm -rf /var/lib/apt/lists/*
+    bc \
+ && rm -rf /var/lib/apt/lists/*
 
-COPY package.json /tmp/package.json
-RUN cd /tmp && npm install
-RUN mkdir -p /usr/app && cp -a /tmp/node_modules /usr/app/
-
+# Define container's working directory
 WORKDIR /usr/app
 
+# Copy files to container's working directory
 COPY . /usr/app
+
+# Install dependencies
+RUN npm install
