@@ -14,7 +14,7 @@ module.exports = (opt) => {
       // eslint-disable-next-line prefer-arrow-callback
       before(function () {
         return image.provision(
-          global.options.appName,
+          process.env.APPLICATION_NAME,
           global.options.deviceType,
           global.options.version,
           global.options.disk,
@@ -26,7 +26,7 @@ module.exports = (opt) => {
         this.retries(50)
 
         return Bluebird.delay(10000)
-          .return(global.options.appName)
+          .return(process.env.APPLICATION_NAME)
           .then(sdk.models.device.getAllByApplication)
           .then((dev) => {
             chai.expect(dev).to.have.length(1)

@@ -11,7 +11,7 @@ module.exports = (opt) => {
     describe: function () {
       // eslint-disable-next-line prefer-arrow-callback
       before('Delete test application if it exists', function () {
-        return sdk.models.application.remove(global.options.appName).catch((reason) => {
+        return sdk.models.application.remove(process.env.APPLICATION_NAME).catch((reason) => {
           if (reason.name !== 'ResinApplicationNotFound') {
             throw reason
           }
@@ -19,13 +19,13 @@ module.exports = (opt) => {
       })
 
       // eslint-disable-next-line prefer-arrow-callback
-      it(`Create test application (${global.options.appName})`, function () {
-        return sdk.models.application.create(global.options.appName, global.options.deviceType)
+      it(`Create test application (${process.env.APPLICATION_NAME})`, function () {
+        return sdk.models.application.create(process.env.APPLICATION_NAME, global.options.deviceType)
           .then(() => {
-            return sdk.models.application.get(global.options.appName)
+            return sdk.models.application.get(process.env.APPLICATION_NAME)
           })
           .then((app) => {
-            return chai.expect(app.app_name).to.equal(global.options.appName)
+            return chai.expect(app.app_name).to.equal(process.env.APPLICATION_NAME)
           })
       })
     }
