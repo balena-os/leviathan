@@ -1,5 +1,7 @@
 {
     "disk": "/dev/sdb",
     "appName": "MochaTest",
+    "deviceType": "raspberrypi3",
+    "version": "latest",
     "gitAppURL": "https://github.com/alexandrosm/hello-python"
 }

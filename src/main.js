@@ -1,5 +1,7 @@
 'use strict'
 
+const fs = require('fs')
+
 const configs = {
   ethernet: {
     network: 'ethernet'
@@ -12,18 +14,23 @@ const configs = {
 }
 
 // Create our asset directory
-if (!global.fs.existsSync(global.assetDir)) {
-  global.fs.mkdirSync(global.assetDir)
+if (!fs.existsSync(global.assetDir)) {
+  fs.mkdirSync(global.assetDir)
+}
+
+const importSuite = (name, testPath, opt) => {
+  describe(name, require(testPath)(opt).describe)
 }
 
 // Create dashboard application
 // importSuite('Test Resin', './resin/application.js')
+//
 
 describe('Test ResinOS', function () {
   this.timeout(600000)
 
-  global.importSuite(`Device provision via ${configs.ethernet.network}`, './resin/device.js', configs.ethernet)
+  importSuite(`Device provision via ${configs.ethernet.network}`, './resin/device.js', configs.ethernet)
 
-  // TODO: global.importSuite(`Provision via ${configs.ethernet.wifi}`, './resin/device.js', configs.wifi)
-  // TODO: global.importSuite('Container', './resin/container.js')
+  // TODO: importSuite(`Provision via ${configs.ethernet.wifi}`, './resin/device.js', configs.wifi)
+  // TODO: importSuite('Container', './resin/container.js')
 })
