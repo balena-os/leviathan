@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "Automated testing for ResinOS",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint src",
+    "test": "npm run lint",
     "start": "mocha src/main.js --opts src/mocha.opts"
   },
   "repository": {
@@ -38,5 +39,13 @@
     "progress-stream": "^2.0.0",
     "resin-cli-form": "^1.4.1",
     "resin-sdk": "^7.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.9.0",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-node": "^5.2.0",
+    "eslint-plugin-promise": "^3.6.0",
+    "eslint-plugin-standard": "^3.0.1"
   }
 }
