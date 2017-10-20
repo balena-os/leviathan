@@ -17,7 +17,7 @@
     "resin"
   ],
   "author": "Theodor Gherzan",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/resin-os/resinos-tests/issues"
   },
