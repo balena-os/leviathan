@@ -17,11 +17,20 @@ jobs:
           - v1-dependencies-
 
       - run: sudo apt-get install bc
-      - run: npm install
+
+      - run:
+            name: Installing dependencies
+            command: npm install
 
       - save_cache:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
         
-      - run: npm start
+      - run:
+            name: Verifying coding style
+            command: npm test
+
+      - run:
+            name: Running resinos tests
+            command: npm start
