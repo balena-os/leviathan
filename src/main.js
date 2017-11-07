@@ -25,6 +25,7 @@ const importSuite = (name, testPath, opt) => {
 describe('Preparing test environment', function () {
   this.timeout(900000)
 
+  console.log(process.env.foo)
   importSuite('Authenticate user using token', './resin/auth.js')
   importSuite('Create application', './resin/application.js')
 })
@@ -32,7 +33,7 @@ describe('Preparing test environment', function () {
 describe('Test ResinOS', function () {
   this.timeout(600000)
 
-  importSuite(`Device provision via ${configs.ethernet.network}`, './resin/device.js', configs.ethernet)
+  // importSuite(`Device provision via ${configs.ethernet.network}`, './resin/device.js', configs.ethernet)
 
   // TODO: importSuite(`Provision via ${configs.ethernet.wifi}`, './resin/device.js', configs.wifi)
   // TODO: importSuite('Container', './resin/container.js')
