@@ -5,7 +5,7 @@
   "scripts": {
     "lint": "eslint src",
     "test": "npm run lint",
-    "start": "mocha src/main.js --opts src/mocha.opts"
+    "start": "mocha src/main.js --ui bdd --timeout 900000"
   },
   "repository": {
     "type": "git",
