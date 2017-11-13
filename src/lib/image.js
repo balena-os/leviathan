@@ -85,10 +85,12 @@ const validateDisk = (disk) => {
 
 const getImage = (deviceType, version) => {
   const download = new bar.Bar({}, bar.Presets.shades_classic)
-  const os = sdk.models.os
 
   return new Bluebird((resolve, reject) => {
-    Bluebird.join(os.download(deviceType, version), os.getDownloadSize(deviceType, version)).spread((stream, size) => {
+    Bluebird.join(
+      sdk.models.os.download(deviceType, version),
+      sdk.models.os.getDownloadSize(deviceType, version)
+    ).spread((stream, size) => {
       fs.access(path.join(ASSETS_DIRECTORY, 'resin.img'), fs.constants.F_OK, (err) => {
         if (err) {
           download.start(100, 0)
