@@ -13,6 +13,9 @@ const lkl = require('lkl')
 const sdk = require('../components/resinio/sdk')
 const filedisk = require('file-disk')
 lkl.fs = Bluebird.promisifyAll(lkl.fs)
+const os = require('os')
+
+const ASSETS_DIRECTORY = os.tmpdir()
 
 const nmWifiConfig = (options) => {
   const ssid = options.wifiSsid.trim()
@@ -51,7 +54,7 @@ const writeConfigure = (config) => {
   const wifiConfig = nmWifiConfig(config)
   const otherConfig = _.omit(config, 'wifiSsid', 'wifiKey')
 
-  Bluebird.using(filedisk.openFile(path.join(global.assetDir, 'resin.img'), 'r+'), (fd) => {
+  Bluebird.using(filedisk.openFile(path.join(ASSETS_DIRECTORY, 'resin.img'), 'r+'), (fd) => {
     const disk = new filedisk.FileDisk(fd)
     Bluebird.using(lkl.utils.attachDisk(disk), (diskId) => {
       Bluebird.using(lkl.utils.mountPartition(diskId, 'vfat'), (mountpoint) => {
@@ -86,7 +89,7 @@ const getImage = (deviceType, version) => {
 
   return new Bluebird((resolve, reject) => {
     Bluebird.join(os.download(deviceType, version), os.getDownloadSize(deviceType, version)).spread((stream, size) => {
-      fs.access(path.join(global.assetDir, 'resin.img'), fs.constants.F_OK, (err) => {
+      fs.access(path.join(ASSETS_DIRECTORY, 'resin.img'), fs.constants.F_OK, (err) => {
         if (err) {
           download.start(100, 0)
 
@@ -95,7 +98,7 @@ const getImage = (deviceType, version) => {
             time: 1000
           })
 
-          stream.pipe(progressStream).pipe(fs.createWriteStream(path.join(global.assetDir, 'resin.img')))
+          stream.pipe(progressStream).pipe(fs.createWriteStream(path.join(ASSETS_DIRECTORY, 'resin.img')))
 
           progressStream.on('progress', (data) => {
             download.update(data.percentage.toFixed(2))
@@ -133,8 +136,8 @@ const writeImage = (disk) => {
       size: 2014314496
     },
     {
-      stream: fs.createReadStream(path.join(global.assetDir, 'resin.img')),
-      size: fs.statSync(path.join(global.assetDir, 'resin.img')).size
+      stream: fs.createReadStream(path.join(ASSETS_DIRECTORY, 'resin.img')),
+      size: fs.statSync(path.join(ASSETS_DIRECTORY, 'resin.img')).size
     },
     {
       check: false
