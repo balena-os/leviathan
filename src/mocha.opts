@@ -1,3 +1,0 @@
---require ./src/setup
---ui bdd
---timeout 900000

@@ -1,7 +1,14 @@
 'use strict'
 
 const fs = require('fs')
+const path = require('path')
 
+global.options = require(path.join(__dirname, '../user.json'))
+global.assetDir = path.resolve(__dirname, '../assets')
+
+global.provDevice = null
+
+/* TODO: Re-enable
 const configs = {
   ethernet: {
     network: 'ethernet'
@@ -12,6 +19,7 @@ const configs = {
     wifiKey: process.env.WIFI_KEY
   }
 }
+*/
 
 // Create asset directory
 if (!fs.existsSync(global.assetDir)) {
@@ -33,7 +41,7 @@ describe('Preparing test environment', function () {
 describe('Test ResinOS', function () {
   this.timeout(600000)
 
-  // importSuite(`Device provision via ${configs.ethernet.network}`, './resin/device.js', configs.ethernet)
+  // TODO: importSuite(`Device provision via ${configs.ethernet.network}`, './resin/device.js', configs.ethernet)
 
   // TODO: importSuite(`Provision via ${configs.ethernet.wifi}`, './resin/device.js', configs.wifi)
   // TODO: importSuite('Container', './resin/container.js')
