@@ -37,7 +37,6 @@
     "mountutils": "^1.2.0",
     "nodegit": "^0.18.3",
     "progress-stream": "^2.0.0",
-    "resin-cli-form": "^1.4.1",
     "resin-sdk": "^7.0.0"
   },
   "devDependencies": {
