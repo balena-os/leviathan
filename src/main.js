@@ -2,6 +2,8 @@
 
 const fs = require('fs')
 const path = require('path')
+const Bluebird = require('bluebird')
+const sdk = require('./components/resinio/sdk')
 
 global.options = require(path.join(__dirname, '../user.json'))
 global.assetDir = path.resolve(__dirname, '../assets')
@@ -26,20 +28,32 @@ if (!fs.existsSync(global.assetDir)) {
   fs.mkdirSync(global.assetDir)
 }
 
+/* TODO: Re-enable
 const importSuite = (name, testPath, opt) => {
   describe(name, require(testPath)(opt).describe)
 }
-
-describe('Preparing test environment', function () {
-  this.timeout(900000)
-
-  console.log(process.env.foo)
-  importSuite('Authenticate user using token', './resin/auth.js')
-  importSuite('Create application', './resin/application.js')
-})
+*/
 
 describe('Test ResinOS', function () {
   this.timeout(600000)
+
+  // eslint-disable-next-line prefer-arrow-callback
+  before(function () {
+    return sdk.auth.loginWithToken(process.env.AUTH_TOKEN)
+      .then(() => {
+        return sdk.models.application.has(process.env.APPLICATION_NAME)
+      })
+      .then((hasApplication) => {
+        if (hasApplication) {
+          return sdk.models.application.remove(process.env.APPLICATION_NAME)
+        }
+
+        return Bluebird.resolve()
+      })
+      .then(() => {
+        return sdk.models.application.create(process.env.APPLICATION_NAME, global.options.deviceType)
+      })
+  })
 
   // TODO: importSuite(`Device provision via ${configs.ethernet.network}`, './resin/device.js', configs.ethernet)
 
