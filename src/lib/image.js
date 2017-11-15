@@ -9,10 +9,8 @@ const bar = require('cli-progress')
 const drivelist = require('drivelist')
 const fs = require('fs')
 const path = require('path')
-const lkl = require('lkl')
+const imagefs = require('resin-image-fs')
 const sdk = require('../components/resinio/sdk')
-const filedisk = require('file-disk')
-lkl.fs = Bluebird.promisifyAll(lkl.fs)
 const os = require('os')
 
 const ASSETS_DIRECTORY = os.tmpdir()
@@ -53,18 +51,22 @@ const nmWifiConfig = (options) => {
 const writeConfigure = (config) => {
   const wifiConfig = nmWifiConfig(config)
   const otherConfig = _.omit(config, 'wifiSsid', 'wifiKey')
+  const image = path.join(ASSETS_DIRECTORY, 'resin.img')
 
-  Bluebird.using(filedisk.openFile(path.join(ASSETS_DIRECTORY, 'resin.img'), 'r+'), (fd) => {
-    const disk = new filedisk.FileDisk(fd)
-    Bluebird.using(lkl.utils.attachDisk(disk), (diskId) => {
-      Bluebird.using(lkl.utils.mountPartition(diskId, 'vfat'), (mountpoint) => {
-        lkl.fs.writeFileAsync(path.join(mountpoint, 'config.json'), JSON.stringify(otherConfig)).then(() => {
-          if (wifiConfig) {
-            lkl.fs.writeFileAsync(path.join(mountpoint, '/system-connections/resin-wifi'), wifiConfig)
-          }
-        })
-      })
-    })
+  return imagefs.writeFile({
+    image,
+    partition: 1,
+    path: '/config.json'
+  }, JSON.stringify(otherConfig)).then(() => {
+    if (wifiConfig) {
+      return imagefs.writeFile({
+        image,
+        partition: 1,
+        path: '/system-connections/resin-wifi'
+      }, wifiConfig)
+    }
+
+    return Bluebird.resolve()
   })
 }
 
