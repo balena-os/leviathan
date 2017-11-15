@@ -34,7 +34,7 @@ module.exports = (opt) => {
             return devices[0]
           })
           .then((device) => {
-            global.provDevice = device
+            global.provDevice = device.id
             return sdk.isDeviceOnline(device)
           }).then((isOnline) => {
             return chai.expect(isOnline).to.be.true
@@ -43,7 +43,9 @@ module.exports = (opt) => {
 
       // eslint-disable-next-line prefer-arrow-callback
       it(`Device should report hostOS version: ${global.options.version}`, function () {
-        return chai.expect(global.provDevice.os_version).to.equal('Resin OS 2.0.6+rev3')
+        return sdk.getDeviceHostOSVersion(global.provDevice).then((version) => {
+          return chai.expect(version).to.equal('Resin OS 2.0.6+rev3')
+        })
       })
     }
   }

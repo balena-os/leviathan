@@ -66,3 +66,11 @@ exports.getApplicationDevices = (application) => {
 exports.isDeviceOnline = (device) => {
   return resin.models.device.isOnline(device)
 }
+
+exports.getDeviceHostOSVersion = (device) => {
+  return resin.models.device.get(device).get('os_version')
+}
+
+exports.getDeviceCommit = (device) => {
+  return resin.models.device.get(device).get('commit')
+}
