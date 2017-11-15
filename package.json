@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "Automated testing for ResinOS",
   "scripts": {
-    "lint": "eslint src",
+    "lint": "eslint lib",
     "test": "npm run lint",
-    "start": "mocha src/main.js --ui bdd --timeout 900000"
+    "start": "mocha lib/main.js --ui bdd --timeout 900000"
   },
   "repository": {
     "type": "git",
