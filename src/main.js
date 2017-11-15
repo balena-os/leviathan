@@ -39,19 +39,19 @@ describe('Test ResinOS', function () {
 
   // eslint-disable-next-line prefer-arrow-callback
   before(function () {
-    return sdk.auth.loginWithToken(process.env.AUTH_TOKEN)
+    return sdk.loginWithToken(process.env.AUTH_TOKEN)
       .then(() => {
-        return sdk.models.application.has(process.env.APPLICATION_NAME)
+        return sdk.hasApplication(process.env.APPLICATION_NAME)
       })
       .then((hasApplication) => {
         if (hasApplication) {
-          return sdk.models.application.remove(process.env.APPLICATION_NAME)
+          return sdk.removeApplication(process.env.APPLICATION_NAME)
         }
 
         return Bluebird.resolve()
       })
       .then(() => {
-        return sdk.models.application.create(process.env.APPLICATION_NAME, global.options.deviceType)
+        return sdk.createApplication(process.env.APPLICATION_NAME, global.options.deviceType)
       })
   })
 

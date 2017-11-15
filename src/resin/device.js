@@ -27,15 +27,17 @@ module.exports = (opt) => {
 
         return Bluebird.delay(10000)
           .return(process.env.APPLICATION_NAME)
-          .then(sdk.models.device.getAllByApplication)
-          .then((dev) => {
-            chai.expect(dev).to.have.length(1)
-            chai.expect(dev).to.be.instanceof(Array)
-            return dev[0]
+          .then(sdk.getApplicationDevices)
+          .then((devices) => {
+            chai.expect(devices).to.have.length(1)
+            chai.expect(devices).to.be.instanceof(Array)
+            return devices[0]
           })
-          .then((dev) => {
-            global.provDevice = dev
-            return chai.expect(dev).to.have.property('is_online', true)
+          .then((device) => {
+            global.provDevice = device
+            return sdk.isDeviceOnline(device)
+          }).then((isOnline) => {
+            return chai.expect(isOnline).to.be.true
           })
       })
 
