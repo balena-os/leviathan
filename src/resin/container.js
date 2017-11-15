@@ -20,9 +20,9 @@ module.exports = (opt) => {
           return git.Clone(global.options.gitAppURL, path.resolve(global.assetDir, 'test'))
         }).then((repo) => {
           repository = repo
-          return sdk.models.application.get(process.env.APPLICATION_NAME)
-        }).then((app) => {
-          return git.Remote.create(repository, 'resin', `telphan@git.resin.io:${app.git_repository}.git`)
+          return sdk.getApplicationGitRemote(process.env.APPLICATION_NAME)
+        }).then((remote) => {
+          return git.Remote.create(repository, 'resin', remote)
         }).then((remote) => {
           return remote.push([ 'refs/heads/master:refs/heads/master' ], {
             callbacks: {

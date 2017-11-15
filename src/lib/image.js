@@ -4,7 +4,6 @@ const _ = require('lodash')
 const imageWriter = require('etcher-image-write')
 const Bluebird = require('bluebird')
 const mountutils = Bluebird.promisifyAll(require('mountutils'))
-const progress = require('progress-stream')
 const bar = require('cli-progress')
 const drivelist = require('drivelist')
 const fs = require('fs')
@@ -85,45 +84,6 @@ const validateDisk = (disk) => {
     })
 }
 
-const getImage = (deviceType, version) => {
-  const download = new bar.Bar({}, bar.Presets.shades_classic)
-
-  return new Bluebird((resolve, reject) => {
-    Bluebird.join(
-      sdk.models.os.download(deviceType, version),
-      sdk.models.os.getDownloadSize(deviceType, version)
-    ).spread((stream, size) => {
-      fs.access(path.join(ASSETS_DIRECTORY, 'resin.img'), fs.constants.F_OK, (err) => {
-        if (err) {
-          download.start(100, 0)
-
-          const progressStream = progress({
-            length: size,
-            time: 1000
-          })
-
-          stream.pipe(progressStream).pipe(fs.createWriteStream(path.join(ASSETS_DIRECTORY, 'resin.img')))
-
-          progressStream.on('progress', (data) => {
-            download.update(data.percentage.toFixed(2))
-          })
-
-          stream.on('finish', () => {
-            download.update(100)
-            download.stop()
-            resolve()
-          })
-
-          stream.on('error', reject)
-        } else {
-          // Image was found in the asset dir, do not attempt download
-          resolve()
-        }
-      })
-    })
-  })
-}
-
 const writeImage = (disk) => {
   const write = new bar.Bar({}, bar.Presets.shades_classic)
   let fd = null
@@ -170,15 +130,12 @@ const writeImage = (disk) => {
 }
 
 exports.provision = (appName, deviceType, version, disk, config) => {
-  return getImage(deviceType, version)
-    .then(() => {
-      return sdk.models.os.getConfig(appName, config)
-    })
-    .then((conf) => {
-      return writeConfigure(conf)
-    })
-    .then(() => {
-      return validateDisk(disk)
-    })
-    .then(writeImage)
+  const imagePath = path.join(ASSETS_DIRECTORY, 'resin.img')
+  return sdk.downloadDeviceTypeOS(deviceType, version, imagePath).then(() => {
+    return sdk.getApplicationOSConfiguration(appName, config)
+  }).then((conf) => {
+    return writeConfigure(conf)
+  }).then(() => {
+    return validateDisk(disk)
+  }).then(writeImage)
 }
