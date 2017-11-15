@@ -6,6 +6,7 @@ chai.use(chaiAsPromised)
 const git = require('nodegit')
 const fse = require('fs-extra')
 const path = require('path')
+const os = require('os')
 const resinio = require('../components/resinio/sdk')
 
 module.exports = () => {
@@ -16,8 +17,9 @@ module.exports = () => {
       before(function () {
         let repository = null
 
-        return fse.remove(path.resolve(global.assetDir, 'test')).then(() => {
-          return git.Clone(global.options.gitAppURL, path.resolve(global.assetDir, 'test'))
+        const repoPath = path.join(os.tmpdir(), 'test')
+        return fse.remove(repoPath).then(() => {
+          return git.Clone(global.options.gitAppURL, repoPath)
         }).then((repo) => {
           repository = repo
           return resinio.getApplicationGitRemote(process.env.APPLICATION_NAME)
