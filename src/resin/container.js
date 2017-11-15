@@ -8,7 +8,7 @@ const fse = require('fs-extra')
 const path = require('path')
 const sdk = require('../components/resinio/sdk')
 
-module.exports = (opt) => {
+module.exports = () => {
   return {
     // eslint-disable-next-line prefer-arrow-callback
     describe: function () {

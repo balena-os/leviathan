@@ -4,23 +4,12 @@ const Bluebird = require('bluebird')
 const chai = require('chai')
 const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
-const image = require('../lib/image')
 const sdk = require('../components/resinio/sdk')
 
-module.exports = (opt) => {
+module.exports = () => {
   return {
     // eslint-disable-next-line prefer-arrow-callback
     describe: function () {
-      // eslint-disable-next-line prefer-arrow-callback
-      before(function () {
-        return image.provision(
-          process.env.APPLICATION_NAME,
-          global.options.deviceType,
-          global.options.version,
-          global.options.disk,
-          opt)
-      })
-
       // eslint-disable-next-line prefer-arrow-callback
       it('Device should become online', function () {
         this.retries(50)
