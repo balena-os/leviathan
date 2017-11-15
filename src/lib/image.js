@@ -8,66 +8,11 @@ const bar = require('cli-progress')
 const drivelist = require('drivelist')
 const fs = require('fs')
 const path = require('path')
-const imagefs = require('resin-image-fs')
 const sdk = require('../components/resinio/sdk')
+const resinos = require('../components/resinos/simple')
 const os = require('os')
 
 const ASSETS_DIRECTORY = os.tmpdir()
-
-const nmWifiConfig = (options) => {
-  const ssid = options.wifiSsid.trim()
-  if (_.isEmpty(ssid)) {
-    return null
-  }
-
-  let config = `
-    [connection]
-    id=resin-wifi
-    type=wifi
-    [wifi]
-    hidden=true
-    mode=infrastructure
-    ssid=#{options.wifiSsid}
-    [ipv4]
-    method=auto
-    [ipv6]
-    addr-gen-mode=stable-privacy
-    method=auto
-  `
-
-  if (options.wifiKey) {
-    config += `
-      [wifi-security]
-      auth-alg=open
-      key-mgmt=wpa-psk
-      psk=#{options.wifiKey}
-    `
-  }
-
-  return config
-}
-
-const writeConfigure = (config) => {
-  const wifiConfig = nmWifiConfig(config)
-  const otherConfig = _.omit(config, 'wifiSsid', 'wifiKey')
-  const image = path.join(ASSETS_DIRECTORY, 'resin.img')
-
-  return imagefs.writeFile({
-    image,
-    partition: 1,
-    path: '/config.json'
-  }, JSON.stringify(otherConfig)).then(() => {
-    if (wifiConfig) {
-      return imagefs.writeFile({
-        image,
-        partition: 1,
-        path: '/system-connections/resin-wifi'
-      }, wifiConfig)
-    }
-
-    return Bluebird.resolve()
-  })
-}
 
 const validateDisk = (disk) => {
   return drivelist.listAsync()
@@ -134,7 +79,9 @@ exports.provision = (appName, deviceType, version, disk, config) => {
   return sdk.downloadDeviceTypeOS(deviceType, version, imagePath).then(() => {
     return sdk.getApplicationOSConfiguration(appName, config)
   }).then((conf) => {
-    return writeConfigure(conf)
+    return resinos.injectResinConfiguration(imagePath, conf).then(() => {
+      return resinos.injectNetworkConfiguration(imagePath, config)
+    })
   }).then(() => {
     return validateDisk(disk)
   }).then(writeImage)
