@@ -3,9 +3,9 @@
 const fs = require('fs')
 const path = require('path')
 const Bluebird = require('bluebird')
-const sdk = require('./components/resinio/sdk')
+const resinio = require('./components/resinio/sdk')
 const resinos = require('./components/resinos/simple')
-const etcher = require('./components/writer/etcher')
+const writer = require('./components/writer/etcher')
 const os = require('os')
 
 global.options = require(path.join(__dirname, '../user.json'))
@@ -30,30 +30,31 @@ describe('Test ResinOS', function () {
   // eslint-disable-next-line prefer-arrow-callback
   before(function () {
     this.imagePath = path.join(os.tmpdir(), 'resin.img')
+    const applicationName = process.env.APPLICATION_NAME
     const configuration = {
       network: 'ethernet'
     }
 
-    return sdk.loginWithToken(process.env.AUTH_TOKEN).then(() => {
-      return sdk.hasApplication(process.env.APPLICATION_NAME)
+    return resinio.loginWithToken(process.env.AUTH_TOKEN).then(() => {
+      return resinio.hasApplication(applicationName)
     }).then((hasApplication) => {
       if (hasApplication) {
-        return sdk.removeApplication(process.env.APPLICATION_NAME)
+        return resinio.removeApplication(applicationName)
       }
 
       return Bluebird.resolve()
     }).then(() => {
-      return sdk.createApplication(process.env.APPLICATION_NAME, global.options.deviceType)
+      return resinio.createApplication(applicationName, global.options.deviceType)
     }).then(() => {
-      return sdk.downloadDeviceTypeOS(global.options.deviceType, global.options.version, this.imagePath)
+      return resinio.downloadDeviceTypeOS(global.options.deviceType, global.options.version, this.imagePath)
     }).then(() => {
-      return sdk.getApplicationOSConfiguration(process.env.APPLICATION_NAME, configuration).then((applicationConfiguration) => {
+      return resinio.getApplicationOSConfiguration(applicationName, configuration).then((applicationConfiguration) => {
         return resinos.injectResinConfiguration(this.imagePath, applicationConfiguration)
       })
     }).then(() => {
       return resinos.injectNetworkConfiguration(this.imagePath, configuration)
     }).then(() => {
-      return etcher.writeImage(this.imagePath, global.options.disk)
+      return writer.writeImage(this.imagePath, global.options.disk)
     })
   })
 

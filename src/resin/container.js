@@ -6,7 +6,7 @@ chai.use(chaiAsPromised)
 const git = require('nodegit')
 const fse = require('fs-extra')
 const path = require('path')
-const sdk = require('../components/resinio/sdk')
+const resinio = require('../components/resinio/sdk')
 
 module.exports = () => {
   return {
@@ -20,7 +20,7 @@ module.exports = () => {
           return git.Clone(global.options.gitAppURL, path.resolve(global.assetDir, 'test'))
         }).then((repo) => {
           repository = repo
-          return sdk.getApplicationGitRemote(process.env.APPLICATION_NAME)
+          return resinio.getApplicationGitRemote(process.env.APPLICATION_NAME)
         }).then((remote) => {
           return git.Remote.create(repository, 'resin', remote)
         }).then((remote) => {
@@ -36,7 +36,7 @@ module.exports = () => {
 
       // eslint-disable-next-line prefer-arrow-callback
       it(`Push: (${global.options.gitAppURL})`, function () {
-        return sdk.getDeviceCommit(global.provDevice).then((commit) => {
+        return resinio.getDeviceCommit(global.provDevice).then((commit) => {
           return chai.expect(commit).to.have.length(40)
         })
       })
