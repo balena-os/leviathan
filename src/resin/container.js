@@ -36,7 +36,9 @@ module.exports = (opt) => {
 
       // eslint-disable-next-line prefer-arrow-callback
       it(`Push: (${global.options.gitAppURL})`, function () {
-        return chai.expect(global.provDevice.commit).to.have.length(40)
+        return sdk.getDeviceCommit(global.provDevice).then((commit) => {
+          return chai.expect(commit).to.have.length(40)
+        })
       })
     }
   }
