@@ -1,6 +1,5 @@
 'use strict'
 
-const fs = require('fs')
 const path = require('path')
 const Bluebird = require('bluebird')
 const resinio = require('./components/resinio/sdk')
@@ -9,14 +8,7 @@ const writer = require('./components/writer/etcher')
 const os = require('os')
 
 global.options = require(path.join(__dirname, '../user.json'))
-global.assetDir = path.resolve(__dirname, '../assets')
-
 global.provDevice = null
-
-// Create asset directory
-if (!fs.existsSync(global.assetDir)) {
-  fs.mkdirSync(global.assetDir)
-}
 
 /* TODO: Re-enable
 const importSuite = (name, testPath) => {
