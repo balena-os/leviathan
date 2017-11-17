@@ -77,7 +77,7 @@ ava.test.before(async () => {
   await resinos.injectNetworkConfiguration(imagePath, configuration)
 
   console.log(`Provisioning ${options.disk} with ${imagePath}`)
-  await deviceType.provision(writer, imagePath, {
+  await deviceType.provision(imagePath, writer, {
     destination: options.disk
   })
 
