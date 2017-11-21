@@ -6,7 +6,7 @@ test: env.list build-docker-image
 
 build-docker-image: Dockerfile
 	@echo '[Info] Building docker image "$(DOCKER_IMAGE)"...'
-	docker build -t $(DOCKER_IMAGE) - < $<
+	docker build -t $(DOCKER_IMAGE) .
 
 clean:
 	@echo '[Info] Removing docker image "$(DOCKER_IMAGE)"...'
