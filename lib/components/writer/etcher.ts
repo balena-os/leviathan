@@ -32,7 +32,7 @@ exports.writeImage = async (image, destination) => {
   })
 
   emitter.on('progress', (state) => {
-    console.log(`Flashing ${image}: ${state.percentage.toFixed(2)} (${state.type})`)
+    console.log(`Flashing ${image}: ${state.percentage.toFixed(2)}% (${state.type})`)
   })
 
   return new Bluebird((resolve, reject) => {
