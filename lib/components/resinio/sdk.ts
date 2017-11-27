@@ -27,7 +27,7 @@ exports.downloadDeviceTypeOS = async (deviceType, version, destination) => {
 
     stream.on('error', reject)
     stream.on('finish', resolve)
-    stream.pipe(output)
+    stream.pipe(progress).pipe(output)
   })
 }
 
