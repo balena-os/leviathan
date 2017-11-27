@@ -4,13 +4,10 @@ import ava = require('ava')
 import Bluebird = require('bluebird')
 import fse = require('fs-extra')
 import git = require('nodegit')
-import os = require('os')
 import path = require('path')
 
-const utils = require('./utils')
-const resinio = utils.requireComponent('resinio', 'sdk')
-const resinos = utils.requireComponent('resinos', 'default')
-const writer = utils.requireComponent('writer', 'etcher')
+const TEMPORARY_DIRECTORY = path.join(__dirname, '..', '.tmp')
+fse.ensureDirSync(TEMPORARY_DIRECTORY)
 
 const options = <any>{
   deviceType: process.env.DEVICE_TYPE,
@@ -21,10 +18,14 @@ const options = <any>{
   password: process.env.PASSWORD
 }
 
+const utils = require('./utils')
+const resinio = utils.requireComponent('resinio', 'sdk')
+const resinos = utils.requireComponent('resinos', 'default')
+const writer = utils.requireComponent('writer', 'etcher')
 const deviceType = utils.requireComponent('device-type', options.deviceType)
 
 ava.test.before(async () => {
-  const imagePath = path.join(os.tmpdir(), 'resin.img')
+  const imagePath = path.join(TEMPORARY_DIRECTORY, 'resin.img')
   const configuration = {
     network: 'ethernet'
   }
@@ -79,7 +80,7 @@ ava.test.skip('device should report hostOS version', async (test) => {
 })
 
 ava.test.skip('should push an application', async (test) => {
-  const repositoryPath = path.join(os.tmpdir(), 'test')
+  const repositoryPath = path.join(TEMPORARY_DIRECTORY, 'test')
   await fse.remove(repositoryPath)
   const repository = await git.Clone('https://github.com/alexandrosm/hello-python', repositoryPath)
   const remote = await resinio.getApplicationGitRemote(options.applicationName)
