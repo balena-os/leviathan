@@ -88,7 +88,7 @@ ava.test.skip('should push an application', (test) => {
   }).then((remote) => {
     return remote.push([ 'refs/heads/master:refs/heads/master' ], {
       callbacks: {
-        credentials: (url, user) => {
+        credentials: (_url, user) => {
           return git.Cred.sshKeyFromAgent(user)
         }
       }
