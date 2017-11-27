@@ -17,6 +17,7 @@ exports.writeImage = async (image, destination) => {
     throw new Error(`The selected drive ${destination} was not found`)
   }
 
+  await mountutils.unmountDiskAsync(drive.device)
   const driveFileDescriptor = await fs.openAsync(drive.raw, 'rs+')
   const imageSize = await fs.statAsync(image).get('size')
 
