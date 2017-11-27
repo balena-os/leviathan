@@ -1,0 +1,37 @@
+{
+  "extends": "tslint:recommended",
+  "rules": {
+    "jsdoc-format": true,
+    "whitespace": [
+      false,
+      "check-type"
+    ],
+    "object-literal-sort-keys": false,
+    "only-arrow-functions": [ false ],
+    "quotemark": [ true, "single", "avoid-escape", "jsx-double" ],
+    "max-classes-per-file": [ false ],
+    "max-line-length": [ 180 ],
+    "member-access": false,
+    "member-ordering": [ false ],
+    "no-consecutive-blank-lines": false,
+    "no-shadowed-variable": false,
+    "no-var-requires": false,
+    "arrow-parens": false,
+    "no-angle-bracket-type-assertion": false,
+    "no-console": [ false ],
+    "no-empty-interface": false,
+    "no-string-literal": false,
+    "object-literal-key-quotes": [ true, "as-needed" ],
+    "interface-name": [ false ],
+    "interface-over-type-literal": false,
+    "variable-name": [
+      true,
+      "ban-keywords",
+      "check-format",
+      "allow-leading-underscore",
+      "allow-pascal-case"
+    ],
+    "semicolon": [ true, "never" ],
+    "trailing-comma": [ true, "never" ]
+  }
+}

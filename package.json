@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "Automated testing for ResinOS",
   "scripts": {
-    "lint": "eslint lib",
-    "test": "npm run lint",
-    "start": "ava"
+    "tslint": "tslint -t stylish \"lib/**/*.ts\"",
+    "test": "npm run tslint",
+    "start": "ava-ts"
   },
   "repository": {
     "type": "git",
@@ -25,13 +25,14 @@
   "homepage": "https://github.com/resin-io/resinos-tests",
   "ava": {
     "files": [
-      "lib/main.js"
+      "lib/main.ts"
     ],
     "failFast": true,
     "failWithoutAssertions": true
   },
   "dependencies": {
     "ava": "^0.23.0",
+    "ava-ts": "^0.23.0",
     "bluebird": "^3.5.0",
     "drivelist": "^5.0.22",
     "etcher-image-write": "^9.1.3",
@@ -40,14 +41,11 @@
     "nodegit": "^0.18.3",
     "progress-stream": "^2.0.0",
     "resin-image-fs": "^4.0.2",
-    "resin-sdk": "^7.0.0"
+    "resin-sdk": "^7.0.0",
+    "ts-node": "^3.3.0",
+    "typescript": "^2.6.1"
   },
   "devDependencies": {
-    "eslint": "^4.9.0",
-    "eslint-config-standard": "^10.2.1",
-    "eslint-plugin-import": "^2.8.0",
-    "eslint-plugin-node": "^5.2.0",
-    "eslint-plugin-promise": "^3.6.0",
-    "eslint-plugin-standard": "^3.0.1"
+    "tslint": "^5.8.0"
   }
 }
