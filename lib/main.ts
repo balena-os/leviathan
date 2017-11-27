@@ -21,21 +21,36 @@ ava.test.before(async () => {
     network: 'ethernet'
   }
 
+  console.log('Logging into resin.io')
   await resinio.loginWithCredentials({
     email: process.env.EMAIL,
     password: process.env.PASSWORD
   })
 
+  console.log(`Removing application: ${applicationName}`)
   await resinio.removeApplication(applicationName)
+
+  console.log(`Creating application: ${applicationName} with device type ${options.deviceType}`)
   await resinio.createApplication(applicationName, options.deviceType)
+
+  console.log('Downloading device type OS')
   await resinio.downloadDeviceTypeOS(options.deviceType, options.version, imagePath)
+
+  console.log('Getting application OS configuration')
   const applicationConfiguration = await resinio.getApplicationOSConfiguration(applicationName, configuration)
+
+  console.log(`Injecting resin.io configuration into ${imagePath}`)
   await resinos.injectResinConfiguration(imagePath, applicationConfiguration)
+
+  console.log(`Injecting network configuration into ${imagePath}`)
   await resinos.injectNetworkConfiguration(imagePath, configuration)
+
+  console.log(`Provisioning ${options.disk} with ${imagePath}`)
   await deviceType.provision(writer, imagePath, {
     destination: options.disk
   })
 
+  console.log(`Waiting while device boots`)
   await Bluebird.delay(10000)
 })
 
