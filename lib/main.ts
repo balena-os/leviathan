@@ -1,14 +1,14 @@
 'use strict'
 
-const ava = require('ava')
-const path = require('path')
-const Bluebird = require('bluebird')
-const os = require('os')
-const git = require('nodegit')
-const fse = require('fs-extra')
+import ava = require('ava')
+import Bluebird = require('bluebird')
+import fse = require('fs-extra')
+import git = require('nodegit')
+import os = require('os')
+import path = require('path')
 
-const options = require(path.join(__dirname, '../user.json'))
 const utils = require('./utils')
+const options = require(path.join(__dirname, '../user.json'))
 const resinio = utils.requireComponent('resinio', 'sdk')
 const resinos = utils.requireComponent('resinos', 'default')
 const writer = utils.requireComponent('writer', 'etcher')

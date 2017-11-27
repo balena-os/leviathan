@@ -1,7 +1,7 @@
 'use strict'
 
-const Bluebird = require('bluebird')
-const imagefs = require('resin-image-fs')
+import Bluebird = require('bluebird')
+import imagefs = require('resin-image-fs')
 
 // TODO: This function should be implemented using Reconfix
 exports.injectResinConfiguration = (image, configuration) => {

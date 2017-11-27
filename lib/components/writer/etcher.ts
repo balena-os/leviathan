@@ -1,14 +1,15 @@
 'use strict'
 
-const _ = require('lodash')
-const Bluebird = require('bluebird')
+import Bluebird = require('bluebird')
+import imageWrite = require('etcher-image-write')
+import _ = require('lodash')
 const fs = Bluebird.promisifyAll(require('fs'))
 const mountutils = Bluebird.promisifyAll(require('mountutils'))
 const drivelist = Bluebird.promisifyAll(require('drivelist'))
-const imageWrite = require('etcher-image-write')
 
 exports.writeImage = async (image, destination) => {
-  const drive = _.find(await drivelist.listAsync(), {
+  const drives = await drivelist.listAsync()
+  const drive = <any>_.find(drives, {
     device: destination
   })
 
@@ -40,7 +41,7 @@ exports.writeImage = async (image, destination) => {
       resolve(drive.device)
     })
   }).then(() => {
-    return fs.closeAsync(results.driveFileDescriptor)
+    return fs.closeAsync(driveFileDescriptor)
       .delay(2000)
       .return(drive.device)
       .then(mountutils.unmountDiskAsync)
