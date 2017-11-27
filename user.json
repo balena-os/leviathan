@@ -1,6 +1,0 @@
-{
-    "disk": "/dev/sdb",
-    "deviceType": "raspberrypi3",
-    "version": "latest",
-    "gitAppURL": "https://github.com/alexandrosm/hello-python"
-}
