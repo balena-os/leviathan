@@ -7,29 +7,27 @@ const resin = require('resin-sdk')({
   apiUrl: 'https://api.resin.io/'
 })
 
-exports.downloadDeviceTypeOS = (deviceType, version, destination) => {
-  return Bluebird.props({
-    stream: resin.models.os.download(deviceType, version),
-    size: resin.models.os.getDownloadSize(deviceType, version)
-  }).then((results) => {
-    return new Bluebird((resolve, reject) => {
-      const output = fs.createWriteStream(destination)
-      output.on('error', reject)
+exports.downloadDeviceTypeOS = async (deviceType, version, destination) => {
+  const stream = await resin.models.os.download(deviceType, version)
+  const size = await resin.models.os.getDownloadSize(deviceType, version)
 
-      const progress = progressStream({
-        length: results.size,
-        time: 1000
-      })
+  return new Bluebird((resolve, reject) => {
+    const output = fs.createWriteStream(destination)
+    output.on('error', reject)
 
-      progress.on('error', reject)
-      progress.on('progress', (data) => {
-        console.log(`Downloading OS: ${data.percentage.toFixed(2)}%`)
-      })
-
-      results.stream.on('error', reject)
-      results.stream.on('finish', resolve)
-      results.stream.pipe(output)
+    const progress = progressStream({
+      length: size,
+      time: 1000
     })
+
+    progress.on('error', reject)
+    progress.on('progress', (data) => {
+      console.log(`Downloading OS: ${data.percentage.toFixed(2)}%`)
+    })
+
+    stream.on('error', reject)
+    stream.on('finish', resolve)
+    stream.pipe(output)
   })
 }
 
