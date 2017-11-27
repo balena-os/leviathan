@@ -22,7 +22,7 @@ exports.downloadDeviceTypeOS = async (deviceType, version, destination) => {
 
     progress.on('error', reject)
     progress.on('progress', (data) => {
-      console.log(`Downloading OS: ${data.percentage.toFixed(2)}%`)
+      console.log(`Downloading OS for ${deviceType} (${version}): ${data.percentage.toFixed(2)}%`)
     })
 
     stream.on('error', reject)

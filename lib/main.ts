@@ -41,8 +41,8 @@ ava.test.before(async () => {
   console.log(`Creating application: ${options.applicationName} with device type ${options.deviceType}`)
   await resinio.createApplication(options.applicationName, options.deviceType)
 
-  console.log('Downloading device type OS')
-  await resinio.downloadDeviceTypeOS(options.deviceType, options.version, imagePath)
+  console.log(`Downloading device type OS into ${imagePath}`)
+  await resinio.downloadDeviceTypeOS(options.deviceType, options.resinOSVersion, imagePath)
 
   console.log('Getting application OS configuration')
   const applicationConfiguration = await resinio.getApplicationOSConfiguration(options.applicationName, configuration)
