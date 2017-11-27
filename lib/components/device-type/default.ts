@@ -1,6 +1,6 @@
 'use strict'
 
-const Bluebird = require('bluebird')
+import Bluebird = require('bluebird')
 
 exports.provision = async (writer, imagePath, options) => {
   await writer.writeImage(imagePath, options.destination)

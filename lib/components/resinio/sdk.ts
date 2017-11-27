@@ -1,8 +1,8 @@
 'use strict'
 
-const fs = require('fs')
-const Bluebird = require('bluebird')
-const progressStream = require('progress-stream')
+import Bluebird = require('bluebird')
+import fs = require('fs')
+import progressStream = require('progress-stream')
 const resin = require('resin-sdk')({
   apiUrl: 'https://api.resin.io/'
 })
@@ -48,7 +48,13 @@ exports.hasApplication = (application) => {
 }
 
 exports.removeApplication = (application) => {
-  return resin.models.application.remove(application)
+  return exports.hasApplication(application).then((hasApplication) => {
+    if (hasApplication) {
+      return resin.models.application.remove(application)
+    }
+
+    return Bluebird.resolve()
+  })
 }
 
 exports.createApplication = (name, deviceType) => {
