@@ -1,7 +1,6 @@
 'use strict'
 
 import ava = require('ava')
-import Bluebird = require('bluebird')
 import fse = require('fs-extra')
 import git = require('nodegit')
 import path = require('path')
@@ -24,7 +23,7 @@ const resinos = utils.requireComponent('resinos', 'default')
 const writer = utils.requireComponent('writer', 'etcher')
 const deviceType = utils.requireComponent('device-type', options.deviceType)
 
-ava.test.before(async () => {
+ava.test.before(async (test) => {
   const imagePath = path.join(TEMPORARY_DIRECTORY, 'resin.img')
   const configuration = {
     network: 'ethernet'
@@ -45,11 +44,14 @@ ava.test.before(async () => {
   console.log(`Downloading device type OS into ${imagePath}`)
   await resinio.downloadDeviceTypeOS(options.deviceType, options.resinOSVersion, imagePath)
 
-  console.log('Getting application OS configuration')
-  const applicationConfiguration = await resinio.getApplicationOSConfiguration(options.applicationName, configuration)
+  console.log(`Creating device placeholder on ${options.applicationName}`)
+  const placeholder = await resinio.createDevicePlaceholder(options.applicationName)
+
+  console.log(`Getting resin.io configuration for device ${placeholder.uuid}`)
+  const resinConfiguration = await resinio.getDeviceOSConfiguration(placeholder.uuid, placeholder.deviceApiKey, configuration)
 
   console.log(`Injecting resin.io configuration into ${imagePath}`)
-  await resinos.injectResinConfiguration(imagePath, applicationConfiguration)
+  await resinos.injectResinConfiguration(imagePath, resinConfiguration)
 
   console.log(`Injecting network configuration into ${imagePath}`)
   await resinos.injectNetworkConfiguration(imagePath, configuration)
@@ -60,26 +62,23 @@ ava.test.before(async () => {
   })
 
   console.log(`Waiting while device boots`)
-  await Bluebird.delay(10000)
+  await resinio.waitForDevice(placeholder.uuid)
+
+  console.log('Done, running tests')
+  test.context.uuid = placeholder.uuid
 })
 
-let provDevice = null
-
-ava.test.skip('device should become online', async (test) => {
-  const devices = await resinio.getApplicationDevices(options.applicationName)
-  test.is(devices.length, 1)
-  test.true(devices instanceof Array)
-  provDevice = devices[0].id
-  const isOnline = await resinio.isDeviceOnline(devices[0])
+ava.test('device should become online', async (test) => {
+  const isOnline = await resinio.isDeviceOnline(test.context.uuid)
   test.true(isOnline)
 })
 
-ava.test.skip('device should report hostOS version', async (test) => {
-  const version = await resinio.getDeviceHostOSVersion(provDevice)
+ava.test('device should report hostOS version', async (test) => {
+  const version = await resinio.getDeviceHostOSVersion(test.context.uuid)
   test.is(version, 'Resin OS 2.0.6+rev3')
 })
 
-ava.test.skip('should push an application', async (test) => {
+ava.test('should push an application', async (test) => {
   const repositoryPath = path.join(TEMPORARY_DIRECTORY, 'test')
   await fse.remove(repositoryPath)
   const repository = await git.Clone('https://github.com/alexandrosm/hello-python', repositoryPath)
@@ -93,6 +92,6 @@ ava.test.skip('should push an application', async (test) => {
     }
   })
 
-  const commit = await resinio.getDeviceCommit(provDevice)
+  const commit = await resinio.getDeviceCommit(test.context.uuid)
   test.is(commit.length, 40)
 })
