@@ -35,6 +35,18 @@ exports.getApplicationOSConfiguration = (application, options) => {
   return resin.models.os.getConfig(application, options)
 }
 
+exports.getDeviceOSConfiguration = async (uuid, apiKey, options) => {
+  const application = await resin.models.device.getApplicationName(uuid)
+  const configuration = await exports.getApplicationOSConfiguration(application, options)
+  const device = await resin.models.device.get(uuid)
+
+  configuration.registered_at = Math.floor(Date.now() / 1000)
+  configuration.deviceId = device.id
+  configuration.uuid = uuid
+  configuration.deviceApiKey = apiKey
+  return configuration
+}
+
 exports.getApplicationGitRemote = (application) => {
   return resin.models.application.get(application).get('git_repository')
 }
@@ -77,4 +89,27 @@ exports.getDeviceHostOSVersion = (device) => {
 
 exports.getDeviceCommit = (device) => {
   return resin.models.device.get(device).get('commit')
+}
+
+exports.createDevicePlaceholder = async (application) => {
+  const applicationId = await resin.models.application.get(application).get('id')
+  const uuid = await resin.models.device.generateUniqueKey()
+  const deviceApiKey = await resin.models.device.generateUniqueKey()
+  await resin.models.device.register(applicationId, uuid, deviceApiKey)
+  return { uuid, deviceApiKey }
+}
+
+exports.waitForDevice = async (uuid, times = 0) => {
+  const isOnline = await resin.models.device.isOnline(uuid)
+  if (isOnline) {
+    return uuid
+  }
+
+  if (times > 20) {
+    throw new Error(`Device did not come online: ${uuid}`)
+  }
+
+  return Bluebird.delay(3000).then(() => {
+    return exports.waitForDevice(uuid, times + 1)
+  })
 }
