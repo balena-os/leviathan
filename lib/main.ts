@@ -10,12 +10,12 @@ const TEMPORARY_DIRECTORY = path.join(__dirname, '..', '.tmp')
 fse.ensureDirSync(TEMPORARY_DIRECTORY)
 
 const options = <any>{
-  deviceType: process.env.DEVICE_TYPE,
-  resinOSVersion: process.env.RESINOS_VERSION,
-  applicationName: process.env.APPLICATION_NAME,
-  disk: process.env.DISK,
-  email: process.env.EMAIL,
-  password: process.env.PASSWORD
+  deviceType: process.env.RESINOS_TESTS_DEVICE_TYPE,
+  resinOSVersion: process.env.RESINOS_TESTS_RESINOS_VERSION,
+  applicationName: process.env.RESINOS_TESTS_APPLICATION_NAME,
+  disk: process.env.RESINOS_TESTS_DISK,
+  email: process.env.RESINOS_TESTS_EMAIL,
+  password: process.env.RESINOS_TESTS_PASSWORD
 }
 
 const utils = require('./utils')
