@@ -1,18 +1,23 @@
-# Pull base image
-FROM node:boron
+FROM node:6 as npm-install
 
-# Install qemu dependencies
+WORKDIR /tmp/node
+
+COPY package.json .
+
+RUN npm install
+
+FROM node:6
+
 RUN apt-get update && apt-get install -y qemu-system-x86 qemu-kvm && \
     rm -rf /var/lib/apt/lists/*
 
-# Set environment variables
 ENV INITSYSTEM on
 
-# Define container's working directory
 WORKDIR /usr/app
 
-# Copy files to container's working directory
-COPY . /usr/app
+COPY --from=npm-install /tmp/node ./
 
-# Install dependencies
-RUN npm install
+ADD tsconfig.json ./
+ADD lib lib
+
+CMD ["npm","start"]

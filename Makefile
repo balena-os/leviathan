@@ -14,7 +14,7 @@ test: build-docker-image
 		--env "RESINOS_TESTS_WIFI_SSID=$(RESINOS_TESTS_WIFI_SSID)" \
 		--env "RESINOS_TESTS_WIFI_KEY=$(RESINOS_TESTS_WIFI_KEY)" \
 		--env "RESINOS_TESTS_DISK=$(RESINOS_TESTS_DISK)" \
-		$(DOCKER_IMAGE) npm start
+		$(DOCKER_IMAGE)
 
 clean:
 	@echo '[Info] Removing docker image "$(DOCKER_IMAGE)"...'
