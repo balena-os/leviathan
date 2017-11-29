@@ -23,7 +23,9 @@ const resinos = utils.requireComponent('resinos', 'default')
 const writer = utils.requireComponent('writer', 'etcher')
 const deviceType = utils.requireComponent('device-type', options.deviceType)
 
-ava.test.before(async (test) => {
+const context = {}
+
+ava.test.before(async () => {
   const imagePath = path.join(TEMPORARY_DIRECTORY, 'resin.img')
   const configuration = {
     network: 'ethernet'
@@ -65,16 +67,16 @@ ava.test.before(async (test) => {
   await resinio.waitForDevice(placeholder.uuid)
 
   console.log('Done, running tests')
-  test.context.uuid = placeholder.uuid
+  context.uuid = placeholder.uuid
 })
 
 ava.test('device should become online', async (test) => {
-  const isOnline = await resinio.isDeviceOnline(test.context.uuid)
+  const isOnline = await resinio.isDeviceOnline(context.uuid)
   test.true(isOnline)
 })
 
 ava.test('device should report hostOS version', async (test) => {
-  const version = await resinio.getDeviceHostOSVersion(test.context.uuid)
+  const version = await resinio.getDeviceHostOSVersion(context.uuid)
   test.is(version, 'Resin OS 2.0.6+rev3')
 })
 
@@ -92,6 +94,6 @@ ava.test('should push an application', async (test) => {
     }
   })
 
-  const commit = await resinio.getDeviceCommit(test.context.uuid)
+  const commit = await resinio.getDeviceCommit(context.uuid)
   test.is(commit.length, 40)
 })
