@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/node:boron
+      - image: circleci/node:6
 
     working_directory: ~/repo
 
@@ -29,7 +29,6 @@ jobs:
             name: Verifying coding style
             command: npm test
 
-      # TODO: Enable once we get this fixed
-      # - run:
-            # name: Running resinos tests
-            # command: npm start
+      - run:
+            name: Running resinos tests
+            command: npm start

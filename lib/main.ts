@@ -93,12 +93,12 @@ ava.test('device should become online', async (test) => {
   test.true(isOnline)
 })
 
-ava.test('device should report hostOS version', async (test) => {
+ava.test.skip('device should report hostOS version', async (test) => {
   const version = await resinio.getDeviceHostOSVersion(context.uuid)
   test.is(version, 'Resin OS 2.0.6+rev3')
 })
 
-ava.test('should push an application', async (test) => {
+ava.test.skip('should push an application', async (test) => {
   const repositoryPath = path.join(TEMPORARY_DIRECTORY, 'test')
   await fse.remove(repositoryPath)
   const repository = await git.Clone('https://github.com/alexandrosm/hello-python', repositoryPath)
