@@ -23,7 +23,9 @@ const resinos = utils.requireComponent('resinos', 'default')
 const writer = utils.requireComponent('writer', 'etcher')
 const deviceType = utils.requireComponent('device-type', options.deviceType)
 
-const context = {}
+const context = {
+  uuid: null
+}
 
 ava.test.before(async () => {
   const imagePath = path.join(TEMPORARY_DIRECTORY, 'resin.img')
