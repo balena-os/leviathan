@@ -52,7 +52,7 @@ Before submitting a PR, please make sure that you include tests, and that
 linters run without any warning:
 
 ```sh
-$ npm run lint
+npm run lint
 ```
 
 License
