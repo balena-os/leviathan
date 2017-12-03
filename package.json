@@ -4,7 +4,8 @@
   "description": "Automated testing for ResinOS",
   "scripts": {
     "tslint": "tslint -t stylish \"lib/**/*.ts\"",
-    "test": "npm run tslint",
+    "lint": "npm run tslint",
+    "test": "npm run lint",
     "start": "ava-ts"
   },
   "repository": {
