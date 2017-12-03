@@ -19,9 +19,9 @@
 import Bluebird = require('bluebird')
 import imageWrite = require('etcher-image-write')
 import _ = require('lodash')
-const fs = Bluebird.promisifyAll(require('fs'))
-const mountutils = Bluebird.promisifyAll(require('mountutils'))
-const drivelist = Bluebird.promisifyAll(require('drivelist'))
+const fs = <any>Bluebird.promisifyAll(require('fs'))
+const mountutils = <any>Bluebird.promisifyAll(require('mountutils'))
+const drivelist = <any>Bluebird.promisifyAll(require('drivelist'))
 
 exports.writeImage = async (image, destination) => {
   const drives = await drivelist.listAsync()
