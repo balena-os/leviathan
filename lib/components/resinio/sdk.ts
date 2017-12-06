@@ -125,7 +125,7 @@ exports.waitForDevice = async (uuid, times = 0) => {
     throw new Error(`Device did not come online: ${uuid}`)
   }
 
-  return Bluebird.delay(3000).then(() => {
+  return Bluebird.delay(30000).then(() => {
     return exports.waitForDevice(uuid, times + 1)
   })
 }

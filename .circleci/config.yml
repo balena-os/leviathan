@@ -2,11 +2,16 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/node:boron
+      - image: circleci/node:6
 
     working_directory: ~/repo
 
     steps:
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt-get update && sudo apt-get install -y qemu-system-x86 qemu-kvm
+
       - checkout
 
       # Download and cache dependencies
@@ -17,7 +22,7 @@ jobs:
           - v1-dependencies-
 
       - run:
-            name: Installing dependencies
+            name: Installing node dependencies
             command: npm install
 
       - save_cache:
@@ -29,7 +34,6 @@ jobs:
             name: Verifying coding style
             command: npm test
 
-      # TODO: Enable once we get this fixed
-      # - run:
-            # name: Running resinos tests
-            # command: npm start
+      - run:
+            name: Running resinos tests
+            command: npm start

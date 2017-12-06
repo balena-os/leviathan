@@ -16,7 +16,7 @@
 
 'use strict'
 
-exports.provision = async (writer, imagePath, options) => {
+exports.provision = async (imagePath, writer, options) => {
   await writer.writeImage(imagePath, options.destination)
   console.log(`Write complete. Please remove ${options.destination}, plug it into the device, and turn it on.`)
 }
