@@ -18,32 +18,26 @@
 
 import Bluebird = require('bluebird')
 import fs = require('fs')
-import progressStream = require('progress-stream')
+import visuals = require('resin-cli-visuals')
 const resin = require('resin-sdk')({
   apiUrl: 'https://api.resin.io/'
 })
 
 exports.downloadDeviceTypeOS = async (deviceType, version, destination) => {
   const stream = await resin.models.os.download(deviceType, version)
-  const size = await resin.models.os.getDownloadSize(deviceType, version)
+  if (!process.env.CI) {
+    const bar = new visuals.Progress('Download')
+    stream.on('progress', (data) => {
+      bar.update({ percentage: data.percentage, eta: data.eta })
+    })
+  }
 
   return new Bluebird((resolve, reject) => {
     const output = fs.createWriteStream(destination)
     output.on('error', reject)
-
-    const progress = progressStream({
-      length: size,
-      time: 1000
-    })
-
-    progress.on('error', reject)
-    progress.on('progress', (data) => {
-      console.log(`Downloading OS for ${deviceType} (${version}): ${data.percentage.toFixed(2)}%`)
-    })
-
     stream.on('error', reject)
     stream.on('finish', resolve)
-    stream.pipe(progress).pipe(output)
+    stream.pipe(output)
   })
 }
 
