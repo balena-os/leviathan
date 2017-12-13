@@ -28,6 +28,7 @@
     "files": [
       "lib/main.ts"
     ],
+    "verbose": true,
     "failFast": true,
     "failWithoutAssertions": true
   },
