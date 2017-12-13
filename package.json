@@ -41,6 +41,7 @@
     "mountutils": "^1.2.0",
     "nodegit": "^0.18.3",
     "progress-stream": "^2.0.0",
+    "resin-cli-visuals": "^1.4.0",
     "resin-image-fs": "^4.0.2",
     "resin-sdk": "^7.0.0",
     "ts-node": "^3.3.0",
