@@ -1,39 +1,20 @@
 version: 2
 jobs:
   build:
-    docker:
-      - image: circleci/node:6
-
-    working_directory: ~/repo
+    machine:
+      docker_layer_caching: true
 
     steps:
-      - run:
-          name: Install dependencies
-          command: |
-            sudo apt-get update && sudo apt-get install -y qemu-system-x86 qemu-kvm
-
       - checkout
 
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
+      - run:
+          name: Build docker image
+          command: make build-docker-image
 
       - run:
-            name: Installing node dependencies
-            command: npm install
-
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
+          name: Verifying coding style
+          command: make code-check
 
       - run:
-            name: Verifying coding style
-            command: npm test
-
-      - run:
-            name: Running resinos tests
-            command: npm start
+          name: Running resinos tests
+          command: make
