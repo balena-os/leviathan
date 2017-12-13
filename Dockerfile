@@ -17,7 +17,7 @@ WORKDIR /usr/app
 
 COPY --from=npm-install /tmp/node ./
 
-ADD tsconfig.json ./
+ADD tslint.json tsconfig.json ./
 ADD lib lib
 
 CMD ["npm","start"]
