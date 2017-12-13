@@ -16,10 +16,14 @@ test: build-docker-image
 		--env "RESINOS_TESTS_DISK=$(RESINOS_TESTS_DISK)" \
 		$(DOCKER_IMAGE)
 
+code-check: build-docker-image
+	@echo '[Info] Checking coding style'
+	@docker run --rm $(DOCKER_IMAGE) npm test
+
 clean:
 	@echo '[Info] Removing docker image "$(DOCKER_IMAGE)"...'
 	@docker rmi $(DOCKER_IMAGE)
 
-.PHONY: build-docker-image test clean
+.PHONY: build-docker-image test code-check clean
 
 .DEFAULT_GOAL = test
