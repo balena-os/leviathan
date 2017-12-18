@@ -7,6 +7,7 @@ build-docker-image: Dockerfile
 test: build-docker-image
 	@echo '[Info] Starting tests inside container...'
 	@docker run -it --rm \
+		--env "CI=$(CI)" \
 		--env "RESINOS_TESTS_APPLICATION_NAME=$(RESINOS_TESTS_APPLICATION_NAME)" \
 		--env "RESINOS_TESTS_DEVICE_TYPE=$(RESINOS_TESTS_DEVICE_TYPE)" \
 		--env "RESINOS_TESTS_EMAIL=$(RESINOS_TESTS_EMAIL)" \
