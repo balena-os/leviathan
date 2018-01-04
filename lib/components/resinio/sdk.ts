@@ -17,11 +17,17 @@
 'use strict'
 
 import Bluebird = require('bluebird')
-import fs = require('fs')
+import path = require('path')
 import visuals = require('resin-cli-visuals')
+
+const fs = Bluebird.promisifyAll(require('fs'))
+const keygen: any = Bluebird.promisify(require('ssh-keygen'))
 const resin = require('resin-sdk')({
   apiUrl: 'https://api.resin.io/'
 })
+
+// Time delay for wait functions
+const delay = 30000
 
 exports.downloadDeviceTypeOS = async (deviceType, version, destination) => {
   const stream = await resin.models.os.download(deviceType, version)
@@ -57,8 +63,11 @@ exports.getDeviceOSConfiguration = async (uuid, apiKey, options) => {
   return configuration
 }
 
-exports.getApplicationGitRemote = (application) => {
-  return resin.models.application.get(application).get('git_repository')
+exports.getApplicationGitRemote = async (application) => {
+  const repo = (await resin.models.application.get(application).get('git_repository'))
+  const config = await resin.models.config.getAll()
+  const user = await resin.auth.whoami()
+  return `${user}@${config.gitServerUrl}:${repo}.git`
 }
 
 exports.loginWithCredentials = (credentials) => {
@@ -89,6 +98,26 @@ exports.getApplicationDevices = (application) => {
   })
 }
 
+exports.createSSHKey = async () => {
+  const sshDir = path.join(process.cwd(), '.ssh')
+  await fs.mkdirAsync(sshDir).catch({
+    code: 'EEXIT'
+  }, this.noop)
+
+  const privateKeyPath = path.join(sshDir, 'id_rsa')
+  const key = await keygen({ location: privateKeyPath })
+
+  await resin.models.key.create('test', key.pubKey)
+
+  return {privateKey: key.key, publicKey: key.pubKey, privateKeyPath}
+}
+
+exports.removeSSHKeys = () => {
+  return resin.models.key.getAll().each((key) => {
+    return resin.models.key.remove(key.id)
+  })
+}
+
 exports.isDeviceOnline = (device) => {
   return resin.models.device.isOnline(device)
 }
@@ -98,7 +127,7 @@ exports.getDeviceHostOSVersion = (device) => {
 }
 
 exports.getDeviceCommit = (device) => {
-  return resin.models.device.get(device).get('commit')
+  return resin.models.device.get(device).get('is_on__commit')
 }
 
 exports.createDevicePlaceholder = async (application) => {
@@ -107,6 +136,20 @@ exports.createDevicePlaceholder = async (application) => {
   const deviceApiKey = await resin.models.device.generateUniqueKey()
   await resin.models.device.register(applicationId, uuid, deviceApiKey)
   return { uuid, deviceApiKey }
+}
+
+exports.waitForDeviceStatus = async (uuid, status, times = 0) => {
+  const done = (await resin.models.device.get(uuid).get('status')) === status
+
+  if (done) { return }
+
+  if (times > 30) {
+    throw new Error(`Device did not reach state [${status}]: ${uuid}`)
+  }
+
+  return Bluebird.delay(delay).then(() => {
+    return exports.waitForDeviceStatus(uuid, status, times + 1)
+  })
 }
 
 exports.waitForDevice = async (uuid, times = 0) => {
@@ -119,7 +162,7 @@ exports.waitForDevice = async (uuid, times = 0) => {
     throw new Error(`Device did not come online: ${uuid}`)
   }
 
-  return Bluebird.delay(30000).then(() => {
+  return Bluebird.delay(delay).then(() => {
     return exports.waitForDevice(uuid, times + 1)
   })
 }

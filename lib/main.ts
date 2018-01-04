@@ -18,8 +18,10 @@
 
 import ava = require('ava')
 import fse = require('fs-extra')
-import git = require('nodegit')
 import path = require('path')
+
+// Simple-git typing is out of date, ignore it for now
+const git: any = require('simple-git/promise')
 
 const TEMPORARY_DIRECTORY = path.join(__dirname, '..', '.tmp')
 fse.ensureDirSync(TEMPORARY_DIRECTORY)
@@ -39,8 +41,9 @@ const resinos = utils.requireComponent('resinos', 'default')
 const writer = utils.requireComponent('writer', 'etcher')
 const deviceType = utils.requireComponent('device-type', options.deviceType)
 
-const context = {
-  uuid: null
+const context: any = {
+  uuid: null,
+  key: null
 }
 
 ava.test.before(async () => {
@@ -60,6 +63,11 @@ ava.test.before(async () => {
 
   console.log(`Creating application: ${options.applicationName} with device type ${options.deviceType}`)
   await resinio.createApplication(options.applicationName, options.deviceType)
+
+  console.log('Remove previous SSH keys')
+  await resinio.removeSSHKeys()
+  context.key = await resinio.createSSHKey()
+  console.log(`Add new SSH key: ${context.key.publicKey}`)
 
   console.log(`Downloading device type OS into ${imagePath}`)
   await resinio.downloadDeviceTypeOS(options.deviceType, options.resinOSVersion, imagePath)
@@ -98,19 +106,19 @@ ava.test.skip('device should report hostOS version', async (test) => {
   test.is(version, 'Resin OS 2.0.6+rev3')
 })
 
-ava.test.skip('should push an application', async (test) => {
+ava.test('should push an application', async (test) => {
+  const GIT_SSH_COMMAND = `ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i ${context.key.privateKeyPath}`
+  const remote = 'resin'
   const repositoryPath = path.join(TEMPORARY_DIRECTORY, 'test')
+  const gitUrl = await resinio.getApplicationGitRemote(options.applicationName)
+
   await fse.remove(repositoryPath)
-  const repository = await git.Clone('https://github.com/alexandrosm/hello-python', repositoryPath)
-  const remote = await resinio.getApplicationGitRemote(options.applicationName)
-  await git.Remote.create(repository, 'resin', remote)
-  await remote.push([ 'refs/heads/master:refs/heads/master' ], {
-    callbacks: {
-      credentials: (_url, user) => {
-        return git.Cred.sshKeyFromAgent(user)
-      }
-    }
-  })
+  await git().clone('https://github.com/resin-io-projects/resin-cpp-hello-world.git', repositoryPath)
+  await git(repositoryPath).addRemote(remote, gitUrl)
+  await git(repositoryPath).env('GIT_SSH_COMMAND', GIT_SSH_COMMAND).push(remote, 'master')
+
+  await resinio.waitForDeviceStatus(context.uuid, 'Downloading')
+  await resinio.waitForDeviceStatus(context.uuid, 'Idle')
 
   const commit = await resinio.getDeviceCommit(context.uuid)
   test.is(commit.length, 40)
