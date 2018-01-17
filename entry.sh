@@ -10,6 +10,10 @@ RESINOS_TESTS_RESINOS_VERSION=$(
   set -m 
   node ./scripts/resolve.js RESINOS_VERSION "${RESINOS_TESTS_RESINOS_VERSION}" "${RESINOS_TESTS_DEVICE_TYPE}" & wait $!
 )
+RESINOS_TESTS_RESINOS_VERSION_UPDATE=$(
+  set -m 
+  node ./scripts/resolve.js RESINOS_VERSION ${RESINOS_TESTS_RESINOS_VERSION_UPDATE-"*"} "${RESINOS_TESTS_DEVICE_TYPE}" & wait $!
+)
 
 echo "Running tests..."
 npm start
