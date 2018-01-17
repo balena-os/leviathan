@@ -52,6 +52,8 @@ ava.test.before(async () => {
     network: 'ethernet'
   }
 
+  options.resinOSVersion = await utils.resolveVersionSelector(await resinio.getAllSupportedOSVersions(options.deviceType), options.resinOSVersion)
+
   console.log('Logging into resin.io')
   await resinio.loginWithCredentials({
     email: options.email,
@@ -90,7 +92,7 @@ ava.test.before(async () => {
   })
 
   console.log(`Waiting while device boots`)
-  await resinio.waitForDevice(placeholder.uuid)
+  await utils.waitUntil(async () => await resinio.isDeviceOnline(placeholder.uuid))
 
   console.log('Done, running tests')
   context.uuid = placeholder.uuid
@@ -117,8 +119,8 @@ ava.test.serial('should push an application', async (test) => {
   await git(repositoryPath).addRemote(remote, gitUrl)
   await git(repositoryPath).env('GIT_SSH_COMMAND', GIT_SSH_COMMAND).push(remote, 'master')
 
-  await resinio.waitForDeviceStatus(context.uuid, 'Downloading')
-  await resinio.waitForDeviceStatus(context.uuid, 'Idle')
+  await utils.waitUntil(async () => await resinio.getDeviceStatus(context.uuid) === 'Downloading')
+  await utils.waitUntil(async () => await resinio.getDeviceStatus(context.uuid) === 'Idle')
 
   const commit = await resinio.getDeviceCommit(context.uuid)
   test.is(commit.length, 40)

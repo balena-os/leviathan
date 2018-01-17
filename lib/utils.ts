@@ -16,6 +16,12 @@
 
 'use strict'
 
+import Bluebird = require('bluebird')
+import byline = require('byline')
+import semver = require('semver')
+
+import { spawn } from 'child_process'
+
 exports.requireComponent = (name, instance) => {
   const COMPONENTS_DIRECTORY = './components'
 
@@ -25,7 +31,51 @@ exports.requireComponent = (name, instance) => {
     if (error.code === 'MODULE_NOT_FOUND') {
       return require(`${COMPONENTS_DIRECTORY}/${name}/default`)
     }
-
     throw error
   }
+}
+
+exports.ssh = async (command, privateKeyPath, options) => {
+  const opts = ['-t', '-o LogLevel=ERROR', '-o StrictHostKeyChecking=no', '-o UserKnownHostsFile=/dev/null' ].concat(`-i${privateKeyPath}`).concat(options)
+
+  return new Bluebird((resolve, reject) => {
+    const ssh = spawn(`ssh`, opts)
+    const lineStream = byline.createStream()
+
+    const output: any = []
+    // The resin proxy will output a welcome message, we ignore it by marking the begining and the end of the ssh command output.
+    const START = '<START>'
+    const END = '<END>'
+
+    ssh.stdout.pipe(lineStream)
+    ssh.stdin.write(`echo "${START}";${command};echo "${END}";exit\n`)
+    ssh.stdin.end()
+
+    lineStream.on('data', (data) => {
+      output.push((data as Buffer).toString('utf8'))
+    })
+    ssh.stderr.on('data', (data) => {
+      reject((data as Buffer).toString('utf8'))
+    })
+    ssh.on('exit', () => {
+      resolve(output.slice(output.indexOf(START) + 1,
+                           output.indexOf(END)))
+    })
+  })
+}
+
+exports.resolveVersionSelector = (versions, range) => {
+  return semver.maxSatisfying(versions, range)
+}
+
+exports.waitUntil = async (promise, _times = 0, _delay = 30000) => {
+  if (await promise()) { return }
+
+  if (_times > 20) {
+    throw new Error(`Condition ${promise} timed out`)
+  }
+
+  return Bluebird.delay(_delay).then(() => {
+    return exports.waitUntil(promise, _times + 1, _delay)
+  })
 }

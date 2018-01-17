@@ -26,8 +26,9 @@ const resin = require('resin-sdk')({
   apiUrl: 'https://api.resin.io/'
 })
 
-// Time delay for wait functions
-const delay = 30000
+exports.getAllSupportedOSVersions = (deviceType) => {
+  return resin.models.os.getSupportedVersions(deviceType).get('versions')
+}
 
 exports.downloadDeviceTypeOS = async (deviceType, version, destination) => {
   const stream = await resin.models.os.download(deviceType, version)
@@ -138,31 +139,6 @@ exports.createDevicePlaceholder = async (application) => {
   return { uuid, deviceApiKey }
 }
 
-exports.waitForDeviceStatus = async (uuid, status, times = 0) => {
-  const done = (await resin.models.device.get(uuid).get('status')) === status
-
-  if (done) { return }
-
-  if (times > 30) {
-    throw new Error(`Device did not reach state [${status}]: ${uuid}`)
-  }
-
-  return Bluebird.delay(delay).then(() => {
-    return exports.waitForDeviceStatus(uuid, status, times + 1)
-  })
-}
-
-exports.waitForDevice = async (uuid, times = 0) => {
-  const isOnline = await resin.models.device.isOnline(uuid)
-  if (isOnline) {
-    return uuid
-  }
-
-  if (times > 20) {
-    throw new Error(`Device did not come online: ${uuid}`)
-  }
-
-  return Bluebird.delay(delay).then(() => {
-    return exports.waitForDevice(uuid, times + 1)
-  })
+exports.getDeviceStatus = (device) => {
+  return resin.models.device.get(device).get('status')
 }
