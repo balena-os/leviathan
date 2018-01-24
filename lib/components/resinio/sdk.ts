@@ -101,7 +101,7 @@ exports.getApplicationDevices = (application) => {
 exports.createSSHKey = async () => {
   const sshDir = path.join(process.cwd(), '.ssh')
   await fs.mkdirAsync(sshDir).catch({
-    code: 'EEXIT'
+    code: 'EEXIST'
   }, this.noop)
 
   const privateKeyPath = path.join(sshDir, 'id_rsa')
