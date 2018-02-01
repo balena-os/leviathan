@@ -1,6 +1,6 @@
 {
   "name": "resinos-tests",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Automated testing for ResinOS",
   "scripts": {
     "tslint": "tslint -t stylish \"lib/**/*.ts\"",
@@ -42,7 +42,7 @@
     "progress-stream": "^2.0.0",
     "resin-cli-visuals": "^1.4.0",
     "resin-image-fs": "^4.0.2",
-    "resin-sdk": "^7.0.0",
+    "resin-sdk": "^8.1.0",
     "simple-git": "^1.85.0",
     "ssh-keygen": "^0.4.1",
     "ts-node": "^3.3.0",
