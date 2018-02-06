@@ -25,6 +25,13 @@ const keygen: any = Bluebird.promisify(require('ssh-keygen'))
 const resin = require('resin-sdk')({
   apiUrl: 'https://api.resin.io/'
 })
+const utils = require('../../utils')
+
+exports.sshHostOS = async (command, uuid, privateKeyPath) => {
+  const SSH_HOST = 'ssh.resindevice.io'
+  const options = ['-p 22', `${await resin.auth.whoami()}@${SSH_HOST}`, `host ${uuid}`]
+  return utils.ssh(command, privateKeyPath, options)
+}
 
 exports.getAllSupportedOSVersions = (deviceType) => {
   return resin.models.os.getSupportedVersions(deviceType).get('versions')

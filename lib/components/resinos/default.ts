@@ -19,6 +19,13 @@
 import Bluebird = require('bluebird')
 import imagefs = require('resin-image-fs')
 
+const utils = require('../../utils')
+
+exports.sshHostOS = async (command, uuid, privateKeyPath) => {
+  const options = ['-p 22222', `root@${uuid}`]
+  return utils.ssh(command, privateKeyPath, options)
+}
+
 // TODO: This function should be implemented using Reconfix
 exports.injectResinConfiguration = (image, configuration) => {
   return imagefs.writeFile({

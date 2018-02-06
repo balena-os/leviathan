@@ -1,6 +1,6 @@
 {
   "name": "resinos-tests",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Automated testing for ResinOS",
   "scripts": {
     "tslint": "tslint -t stylish \"lib/**/*.ts\"",
