@@ -29,7 +29,10 @@
       "lib/main.ts"
     ],
     "failFast": true,
-    "failWithoutAssertions": true
+    "failWithoutAssertions": true,
+    "serial": true,
+    "concurrency": 1,
+    "verbose": true
   },
   "dependencies": {
     "ava": "^0.23.0",
