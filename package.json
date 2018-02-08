@@ -6,7 +6,7 @@
     "tslint": "tslint -t stylish \"lib/**/*.ts\"",
     "lint": "npm run tslint",
     "test": "npm run lint",
-    "start": "ava-ts"
+    "start": "node lib/runner.js"
   },
   "repository": {
     "type": "git",
