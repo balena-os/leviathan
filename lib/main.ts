@@ -98,7 +98,7 @@ ava.test.before(async () => {
   context.uuid = placeholder.uuid
 })
 
-ava.test.serial('device should become online', async (test) => {
+ava.test('device should become online', async (test) => {
   const isOnline = await resinio.isDeviceOnline(context.uuid)
   test.true(isOnline)
 })
@@ -108,7 +108,7 @@ ava.test.skip('device should report hostOS version', async (test) => {
   test.is(version, 'Resin OS 2.0.6+rev3')
 })
 
-ava.test.serial('should push an application', async (test) => {
+ava.test('should push an application', async (test) => {
   const GIT_SSH_COMMAND = `ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i ${context.key.privateKeyPath}`
   const remote = 'resin'
   const repositoryPath = path.join(TEMPORARY_DIRECTORY, 'test')
