@@ -18,9 +18,12 @@
 
 import Bluebird = require('bluebird')
 import byline = require('byline')
+import _ = require('lodash')
 import semver = require('semver')
 
 import { spawn } from 'child_process'
+
+const ipc = require('./ipc')
 
 exports.requireComponent = (name, instance) => {
   const COMPONENTS_DIRECTORY = './components'
@@ -78,4 +81,32 @@ exports.waitUntil = async (promise, _times = 0, _delay = 30000) => {
   return Bluebird.delay(_delay).then(() => {
     return exports.waitUntil(promise, _times + 1, _delay)
   })
+}
+
+const printInstructionsSet = (title, instructions) => {
+  if (_.isEmpty(instructions)) {
+    return
+  }
+
+  // Some padding space to make it easier to the eye
+  console.log('')
+  console.log('')
+  console.log('')
+
+  console.log(`==== ${title}`)
+  console.log('')
+
+  _.each(instructions, (instruction) => {
+    console.log(`- ${instruction}`)
+  })
+
+  console.log('')
+}
+
+exports.runManualTestCase = async (test, testCase) => {
+  printInstructionsSet('PREPARE', testCase.prepare)
+  printInstructionsSet('DO', testCase.do)
+  printInstructionsSet('ASSERT', testCase.assert)
+  printInstructionsSet('CLEANUP', testCase.cleanup)
+  test.true(await ipc.requestConfirmation())
 }
