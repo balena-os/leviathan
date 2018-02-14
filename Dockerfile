@@ -17,6 +17,8 @@ RUN apt-get update && \
     apt-get install -y -t jessie-backports git && \
     rm -rf /var/lib/apt/lists/*
 
+RUN npm install -g resin-cli
+
 ENV INITSYSTEM on
 
 WORKDIR /usr/app
