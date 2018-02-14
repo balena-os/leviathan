@@ -1,6 +1,6 @@
 {
   "name": "resinos-tests",
-  "version": "1.0.8",
+  "version": "1.1.0",
   "description": "Automated testing for ResinOS",
   "scripts": {
     "tslint": "tslint -t stylish \"lib/**/*.ts\"",
@@ -28,7 +28,6 @@
     "files": [
       "lib/main.ts"
     ],
-    "failFast": true,
     "failWithoutAssertions": true,
     "serial": true,
     "concurrency": 1,
