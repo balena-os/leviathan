@@ -23,17 +23,17 @@ import path = require('path')
 // Simple-git typing is out of date, ignore it for now
 const git: any = require('simple-git/promise')
 
-const TEMPORARY_DIRECTORY = path.join(__dirname, '..', '.tmp')
-fse.ensureDirSync(TEMPORARY_DIRECTORY)
-
 const options = <any>{
   deviceType: process.env.RESINOS_TESTS_DEVICE_TYPE,
   resinOSVersion: process.env.RESINOS_TESTS_RESINOS_VERSION,
   applicationName: process.env.RESINOS_TESTS_APPLICATION_NAME,
   disk: process.env.RESINOS_TESTS_DISK,
   email: process.env.RESINOS_TESTS_EMAIL,
-  password: process.env.RESINOS_TESTS_PASSWORD
+  password: process.env.RESINOS_TESTS_PASSWORD,
+  tmpdir: process.env.RESINOS_TESTS_TMPDIR
 }
+
+fse.ensureDirSync(options.tmpdir)
 
 const utils = require('./utils')
 const resinio = utils.requireComponent('resinio', 'sdk')
@@ -47,7 +47,7 @@ const context: any = {
 }
 
 ava.test.before(async () => {
-  const imagePath = path.join(TEMPORARY_DIRECTORY, 'resin.img')
+  const imagePath = path.join(options.tmpdir, 'resin.img')
   const configuration = {
     network: 'ethernet'
   }
@@ -111,7 +111,7 @@ ava.test.skip('device should report hostOS version', async (test) => {
 ava.test('should push an application', async (test) => {
   const GIT_SSH_COMMAND = `ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i ${context.key.privateKeyPath}`
   const remote = 'resin'
-  const repositoryPath = path.join(TEMPORARY_DIRECTORY, 'test')
+  const repositoryPath = path.join(options.tmpdir, 'test')
   const gitUrl = await resinio.getApplicationGitRemote(options.applicationName)
 
   await fse.remove(repositoryPath)
