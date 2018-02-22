@@ -45,6 +45,7 @@
     "mountutils": "^1.2.0",
     "node-ipc": "^9.1.1",
     "progress-stream": "^2.0.0",
+    "randomstring": "^1.1.5",
     "resin-cli-visuals": "^1.4.0",
     "resin-image-fs": "^4.0.2",
     "resin-sdk": "^8.1.0",
