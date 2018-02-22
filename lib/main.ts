@@ -19,6 +19,7 @@
 import ava = require('ava')
 import fse = require('fs-extra')
 import path = require('path')
+import randomstring = require('randomstring')
 
 // Simple-git typing is out of date, ignore it for now
 const git: any = require('simple-git/promise')
@@ -26,7 +27,7 @@ const git: any = require('simple-git/promise')
 const options = <any>{
   deviceType: process.env.RESINOS_TESTS_DEVICE_TYPE,
   resinOSVersion: process.env.RESINOS_TESTS_RESINOS_VERSION,
-  applicationName: process.env.RESINOS_TESTS_APPLICATION_NAME,
+  applicationName: `${process.env.RESINOS_TESTS_APPLICATION_NAME_PREFIX}_${randomstring.generate({length: 5, charset: 'alphabetic'})}`,
   disk: process.env.RESINOS_TESTS_DISK,
   email: process.env.RESINOS_TESTS_EMAIL,
   password: process.env.RESINOS_TESTS_PASSWORD,
