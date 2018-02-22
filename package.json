@@ -3,8 +3,7 @@
   "version": "1.3.1",
   "description": "Automated testing for ResinOS",
   "scripts": {
-    "tslint": "tslint -t stylish \"lib/**/*.ts\"",
-    "lint": "eslint lib && npm run tslint",
+    "lint": "eslint lib",
     "test": "npm run lint",
     "start": "node lib/runner.js"
   },
@@ -26,7 +25,7 @@
   "homepage": "https://github.com/resin-io/resinos-tests",
   "ava": {
     "files": [
-      "lib/main.ts"
+      "lib/main.js"
     ],
     "failWithoutAssertions": true,
     "serial": true,
@@ -35,7 +34,6 @@
   },
   "dependencies": {
     "ava": "^0.23.0",
-    "ava-ts": "^0.23.0",
     "bluebird": "^3.5.0",
     "byline": "^5.0.0",
     "drivelist": "^5.0.22",
@@ -51,9 +49,7 @@
     "resin-sdk": "^8.1.0",
     "semver": "^5.5.0",
     "simple-git": "^1.85.0",
-    "ssh-keygen": "^0.4.1",
-    "ts-node": "^3.3.0",
-    "typescript": "^2.6.1"
+    "ssh-keygen": "^0.4.1"
   },
   "devDependencies": {
     "eslint": "^4.18.1",
@@ -63,7 +59,6 @@
     "eslint-plugin-lodash": "^2.6.1",
     "eslint-plugin-node": "^6.0.0",
     "eslint-plugin-promise": "^3.6.0",
-    "eslint-plugin-standard": "^3.0.1",
-    "tslint": "^5.8.0"
+    "eslint-plugin-standard": "^3.0.1"
   }
 }

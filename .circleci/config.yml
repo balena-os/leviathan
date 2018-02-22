@@ -19,3 +19,4 @@ jobs:
       - run:
           name: Running resinos tests
           command: make
+          no_output_timeout: 20m
