@@ -30,5 +30,6 @@ COPY --from=npm-install /tmp/node ./
 
 ADD .eslintrc.yml ./
 ADD lib lib
+ADD contracts contracts
 
 CMD ["npm","start"]
