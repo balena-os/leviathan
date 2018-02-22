@@ -21,6 +21,7 @@ test: build-docker-image
 		--env "RESINOS_TESTS_WIFI_KEY=$(RESINOS_TESTS_WIFI_KEY)" \
 		--env "RESINOS_TESTS_DISK=$(RESINOS_TESTS_DISK)" \
 		--env "RESINOS_TESTS_TMPDIR=$(RESINOS_TESTS_TMPDIR)" \
+		$(foreach variable, $(shell env | grep RESINOS), --env $(variable)) \
 		$(DEVICE) \
 		$(DOCKER_IMAGE)
 
