@@ -39,9 +39,6 @@ build/Release
 node_modules/
 jspm_packages/
 
-# Typescript v1 declaration files
-typings/
-
 # Optional npm cache directory
 .npm
 
@@ -60,8 +57,9 @@ typings/
 # dotenv environment variables file
 .env
 
+# Swap files
+*.sw*
+
 # End of https://www.gitignore.io/api/node
 
-env.list
 .tmp
-ts-node-*
