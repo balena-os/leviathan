@@ -5,30 +5,43 @@ resinOS Automated Testing
 
 > An automated test suite for resinOS
 
-This project is built using TypeScript and the Ava test framework, and is
+This project is built using JavaScript and the Ava test framework, and is
 expected to run under the provided Docker image.
 
 Getting Started
 ---------------
 
-First, you need a resin.io account to use during the tests. You can use your
-personal one, or create an account for the purpose of testing (recommended).
-Keep in mind that since API keys are not ready for general usage yet, you will
-have to trust the test suite with your email and password.
+#### Clone/Initialize the repository
+
+This repository makes use of git submodules, therefore you should run the following command after cloning:
+
+```
+git submodule update --init --recursive
+```
+
+#### Setup
+
+First, you need a [resin.io](https://resin.io/) account to use during the tests. You can use your
+personal one or create an account for the purpose of testing (recommended).
 
 The test suite must be configured with a set of environment variables that you
 can export before running the tests:
 
 - `RESINOS_TESTS_APPLICATION_NAME`: the application name to use during the
   tests (will be created by the test suite)
-- `RESINOS_TESTS_DEVICE_TYPE`: the device type to test, like `raspberrypi3`
-- `RESINOS_TESTS_EMAIL`: the email of the test account
-- `RESINOS_TESTS_PASSWORD`: the password of the test account
-- `RESINOS_TESTS_WIFI_SSID`: the wifi SSID the provisioned device should
-  connect to
-- `RESINOS_TESTS_WIFI_KEY`: the wifi key the provisioned device should use
-- `RESINOS_TESTS_DISK`: the device that should be provisioned with resinOS
-  (i.e. `/dev/disk3`)
+- `RESINOS_TESTS_DEVICE_TYPE`: the device type to test (like `raspberrypi3`)
+- `RESINOS_TESTS_RESINOS_VERSION`: the device version to test (default uses `latest`)
+- `RESINOS_TESTS_RESINOS_VERSION_UPDATE`: the version that the device will be updated to (default uses `latest`)
+- `RESINOS_TESTS_API_KEY`: the API key created for authenticating
+- `RESINOS_TESTS_NETWORK`: choose the network connection type (`ethernet` or `wifi+ethernet`)
+- `RESINOS_TESTS_WIFI_SSID`: the WIFI SSID the provisioned device should connect to
+- `RESINOS_TESTS_WIFI_KEY`: the WIFI passphrase the provisioned device should use
+- `RESINOS_TESTS_DISK`: the device that should be provisioned with resinOS (i.e. `/dev/disk3`)
+- `RESINOS_TESTS_TMPDIR`: modify temporary directory
+- `RESINOS_TESTS_RESINIO_URL`: insert production API url (i.e. `resin.io`)
+- `RESINOS_TESTS_RESINIO_STAGING_URL`: insert staging API url (i.e. `resinstaging.io`)
+- `RESINOS_TESTS_RESIN_SUPERVISOR_DELTA`: enable delta updates (`0` - disable, `1` - enable)
+- `RESINOS_TESTS_ENABLE_INTERACTIVE_TESTS`: enable interactive tests
 
 Finally, you can run the test suite by executing:
 
@@ -51,8 +64,8 @@ Contribute
 Before submitting a PR, please make sure that you include tests, and that
 linters run without any warning:
 
-```sh
-npm run lint
+```
+make code-check
 ```
 
 License
