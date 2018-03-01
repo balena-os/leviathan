@@ -1,5 +1,9 @@
 DOCKER_IMAGE = resinos-tests
 
+ifdef $(RESINOS_TESTS_DISK)
+	DEVICE = '--device=$(RESINOS_TESTS_DISK)'
+endif
+
 build-docker-image: Dockerfile
 	@echo '[Info] Building docker image "$(DOCKER_IMAGE)"...'
 	@docker build -t $(DOCKER_IMAGE) .
@@ -17,6 +21,7 @@ test: build-docker-image
 		--env "RESINOS_TESTS_WIFI_KEY=$(RESINOS_TESTS_WIFI_KEY)" \
 		--env "RESINOS_TESTS_DISK=$(RESINOS_TESTS_DISK)" \
 		--env "RESINOS_TESTS_TMPDIR=$(RESINOS_TESTS_TMPDIR)" \
+		$(DEVICE) \
 		$(DOCKER_IMAGE)
 
 enter:
