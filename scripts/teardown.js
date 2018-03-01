@@ -21,16 +21,19 @@ const _ = require('lodash')
 const utils = require('./../lib/utils')
 const resinio = utils.requireComponent('resinio', 'sdk')
 
-const teardown = async () => {
+exports.teardown = async (apiUrl) => {
   console.log(`Removing application: ${process.env.RESINOS_TESTS_APPLICATION_NAME}`)
-  await resinio.removeApplication(process.env.RESINOS_TESTS_APPLICATION_NAME).catch({
+  await resinio(apiUrl).removeApplication(process.env.RESINOS_TESTS_APPLICATION_NAME).catch({
     code: 'ResinNotLoggedIn'
   }, _.noop)
 
   console.log('Log out of resin.io')
-  await resinio.logout().catch({
+  await resinio(apiUrl).logout().catch({
     code: 'ResinNotLoggedIn'
   }, _.noop)
+  return 'Done!'
 }
 
-teardown()
+require('make-runnable/custom')({
+   printOutputFrame: false
+})
