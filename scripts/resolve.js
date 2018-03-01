@@ -31,8 +31,8 @@ exports.APPLICATION_NAME = (appName) => {
   return `${appName}_${testID}`
 }
 
-exports.RESINOS_VERSION = async (version, deviceType) => {
-  const supportedOSVersion = await resinio.getAllSupportedOSVersions(deviceType)
+exports.RESINOS_VERSION = async (apiUrl, version, deviceType) => {
+  const supportedOSVersion = await resinio(apiUrl).getAllSupportedOSVersions(deviceType)
   return `${await semver.maxSatisfying(supportedOSVersion, version)}`
 }
 

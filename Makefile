@@ -2,7 +2,7 @@ DOCKER_IMAGE = resinos-tests
 
 build-docker-image: Dockerfile
 	@echo '[Info] Building docker image "$(DOCKER_IMAGE)"...'
-	@docker build -t $(DOCKER_IMAGE) .
+	@docker build --rm -t $(DOCKER_IMAGE) .
 
 test: build-docker-image
 	@echo '[Info] Starting tests inside container...'
