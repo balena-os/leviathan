@@ -17,20 +17,34 @@
 'use strict'
 
 const _ = require('lodash')
+const retry = require('bluebird-retry')
 
 const utils = require('./../lib/utils')
 const resinio = utils.requireComponent('resinio', 'sdk')
 
-const teardown = async () => {
-  console.log(`Removing application: ${process.env.RESINOS_TESTS_APPLICATION_NAME}`)
-  await resinio.removeApplication(process.env.RESINOS_TESTS_APPLICATION_NAME).catch({
-    code: 'ResinNotLoggedIn'
-  }, _.noop)
+const RETRIES = 5
+const DELAY = 1500
 
-  console.log('Log out of resin.io')
-  await resinio.logout().catch({
-    code: 'ResinNotLoggedIn'
-  }, _.noop)
+const teardown = async () => {
+  await retry(() => {
+    console.log(`Removing application: ${process.env.RESINOS_TESTS_APPLICATION_NAME}`)
+    return resinio.removeApplication(process.env.RESINOS_TESTS_APPLICATION_NAME).catch({
+      code: 'ResinNotLoggedIn'
+    }, _.noop)
+  }, {
+    max_tries: RETRIES,
+    interval: DELAY
+  })
+
+  await retry(() => {
+    console.log('Log out of resin.io')
+    return resinio.logout().catch({
+      code: 'ResinNotLoggedIn'
+    }, _.noop)
+  }, {
+    max_tries: RETRIES,
+    interval: DELAY
+  })
 }
 
 teardown()
