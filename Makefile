@@ -1,6 +1,6 @@
 DOCKER_IMAGE = resinos-tests
 
-ifdef $(RESINOS_TESTS_DISK)
+ifdef RESINOS_TESTS_DISK
 	DEVICE = '--device=$(RESINOS_TESTS_DISK)'
 endif
 
@@ -12,16 +12,6 @@ test: build-docker-image
 	@echo '[Info] Starting tests inside container...'
 	@docker run -it --rm --name ${DOCKER_IMAGE} \
 		--env "CI=$(CI)" \
-		--env "RESINOS_TESTS_RESINOS_VERSION=$(RESINOS_TESTS_RESINOS_VERSION)" \
-		--env "RESINOS_TESTS_RESINOS_UPDATE=$(RESINOS_TESTS_RESINOS_UPDATE)" \
-		--env "RESINOS_TESTS_APPLICATION_NAME=$(RESINOS_TESTS_APPLICATION_NAME)" \
-		--env "RESINOS_TESTS_DEVICE_TYPE=$(RESINOS_TESTS_DEVICE_TYPE)" \
-		--env "RESINOS_TESTS_EMAIL=$(RESINOS_TESTS_EMAIL)" \
-		--env "RESINOS_TESTS_PASSWORD=$(RESINOS_TESTS_PASSWORD)" \
-		--env "RESINOS_TESTS_WIFI_SSID=$(RESINOS_TESTS_WIFI_SSID)" \
-		--env "RESINOS_TESTS_WIFI_KEY=$(RESINOS_TESTS_WIFI_KEY)" \
-		--env "RESINOS_TESTS_DISK=$(RESINOS_TESTS_DISK)" \
-		--env "RESINOS_TESTS_TMPDIR=$(RESINOS_TESTS_TMPDIR)" \
 		$(foreach variable, $(shell env | grep RESINOS), --env $(variable)) \
 		$(DEVICE) \
 		$(DOCKER_IMAGE)
