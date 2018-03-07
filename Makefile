@@ -25,7 +25,7 @@ else
 endif
 
 code-check: build-docker-image
-	@echo '[Info] Checking coding style'
+	@echo '[Info] Checking coding style...'
 	@docker run --rm $(DOCKER_IMAGE) npm test
 
 clean:

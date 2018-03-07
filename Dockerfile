@@ -1,4 +1,4 @@
-FROM node:9 as npm-install
+FROM node:9 AS npm-install
 
 ENV npm_config_unsafe_perm=true
 
