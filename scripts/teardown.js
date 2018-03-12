@@ -39,6 +39,16 @@ const teardown = async () => {
   })
 
   await retry(() => {
+    console.log(`Delete SSH key with label: ${process.env.RESINOS_TESTS_SSH_KEY_LABEL}`)
+    return resinio.removeSSHKey(process.env.RESINOS_TESTS_SSH_KEY_LABEL).catch({
+      code: 'ResinNotLoggedIn'
+    }, _.noop)
+  }, {
+    max_tries: RETRIES,
+    interval: DELAY
+  })
+
+  await retry(() => {
     console.log('Log out of resin.io')
     return resinio.logout().catch({
       code: 'ResinNotLoggedIn'
