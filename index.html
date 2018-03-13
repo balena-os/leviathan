@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>ResinOS Tests Results</title>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Ubuntu+Mono">
+	</head>
+	<body>
+		<div id="pensieve"></div>
+		<script>
+			var element = document.createElement('script');
+			element.src = 'https://resin-production-downloads.s3.amazonaws.com/pensieve/latest/pensieve.js?' + Date.now();
+			element.onload = function () {
+						Pensieve({
+							schema: 'schema.yaml',
+							contentPath: 'results',
+							repo: {
+								name: 'resinos-tests',
+								account: 'resin-io',
+								file: 'results.yaml',
+								ref: 'gh-pages'
+							}
+						})
+				};
+			document.head.appendChild(element);
+		</script>
+	</body>
+</html>
