@@ -45,6 +45,7 @@
     "make-runnable": "^1.3.6",
     "mountutils": "^1.2.0",
     "node-ipc": "^9.1.1",
+    "pensieve-sdk": "^1.0.0",
     "progress-stream": "^2.0.0",
     "randomstring": "^1.1.5",
     "resin-cli-visuals": "^1.4.0",
