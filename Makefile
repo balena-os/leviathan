@@ -12,6 +12,7 @@ test: build-docker-image
 	@echo '[Info] Starting tests inside container...'
 	@docker run -it --rm --name ${DOCKER_IMAGE} \
 		--env "CI=$(CI)" \
+		--env "GITHUB_TOKEN=$(GITHUB_TOKEN)" \
 		$(foreach variable, $(shell env | grep RESINOS), --env $(variable)) \
 		$(DEVICE) \
 		$(DOCKER_IMAGE)
