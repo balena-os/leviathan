@@ -30,7 +30,8 @@
     "failWithoutAssertions": true,
     "serial": true,
     "concurrency": 1,
-    "verbose": true
+    "verbose": true,
+    "tap": true
   },
   "dependencies": {
     "ava": "^0.23.0",
@@ -51,7 +52,8 @@
     "resin-sdk": "^8.1.0",
     "semver": "^5.5.0",
     "simple-git": "^1.85.0",
-    "ssh-keygen": "^0.4.1"
+    "ssh-keygen": "^0.4.1",
+    "tap-markdown": "^1.2.1"
   },
   "devDependencies": {
     "eslint": "^4.18.1",
