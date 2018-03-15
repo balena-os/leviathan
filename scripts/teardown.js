@@ -20,7 +20,9 @@ const _ = require('lodash')
 const retry = require('bluebird-retry')
 
 const utils = require('./../lib/utils')
-const resinio = utils.requireComponent('resinio', 'sdk')
+const Resinio = utils.requireComponent('resinio', 'sdk')
+
+const resinio = new Resinio(process.env.RESINOS_TESTS_RESINIO_API)
 
 const RETRIES = 5
 const DELAY = 1500
