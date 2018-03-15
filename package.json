@@ -30,7 +30,8 @@
     "failWithoutAssertions": true,
     "serial": true,
     "concurrency": 1,
-    "verbose": true
+    "verbose": true,
+    "tap": true
   },
   "dependencies": {
     "ava": "^0.23.0",
@@ -44,6 +45,7 @@
     "make-runnable": "^1.3.6",
     "mountutils": "^1.2.0",
     "node-ipc": "^9.1.1",
+    "pensieve-sdk": "^1.0.0",
     "progress-stream": "^2.0.0",
     "randomstring": "^1.1.5",
     "resin-cli-visuals": "^1.4.0",
@@ -51,7 +53,8 @@
     "resin-sdk": "^8.1.0",
     "semver": "^5.5.0",
     "simple-git": "^1.85.0",
-    "ssh-keygen": "^0.4.1"
+    "ssh-keygen": "^0.4.1",
+    "tap-markdown": "^1.2.1"
   },
   "devDependencies": {
     "eslint": "^4.18.1",
