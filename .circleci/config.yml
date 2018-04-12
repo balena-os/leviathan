@@ -1,6 +1,9 @@
 version: 2
 jobs:
   build:
+    branches:
+      ignore:
+        - /v\d+\.\d+.\d+/
     parallelism: 1
     machine:
       docker_layer_caching: true
