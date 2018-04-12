@@ -1,4 +1,4 @@
-FROM node:9 as npm-install
+FROM node:9 AS npm-install
 
 ENV npm_config_unsafe_perm=true
 
@@ -28,8 +28,12 @@ WORKDIR /usr/app
 
 COPY --from=npm-install /tmp/node ./
 
-ADD .eslintrc.yml ./
-ADD lib lib
 ADD contracts contracts
+ADD scripts scripts
+ADD .eslintrc.yml entry.sh ./
 
-CMD ["npm","start"]
+RUN chmod a+x entry.sh
+
+ADD lib lib
+
+CMD ./entry.sh

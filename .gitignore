@@ -60,6 +60,9 @@ jspm_packages/
 # Swap files
 *.sw*
 
+# IDE file 
+.idea
+
 # End of https://www.gitignore.io/api/node
 
 .tmp
