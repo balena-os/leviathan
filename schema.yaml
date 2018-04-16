@@ -4,6 +4,8 @@
   type: Date
 - name: device_type
   type: Short Text
+- name: image_size
+  type: Text
 - name: provision_time
   type: Text
 - name: resin_os_version
