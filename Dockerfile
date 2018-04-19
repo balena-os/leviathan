@@ -17,8 +17,11 @@ RUN echo 'deb http://ftp.debian.org/debian jessie-backports main' >> /etc/apt/so
 # Avoid using a ssh agent by using GIT_SSH_COMMAND (requires git v2.10+)
 RUN apt-get update && \
     apt-get install -y qemu-system-x86 qemu-kvm && \
-    apt-get install -y -t jessie-backports git && \
+    apt-get install -y -t jessie-backports git vim rsync && \
     rm -rf /var/lib/apt/lists/*
+
+RUN git config --global user.email "testbot@resin.io" && \
+    git config --global user.name "Test Bot"
 
 RUN npm install -g resin-cli
 
