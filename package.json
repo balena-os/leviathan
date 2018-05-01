@@ -1,6 +1,6 @@
 {
   "name": "resinos-tests",
-  "version": "1.14.0",
+  "version": "1.15.0",
   "description": "Automated testing for ResinOS",
   "scripts": {
     "lint": "eslint lib scripts",
