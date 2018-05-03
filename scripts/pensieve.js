@@ -19,7 +19,6 @@
 const _ = require('lodash')
 const Pensieve = require('pensieve-sdk').Pensieve
 const readJson = require('bluebird').promisify(require('fs-extra').readJson)
-const stat = require('bluebird').promisify(require('fs').stat)
 
 const config = {
   owner: 'resin-io',
@@ -56,12 +55,8 @@ const createNewFragment = async (resultFile) => {
 }
 
 exports.publish = async (resultFile) => {
-  if (await stat(resultFile) && _.isUndefined(process.env.CI)) {
-    pensieve.updateFragment(await createNewFragment(resultFile))
-    return `Published test results to ${pensieve.backend.account}.github.io/${pensieve.backend.name}`
-  }
-
-  return 'Skipping result publish!'
+  pensieve.updateFragment(await createNewFragment(resultFile))
+  return `Published test results to ${pensieve.backend.account}.github.io/${pensieve.backend.name}`
 }
 
 require('make-runnable/custom')({
