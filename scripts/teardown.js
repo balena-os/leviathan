@@ -17,12 +17,13 @@
 'use strict'
 
 const _ = require('lodash')
+const Bluebird = require('bluebird')
 const retry = require('bluebird-retry')
 
 const utils = require('./../lib/utils')
 const Resinio = utils.requireComponent('resinio', 'sdk')
 
-const resinio = new Resinio(process.env.RESINOS_TESTS_RESINIO_API)
+const resinio = new Resinio(process.env.RESINOS_TESTS_RESINIO_URL)
 
 const RETRIES = 5
 const DELAY = 1500
@@ -40,7 +41,7 @@ const teardown = async () => {
 
   await retry(() => {
     console.log(`Delete SSH key with label: ${process.env.RESINOS_TESTS_SSH_KEY_LABEL}`)
-    return resinio.removeSSHKey(process.env.RESINOS_TESTS_SSH_KEY_LABEL).catch({
+    return Bluebird.resolve(resinio.removeSSHKey(process.env.RESINOS_TESTS_SSH_KEY_LABEL)).catch({
       code: 'ResinNotLoggedIn'
     }, _.noop)
   }, {

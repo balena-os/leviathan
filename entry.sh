@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -o pipefail
+
 trap 'echo "Teardown..." ; node ./scripts/teardown.js' EXIT
 
 export RESINOS_TESTS_RESULTS_PATH="$RESINOS_TESTS_TMPDIR/results"

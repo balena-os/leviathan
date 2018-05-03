@@ -61,7 +61,7 @@ class Formatter {
     this.output = output
     this.output.push('$ Tests')
 
-    this.output.on('assert', (test) => {
+    this.output.on('test', (test) => {
       this.test(test)
     })
 
@@ -91,7 +91,7 @@ class Formatter {
 
 class MarkdownFormatter extends Formatter {
   test (test) {
-    this.output.push(` - ${(test.ok ? symbols.cross : symbols.tick)} ${test.name}`)
+    this.output.push(` - ${(test.ok ? symbols.tick : symbols.cross)} ${test.name}${LF}`)
   }
 
   summary (summary) {

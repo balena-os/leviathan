@@ -22,7 +22,7 @@ const semver = require('semver')
 const utils = require('./../lib/utils')
 const Resinio = utils.requireComponent('resinio', 'sdk')
 
-const resinio = new Resinio(process.env.RESINOS_TESTS_RESINIO_API)
+const resinio = new Resinio(process.env.RESINOS_TESTS_RESINIO_STAGING_URL)
 
 const testID = randomstring.generate({
   length: 5,
