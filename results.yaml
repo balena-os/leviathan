@@ -1,6 +1,35 @@
 results:
   -
-    provision_time: 4m 8.759999999999991s
+    provision_time: 4m 38.48000000000002s
+    image_size: 1724 Mb
+    body: |-
+      $ Tests
+       - ✔ Device reported hostOS version
+       - ✔ Checking filename format of the image
+       - ✔ Device is online
+       - ✔ Device has started application
+       - ✖ Resin host OS update [2.12.7+rev1.prod -> 2.12.7+rev1.prod]
+
+
+      # Summary
+      - planned: 5
+      - pass: 4
+      - fail: 1
+
+      # Fails
+      ## Resin host OS update [2.12.7+rev1.prod -> 2.12.7+rev1.prod]
+          ✖ Resin host OS update [2.12.7+rev1.prod -> 2.12.7+rev1.prod]
+          {
+              "name": "AssertionError",
+              "message": "Rejected promise returned by test",
+              "values": {
+                  "Rejected promise returned by test. Reason:": "`host error: Could not connect to device d98e2cc88c3a47332e9724043bf907dcb67a3e31bda880b75bbe237f635059: HTTP/1.0 500 Internal Server Error␊\n`"
+              }
+          }
+    author: testbot+resinos@resin.io
+    timestamp: 2018-5-11
+    PS_UUID: c96e24a0-5555-11e8-9c73-272ec5a21599
+  - provision_time: 4m 8.759999999999991s
     image_size: 1724 Mb
     body: |-
       $ Tests
