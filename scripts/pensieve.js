@@ -36,7 +36,7 @@ const createNewFragment = async (resultFile) => {
   const results = await readJson(resultFile)
 
   const newFragment = {
-    device_type: results.resinDeviceType,
+    device_type: results.deviceType,
     provision_time: results.provisionTime,
     image_size: results.imageSize,
     resin_os_version: results.resinOSVersion,
