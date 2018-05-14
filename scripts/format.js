@@ -59,7 +59,8 @@ const wrapParser = (tap) => {
 class Formatter {
   constructor (output) {
     this.output = output
-    this.output.push('$ Tests')
+
+    this.output.push('# Tests')
 
     this.output.on('test', (test) => {
       this.test(test)
@@ -68,7 +69,7 @@ class Formatter {
     this.output.on('complete', (results) => {
       this.summary(results)
 
-      if (results.failures) {
+      if (results.fail) {
         this.fail(results.failures)
       }
     })
