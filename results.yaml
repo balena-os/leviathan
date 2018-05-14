@@ -1,6 +1,33 @@
 results:
   -
-    provision_time: 4m 11.150000000000006s
+    provision_time: null
+    image_size: null
+    body: |-
+      $ Tests
+       - ✔ Device reported hostOS version
+       - ✖ before hook
+
+
+      # Summary
+      - planned: 2
+      - pass: 1
+      - fail: 1
+
+      # Fails
+      ## before hook
+          ✖ before hook
+          {
+              "name": "AssertionError",
+              "message": "Rejected promise returned by test",
+              "values": {
+                  "Rejected promise returned by test. Reason:": "Error {\n  message: `Condition async () => {␊\n      return (await resinio.getDeviceStatus(placeholder.uuid)) === 'Idle';␊\n    } timed out`,\n}"
+              },
+              "at": "Object.exports.waitUntil (lib/utils.js:83:11)"
+          }
+    author: testbot+resinos@resin.io
+    timestamp: 2018-5-14
+    PS_UUID: 4a588d20-5769-11e8-9fa1-0bf71b120a56
+  - provision_time: 4m 11.150000000000006s
     image_size: 1724 Mb
     body: |-
       $ Tests
