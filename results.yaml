@@ -1,6 +1,26 @@
 results:
   -
-    provision_time: 3m 0.789999999999992s
+    provision_time: 4m 11.150000000000006s
+    image_size: 1724 Mb
+    body: |-
+      $ Tests
+       - ✔ Device reported hostOS version
+       - ✔ Checking filename format of the image
+       - ✔ Device is online
+       - ✔ Device has started application
+       - ✔ Resin host OS update [2.12.7+rev1.prod -> 2.12.7+rev1.prod]
+
+
+      # Summary
+      - planned: 5
+      - pass: 5
+      - fail: 0
+
+      # Fails
+    author: testbot+resinos@resin.io
+    timestamp: 2018-5-14
+    PS_UUID: d489d290-575c-11e8-b482-eb0bea361e98
+  - provision_time: 3m 0.789999999999992s
     image_size: 1724 Mb
     body: |-
       $ Tests
