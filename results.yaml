@@ -1,4 +1,26 @@
 results:
+  - device_type: qemux86-64
+    provision_time: 3m 15s
+    image_size: 1724 Mb
+    resin_os_version: 2.12.7+rev1.prod
+    body: |-
+      # Tests
+       - ✔ Device reported hostOS version
+       - ✔ Checking filename format of the image
+       - ✔ Device is online
+       - ✔ Device has started application
+       - ✔ Resin host OS update [2.12.7+rev1.prod -> 2.12.7+rev1.prod]
+
+
+      # Summary
+      - planned: 5
+      - pass: 5
+      - fail: 0
+
+      # Fails
+    author: testbot+resinos@resin.io
+    timestamp: 2018-5-15
+    PS_UUID: 700b3ea0-583b-11e8-977a-a17c018ba149
   - provision_time: 3m 28.94999999999999s
     image_size: 1724 Mb
     resin_os_version: 2.12.7+rev1.prod
