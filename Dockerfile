@@ -39,4 +39,11 @@ RUN chmod a+x entry.sh
 
 ADD lib lib
 
+RUN apt-get update && apt-get install -y unzip
+RUN wget https://github.com/nadoo/glider/releases/download/v0.5.1/glider-v0.5.1-linux-amd64.zip -P glider && \
+    cd glider && \
+    unzip glider-v0.5.1-linux-amd64.zip && \
+    chmod +x glider && \
+    ln -s /usr/app/glider/glider /usr/local/bin/
+
 CMD ./entry.sh
