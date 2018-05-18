@@ -10,7 +10,7 @@ build-docker-image: Dockerfile
 
 test: build-docker-image
 	@echo '[Info] Starting tests inside container...'
-	@docker run -it --rm --name ${DOCKER_IMAGE} \
+	@docker run -it --rm --name ${DOCKER_IMAGE} -p 8123:8123\
 		--env "CI=$(CI)" \
 		--env "GITHUB_TOKEN=$(GITHUB_TOKEN)" \
 		$(foreach variable, $(shell env | grep RESINOS), --env $(variable)) \
