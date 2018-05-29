@@ -1,6 +1,41 @@
 results:
   -
     body: |-
+      # Tests 
+       - ✔ Device reported hostOS version
+       - ✖ before hook
+       - ✖ after.always hook
+
+
+      # Summary
+      - planned: 3
+      - pass: 1
+      - fail: 2
+
+      # Fails
+      ## before hook
+          ✖ before hook
+          {
+              "name": "AssertionError",
+              "message": "Rejected promise returned by test",
+              "values": {
+                  "Rejected promise returned by test. Reason:": "TypeError {\n  message: 'Cannot read property \\'toString\\' of undefined',\n}"
+              },
+              "at": "LocalStorage.setItem (node_modules/node-localstorage/LocalStorage.js:176:27)"
+          }
+      ## after.always hook
+          ✖ after.always hook
+          {
+              "name": "AssertionError",
+              "message": "Rejected promise returned by test",
+              "values": {
+                  "Rejected promise returned by test. Reason:": "ResinNotLoggedIn {\n  message: 'You have to log in',\n  name: 'ResinNotLoggedIn',\n}"
+              },
+              "at": "node_modules/resin-sdk/build/auth.js:49:15"
+          }
+    timestamp: 2018-5-29
+    PS_UUID: e4a30d70-6398-11e8-b05a-8fb8df0d120f
+  - body: |-
       # Tests - ✔ Device reported hostOS version
        - ✖ before hook
        - ✖ after.always hook
