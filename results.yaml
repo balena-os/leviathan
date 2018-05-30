@@ -1,6 +1,37 @@
 results:
   -
-    provision_time: 3m 31s
+    provision_time: null
+    image_size: null
+    resin_os_version: 2.12.7+rev1.prod
+    body: |-
+      # Tests 
+       - ✔ Device is online
+       - ✔ Device reported hostOS version
+       - ✔ Device has started application
+       - ✔ Resin host OS update [2.12.7+rev1.prod -> 2.12.7+rev1.prod]
+       - ✖ before hook
+
+
+      # Summary
+      - planned: 5
+      - pass: 4
+      - fail: 1
+
+      # Fails
+      ## before hook
+          ✖ before hook
+          {
+              "name": "AssertionError",
+              "message": "Rejected promise returned by test",
+              "values": {
+                  "Rejected promise returned by test. Reason:": "ResinRequestError {\n  body: 'Unauthorized',\n  message: 'Request error: Unauthorized',\n  name: 'ResinRequestError',\n  requestOptions: {\n    apiKey: undefined,\n    body: {\n      app_name: 'AvaTest_zhXKz',\n      device_type: 'qemux86-64',\n    },\n    headers: {\n      'Accept-Encoding': 'compress, gzip',\n      Authorization: 'Bearer [object Object]',\n      'Content-Type': 'application/json',\n    },\n    json: true,\n    method: 'POST',\n    refreshToken: true,\n    retries: 0,\n    sendToken: true,\n    strictSSL: true,\n    timeout: 30000,\n    url: 'https://api.resin.io/v4/application',\n  },\n  statusCode: 401,\n}"
+              },
+              "at": "node_modules/resin-request/build/request.js:201:17"
+          }
+    author: null
+    timestamp: 2018-5-30
+    PS_UUID: eb334420-6410-11e8-837b-15bd5d322517
+  - provision_time: 3m 31s
     image_size: 1724 Mb
     resin_os_version: 2.12.7+rev1.prod
     body: |-
