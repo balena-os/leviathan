@@ -1,6 +1,74 @@
 results:
   -
-    provision_time: 4m 46s
+    provision_time: 3m 2s
+    image_size: 1724 Mb
+    resin_os_version: 2.12.7+rev1.prod
+    body: |-
+      # Tests 
+       - ✔ Device is online
+       - ✔ Device reported hostOS version
+       - ✔ Device has started application
+       - ✔ Resin host OS update [2.12.7+rev1.prod -> 2.12.7+rev1.prod]
+       - ✔ Checking filename format of the image
+       - ✖ experience: Enter running application container
+       - ✔ experience: Sync application container
+       - ✖ supervisor: Set device service variable when application is running
+       - ✔ supervisor: Reboot while application is running
+       - ✖ supervisor: Reload supervisor on a running device
+       - ✖ supervisor: Test multicontainer application on a running device
+       - ✔ resinhup: Update device status with resin-device-progress
+
+
+      # Summary
+      - planned: 12
+      - pass: 8
+      - fail: 4
+
+      # Fails
+      ## experience: Enter running application container
+          ✖ experience: Enter running application container
+          {
+              "name": "AssertionError",
+              "assertion": "true",
+              "values": {
+                  "Value is not `true`:": "false"
+              },
+              "at": "Object.exports.runManualTestCase (lib/utils.js:137:12)"
+          }
+      ## supervisor: Set device service variable when application is running
+          ✖ supervisor: Set device service variable when application is running
+          {
+              "name": "AssertionError",
+              "assertion": "true",
+              "values": {
+                  "Value is not `true`:": "false"
+              },
+              "at": "Object.exports.runManualTestCase (lib/utils.js:137:12)"
+          }
+      ## supervisor: Reload supervisor on a running device
+          ✖ supervisor: Reload supervisor on a running device
+          {
+              "name": "AssertionError",
+              "assertion": "true",
+              "values": {
+                  "Value is not `true`:": "false"
+              },
+              "at": "Object.exports.runManualTestCase (lib/utils.js:137:12)"
+          }
+      ## supervisor: Test multicontainer application on a running device
+          ✖ supervisor: Test multicontainer application on a running device
+          {
+              "name": "AssertionError",
+              "assertion": "true",
+              "values": {
+                  "Value is not `true`:": "false"
+              },
+              "at": "Object.exports.runManualTestCase (lib/utils.js:137:12)"
+          }
+    author: null
+    timestamp: 2018-5-30
+    PS_UUID: 95b067d0-641f-11e8-9557-a793cb1cea82
+  - provision_time: 4m 46s
     image_size: 1724 Mb
     resin_os_version: 2.12.7+rev1.prod
     body: |-
