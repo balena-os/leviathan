@@ -1,6 +1,33 @@
 results:
   -
-    provision_time: 2m 56s
+    provision_time: null
+    image_size: null
+    resin_os_version: 2.12.7+rev1.prod
+    body: |-
+      # Tests 
+       - ✖ before hook
+
+
+      # Summary
+      - planned: 1
+      - pass: 0
+      - fail: 1
+
+      # Fails
+      ## before hook
+          ✖ before hook
+          {
+              "name": "AssertionError",
+              "message": "Rejected promise returned by test",
+              "values": {
+                  "Rejected promise returned by test. Reason:": "ResinRequestError {\n  body: 'Unauthorized',\n  message: 'Request error: Unauthorized',\n  name: 'ResinRequestError',\n  requestOptions: {\n    apiKey: undefined,\n    body: {\n      app_name: 'AvaTest_KtDyb',\n      device_type: 'qemux86-64',\n    },\n    headers: {\n      'Accept-Encoding': 'compress, gzip',\n      Authorization: 'Bearer z2kQ2BZvJuAHJXh1IwxPQhPP3g0yZabt',\n      'Content-Type': 'application/json',\n    },\n    json: true,\n    method: 'POST',\n    refreshToken: true,\n    retries: 0,\n    sendToken: true,\n    strictSSL: true,\n    timeout: 30000,\n    url: 'https://api.resin.io/v4/application',\n  },\n  statusCode: 401,\n}"
+              },
+              "at": "node_modules/resin-request/build/request.js:201:17"
+          }
+    author: null
+    timestamp: 2018-5-30
+    PS_UUID: fd4a47d0-6438-11e8-98d2-e5f2ddbd8666
+  - provision_time: 2m 56s
     image_size: 1724 Mb
     resin_os_version: 2.12.7+rev1.prod
     body: |-
