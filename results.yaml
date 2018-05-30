@@ -1,6 +1,104 @@
 results:
   -
-    provision_time: null
+    provision_time: 4m 46s
+    image_size: 1724 Mb
+    resin_os_version: 2.12.7+rev1.prod
+    body: |-
+      # Tests 
+       - ✔ Device is online
+       - ✔ Device reported hostOS version
+       - ✔ Device has started application
+       - ✔ Resin host OS update [2.12.7+rev1.prod -> 2.12.7+rev1.prod]
+       - ✔ Checking filename format of the image
+       - ✖ experience: Enter running application container
+       - ✖ experience: Sync application container
+       - ✖ supervisor: Set device service variable when application is running
+       - ✖ supervisor: Reboot while application is running
+       - ✖ supervisor: Reload supervisor on a running device
+       - ✖ supervisor: Test multicontainer application on a running device
+       - ✖ resinhup: Update device status with resin-device-progress
+
+
+      # Summary
+      - planned: 12
+      - pass: 5
+      - fail: 7
+
+      # Fails
+      ## experience: Enter running application container
+          ✖ experience: Enter running application container
+          {
+              "name": "AssertionError",
+              "message": "Rejected promise returned by test",
+              "values": {
+                  "Rejected promise returned by test. Reason:": "TypeError {\n  message: 'ipc.requestConfirmation is not a function',\n}"
+              },
+              "at": "Object.exports.runManualTestCase (lib/utils.js:138:23)"
+          }
+      ## experience: Sync application container
+          ✖ experience: Sync application container
+          {
+              "name": "AssertionError",
+              "message": "Rejected promise returned by test",
+              "values": {
+                  "Rejected promise returned by test. Reason:": "TypeError {\n  message: 'ipc.requestConfirmation is not a function',\n}"
+              },
+              "at": "Object.exports.runManualTestCase (lib/utils.js:138:23)"
+          }
+      ## supervisor: Set device service variable when application is running
+          ✖ supervisor: Set device service variable when application is running
+          {
+              "name": "AssertionError",
+              "message": "Rejected promise returned by test",
+              "values": {
+                  "Rejected promise returned by test. Reason:": "TypeError {\n  message: 'ipc.requestConfirmation is not a function',\n}"
+              },
+              "at": "Object.exports.runManualTestCase (lib/utils.js:138:23)"
+          }
+      ## supervisor: Reboot while application is running
+          ✖ supervisor: Reboot while application is running
+          {
+              "name": "AssertionError",
+              "message": "Rejected promise returned by test",
+              "values": {
+                  "Rejected promise returned by test. Reason:": "TypeError {\n  message: 'ipc.requestConfirmation is not a function',\n}"
+              },
+              "at": "Object.exports.runManualTestCase (lib/utils.js:138:23)"
+          }
+      ## supervisor: Reload supervisor on a running device
+          ✖ supervisor: Reload supervisor on a running device
+          {
+              "name": "AssertionError",
+              "message": "Rejected promise returned by test",
+              "values": {
+                  "Rejected promise returned by test. Reason:": "TypeError {\n  message: 'ipc.requestConfirmation is not a function',\n}"
+              },
+              "at": "Object.exports.runManualTestCase (lib/utils.js:138:23)"
+          }
+      ## supervisor: Test multicontainer application on a running device
+          ✖ supervisor: Test multicontainer application on a running device
+          {
+              "name": "AssertionError",
+              "message": "Rejected promise returned by test",
+              "values": {
+                  "Rejected promise returned by test. Reason:": "TypeError {\n  message: 'ipc.requestConfirmation is not a function',\n}"
+              },
+              "at": "Object.exports.runManualTestCase (lib/utils.js:138:23)"
+          }
+      ## resinhup: Update device status with resin-device-progress
+          ✖ resinhup: Update device status with resin-device-progress
+          {
+              "name": "AssertionError",
+              "message": "Rejected promise returned by test",
+              "values": {
+                  "Rejected promise returned by test. Reason:": "TypeError {\n  message: 'ipc.requestConfirmation is not a function',\n}"
+              },
+              "at": "Object.exports.runManualTestCase (lib/utils.js:138:23)"
+          }
+    author: null
+    timestamp: 2018-5-30
+    PS_UUID: 50516900-641a-11e8-95c6-41977d8207f4
+  - provision_time: null
     image_size: null
     resin_os_version: 2.12.7+rev1.prod
     body: |-
