@@ -1,6 +1,23 @@
 results:
   -
+    provision_time: null
+    image_size: null
+    resin_os_version: 2.12.7+rev1.prod
     body: |-
+      # Tests 
+       - ✔ Cellular modem connection
+
+
+      # Summary
+      - planned: 1
+      - pass: 1
+      - fail: 0
+
+      # Fails
+    author: null
+    timestamp: 2018-5-31
+    PS_UUID: 42164fd0-64ca-11e8-b185-dfb6eb826e0e
+  - body: |-
       # Tests 
        - ✔ Cellular modem connection
 
