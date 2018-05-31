@@ -2,6 +2,29 @@ results:
   -
     body: |-
       # Tests 
+       - ✖ Cannot find module '../tests/bluetooth-test'
+
+
+      # Summary
+      - planned: 0
+      - pass: 0
+      - fail: 2
+
+      # Fails
+      ## Cannot find module '../tests/bluetooth-test'
+          ✖ Cannot find module '../tests/bluetooth-test'
+          {
+              "code": "MODULE_NOT_FOUND",
+              "name": "Error",
+              "at": "Object.<anonymous> (lib/main.js:160:3)"
+          }
+      ## undefined
+          ✖ undefined
+          undefined
+    timestamp: 2018-5-31
+    PS_UUID: 2e1c3e30-64f8-11e8-a357-69aa4f8f7751
+  - body: |-
+      # Tests 
        - ✖ Cannot find module './tests/bluetooth-test'
 
 
