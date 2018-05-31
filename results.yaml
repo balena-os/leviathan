@@ -1,6 +1,37 @@
 results:
   -
-    provision_time: null
+    provision_time: 2m 35s
+    image_size: 1724 Mb
+    resin_os_version: 2.12.7+rev1.prod
+    body: |-
+      # Tests 
+       - ✔ Device reported hostOS version
+       - ✔ Checking filename format of the image
+       - ✔ Device is online
+       - ✖ Device has started application
+       - ✔ Resin host OS update [2.12.7+rev1.prod -> 2.12.7+rev1.prod]
+
+
+      # Summary
+      - planned: 5
+      - pass: 4
+      - fail: 1
+
+      # Fails
+      ## Device has started application
+          ✖ Device has started application
+          {
+              "name": "AssertionError",
+              "message": "Rejected promise returned by test",
+              "values": {
+                  "Rejected promise returned by test. Reason:": "Error {\n  message: `() => {␊\n      return resinio.getServiceProperty(context.uuid, 'download_progress');␊\n    } might have finished in the wait period.`,\n}"
+              },
+              "at": "Object.exports.waitProgressCompletion (lib/utils.js:95:11)"
+          }
+    author: null
+    timestamp: 2018-5-31
+    PS_UUID: acde2e50-64cf-11e8-9c96-d9ce792ab6cc
+  - provision_time: null
     image_size: null
     resin_os_version: 2.12.7+rev1.prod
     body: |-
