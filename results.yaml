@@ -1,6 +1,29 @@
 results:
   -
-    provision_time: null
+    body: |-
+      # Tests 
+       - ✖ Cellular modem connection
+
+
+      # Summary
+      - planned: 1
+      - pass: 0
+      - fail: 1
+
+      # Fails
+      ## Cellular modem connection
+          ✖ Cellular modem connection
+          {
+              "name": "AssertionError",
+              "assertion": "is",
+              "values": {
+                  "Difference:": "- []\n+ '200'"
+              },
+              "at": "Test.ava.test.only [as fn] (lib/main.js:240:8)"
+          }
+    timestamp: 2018-5-31
+    PS_UUID: 4d690d80-64c7-11e8-8e24-57e1e44c1223
+  - provision_time: null
     image_size: null
     resin_os_version: 2.12.7+rev1.prod
     body: |-
