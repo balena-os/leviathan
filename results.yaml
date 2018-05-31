@@ -1,6 +1,32 @@
 results:
   -
-    provision_time: 3m 34s
+    provision_time: null
+    image_size: null
+    resin_os_version: 2.12.7+rev1.prod
+    body: |-
+      # Tests 
+       - ✖ Cellular modem connection
+
+
+      # Summary
+      - planned: 1
+      - pass: 0
+      - fail: 1
+
+      # Fails
+      ## Cellular modem connection
+          ✖ Cellular modem connection
+          {
+              "name": "AssertionError",
+              "message": "Rejected promise returned by test",
+              "values": {
+                  "Rejected promise returned by test. Reason:": "`Warning: Identity file undefined not accessible: No such file or directory.␊\n`"
+              }
+          }
+    author: null
+    timestamp: 2018-5-31
+    PS_UUID: cc03d150-64c4-11e8-a9ad-4bdda4fd072f
+  - provision_time: 3m 34s
     image_size: 1724 Mb
     resin_os_version: 2.12.7+rev1.prod
     body: |-
