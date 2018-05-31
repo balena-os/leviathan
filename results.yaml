@@ -2,6 +2,32 @@ results:
   -
     body: |-
       # Tests 
+       - ✖ Duplicate test title: Device is online
+       - ✖ No tests found in lib/main.js
+
+
+      # Summary
+      - planned: 0
+      - pass: 0
+      - fail: 3
+
+      # Fails
+      ## Duplicate test title: Device is online
+          ✖ Duplicate test title: Device is online
+          {
+              "name": "Error",
+              "at": "Object.<anonymous> (lib/main.js:190:7)"
+          }
+      ## No tests found in lib/main.js
+          ✖ No tests found in lib/main.js
+          undefined
+      ## undefined
+          ✖ undefined
+          undefined
+    timestamp: 2018-5-31
+    PS_UUID: 74dda570-64f8-11e8-b2b8-6dbfb037f8e1
+  - body: |-
+      # Tests 
        - ✖ Cannot find module '../tests/bluetooth-test'
 
 
