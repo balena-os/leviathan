@@ -25,6 +25,32 @@ results:
           ✖ 4 tests remaining in lib/main.js
           undefined
     timestamp: 2018-5-31
+    PS_UUID: cce2f4d0-6513-11e8-8ff8-d9b643c9bb08
+  - body: |-
+      # Tests 
+       - ✖ before hook
+       - ✖ 4 tests remaining in lib/main.js
+
+
+      # Summary
+      - planned: 1
+      - pass: 0
+      - fail: 2
+
+      # Fails
+      ## before hook
+          ✖ before hook
+          {
+              "name": "AssertionError",
+              "message": "Rejected promise returned by test",
+              "values": {
+                  "Rejected promise returned by test. Reason:": "`Permission denied (publickey).␍␊\n`"
+              }
+          }
+      ## 4 tests remaining in lib/main.js
+          ✖ 4 tests remaining in lib/main.js
+          undefined
+    timestamp: 2018-5-31
     PS_UUID: c114a5e0-6513-11e8-9643-93c16d19a6fb
   - body: |-
       # Tests 
