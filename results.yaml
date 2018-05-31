@@ -1,6 +1,32 @@
 results:
   -
-    provision_time: 3m 0s
+    body: |-
+      # Tests 
+       - ✔ Device is online
+       - ✔ Resin host OS update [2.12.7+rev1.prod -> 2.12.7+rev1.prod]
+       - ✔ Image filename format
+       - ✖ Push a mono-container to the application
+
+
+      # Summary
+      - planned: 4
+      - pass: 3
+      - fail: 1
+
+      # Fails
+      ## Push a mono-container to the application
+          ✖ Push a mono-container to the application
+          {
+              "name": "AssertionError",
+              "message": "Rejected promise returned by test",
+              "values": {
+                  "Rejected promise returned by test. Reason:": "Error {\n  message: `() => {␊\n        return components.resinio.getServiceProperty(context.uuid, 'download_progress')␊\n      } might have finished in the wait period.`,\n}"
+              },
+              "at": "Object.exports.waitProgressCompletion (lib/utils.js:95:11)"
+          }
+    timestamp: 2018-5-31
+    PS_UUID: a320bc30-650a-11e8-b2e4-e761f581f593
+  - provision_time: 3m 0s
     image_size: 1724 Mb
     resin_os_version: 2.12.7+rev1.prod
     body: |-
