@@ -1,9 +1,9 @@
 {
   "name": "resinos-tests",
-  "version": "1.15.4",
+  "version": "1.15.5",
   "description": "Automated testing for ResinOS",
   "scripts": {
-    "lint": "eslint lib scripts",
+    "lint": "eslint lib scripts tests",
     "test": "npm run lint",
     "start": "node lib/runner.js"
   },
@@ -32,6 +32,7 @@
     "tap": true
   },
   "dependencies": {
+    "ajv": "^6.5.0",
     "ava": "^1.0.0-beta.4",
     "bluebird": "^3.5.1",
     "bluebird-retry": "^0.11.0",
