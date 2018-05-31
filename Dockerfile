@@ -32,11 +32,8 @@ WORKDIR /usr/app
 COPY --from=npm-install /tmp/node ./
 
 ADD contracts contracts
-ADD scripts scripts
-ADD .eslintrc.yml entry.sh ./
-
-RUN chmod a+x entry.sh
+ADD .eslintrc.yml ./
 
 ADD lib lib
 
-CMD ./entry.sh
+CMD npm start
