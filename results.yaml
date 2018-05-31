@@ -1,6 +1,29 @@
 results:
   -
-    provision_time: 3m 20s
+    body: |-
+      # Tests 
+       - ✖ Cannot find module './tests/bluetooth-test'
+
+
+      # Summary
+      - planned: 0
+      - pass: 0
+      - fail: 2
+
+      # Fails
+      ## Cannot find module './tests/bluetooth-test'
+          ✖ Cannot find module './tests/bluetooth-test'
+          {
+              "code": "MODULE_NOT_FOUND",
+              "name": "Error",
+              "at": "Object.<anonymous> (lib/main.js:160:3)"
+          }
+      ## undefined
+          ✖ undefined
+          undefined
+    timestamp: 2018-5-31
+    PS_UUID: ff799d20-64f7-11e8-ae9c-e70a4118369c
+  - provision_time: 3m 20s
     image_size: 1724 Mb
     resin_os_version: 2.12.7+rev1.prod
     body: |-
