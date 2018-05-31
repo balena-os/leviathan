@@ -35,5 +35,6 @@ ADD contracts contracts
 ADD .eslintrc.yml ./
 
 ADD lib lib
+ADD tests tests
 
 CMD npm start
