@@ -2,6 +2,28 @@ results:
   -
     body: |-
       # Tests 
+       - ✖ /usr/app/lib/main.js: Unexpected token, expected "," (234:98)
+
+
+      # Summary
+      - planned: 0
+      - pass: 0
+      - fail: 2
+
+      # Fails
+      ## /usr/app/lib/main.js: Unexpected token, expected "," (234:98)
+          ✖ /usr/app/lib/main.js: Unexpected token, expected "," (234:98)
+          {
+              "name": "SyntaxError",
+              "at": "SyntaxError: /usr/app/lib/main.js: Unexpected token, expected \",\" (234:98)"
+          }
+      ## undefined
+          ✖ undefined
+          undefined
+    timestamp: 2018-5-31
+    PS_UUID: ae8c69a0-64c6-11e8-99c6-03026c726028
+  - body: |-
+      # Tests 
        - ✖ /usr/app/lib/main.js: Unexpected token, expected "," (234:122)
 
 
