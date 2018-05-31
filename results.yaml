@@ -1,6 +1,28 @@
 results:
   -
-    provision_time: null
+    body: |-
+      # Tests 
+       - ✖ Cellular modem connection
+
+
+      # Summary
+      - planned: 1
+      - pass: 0
+      - fail: 1
+
+      # Fails
+      ## Cellular modem connection
+          ✖ Cellular modem connection
+          {
+              "name": "AssertionError",
+              "message": "Rejected promise returned by test",
+              "values": {
+                  "Rejected promise returned by test. Reason:": "`ip: invalid argument 'IP4.ADDRESS[1]:' to 'ip'␊\n`"
+              }
+          }
+    timestamp: 2018-5-31
+    PS_UUID: 80f6e840-64c5-11e8-821c-514b718a4237
+  - provision_time: null
     image_size: null
     resin_os_version: 2.12.7+rev1.prod
     body: |-
