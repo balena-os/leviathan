@@ -20,6 +20,33 @@ results:
               "name": "AssertionError",
               "assertion": "is",
               "values": {
+                  "Difference:": "- [\n-   '200',\n- ]\n+ '200'"
+              },
+              "at": "Test.ava.test.only [as fn] (lib/main.js:237:8)"
+          }
+    author: null
+    timestamp: 2018-5-31
+    PS_UUID: 4a6e0080-64c8-11e8-8931-c51ea1a0e264
+  - provision_time: null
+    image_size: null
+    resin_os_version: 2.12.7+rev1.prod
+    body: |-
+      # Tests 
+       - ✖ Cellular modem connection
+
+
+      # Summary
+      - planned: 1
+      - pass: 0
+      - fail: 1
+
+      # Fails
+      ## Cellular modem connection
+          ✖ Cellular modem connection
+          {
+              "name": "AssertionError",
+              "assertion": "is",
+              "values": {
                   "Difference:": "- [\n-   'HTTP/1.1 200 OK',\n- ]\n+ '200'"
               },
               "at": "Test.ava.test.only [as fn] (lib/main.js:237:8)"
