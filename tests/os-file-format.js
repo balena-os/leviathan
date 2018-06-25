@@ -16,13 +16,22 @@
 
 'use strict'
 
+const Bluebird = require('bluebird')
+const realpath = Bluebird.promisify(require('fs').realpath)
+
+const {
+  basename
+} = require('path')
+
 module.exports = {
   title: 'Image filename format',
   run: async (test, context, options, components) => {
     const supervisorVersion = await components.resinio.getSupervisorVersion(context.uuid)
     const hostOsVersion = (await components.resinio.getDeviceHostOSVersion(context.uuid)).split(' ')
     const apiUrl = (await components.resinio.getApiUrl()).split('.')
-    test.is(context.filename, `${apiUrl[1]}-${options.deviceType}-${hostOsVersion[2]}-v${supervisorVersion}.img`)
+    const filename = basename(await realpath(context.os.image))
+    test.is(filename, `${apiUrl[1]}-${options.deviceType}-${hostOsVersion[2]}-v${supervisorVersion}.img`)
     test.end()
+    test.is(filename, `${apiUrl[1]}-${options.deviceType}-${hostOsVersion[2]}-v${supervisorVersion}.img`)
   }
 }
