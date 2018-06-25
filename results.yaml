@@ -18,6 +18,33 @@ results:
               "name": "AssertionError",
               "message": "Rejected promise returned by test",
               "values": {
+                  "Rejected promise returned by test. Reason:": "Error {\n  message: `Condition () => {␊\n      return resinio.isDeviceOnline(placeholder.uuid);␊\n    } timed out`,\n}"
+              },
+              "at": "Object.exports.waitUntil (lib/utils.js:83:11)"
+          }
+      ## 4 tests remaining in lib/main.js
+          ✖ 4 tests remaining in lib/main.js
+          undefined
+    timestamp: 2018-6-25
+    PS_UUID: dc5f0620-7872-11e8-915b-e73cc981e7a3
+  - body: |-
+      # Tests 
+       - ✖ before hook
+       - ✖ 4 tests remaining in lib/main.js
+
+
+      # Summary
+      - planned: 1
+      - pass: 0
+      - fail: 2
+
+      # Fails
+      ## before hook
+          ✖ before hook
+          {
+              "name": "AssertionError",
+              "message": "Rejected promise returned by test",
+              "values": {
                   "Rejected promise returned by test. Reason:": "ResinRequestError {\n  body: '401',\n  message: 'Request error: 401',\n  name: 'ResinRequestError',\n  requestOptions: {\n    baseUrl: 'https://api.resin.io',\n    body: {\n      appId: 1139729,\n      network: 'ethernet',\n    },\n    headers: {\n      'Accept-Encoding': 'compress, gzip',\n      Authorization: 'Bearer oqj5PQZiiPypDUwpyZ4Qhak2nsrbCDYQ',\n      'Content-Type': 'application/json',\n    },\n    json: true,\n    method: 'POST',\n    refreshToken: true,\n    retries: 0,\n    sendToken: true,\n    strictSSL: true,\n    timeout: 30000,\n    url: '/download-config',\n  },\n  statusCode: 500,\n}"
               },
               "at": "node_modules/resin-request/build/request.js:201:17"
