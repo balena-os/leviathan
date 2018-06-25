@@ -26,6 +26,33 @@ results:
           ✖ 4 tests remaining in lib/main.js
           undefined
     timestamp: 2018-6-25
+    PS_UUID: a078f060-7874-11e8-8229-23a82ba8bd90
+  - body: |-
+      # Tests 
+       - ✖ before hook
+       - ✖ 4 tests remaining in lib/main.js
+
+
+      # Summary
+      - planned: 1
+      - pass: 0
+      - fail: 2
+
+      # Fails
+      ## before hook
+          ✖ before hook
+          {
+              "name": "AssertionError",
+              "message": "Rejected promise returned by test",
+              "values": {
+                  "Rejected promise returned by test. Reason:": "Error {\n  message: `Condition () => {␊\n      return resinio.isDeviceOnline(placeholder.uuid);␊\n    } timed out`,\n}"
+              },
+              "at": "Object.exports.waitUntil (lib/utils.js:83:11)"
+          }
+      ## 4 tests remaining in lib/main.js
+          ✖ 4 tests remaining in lib/main.js
+          undefined
+    timestamp: 2018-6-25
     PS_UUID: dc5f0620-7872-11e8-915b-e73cc981e7a3
   - body: |-
       # Tests 
