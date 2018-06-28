@@ -3,6 +3,44 @@ results:
     body: |-
       # Tests 
        - ✖ before hook
+       - ✖ after.always hook
+       - ✖ 4 tests remaining in lib/main.js
+
+
+      # Summary
+      - planned: 2
+      - pass: 0
+      - fail: 3
+
+      # Fails
+      ## before hook
+          ✖ before hook
+          {
+              "name": "AssertionError",
+              "message": "Rejected promise returned by test",
+              "values": {
+                  "Rejected promise returned by test. Reason:": "ResinRequestError {\n  body: '401',\n  message: 'Request error: 401',\n  name: 'ResinRequestError',\n  requestOptions: {\n    baseUrl: 'https://api.resin.io',\n    body: {\n      appId: 1143770,\n      network: 'ethernet',\n    },\n    headers: {\n      'Accept-Encoding': 'compress, gzip',\n      Authorization: 'Bearer oqj5PQZiiPypDUwpyZ4Qhak2nsrbCDYQ',\n      'Content-Type': 'application/json',\n    },\n    json: true,\n    method: 'POST',\n    refreshToken: true,\n    retries: 0,\n    sendToken: true,\n    strictSSL: true,\n    timeout: 30000,\n    url: '/download-config',\n  },\n  statusCode: 500,\n}"
+              },
+              "at": "node_modules/resin-request/build/request.js:201:17"
+          }
+      ## after.always hook
+          ✖ after.always hook
+          {
+              "name": "AssertionError",
+              "message": "Rejected promise returned by test",
+              "values": {
+                  "Rejected promise returned by test. Reason:": "TypeError {\n  message: 'Cannot read property \\'off\\' of undefined',\n}"
+              },
+              "at": "ava.test.after.always (lib/main.js:132:24)"
+          }
+      ## 4 tests remaining in lib/main.js
+          ✖ 4 tests remaining in lib/main.js
+          undefined
+    timestamp: 2018-6-28
+    PS_UUID: bb655150-7aec-11e8-a0fa-bf61b34ecb32
+  - body: |-
+      # Tests 
+       - ✖ before hook
        - ✖ 4 tests remaining in lib/main.js
 
 
