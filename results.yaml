@@ -1,6 +1,65 @@
 results:
   -
+    provision_time: 4m 11s
+    image_size: NaN Mb
+    resin_os_version: 2.12.7+rev1.prod
     body: |-
+      # Tests 
+       - ✔ Device is online
+       - ✔ Resin host OS update [2.12.7+rev1.prod -> 2.12.7+rev1.prod]
+       - ✖ Image filename format
+       - ✔ Push a mono-container to the application
+       - ✖ TypeError: path must be a string or Buffer
+       - ✖ Error: ENOENT: no such file or directory, lstat '/usr/app/undefined'
+
+
+      # Summary
+      - planned: 4
+      - pass: 3
+      - fail: 3
+
+      # Fails
+      ## Image filename format
+          ✖ Image filename format
+          {
+              "name": "AssertionError",
+              "assertion": "is",
+              "values": {
+                  "Difference:": "- '/tmp/resin-qemux86-64-2.12.7+rev1-v7.4.3.img'\n+ 'resin-qemux86-64-2.12.7+rev1-v7.4.3.img'"
+              },
+              "at": "Object.run (tests/os-file-format.js:28:10)"
+          }
+      ## TypeError: path must be a string or Buffer
+          ✖ TypeError: path must be a string or Buffer
+          {
+              "name": "TypeError",
+              "message": "path must be a string or Buffer",
+              "at": "ava.test.before (lib/main.js:126:35)"
+          }
+      ## Error: ENOENT: no such file or directory, lstat '/usr/app/undefined'
+          ✖ Error: ENOENT: no such file or directory, lstat '/usr/app/undefined'
+          {
+              "cause": {
+                  "name": "Error",
+                  "stack": "Error: ENOENT: no such file or directory, lstat '/usr/app/undefined'",
+                  "message": "ENOENT: no such file or directory, lstat '/usr/app/undefined'",
+                  "errno": -2,
+                  "code": "ENOENT",
+                  "syscall": "lstat",
+                  "path": "/usr/app/undefined"
+              },
+              "isOperational": true,
+              "errno": -2,
+              "code": "ENOENT",
+              "syscall": "lstat",
+              "path": "/usr/app/undefined",
+              "name": "Error",
+              "message": "ENOENT: no such file or directory, lstat '/usr/app/undefined'"
+          }
+    author: null
+    timestamp: 2018-6-29
+    PS_UUID: aae43fc0-7b9c-11e8-b958-f1e2a644adda
+  - body: |-
       # Tests 
        - ✔ Device is online
        - ✔ Resin host OS update [2.12.7+rev1.prod -> 2.12.7+rev1.prod]
