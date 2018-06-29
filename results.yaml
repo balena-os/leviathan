@@ -2,6 +2,22 @@ results:
   -
     body: |-
       # Tests 
+       - ✔ Device is online
+       - ✔ Resin host OS update [2.12.7+rev1.prod -> 2.12.7+rev1.prod]
+       - ✔ Image filename format
+       - ✔ Push a mono-container to the application
+
+
+      # Summary
+      - planned: 4
+      - pass: 4
+      - fail: 0
+
+      # Fails
+    timestamp: 2018-6-29
+    PS_UUID: f3f78670-7bc1-11e8-ba67-61c540e30f20
+  - body: |-
+      # Tests 
        - ✖ before hook
        - ✖ 4 tests remaining in lib/main.js
 
