@@ -2,6 +2,31 @@ results:
   -
     body: |-
       # Tests 
+       - ✔ Device is online
+       - ✖ Resin host OS update [2.12.7+rev1.prod -> 2.12.7+rev1.prod]
+       - ✔ Image filename format
+       - ✔ Push a mono-container to the application
+
+
+      # Summary
+      - planned: 4
+      - pass: 3
+      - fail: 1
+
+      # Fails
+      ## Resin host OS update [2.12.7+rev1.prod -> 2.12.7+rev1.prod]
+          ✖ Resin host OS update [2.12.7+rev1.prod -> 2.12.7+rev1.prod]
+          {
+              "name": "AssertionError",
+              "message": "Rejected promise returned by test",
+              "values": {
+                  "Rejected promise returned by test. Reason:": "`host error: Could not connect to device 723404dc7dce5e4e196263abf163562eba97cea6b9d4c0f316c2897572668b: HTTP/1.0 500 Internal Server Error␊\n`"
+              }
+          }
+    timestamp: 2018-7-2
+    PS_UUID: 93a97a80-7e19-11e8-a4e4-27dffc12aab5
+  - body: |-
+      # Tests 
        - ✖ before hook
        - ✖ 4 tests remaining in lib/main.js
 
