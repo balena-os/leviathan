@@ -39,7 +39,7 @@ module.exports = {
     }
   },
   run: async (test, context, options) => {
-    return utils.runManualTestCase(test, {
+    test.resolveMatch(utils.runManualTestCase({
       prepare: [
         'Set "console=serial0,115200" in /mnt/boot/cmdline.txt so that the kernel outputs logs to serial',
         'Make sure there are no "Device Configuration" variables configured'
@@ -53,6 +53,7 @@ module.exports = {
         'You should see booting messages on serial',
         '`getty` should be advertised as spawned on `ttyAMA0` with a login message like: Resin OS X.X raspberrypi3 ttyAMA0'
       ]
-    })
+    }), true)
+    test.end()
   }
 }

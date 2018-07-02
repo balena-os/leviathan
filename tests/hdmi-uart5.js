@@ -32,7 +32,7 @@ module.exports = {
     }
   },
   run: async (test, context, options) => {
-    return utils.runManualTestCase(test, {
+    test.resolveMatch(utils.runManualTestCase({
       do: [
         'Download a new Beaglebone Black flasher image from the dashboard',
         'Append `fdtfile=am335x-boneblack-emmc-overlay.dtb` to `uEnv.txt_internal`',
@@ -44,6 +44,7 @@ module.exports = {
         'Check that the UART5 is loaded by running `cat /sys/devices/platform/bone_capemgr/slots`',
         'Check that there are no HDMI conflict errors by running `dmesg | grep "could not request pin"`'
       ]
-    })
+    }), true)
+    test.end()
   }
 }

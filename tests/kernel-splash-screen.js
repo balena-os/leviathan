@@ -32,7 +32,7 @@ module.exports = {
     }
   },
   run: async (test, context, options) => {
-    return utils.runManualTestCase(test, {
+    test.resolveMatch(utils.runManualTestCase({
       prepare: [ 'Plug a monitor in the device\'s HDMI output' ],
       do: [ 'Reboot the device' ],
       assert: [
@@ -40,6 +40,7 @@ module.exports = {
         'The Tux (Linux) logo should not be visible on the screen while device is booting',
         'The Resin.io logo splash screen should be visible during boot-up'
       ]
-    })
+    }), true)
+    test.end()
   }
 }

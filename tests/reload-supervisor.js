@@ -22,7 +22,7 @@ module.exports = {
   title: 'Reload supervisor on a running device',
   interactive: true,
   run: async (test, context, options) => {
-    return utils.runManualTestCase(test, {
+    test.resolveMatch(utils.runManualTestCase({
       prepare: [
         'Ensure the device is online and running an application',
         'Logging into the device (ssh to the host OS)',
@@ -43,6 +43,7 @@ module.exports = {
         'Execute "balena ps". It should list resin_supervisor running'
       ],
       cleanup: [ 'Close the Web Service Terminal' ]
-    })
+    }), true)
+    test.end()
   }
 }
