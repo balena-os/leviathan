@@ -2,6 +2,33 @@ results:
   -
     body: |-
       # Tests 
+       - ✖ before hook
+       - ✖ 4 tests remaining in lib/main.js
+
+
+      # Summary
+      - planned: 1
+      - pass: 0
+      - fail: 2
+
+      # Fails
+      ## before hook
+          ✖ before hook
+          {
+              "name": "AssertionError",
+              "message": "Rejected promise returned by test",
+              "values": {
+                  "Rejected promise returned by test. Reason:": "TypeError [ERR_INVALID_ARG_TYPE] (NodeError) {\n  message: 'The \"path\" argument must be of type string',\n}"
+              },
+              "at": "ResinOS.getImage (lib/components/os/resinos.js:80:12)"
+          }
+      ## 4 tests remaining in lib/main.js
+          ✖ 4 tests remaining in lib/main.js
+          undefined
+    timestamp: 2018-7-2
+    PS_UUID: cbb594f0-7e18-11e8-b824-2bbc2c5dbe00
+  - body: |-
+      # Tests 
        - ✔ Device is online
        - ✔ Resin host OS update [2.12.7+rev1.prod -> 2.12.7+rev1.prod]
        - ✔ Image filename format
