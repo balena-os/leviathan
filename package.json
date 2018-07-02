@@ -2,6 +2,7 @@
   "name": "resinos-tests",
   "version": "1.15.7",
   "description": "Automated testing for ResinOS",
+  "private": true,
   "scripts": {
     "lint": "eslint lib scripts tests",
     "test": "npm run lint",
