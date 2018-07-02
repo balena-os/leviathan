@@ -1,6 +1,51 @@
 results:
   -
-    body: |-
+    provision_time: 3m 27s
+    image_size: 1724 Mb
+    resin_os_version: 2.12.7+rev1.prod
+    body: >-
+      # Tests 
+       - ✔ Device is online
+       - ✖ Resin host OS update [2.12.7+rev1.prod -> 2.12.7+rev1.prod]
+       - ✖ child test left in queue: t.test Image filename format
+       - ✖ child test left in queue: t.test Push a mono-container to the application
+       - ✖ Cannot create property 'test' on string 'host error: Could not connect to device 9f08cbee69f487af4caabe03465ada41fbb9d9ec9caacdfa0a59b9c867c052: HTTP/1.0 503 Service Unavailable '
+
+
+      # Summary
+
+      - planned: 3
+
+      - pass: 1
+
+      - fail: 4
+
+
+      # Fails
+
+      ## Resin host OS update [2.12.7+rev1.prod -> 2.12.7+rev1.prod]
+          ✖ Resin host OS update [2.12.7+rev1.prod -> 2.12.7+rev1.prod]
+          undefined
+      ## child test left in queue: t.test Image filename format
+          ✖ child test left in queue: t.test Image filename format
+          undefined
+      ## child test left in queue: t.test Push a mono-container to the
+      application
+          ✖ child test left in queue: t.test Push a mono-container to the application
+          undefined
+      ## Cannot create property 'test' on string 'host error: Could not connect
+      to device 9f08cbee69f487af4caabe03465ada41fbb9d9ec9caacdfa0a59b9c867c052:
+      HTTP/1.0 503 Service Unavailable '
+          ✖ Cannot create property 'test' on string 'host error: Could not connect to device 9f08cbee69f487af4caabe03465ada41fbb9d9ec9caacdfa0a59b9c867c052: HTTP/1.0 503 Service Unavailable '
+          {
+              "stack": "<anonymous>\n",
+              "type": "TypeError",
+              "test": "TAP"
+          }
+    author: null
+    timestamp: 2018-7-2
+    PS_UUID: 79ccf530-7e0d-11e8-8dbd-1941c08f7601
+  - body: |-
       # Tests 
        - ✔ Device is online
        - ✔ Resin host OS update [2.12.7+rev1.prod -> 2.12.7+rev1.prod]
