@@ -2,6 +2,44 @@ results:
   -
     body: |-
       # Tests 
+       - ✖ before hook
+       - ✖ after.always hook
+       - ✖ 4 tests remaining in lib/main.js
+
+
+      # Summary
+      - planned: 2
+      - pass: 0
+      - fail: 3
+
+      # Fails
+      ## before hook
+          ✖ before hook
+          {
+              "name": "AssertionError",
+              "message": "Rejected promise returned by test",
+              "values": {
+                  "Rejected promise returned by test. Reason:": "TypeError {\n  message: 'os.getImage is not a function',\n}"
+              },
+              "at": "QEMUWorker.flash (lib/workers/qemu.js:44:21)"
+          }
+      ## after.always hook
+          ✖ after.always hook
+          {
+              "name": "AssertionError",
+              "message": "Rejected promise returned by test",
+              "values": {
+                  "Rejected promise returned by test. Reason:": "TypeError {\n  message: 'Cannot read property \\'kill\\' of undefined',\n}"
+              },
+              "at": "QEMUWorker.off (lib/workers/qemu.js:69:23)"
+          }
+      ## 4 tests remaining in lib/main.js
+          ✖ 4 tests remaining in lib/main.js
+          undefined
+    timestamp: 2018-7-3
+    PS_UUID: 4e7af190-7ec4-11e8-8f86-b11c9ded28c5
+  - body: |-
+      # Tests 
        - ✔ Device is online
        - ✔ Device reported hostOS version
        - ✔ Resin host OS update [2.12.7+rev1.prod -> 2.12.7+rev1.prod]
