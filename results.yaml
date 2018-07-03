@@ -3,6 +3,23 @@ results:
     body: |-
       # Tests 
        - ✔ Device is online
+       - ✔ Device reported hostOS version
+       - ✔ Resin host OS update [2.12.7+rev1.prod -> 2.12.7+rev1.prod]
+       - ✔ Image filename format
+       - ✔ Push a mono-container to the application
+
+
+      # Summary
+      - planned: 5
+      - pass: 5
+      - fail: 0
+
+      # Fails
+    timestamp: 2018-7-3
+    PS_UUID: db23a4d0-7ea5-11e8-9008-9be15d46f53c
+  - body: |-
+      # Tests 
+       - ✔ Device is online
        - ✔ Resin host OS update [2.12.7+rev1.prod -> 2.12.7+rev1.prod]
        - ✔ Image filename format
        - ✔ Push a mono-container to the application
