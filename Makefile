@@ -4,6 +4,10 @@ ifdef RESINOS_TESTS_DISK
 	DEVICE = '--device=$(RESINOS_TESTS_DISK)'
 endif
 
+ifdef RESINOS_TESTS_SERIAL_CONNECTION
+	SERIAL_CONNECTION = '--device=$(RESINOS_TESTS_SERIAL_CONNECTION)'
+endif
+
 build-docker-image: Dockerfile
 	@echo '[Info] Building docker image "$(DOCKER_IMAGE)"...'
 	@docker build --rm -t $(DOCKER_IMAGE) .
@@ -15,6 +19,7 @@ test: build-docker-image
 		--env "GITHUB_TOKEN=$(GITHUB_TOKEN)" \
 		$(foreach variable, $(shell env | grep RESINOS), --env $(variable)) \
 		$(DEVICE) \
+		$(SERIAL_CONNECTION) \
 		$(DOCKER_IMAGE)
 
 enter:

@@ -34,19 +34,26 @@ module.exports = {
   run: async (test, context, options) => {
     test.resolveMatch(utils.runManualTestCase({
       prepare: [
-        'Set "console=serial0,115200" in /mnt/boot/cmdline.txt so that the kernel outputs logs to serial',
+        'Logging into the device (ssh to the host OS)',
+        'Set "console=serial0,115200" in "/mnt/boot/cmdline.txt" so that the kernel outputs logs to serial',
+        'Plug in the USB serial cable into device, like this "https://elinux.org/RPi_Serial_Connection"',
         'Make sure there are no "Device Configuration" variables configured'
       ],
       do: [
-        'Run `minicom -b 115200 -o -D /dev/tty***`, replacing the tty device accordingly to your host',
-        'Set `RESIN_HOST_CONFIG_enable_uart=0` as a "Device Configuration" variable',
-        'The device should reboot. Wait until its back online',
-        'Set `RESIN_HOST_CONFIG_enable_uart=1` as a "Device Configuration" variable. The device should reboot',
-        'The device should reboot. Wait until its back online'
+        `Run "minicom -b 115200 -o -D ${options.serialConnection}"`,
+        'Enable "RESIN_HOST_CONFIG_enable_uart" as a "Device Configuration" variable',
+        'The device should reboot. Wait until it\'s back online',
+        'Disable "RESIN_HOST_CONFIG_enable_uart" as a "Device Configuration" variable.',
+        'The device should reboot. Wait until it\'s back online'
       ],
       assert: [
-        'No messages should be seen on the serial debug connection when setting `RESIN_HOST_CONFIG_enable_uart` to 0',
-        'You should see the boot messages on the serial debug connection'
+        'You should see the boot messages on the serial debug connection when enabling "RESIN_HOST_CONFIG_enable_uart"',
+        'No messages should be seen on the serial debug connection when disabling "RESIN_HOST_CONFIG_enable_uart"'
+      ],
+      cleanup: [
+        'Remove variable "RESIN_HOST_CONFIG_enable_uart" from "Device Configuration"',
+        'Exit from minicom',
+        'Close the Web HostOS Terminal'
       ]
     }), true)
     test.end()
