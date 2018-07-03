@@ -2,6 +2,41 @@ results:
   -
     body: |-
       # Tests 
+       - ✔ Device is online
+       - ✖ Resin host OS update [2.12.7+rev1.prod -> 2.12.7+rev1.prod]
+       - ✔ Image filename format
+       - ✖ Push a mono-container to the application
+
+
+      # Summary
+      - planned: 4
+      - pass: 2
+      - fail: 2
+
+      # Fails
+      ## Resin host OS update [2.12.7+rev1.prod -> 2.12.7+rev1.prod]
+          ✖ Resin host OS update [2.12.7+rev1.prod -> 2.12.7+rev1.prod]
+          {
+              "name": "AssertionError",
+              "message": "Rejected promise returned by test",
+              "values": {
+                  "Rejected promise returned by test. Reason:": "`Permission denied (publickey).␍␊\n`"
+              }
+          }
+      ## Push a mono-container to the application
+          ✖ Push a mono-container to the application
+          {
+              "name": "AssertionError",
+              "message": "Rejected promise returned by test",
+              "values": {
+                  "Rejected promise returned by test. Reason:": "Error {\n  message: `Warning: Permanently added 'git.resin.io,54.165.162.194' (ECDSA) to the list of known hosts.␍␊\n  ␊\n  \t############################################################################␊\n  ␊\n  \tNone of the supplied SSH keys matched a known key for user `testbot_resinos`␊\n  ␊\n  \tKnown ssh key fingerprints for `testbot_resinos`:␊\n  \t\t* b5a7db6249f81d4b063c7afee02edcd2␊\n  \t\t* de6037a88be7a4e203dbd14830378c33␊\n  \t\t* 5c915c1289242ac5076fb7be3c7ca36c␊\n  \t\t* d480dc7c495acc3bf0e380ea31e812c8␊\n  \t\t* 57cb6cb62690445410b0029b3a0fb5eb␊\n  \t\t* 9c2f7846ba3d64040f7da1c33b0961d6␊\n  \t\t* 83194a3315e9657561aa26a080015bf2␊\n  \t\t* 3766ef8e4cc58275d147894332e9aca2␊\n  \t\t* a429f362c833e666f4cbc88b05e48c7d␊\n  \t\t* eb2a557ce130d06aa0c7a8e5d82264b3␊\n  \t\t* 40199d305395617e9dc61a518b8822f3␊\n  \t\t* 39ed237526e73ccebd8211f624325ca0␊\n  \t\t* a3b76ad88753651fc4bcca3d2a33df67␊\n  \t\t* 070de17a3245b2036e82817c595112a6␊\n  \t\t* cd6543437f12deabff6690fca94cbe28␊\n  \t\t* b66a0e5d8368d1e751a149ea5fb8e7c7␊\n  \t\t* eba8ba54ee3bc4199df1fb4bc1c90e45␊\n  \t\t* d78057a0801c2a049d7bbc033271e70c␊\n  \t\t* f694f1bc9f8cac820448deb33bf0c5e6␊\n  \t\t* 89aabca5f971fa20b5a497f9238b5c58␊\n  \t\t* 2c5f69741b2ed8695272c7ecaee383c0␊\n  \t\t* 80cf2d2496faa4d3a631451d4dbc751aPermission denied (publickey,keyboard-interactive).␍␊\n  fatal: Could not read from remote repository.␊\n  ␊\n  Please make sure you have the correct access rights␊\n  and the repository exists.␊\n  `,\n}"
+              },
+              "at": "node_modules/simple-git/promise.js:21:26"
+          }
+    timestamp: 2018-7-3
+    PS_UUID: 667ee0c0-7e98-11e8-8fc4-05f3d81b75c6
+  - body: |-
+      # Tests 
        - ✖ before hook
        - ✖ 4 tests remaining in lib/main.js
 
