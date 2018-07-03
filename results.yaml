@@ -2,6 +2,32 @@ results:
   -
     body: |-
       # Tests 
+       - ✖ before hook
+       - ✖ 4 tests remaining in lib/main.js
+
+
+      # Summary
+      - planned: 1
+      - pass: 0
+      - fail: 2
+
+      # Fails
+      ## before hook
+          ✖ before hook
+          {
+              "name": "AssertionError",
+              "message": "Rejected promise returned by test",
+              "values": {
+                  "Rejected promise returned by test. Reason:": "OperationalError {\n  cause: Error {\n    code: 'ENOENT',\n    errno: -2,\n    path: '/usr/app/undefined',\n    syscall: 'lstat',\n    message: 'ENOENT: no such file or directory, lstat \\'/usr/app/undefined\\'',\n  },\n  code: 'ENOENT',\n  errno: -2,\n  isOperational: true,\n  path: '/usr/app/undefined',\n  syscall: 'lstat',\n}"
+              }
+          }
+      ## 4 tests remaining in lib/main.js
+          ✖ 4 tests remaining in lib/main.js
+          undefined
+    timestamp: 2018-7-3
+    PS_UUID: ac196620-7e96-11e8-971f-4faa97d8ede4
+  - body: |-
+      # Tests 
        - ✔ Device is online
        - ✖ Resin host OS update [2.12.7+rev1.prod -> 2.12.7+rev1.prod]
        - ✔ Image filename format
