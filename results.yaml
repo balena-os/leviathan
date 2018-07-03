@@ -15,6 +15,22 @@ results:
 
       # Fails
     timestamp: 2018-7-3
+    PS_UUID: 60a0a4a0-7ed3-11e8-8eb0-a5799676c2cb
+  - body: |-
+      # Tests 
+       - ✔ Device is online
+       - ✔ Resin host OS update [2.12.7+rev1.prod -> 2.12.7+rev1.prod]
+       - ✔ Image filename format
+       - ✔ Push a mono-container to the application
+
+
+      # Summary
+      - planned: 4
+      - pass: 4
+      - fail: 0
+
+      # Fails
+    timestamp: 2018-7-3
     PS_UUID: e28b1760-7eca-11e8-8f9a-bbeeb55d94a7
   - body: |-
       # Tests 
