@@ -32,7 +32,7 @@ module.exports = {
     }
   },
   run: async (test, context, options) => {
-    return utils.runManualTestCase(test, {
+    test.resolveMatch(utils.runManualTestCase({
       prepare: [
         'Set "console=serial0,115200" in /mnt/boot/cmdline.txt so that the kernel outputs logs to serial',
         'Make sure there are no "Device Configuration" variables configured'
@@ -48,6 +48,7 @@ module.exports = {
         'No messages should be seen on the serial debug connection when setting `RESIN_HOST_CONFIG_enable_uart` to 0',
         'You should see the boot messages on the serial debug connection'
       ]
-    })
+    }), true)
+    test.end()
   }
 }

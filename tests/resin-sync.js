@@ -22,7 +22,7 @@ module.exports = {
   title: 'Sync application container',
   interactive: true,
   run: async (test, context, options) => {
-    return utils.runManualTestCase(test, {
+    test.resolveMatch(utils.runManualTestCase({
       prepare: [
         'Clone repo and change directory to it: "git clone https://github.com/resin-io-projects/simple-server-node && cd simple-server-node"',
         `Add resin remote url: "git remote add resin ${options.gitUrl}"`,
@@ -44,6 +44,7 @@ module.exports = {
         'Disable Public Device URL',
         'Restart application from the dashboard'
       ]
-    })
+    }), true)
+    test.end()
   }
 }

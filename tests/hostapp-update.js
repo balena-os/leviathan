@@ -50,5 +50,6 @@ module.exports = {
     const inactiveAfter = await components.resinio.sshHostOS(testCmd('inactive'), context.uuid, context.key.privateKeyPath)
 
     test.deepEqual([ activeBefore, inactiveBefore ], [ inactiveAfter, activeAfter ])
+    test.end()
   }
 }

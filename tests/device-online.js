@@ -21,5 +21,6 @@ module.exports = {
   run: async (test, context, options, components) => {
     const isOnline = await components.resinio.isDeviceOnline(context.uuid)
     test.true(isOnline)
+    test.end()
   }
 }

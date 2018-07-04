@@ -38,10 +38,11 @@ module.exports = {
     }
   },
   run: async (test, context, options) => {
-    return utils.runManualTestCase(test, {
+    test.resolveMatch(utils.runManualTestCase({
       prepare: [ 'Have an activated and visible Bluetooth device around you (i.e your phone\'s bluetooth)' ],
       do: [ 'Clone and push "https://github.com/resin-io-playground/test-bluetooth" to the device' ],
       assert: [ 'Check the device dashboard\'s logs. The last log message should be: TEST PASSED' ]
-    })
+    }), true)
+    test.end()
   }
 }

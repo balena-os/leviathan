@@ -22,13 +22,14 @@ module.exports = {
   title: 'Reboot while application is running',
   interactive: true,
   run: async (test, context, options) => {
-    return utils.runManualTestCase(test, {
+    test.resolveMatch(utils.runManualTestCase({
       prepare: [ 'Ensure the device is running an application' ],
       do: [ 'Reboot device' ],
       assert: [
         'Ensure the device is online',
         'Ensure the device is running an application'
       ]
-    })
+    }), true)
+    test.end()
   }
 }

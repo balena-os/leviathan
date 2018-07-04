@@ -22,7 +22,7 @@ module.exports = {
   title: 'Push a multi-container application',
   interactive: true,
   run: async (test, context, options) => {
-    return utils.runManualTestCase(test, {
+    test.resolveMatch(utils.runManualTestCase({
       do: [
         'Ensure the device is running a multicontainer application. Clone this repo and change directory to it:',
         '"git clone https://github.com/resin-io-projects/multicontainer-getting-started && cd multicontainer-getting-started"',
@@ -35,6 +35,7 @@ module.exports = {
         'You should be able to ssh using the web service terminal on each of the 3 service containers'
       ],
       cleanup: [ 'Close the 3 Web Service Terminal' ]
-    })
+    }), true)
+    test.end()
   }
 }

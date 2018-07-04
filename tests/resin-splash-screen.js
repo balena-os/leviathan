@@ -32,7 +32,7 @@ module.exports = {
     }
   },
   run: async (test, context, options) => {
-    return utils.runManualTestCase(test, {
+    test.resolveMatch(utils.runManualTestCase({
       prepare: [ 'Plug a monitor in the device\'s HDMI output' ],
       do: [
         'Shutdown the device',
@@ -42,6 +42,7 @@ module.exports = {
         'The Resin.io logo splash screen should be visible when the board initiates shutdown',
         'The Resin.io logo splash screen should be visible during boot-up'
       ]
-    })
+    }), true)
+    test.end()
   }
 }
