@@ -1,6 +1,45 @@
 results:
   -
-    body: |-
+    provision_time: 3m 49s
+    image_size: 1724 Mb
+    resin_os_version: 2.12.7+rev1.prod
+    body: >-
+      # Tests 
+       - ✖ Device is online
+       - ✖ child test left in queue: t.test Resin host OS update [2.12.7+rev1.prod -> 2.12.7+rev1.prod]
+       - ✖ child test left in queue: t.test Image filename format
+       - ✖ child test left in queue: t.test Push a mono-container to the application
+
+
+      # Summary
+
+      - planned: 4
+
+      - pass: 0
+
+      - fail: 4
+
+
+      # Fails
+
+      ## Device is online
+          ✖ Device is online
+          undefined
+      ## child test left in queue: t.test Resin host OS update [2.12.7+rev1.prod
+      -> 2.12.7+rev1.prod]
+          ✖ child test left in queue: t.test Resin host OS update [2.12.7+rev1.prod -> 2.12.7+rev1.prod]
+          undefined
+      ## child test left in queue: t.test Image filename format
+          ✖ child test left in queue: t.test Image filename format
+          undefined
+      ## child test left in queue: t.test Push a mono-container to the
+      application
+          ✖ child test left in queue: t.test Push a mono-container to the application
+          undefined
+    author: null
+    timestamp: 2018-7-4
+    PS_UUID: 24a93ea0-7f76-11e8-b5bf-ebc3994e3b50
+  - body: |-
       # Tests 
        - ✔ Device is online
        - ✔ Resin host OS update [2.12.7+rev1.prod -> 2.12.7+rev1.prod]
