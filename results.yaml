@@ -1,6 +1,26 @@
 results:
   -
-    provision_time: 3m 49s
+    provision_time: 3m 22s
+    image_size: 1724 Mb
+    resin_os_version: 2.12.7+rev1.prod
+    body: |-
+      # Tests 
+       - ✔ Device is online
+       - ✔ Resin host OS update [2.12.7+rev1.prod -> 2.12.7+rev1.prod]
+       - ✔ Image filename format
+       - ✔ Push a mono-container to the application
+
+
+      # Summary
+      - planned: 4
+      - pass: 4
+      - fail: 0
+
+      # Fails
+    author: null
+    timestamp: 2018-7-4
+    PS_UUID: 07032f60-7f84-11e8-8e4d-3782982cb634
+  - provision_time: 3m 49s
     image_size: 1724 Mb
     resin_os_version: 2.12.7+rev1.prod
     body: >-
