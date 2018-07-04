@@ -2,6 +2,18 @@ results:
   -
     body: |-
       # Tests 
+
+
+      # Summary
+      - planned: 0
+      - pass: 0
+      - fail: 0
+
+      # Fails
+    timestamp: 2018-7-4
+    PS_UUID: bfd867b0-7f72-11e8-884e-c91813c827c3
+  - body: |-
+      # Tests 
        - ✔ Device is online
        - ✔ Resin host OS update [2.12.7+rev1.prod -> 2.12.7+rev1.prod]
        - ✔ Image filename format
