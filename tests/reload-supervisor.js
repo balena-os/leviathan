@@ -44,6 +44,5 @@ module.exports = {
       ],
       cleanup: [ 'Close the Web Service Terminal' ]
     }), true)
-    test.end()
   }
 }

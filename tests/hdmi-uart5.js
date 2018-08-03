@@ -45,6 +45,5 @@ module.exports = {
         'Check that there are no HDMI conflict errors by running `dmesg | grep "could not request pin"`'
       ]
     }), true)
-    test.end()
   }
 }

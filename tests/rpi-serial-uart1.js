@@ -49,6 +49,5 @@ module.exports = {
         'You should see the boot messages on the serial debug connection'
       ]
     }), true)
-    test.end()
   }
 }

@@ -31,6 +31,5 @@ module.exports = {
       assert: [ 'Open the Web Service Terminal, run "env", and ensure the new device variable is there' ],
       cleanup: [ 'Close the Web Terminal' ]
     }), true)
-    test.end()
   }
 }

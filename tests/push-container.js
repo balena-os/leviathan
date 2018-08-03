@@ -52,6 +52,5 @@ module.exports = {
 
     const commit = await components.resinio.getDeviceCommit(context.uuid)
     test.is(commit.length, 40)
-    test.end()
   }
 }

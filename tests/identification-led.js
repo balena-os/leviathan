@@ -36,6 +36,5 @@ module.exports = {
       do: [ `Click the "Identify" button from the dashboard: ${context.dashboardUrl}` ],
       assert: [ 'The device\'s identification LEDs should blink for a couple of seconds' ]
     }), true)
-    test.end()
   }
 }

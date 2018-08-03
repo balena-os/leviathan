@@ -30,6 +30,5 @@ module.exports = {
         'Ensure the device is running an application'
       ]
     }), true)
-    test.end()
   }
 }
