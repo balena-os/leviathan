@@ -1,3 +1,17 @@
 ---
 docker:
-  publish: false
+  builds:
+    - dockerfile: Dockerfile
+      path: .
+      docker_repo: n/a
+      publish: false
+      environment:
+        RESINOS_TESTS_APPLICATION_NAME: mochaTest
+        RESINOS_TESTS_DEVICE_TYPE: qemux86-64
+        RESINOS_TESTS_RESINOS_VERSION: *
+        RESINOS_TESTS_RESINIO_URL: resin.io
+        RESINOS_TESTS_RESINIO_STAGING_URL: resinstaging.io
+        RESINOS_TESTS_ENABLE_INTERACTIVE_TESTS: no
+      secrets:
+        - RESINOS_TESTS_API_KEY
+
