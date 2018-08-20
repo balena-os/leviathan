@@ -1,6 +1,6 @@
 {
   "name": "resinos-tests",
-  "version": "1.15.9",
+  "version": "1.15.10",
   "description": "Automated testing for ResinOS",
   "private": true,
   "scripts": {
@@ -43,7 +43,7 @@
     "randomstring": "^1.1.5",
     "resin-cli-visuals": "^1.4.0",
     "resin-image-fs": "^4.0.2",
-    "resin-sdk": "^9.0.0-beta10",
+    "resin-sdk": "^10.0.4",
     "semver": "^5.5.0",
     "simple-git": "^1.85.0",
     "ssh-keygen": "^0.4.1",
