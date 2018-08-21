@@ -31,10 +31,10 @@ WORKDIR /usr/app
 
 COPY --from=npm-install /tmp/node ./
 
-ADD contracts contracts
-ADD .eslintrc.yml ./
+COPY contracts contracts
+COPY .eslintrc.yml ./
 
-ADD lib lib
-ADD tests tests
+COPY lib lib
+COPY tests tests
 
 CMD npm start
