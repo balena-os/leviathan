@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 resin.io
+ * Copyright 2018 resin.io
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,29 +20,36 @@ const utils = require('../lib/utils')
 
 module.exports = {
   title: 'Reload supervisor on a running device',
-  interactive: true,
-  run: async (test, context, options) => {
-    test.resolveMatch(utils.runManualTestCase({
-      prepare: [
-        'Ensure the device is online and running an application',
-        'Logging into the device (ssh to the host OS)',
-        'Check with "balena images" that the correct supervisor version is running on the device'
-      ],
-      do: [
-        'Stop the supervisor by running "systemctl stop resin-supervisor" on the host OS',
-        'Remove the supervisor container by running "balena rm resin_supervisor"',
-        `Remove all supervisor images: "balena rmi -f $(balena images -q resin/${context.deviceType.arch}-supervisor)"`,
-        'Push an update to the application (for example, change what is outputted to the console)',
-        'Execute "update-resin-supervisor"'
-      ],
-      assert: [
-        'Now check the dashboard to see if your app update is being downloaded.',
-        'Because the supervisor is stopped, the application update should NOT download',
-        'After supervisor update download finishes, check that the app update is functional as expected.',
-        'Execute "balena images". It should list the same supervisor version the device started with',
-        'Execute "balena ps". It should list resin_supervisor running'
-      ],
-      cleanup: [ 'Close the Web Service Terminal' ]
-    }), true)
+  run: async (test, context, options, components) => {
+    // Delete current supervisor
+    await components.resinio.sshHostOS('systemctl stop resin-supervisor',
+      context.uuid,
+      context.key.privateKeyPath
+    )
+    await components.resinio.sshHostOS('balena rm resin_supervisor',
+      context.uuid,
+      context.key.privateKeyPath
+    )
+    await components.resinio.sshHostOS(`balena rmi -f $(balena images -q resin/${context.deviceType.arch}-supervisor)`,
+      context.uuid,
+      context.key.privateKeyPath
+    )
+    test.rejects(components.resinio.pingSupervisor(context.uuid))
+
+    // Pull and start the supervisor
+    await components.resinio.sshHostOS('update-resin-supervisor',
+      context.uuid,
+      context.key.privateKeyPath
+    )
+
+    // Wait for the supervisor to be marked as healthy
+    await utils.waitUntil(async () => {
+      return await components.resinio.sshHostOS('balena inspect --format \'{{.State.Health.Status}}\' resin_supervisor',
+        context.uuid,
+        context.key.privateKeyPath
+      ) === 'healthy'
+    })
+
+    test.resolves(components.resinio.pingSupervisor(context.uuid))
   }
 }
