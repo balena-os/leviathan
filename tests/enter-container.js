@@ -22,7 +22,7 @@ module.exports = {
   title: 'Enter running application container',
   interactive: true,
   run: async (test, context, options) => {
-    test.resolvesMatch(utils.runManualTestCase({
+    test.resolveMatch(utils.runManualTestCase({
       prepare: [
         `Ensure the device is running an application: ${context.dashboardUrl}. Clone one of the repos and change directory:`,
         '"git clone https://github.com/resin-io-projects/resin-cpp-hello-world.git && cd resin-cpp-hello-world" or',
@@ -37,6 +37,5 @@ module.exports = {
       ],
       cleanup: [ 'Exit shell' ]
     }), true)
-    test.end()
   }
 }

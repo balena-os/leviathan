@@ -41,6 +41,5 @@ module.exports = {
         'The Resin.io logo splash screen should be visible during boot-up'
       ]
     }), true)
-    test.end()
   }
 }

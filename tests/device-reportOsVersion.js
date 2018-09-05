@@ -23,6 +23,5 @@ module.exports = {
     const hostOSVariant = await components.resinio.getDeviceHostOSVariant(context.uuid)
 
     test.is(`${hostOSVersion}.${hostOSVariant}`, `Resin OS ${options.resinOSVersion}`)
-    test.end()
   }
 }

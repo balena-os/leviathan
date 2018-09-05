@@ -13,6 +13,7 @@ test: build-docker-image
 	@docker run -it --rm --name ${DOCKER_IMAGE} \
 		--env "CI=$(CI)" \
 		--env "GITHUB_TOKEN=$(GITHUB_TOKEN)" \
+		--privileged \
 		$(foreach variable, $(shell env | grep RESINOS), --env $(variable)) \
 		$(DEVICE) \
 		$(DOCKER_IMAGE)

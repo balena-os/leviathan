@@ -38,6 +38,5 @@ module.exports = {
       ],
       cleanup: [ 'Close the Web HostOS Terminal' ]
     }), true)
-    test.end()
   }
 }

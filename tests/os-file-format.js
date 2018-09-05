@@ -31,7 +31,5 @@ module.exports = {
     const apiUrl = (await components.resinio.getApiUrl()).split('.')
     const filename = basename(await realpath(context.os.image))
     test.is(filename, `${apiUrl[1]}-${options.deviceType}-${hostOsVersion[2]}-v${supervisorVersion}.img`)
-    test.end()
-    test.is(filename, `${apiUrl[1]}-${options.deviceType}-${hostOsVersion[2]}-v${supervisorVersion}.img`)
   }
 }

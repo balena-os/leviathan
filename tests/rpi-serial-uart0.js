@@ -54,6 +54,5 @@ module.exports = {
         '`getty` should be advertised as spawned on `ttyAMA0` with a login message like: Resin OS X.X raspberrypi3 ttyAMA0'
       ]
     }), true)
-    test.end()
   }
 }

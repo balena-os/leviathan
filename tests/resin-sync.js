@@ -45,6 +45,5 @@ module.exports = {
         'Restart application from the dashboard'
       ]
     }), true)
-    test.end()
   }
 }
