@@ -16,27 +16,63 @@
 
 'use strict'
 
-const utils = require('../lib/utils')
-
 module.exports = {
   title: 'Update supervisor through the API',
-  interactive: true,
-  run: async (test, context, options) => {
-    test.resolveMatch(utils.runManualTestCase({
-      prepare: [
-        'Ensure the device is online and running an application',
-        `Logging into the device. Use the Web HostOS terminal from dashboard: ${context.dashboardUrl}`
-      ],
-      do: [
-        'Copy paste the script from https://gist.github.com/horia-delicoti/848368a7e746e864c05e2a79f540dc3b inside ' +
-        'your terminal and run it.'
-      ],
-      assert: [
-        'Setting the supervisor should output the supervisor release ID and an OK for the set: ' +
-        '"Extracted supervisor ID: XXX"',
-        'The "update-resin-supervisor" run should have "Supervisor configuration found from API"'
-      ],
-      cleanup: [ 'Close the Web HostOS Terminal' ]
-    }), true)
+  run: async (test, context, options, components) => {
+    // Get supervisor update info
+    const supervisorImage = await components.resinio.sshHostOS(
+      'source /etc/resin-supervisor/supervisor.conf ; echo $SUPERVISOR_IMAGE',
+      context.uuid,
+      context.key.privateKeyPath
+    )
+    const supervisorTag = await components.resinio.sshHostOS(
+      'source /etc/resin-supervisor/supervisor.conf ; echo $SUPERVISOR_TAG',
+      context.uuid,
+      context.key.privateKeyPath
+    )
+
+    // Get config.json path
+    const configPath = await components.resinio.sshHostOS(
+      'systemctl show config-json.path --no-pager | grep PathChanged | cut -d \'=\' -f 2',
+      context.uuid,
+      context.key.privateKeyPath
+    )
+
+    test.isNot(supervisorImage, '')
+    test.isNot(supervisorTag, '')
+    test.isNot(configPath, '')
+
+    // Get config.json content
+    const config = JSON.parse(await components.resinio.sshHostOS(
+      `cat ${configPath}`,
+      context.uuid,
+      context.key.privateKeyPath
+    ))
+
+    // Get Supervisor ID
+    const supervisorId = await components.resinio.sshHostOS(
+      'curl -s ' +
+      `"${config.apiEndpoint}/v3/supervisor_release?` +
+        '\\$select=id,image_name&' +
+        `\\$filter=((device_type%20eq%20'${config.deviceType}')%20and%20(supervisor_version%20eq%20'${supervisorTag}'))&` +
+        `apikey=${config.deviceApiKey}" ` +
+      '| jq -e -r \'.d[0].id\'',
+      context.uuid,
+      context.key.privateKeyPath
+    )
+
+    test.resolveMatch(components.resinio.sshHostOS(
+      'curl -s ' +
+      `"${config.apiEndpoint}/v2/device(${config.deviceId})?apikey=${config.deviceApiKey}" ` +
+      '-X PATCH ' +
+      `--data-urlencode "supervisor_release=${supervisorId}"`,
+      context.uuid,
+      context.key.privateKeyPath
+    ), 'OK')
+    test.resolveMatch(components.resinio.sshHostOS(
+      'update-resin-supervisor | grep "Supervisor configuration found from API"',
+      context.uuid,
+      context.key.privateKeyPath
+    ), 'Supervisor configuration found from API')
   }
 }
