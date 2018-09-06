@@ -11,6 +11,18 @@ results:
 
       # Fails
     timestamp: 2018-9-6
+    PS_UUID: 2e80d010-b1de-11e8-bc22-3ff44c29849b
+  - body: |-
+      # Tests 
+
+
+      # Summary
+      - planned: 0
+      - pass: 0
+      - fail: 0
+
+      # Fails
+    timestamp: 2018-9-6
     PS_UUID: 35674e40-b1c0-11e8-a971-edacb009c264
   - body: |-
       # Tests 
