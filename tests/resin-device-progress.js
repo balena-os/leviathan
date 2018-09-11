@@ -16,22 +16,15 @@
 
 'use strict'
 
-const utils = require('../lib/utils')
-
 module.exports = {
   title: 'Update device status with resin-device-progress',
-  interactive: true,
-  run: async (test, context, options) => {
-    test.resolveMatch(utils.runManualTestCase({
-      do: [
-        'Login to the host OS',
-        'Update device status by running "resin-device-progress -p 60 -s "resinOS test""'
-      ],
-      assert: [
-        'The command runs successfully',
-        'The device dashboard status is updated to show 60% and status message "resinOS test"'
-      ],
-      cleanup: [ 'Close the Web Service Terminal' ]
-    }), true)
+  run: async (test, context, options, components) => {
+    await components.resinio.sshHostOS('resin-device-progress -p 60 -s "resinOS test"',
+      context.uuid,
+      context.key.privateKeyPath
+    )
+
+    await test.resolveMatch(components.resinio.getDeviceProperty(context.uuid, 'provisioning_state'), 'resinOS test')
+    await test.resolveMatch(components.resinio.getDeviceProperty(context.uuid, 'provisioning_progress'), 60)
   }
 }
