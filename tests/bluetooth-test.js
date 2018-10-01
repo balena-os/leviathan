@@ -16,6 +16,7 @@
 
 'use strict'
 
+const path = require('path')
 const utils = require('../lib/utils')
 
 module.exports = {
@@ -43,11 +44,24 @@ module.exports = {
       }
     }
   },
-  run: async (test, context, options) => {
+  run: async (test, context, options, components) => {
+    const hash = await utils.pushAndWaitRepoToResinDevice({
+      path: path.join(options.tmpdir, 'test-bluetooth'),
+      url: 'https://github.com/resin-io-playground/test-bluetooth.git',
+      uuid: context.uuid,
+      key: context.key.privateKeyPath,
+      resinio: components.resinio,
+      applicationName: options.applicationName
+    })
+
+    test.is(await components.resinio.getDeviceCommit(context.uuid), hash)
+
     test.resolveMatch(utils.runManualTestCase({
       prepare: [ 'Have an activated and visible Bluetooth device around you (i.e your phone\'s bluetooth)' ],
-      do: [ 'Clone and push "https://github.com/resin-io-playground/test-bluetooth" to the device' ],
-      assert: [ 'Check the device dashboard\'s logs. The last log message should be: TEST PASSED' ]
+      assert: [
+        'Check the device dashboard\'s logs. The last log message should be: TEST PASSED',
+        'Restart application if test fails'
+      ]
     }), true)
   }
 }
