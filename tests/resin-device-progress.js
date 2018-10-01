@@ -23,15 +23,13 @@ module.exports = {
   interactive: true,
   run: async (test, context, options) => {
     test.resolveMatch(utils.runManualTestCase({
-      do: [
-        'Login to the host OS',
-        'Update device status by running "resin-device-progress -p 60 -s "resinOS test""'
-      ],
+      prepare: [ 'Logging into the device (ssh to the host OS)' ],
+      do: [ 'Update device status by running: "resin-device-progress -p 60 -s "resinOS test" "' ],
       assert: [
         'The command runs successfully',
         'The device dashboard status is updated to show 60% and status message "resinOS test"'
       ],
-      cleanup: [ 'Close the Web Service Terminal' ]
+      cleanup: [ 'Close the Web HostOS Terminal' ]
     }), true)
   }
 }
