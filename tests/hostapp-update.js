@@ -21,7 +21,7 @@ const utils = require('../lib/utils')
 module.exports = {
   title: 'Resin host OS update [<%= options.resinOSVersion %> -> <%= options.resinOSVersionUpdate %>]',
   run: async (test, context, options, components) => {
-    const dockerVersion = options.resinOSVersion
+    const dockerVersion = options.resinOSVersionUpdate
       .replace('+', '_')
       .replace(/\.(prod|dev)$/, '')
 
