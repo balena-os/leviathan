@@ -37,4 +37,5 @@ COPY .eslintrc.yml ./
 COPY lib lib
 COPY tests tests
 
+CMD env
 CMD npm start
