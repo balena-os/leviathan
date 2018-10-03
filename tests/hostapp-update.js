@@ -33,17 +33,15 @@ module.exports = {
     const activeBefore = await components.resinio.sshHostOS(testCmd('active'), context.uuid, context.key.privateKeyPath)
     const inactiveBefore = await components.resinio.sshHostOS(testCmd('inactive'), context.uuid, context.key.privateKeyPath)
 
+    const lastTimeOnline = await components.resinio.getLastConnectedTime(context.uuid)
+
     await components.resinio.sshHostOS(`hostapp-update -r -i resin/resinos:${dockerVersion}-${options.deviceType}`,
       context.uuid,
       context.key.privateKeyPath
     )
 
     await utils.waitUntil(async () => {
-      return !await components.resinio.isDeviceOnline(context.uuid)
-    })
-
-    await utils.waitUntil(() => {
-      return components.resinio.isDeviceOnline(context.uuid)
+      return await components.resinio.getLastConnectedTime(context.uuid) > lastTimeOnline
     })
 
     const activeAfter = await components.resinio.sshHostOS(testCmd('active'), context.uuid, context.key.privateKeyPath)
