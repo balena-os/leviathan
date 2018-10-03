@@ -1,3 +1,4 @@
+TEST
 resinOS Automated Testing
 =========================
 
