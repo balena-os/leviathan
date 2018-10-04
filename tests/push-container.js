@@ -35,18 +35,6 @@ module.exports = {
     await git(repositoryPath).env('GIT_SSH_COMMAND', GIT_SSH_COMMAND).push(remote, 'master')
 
     await utils.waitUntil(async () => {
-      return await components.resinio.getServiceProperty(context.uuid, 'status') === 'Downloading'
-    })
-
-    await utils.waitProgressCompletion(() => {
-      return components.resinio.getServiceProperty(context.uuid, 'download_progress')
-    })
-
-    await utils.waitUntil(async () => {
-      return await components.resinio.getServiceProperty(context.uuid, 'status') === 'Running'
-    })
-
-    await utils.waitUntil(async () => {
       return await components.resinio.getDeviceCommit(context.uuid) !== null
     })
 
