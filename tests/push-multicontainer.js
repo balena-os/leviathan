@@ -16,25 +16,47 @@
 
 'use strict'
 
+const _ = require('lodash')
+const path = require('path')
 const utils = require('../lib/utils')
 
 module.exports = {
   title: 'Push a multi-container application',
-  interactive: true,
-  run: async (test, context, options) => {
-    test.resolveMatch(utils.runManualTestCase({
-      do: [
-        'Ensure the device is running a multicontainer application. Clone this repo and change directory to it:',
-        '"git clone https://github.com/resin-io-projects/multicontainer-getting-started && cd multicontainer-getting-started"',
-        `Add resin remote url: "git remote add resin ${options.gitUrl}"`,
-        'Push to application: "git push resin master"'
-      ],
-      assert: [
-        'The application should be downloaded and running successfully on the board',
-        'You should be able to see the 3 service-containers running in the dashboard',
-        'You should be able to ssh using the web service terminal on each of the 3 service containers'
-      ],
-      cleanup: [ 'Close the 3 Web Service Terminal' ]
-    }), true)
+  run: async (test, context, options, components) => {
+    const clonePath = path.join(options.tmpdir, 'multi-test')
+
+    await utils.cloneRepo({
+      path: clonePath,
+      url: 'https://github.com/resin-io-projects/multicontainer-getting-started.git'
+    })
+    const hash = await utils.pushRepo(context.key.privateKeyPath, {
+      repo: {
+        remote: {
+          name: 'resin',
+          url: await components.resinio.getApplicationGitRemote(options.applicationName)
+        },
+        branch: {
+          name: 'master'
+        },
+        path: clonePath
+      }
+    })
+
+    await utils.waitProgressCompletion(async () => {
+      return components.resinio.getAllServicesProperties(context.uuid, 'download_progress')
+    }, async () => {
+      const services = await components.resinio.getAllServicesProperties(context.uuid, [ 'status', 'commit' ])
+
+      if (_.isEmpty(services)) {
+        return false
+      }
+
+      return _.every(services, {
+        status: 'Running',
+        commit: hash
+      })
+    })
+
+    test.resolveMatch(components.resinio.getDeviceCommit(context.uuid), hash)
   }
 }
