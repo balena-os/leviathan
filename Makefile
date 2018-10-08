@@ -15,7 +15,7 @@ build-docker-image: Dockerfile
 
 test: build-docker-image
 	@echo '[Info] Starting tests inside container...'
-	@docker run --rm --name $(DOCKER_IMAGE) \
+	@docker run --rm \
 		--env "CI=$(CI)" \
 		--env "GITHUB_TOKEN=$(GITHUB_TOKEN)" \
 		--privileged \
@@ -26,11 +26,16 @@ test: build-docker-image
 		$(DOCKER_IMAGE)
 
 enter:
-ifeq ("$(shell docker inspect -f '{{.State.Running}}' ${DOCKER_IMAGE} 2>/dev/null)","true")
-	@echo '[Info] You are inside container "${DOCKER_IMAGE}"'
-	@docker exec -it ${DOCKER_IMAGE} bash
+ifndef id
+	@echo '[Error] Mandatory argument "id" not defined'
+	@exit 1
+endif
+ifeq ("$(shell docker inspect -f '{{.State.Running}}' $(id) 2>/dev/null)","true")
+	@echo '[Info] You are inside container "$(id)"'
+	@docker exec -it $(id) bash
 else
-	@echo '[Error] Container "${DOCKER_IMAGE}" is not running!'
+	@echo '[Error] Container "$(id)" is not running!'
+	@exit 1
 endif
 
 code-check: build-docker-image
