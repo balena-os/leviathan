@@ -16,26 +16,25 @@
 
 'use strict'
 
+const path = require('path')
 const utils = require('../lib/utils')
 
 module.exports = {
   title: 'Enter running application container',
-  interactive: true,
-  run: async (test, context, options) => {
-    test.resolveMatch(utils.runManualTestCase({
-      prepare: [
-        `Ensure the device is running an application: ${context.dashboardUrl}. Clone one of the repos and change directory:`,
-        '"git clone https://github.com/balena-io-projects/balena-cpp-hello-world.git && cd balena-cpp-hello-world" or',
-        '"git clone https://github.com/balena-io-projects/simple-server-node.git && cd simple-server-node"',
-        `Add balena remote url: "git remote add balena ${options.gitUrl}"`,
-        'Push to application: "git push balena master"'
-      ],
-      do: [ `Run "balena ssh ${context.uuid}"` ],
-      assert: [
-        'A shell prompt should appear after a few seconds',
-        'Running "env | grep RESIN_DEVICE_NAME_AT_INIT" should return the device name listed in the dashboard'
-      ],
-      cleanup: [ 'Exit shell' ]
-    }), true)
+  run: async (test, context, options, components) => {
+    const hash = await utils.pushAndWaitRepoToBalenaDevice({
+      path: path.join(options.tmpdir, 'test-ssh'),
+      url: 'https://github.com/balena-io-projects/balena-cpp-hello-world.git',
+      uuid: context.uuid,
+      key: context.key.privateKeyPath,
+      balena: components.balena,
+      applicationName: options.applicationName
+    })
+
+    test.is(await components.balena.sdk.getDeviceCommit(context.uuid), hash)
+    test.is(
+      await components.balena.sdk.getDeviceName(context.uuid),
+      await components.balena.sdk.sshUserContainer('echo $RESIN_DEVICE_NAME_AT_INIT', context.uuid, context.key.privateKeyPath)
+    )
   }
 }
