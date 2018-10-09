@@ -19,7 +19,7 @@
 module.exports = {
   title: 'Device is online',
   run: async (test, context, options, components) => {
-    const isOnline = await components.balena.isDeviceOnline(context.uuid)
+    const isOnline = await components.balena.sdk.isDeviceOnline(context.uuid)
     test.true(isOnline)
   }
 }
