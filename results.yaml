@@ -1,17 +1,4 @@
 results:
-  -
-    body: |-
-      # Tests 
-
-
-      # Summary
-      - planned: 0
-      - pass: 0
-      - fail: 0
-
-      # Fails
-    timestamp: 2018-10-9
-    PS_UUID: 19e772e0-cbc3-11e8-80e6-99617deaa1d8
   - provision_time: 1m 9s
     image_size: 1724 Mb
     resin_os_version: 2.19.0+rev1.prod
