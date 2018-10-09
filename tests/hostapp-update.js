@@ -58,7 +58,7 @@ module.exports = {
       context.uuid,
       context.key.privateKeyPath
     )
-    const inactiveAfter = await components.balena.sdk..executeCommandInHostOS(
+    const inactiveAfter = await components.balena.sdk.executeCommandInHostOS(
       testCmd('inactive'),
       context.uuid,
       context.key.privateKeyPath

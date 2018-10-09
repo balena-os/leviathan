@@ -16,34 +16,55 @@
 
 'use strict'
 
+const _ = require('lodash')
+const path = require('path')
+const request = require('request-promise')
 const utils = require('../lib/utils')
 
 module.exports = {
   title: 'Sync application container',
-  interactive: true,
-  run: async (test, context, options) => {
-    test.resolveMatch(utils.runManualTestCase({
-      prepare: [
-        'Clone repo and change directory to it: "git clone https://github.com/balena-io-projects/simple-server-node && cd simple-server-node"',
-        `Add balena remote url: "git remote add balena ${options.gitUrl}"`,
-        'Push to application: "git push balena master"',
-        'Enable Public Device URL'
-      ],
-      do: [
-        'Ensure the device is running an application',
-        'Confirm that the web server shows a "Hello World" message',
-        'Edit server.js on the cloned application so that "res.send()" returns a different message',
-        `Run "balena sync ${context.uuid} -s . -d /usr/src/app"`
-      ],
-      assert: [
-        'The sync process should start with a status message appearing on each step',
-        'A "balena sync completed successfully!" message should appear at the end',
-        'The device\'s Public Device URL should now show the new response message'
-      ],
-      cleanup: [
-        'Disable Public Device URL',
-        'Restart application from the dashboard'
-      ]
-    }), true)
+  run: async (test, context, options, components) => {
+    const clonePath = path.join(options.tmpdir, 'test-sync')
+    const hash = await utils.pushAndWaitRepoToBalenaDevice({
+      path: clonePath,
+      url: 'https://github.com/balena-io-projects/simple-server-python.git',
+      uuid: context.uuid,
+      key: context.key.privateKeyPath,
+      balena: components.balena,
+      applicationName: options.applicationName
+    })
+
+    test.is(await components.balena.sdk.getDeviceCommit(context.uuid), hash)
+
+    await components.balena.sdk.enableDeviceUrl(context.uuid)
+    const deviceUrl = await components.balena.sdk.getDeviceUrl(context.uuid)
+
+    test.is(await request(deviceUrl), 'Hello World!')
+
+    await utils.searchAndReplace(
+      path.join(clonePath, 'src/main.py'),
+      '\'Hello World!\'',
+      '\'Hello World Synced!\''
+    )
+
+    await components.balena.sync.remote(context.uuid, clonePath, '/usr/src/app')
+
+    await utils.waitUntil(async () => {
+      const services = await components.balena.sdk.getAllServicesProperties(context.uuid, [ 'status' ])
+
+      if (_.isEmpty(services)) {
+        return false
+      }
+
+      return _.every(services, (service) => {
+        return service === 'Running'
+      })
+    })
+
+    test.is(await request(deviceUrl), 'Hello World Synced!')
+
+    test.tearDown(async () => {
+      await components.balena.sdk.disableDeviceUrl(context.uuid)
+    })
   }
 }

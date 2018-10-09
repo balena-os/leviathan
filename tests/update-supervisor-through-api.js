@@ -50,7 +50,7 @@ module.exports = {
     ))
 
     // Get Supervisor ID
-    const supervisorId = (await components.balena.pine.get({
+    const supervisorId = (await components.balena.sdk.pine.get({
       resource: 'supervisor_release',
       options: {
         $select: 'id',
@@ -61,7 +61,7 @@ module.exports = {
       }
     }))[0].id
 
-    test.is(await components.balena.pine.patch({
+    test.is(await components.balena.sdk.pine.patch({
       resource: 'device',
       id: config.deviceId,
       body: {
