@@ -1,6 +1,18 @@
 results:
   -
-    provision_time: 0m 55s
+    body: |-
+      # Tests 
+
+
+      # Summary
+      - planned: 0
+      - pass: 0
+      - fail: 0
+
+      # Fails
+    timestamp: '2018-10-10'
+    PS_UUID: b5830e20-ccd7-11e8-b3e5-0b2da60033e6
+  - provision_time: 0m 55s
     image_size: 1724 Mb
     resin_os_version: 2.19.0+rev1.prod
     body: |-
