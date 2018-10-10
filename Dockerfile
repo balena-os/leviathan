@@ -25,8 +25,6 @@ RUN git config --global user.email "testbot@resin.io" && \
 
 RUN npm install -g resin-cli
 
-ENV INITSYSTEM on
-
 WORKDIR /usr/app
 
 COPY --from=npm-install /tmp/node ./
@@ -36,5 +34,6 @@ COPY .eslintrc.yml ./
 
 COPY lib lib
 COPY tests tests
+COPY entry.sh ./
 
-CMD npm start
+CMD [ "./entry.sh" ]
