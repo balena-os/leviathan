@@ -1,5 +1,6 @@
 NAME PLACEHOLDER
 ================
+[![Build Status (master)](https://jenkins.dev.resin.io/buildStatus/icon?job=resinos-tests-master)](https://jenkins.dev.resin.io/job/resinos-tests-master/)
 [![GitHub Issues](https://img.shields.io/github/issues/resin-io/resinos-tests.svg)](https://github.com/resin-io/resinos-tests/issues)
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/resin-io/resinos-tests.svg)](https://github.com/resin-io/resinos-tests/pulls)
 [![node](https://img.shields.io/badge/node-v10.0.0-green.svg)](https://nodejs.org/download/release/v10.0.0/)
