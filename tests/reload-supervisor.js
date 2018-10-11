@@ -30,7 +30,7 @@ module.exports = {
       context.uuid,
       context.key.privateKeyPath
     )
-    await components.resinio.sshHostOS(`balena rmi -f $(balena images -q resin/${context.deviceType.arch}-supervisor)`,
+    await components.resinio.sshHostOS(`balena rmi -f $(balena images -q resin/${context.deviceType.data.arch}-supervisor)`,
       context.uuid,
       context.key.privateKeyPath
     )
