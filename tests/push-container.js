@@ -16,44 +16,19 @@
 
 'use strict'
 
-const _ = require('lodash')
 const path = require('path')
 const utils = require('../lib/utils')
 
 module.exports = {
   title: 'Push a mono-container to the application',
   run: async (test, context, options, components) => {
-    const clonePath = path.join(options.tmpdir, 'test')
-    await utils.cloneRepo({
-      path: clonePath,
-      url: 'https://github.com/resin-io-projects/resin-cpp-hello-world.git'
-    })
-    const hash = await utils.pushRepo(context.key.privateKeyPath, {
-      repo: {
-        remote: {
-          name: 'resin',
-          url: await components.resinio.getApplicationGitRemote(options.applicationName)
-        },
-        branch: {
-          name: 'master'
-        },
-        path: clonePath
-      }
-    })
-
-    await utils.waitProgressCompletion(async () => {
-      return components.resinio.getAllServicesProperties(context.uuid, 'download_progress')
-    }, async () => {
-      const services = await components.resinio.getAllServicesProperties(context.uuid, [ 'status', 'commit' ])
-
-      if (_.isEmpty(services)) {
-        return false
-      }
-
-      return _.every(services, {
-        status: 'Running',
-        commit: hash
-      })
+    const hash = await utils.pushAndWaitRepoToResinDevice({
+      path: path.join(options.tmpdir, 'test'),
+      url: 'https://github.com/resin-io-projects/resin-cpp-hello-world.git',
+      uuid: context.uuid,
+      key: context.key.privateKeyPath,
+      resinio: components.resinio,
+      applicationName: options.applicationName
     })
 
     test.resolveMatch(components.resinio.getDeviceCommit(context.uuid), hash)
