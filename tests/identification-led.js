@@ -23,11 +23,17 @@ module.exports = {
   interactive: true,
   deviceType: {
     type: 'object',
-    required: [ 'led' ],
+    required: [ 'data' ],
     properties: {
-      led: {
-        type: 'boolean',
-        const: true
+      data: {
+        type: 'object',
+        required: [ 'led' ],
+        properties: {
+          led: {
+            type: 'boolean',
+            const: true
+          }
+        }
       }
     }
   },

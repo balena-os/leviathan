@@ -23,15 +23,21 @@ module.exports = {
   interactive: true,
   deviceType: {
     type: 'object',
-    required: [ 'connectivity' ],
+    required: [ 'data' ],
     properties: {
-      connectivity: {
+      data: {
         type: 'object',
-        required: [ 'bluetooth' ],
+        required: [ 'connectivity' ],
         properties: {
-          bluetooth: {
-            type: 'boolean',
-            const: true
+          connectivity: {
+            type: 'object',
+            required: [ 'bluetooth' ],
+            properties: {
+              bluetooth: {
+                type: 'boolean',
+                const: true
+              }
+            }
           }
         }
       }

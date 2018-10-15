@@ -27,7 +27,14 @@ module.exports = {
     properties: {
       slug: {
         type: 'string',
-        const: 'raspberrypi3'
+        anyOf: [
+          {
+            const: 'raspberrypi3'
+          },
+          {
+            const: 'raspberry-pi'
+          }
+        ]
       }
     }
   },
