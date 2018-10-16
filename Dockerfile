@@ -6,6 +6,7 @@ WORKDIR /tmp/node
 
 COPY package.json .
 
+RUN npm i npm@latest -g
 RUN npm install
 
 FROM node:9
