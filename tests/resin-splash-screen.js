@@ -23,11 +23,17 @@ module.exports = {
   interactive: true,
   deviceType: {
     type: 'object',
-    required: [ 'hdmi' ],
+    required: [ 'data' ],
     properties: {
-      hdmi: {
-        type: 'boolean',
-        const: true
+      data: {
+        type: 'object',
+        required: [ 'hdmi' ],
+        properties: {
+          hdmi: {
+            type: 'boolean',
+            const: true
+          }
+        }
       }
     }
   },

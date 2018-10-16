@@ -32,7 +32,7 @@ module.exports = {
             const: 'raspberrypi3'
           },
           {
-            const: 'raspberrypi-pi'
+            const: 'raspberry-pi'
           }
         ]
       }
