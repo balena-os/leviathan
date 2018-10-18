@@ -37,7 +37,10 @@ module.exports = {
       }
     }
   },
-  run: async (test, context, options) => {
+  run: async (test, context, options, components) => {
+
+    await components.resinio.identifyLed(context.uuid)
+
     test.resolveMatch(utils.runManualTestCase({
       do: [ `Click the "Identify" button from the dashboard: ${context.dashboardUrl}` ],
       assert: [ 'The device\'s identification LEDs should blink for a couple of seconds' ]
