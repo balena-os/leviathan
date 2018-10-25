@@ -35,7 +35,7 @@ module.exports = {
 
     const lastTimeOnline = await components.resinio.getLastConnectedTime(context.uuid)
 
-    await components.resinio.sshHostOS(`hostapp-update -r -i resin/resinos:${dockerVersion}-${options.deviceType}`,
+    await components.resinio.sshHostOS(`hostapp-update -r -i resin/resinos-staging:${dockerVersion}-${options.deviceType}`,
       context.uuid,
       context.key.privateKeyPath
     )
