@@ -1,6 +1,6 @@
 {
   "name": "resinos-tests",
-  "version": "1.17.11",
+  "version": "1.17.12",
   "description": "Automated testing for ResinOS",
   "private": true,
   "scripts": {
