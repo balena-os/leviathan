@@ -1,6 +1,6 @@
 {
   "name": "resinos-tests",
-  "version": "1.17.10",
+  "version": "1.17.11",
   "description": "Automated testing for ResinOS",
   "private": true,
   "scripts": {
@@ -63,4 +63,3 @@
     "eslint-plugin-standard": "^3.0.1"
   }
 }
-
