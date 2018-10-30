@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 resin.io
+ * Copyright 2018 balena
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@
 module.exports = {
   title: 'Device reported hostOS version',
   run: async (test, context, options, components) => {
-    const hostOSVersion = await components.resinio.getDeviceHostOSVersion(context.uuid)
-    const hostOSVariant = await components.resinio.getDeviceHostOSVariant(context.uuid)
+    const hostOSVersion = await components.balena.getDeviceHostOSVersion(context.uuid)
+    const hostOSVariant = await components.balena.getDeviceHostOSVariant(context.uuid)
 
-    test.is(`${hostOSVersion}.${hostOSVariant}`, `Resin OS ${options.resinOSVersion}`)
+    test.is(`${hostOSVersion}.${hostOSVariant}`, `Resin OS ${options.balenaOSVersion}`)
   }
 }

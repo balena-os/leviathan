@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 resin.io
+ * Copyright 2017 balena
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,19 +20,19 @@ module.exports = {
   title: 'Update supervisor through the API',
   run: async (test, context, options, components) => {
     // Get supervisor update info
-    const supervisorImage = await components.resinio.sshHostOS(
+    const supervisorImage = await components.balena.sshHostOS(
       'source /etc/resin-supervisor/supervisor.conf ; echo $SUPERVISOR_IMAGE',
       context.uuid,
       context.key.privateKeyPath
     )
-    const supervisorTag = await components.resinio.sshHostOS(
+    const supervisorTag = await components.balena.sshHostOS(
       'source /etc/resin-supervisor/supervisor.conf ; echo $SUPERVISOR_TAG',
       context.uuid,
       context.key.privateKeyPath
     )
 
     // Get config.json path
-    const configPath = await components.resinio.sshHostOS(
+    const configPath = await components.balena.sshHostOS(
       'systemctl show config-json.path --no-pager | grep PathChanged | cut -d \'=\' -f 2',
       context.uuid,
       context.key.privateKeyPath
@@ -43,14 +43,14 @@ module.exports = {
     test.isNot(configPath, '')
 
     // Get config.json content
-    const config = JSON.parse(await components.resinio.sshHostOS(
+    const config = JSON.parse(await components.balena.sshHostOS(
       `cat ${configPath}`,
       context.uuid,
       context.key.privateKeyPath
     ))
 
     // Get Supervisor ID
-    const supervisorId = await components.resinio.sshHostOS(
+    const supervisorId = await components.balena.sshHostOS(
       'curl -s ' +
       `"${config.apiEndpoint}/v3/supervisor_release?` +
         '\\$select=id,image_name&' +
@@ -61,7 +61,7 @@ module.exports = {
       context.key.privateKeyPath
     )
 
-    test.resolveMatch(components.resinio.sshHostOS(
+    test.resolveMatch(components.balena.sshHostOS(
       'curl -s ' +
       `"${config.apiEndpoint}/v2/device(${config.deviceId})?apikey=${config.deviceApiKey}" ` +
       '-X PATCH ' +
@@ -69,7 +69,7 @@ module.exports = {
       context.uuid,
       context.key.privateKeyPath
     ), 'OK')
-    test.resolveMatch(components.resinio.sshHostOS(
+    test.resolveMatch(components.balena.sshHostOS(
       'update-resin-supervisor | grep "Supervisor configuration found from API"',
       context.uuid,
       context.key.privateKeyPath

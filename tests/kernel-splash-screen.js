@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 resin.io
+ * Copyright 2017 balena
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,9 +42,9 @@ module.exports = {
       prepare: [ 'Plug a monitor in the device\'s HDMI output' ],
       do: [ 'Reboot the device' ],
       assert: [
-        'The Resin.io logo splash screen should be visible when the board initiates reboot',
+        'The balena logo splash screen should be visible when the board initiates reboot',
         'The Tux (Linux) logo should not be visible on the screen while device is booting',
-        'The Resin.io logo splash screen should be visible during boot-up'
+        'The balena logo splash screen should be visible during boot-up'
       ]
     }), true)
   }

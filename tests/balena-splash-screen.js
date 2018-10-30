@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 resin.io
+ * Copyright 2017 balena
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,8 @@ module.exports = {
         'Power back on the device'
       ],
       assert: [
-        'The Resin.io logo splash screen should be visible when the board initiates shutdown',
-        'The Resin.io logo splash screen should be visible during boot-up'
+        'The balena logo splash screen should be visible when the board initiates shutdown',
+        'The balena logo splash screen should be visible during boot-up'
       ]
     }), true)
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 resin.io
+ * Copyright 2017 balena
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,10 +26,14 @@ const {
 module.exports = {
   title: 'Image filename format',
   run: async (test, context, options, components) => {
-    const supervisorVersion = await components.resinio.getSupervisorVersion(context.uuid)
-    const hostOsVersion = (await components.resinio.getDeviceHostOSVersion(context.uuid)).split(' ')
-    const apiUrl = (await components.resinio.getApiUrl()).split('.')
+    const supervisorVersion = await components.balena.getSupervisorVersion(context.uuid)
+    const hostOsVersion = (await components.balena.getDeviceHostOSVersion(context.uuid)).split(' ')
     const filename = basename(await realpath(context.os.image))
-    test.is(filename, `${apiUrl[1]}-${options.deviceType}-${hostOsVersion[2]}-v${supervisorVersion}.img`)
+
+    // BalenaOS is yet to rename
+    // const apiUrl = (await components.balena.getApiUrl()).split('.')
+    // test.is(filename, `${apiUrl[1]}-${options.deviceType}-${hostOsVersion[2]}-v${supervisorVersion}.img`)
+
+    test.is(filename, `resin-${options.deviceType}-${hostOsVersion[2]}-v${supervisorVersion}.img`)
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 resin.io
+ * Copyright 2017 balena
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@
 const utils = require('../lib/utils')
 
 module.exports = {
-  title: 'Resin host OS update [<%= options.resinOSVersion %> -> <%= options.resinOSVersionUpdate %>]',
+  title: 'Balena host OS update [<%= options.balenaOSVersion %> -> <%= options.balenaOSVersionUpdate %>]',
   run: async (test, context, options, components) => {
-    const dockerVersion = options.resinOSVersionUpdate
+    const dockerVersion = options.balenaOSVersionUpdate
       .replace('+', '_')
       .replace(/\.(prod|dev)$/, '')
 
@@ -30,22 +30,22 @@ module.exports = {
       return `findmnt --noheadings --canonicalize --output SOURCE /mnt/sysroot/${mountpoint}`
     }
 
-    const activeBefore = await components.resinio.sshHostOS(testCmd('active'), context.uuid, context.key.privateKeyPath)
-    const inactiveBefore = await components.resinio.sshHostOS(testCmd('inactive'), context.uuid, context.key.privateKeyPath)
+    const activeBefore = await components.balena.sshHostOS(testCmd('active'), context.uuid, context.key.privateKeyPath)
+    const inactiveBefore = await components.balena.sshHostOS(testCmd('inactive'), context.uuid, context.key.privateKeyPath)
 
-    const lastTimeOnline = await components.resinio.getLastConnectedTime(context.uuid)
+    const lastTimeOnline = await components.balena.getLastConnectedTime(context.uuid)
 
-    await components.resinio.sshHostOS(`hostapp-update -r -i resin/resinos-staging:${dockerVersion}-${options.deviceType}`,
+    await components.balena.sshHostOS(`hostapp-update -r -i resin/resinos-staging:${dockerVersion}-${options.deviceType}`,
       context.uuid,
       context.key.privateKeyPath
     )
 
     await utils.waitUntil(async () => {
-      return await components.resinio.getLastConnectedTime(context.uuid) > lastTimeOnline
+      return await components.balena.getLastConnectedTime(context.uuid) > lastTimeOnline
     })
 
-    const activeAfter = await components.resinio.sshHostOS(testCmd('active'), context.uuid, context.key.privateKeyPath)
-    const inactiveAfter = await components.resinio.sshHostOS(testCmd('inactive'), context.uuid, context.key.privateKeyPath)
+    const activeAfter = await components.balena.sshHostOS(testCmd('active'), context.uuid, context.key.privateKeyPath)
+    const inactiveAfter = await components.balena.sshHostOS(testCmd('inactive'), context.uuid, context.key.privateKeyPath)
 
     test.deepEqual([ activeBefore, inactiveBefore ], [ inactiveAfter, activeAfter ])
   }

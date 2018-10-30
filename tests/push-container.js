@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 resin.io
+ * Copyright 2017 balena
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,15 +22,15 @@ const utils = require('../lib/utils')
 module.exports = {
   title: 'Push a mono-container to the application',
   run: async (test, context, options, components) => {
-    const hash = await utils.pushAndWaitRepoToResinDevice({
+    const hash = await utils.pushAndWaitRepoToBalenaDevice({
       path: path.join(options.tmpdir, 'test'),
-      url: 'https://github.com/resin-io-projects/resin-cpp-hello-world.git',
+      url: 'https://github.com/balena-io-projects/balena-cpp-hello-world.git',
       uuid: context.uuid,
       key: context.key.privateKeyPath,
-      resinio: components.resinio,
+      balena: components.balena,
       applicationName: options.applicationName
     })
 
-    test.resolveMatch(components.resinio.getDeviceCommit(context.uuid), hash)
+    test.resolveMatch(components.balena.getDeviceCommit(context.uuid), hash)
   }
 }

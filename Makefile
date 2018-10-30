@@ -1,13 +1,13 @@
 SHELL = /bin/bash
-DOCKER_IMAGE = resinos-tests
+DOCKER_IMAGE = balena-tests
 
 ifndef CI
 	DOCKER_TTY = '--tty'
 	DOCKER_INTERACTIVE = '--interactive'
 endif
 
-ifdef RESINOS_TESTS_DISK
-	DEVICE = '--device=$(RESINOS_TESTS_DISK)'
+ifdef BALENA_TESTS_DISK
+	DEVICE = '--device=$(BALENA_TESTS_DISK)'
 endif
 
 build-docker-image: Dockerfile
@@ -20,7 +20,7 @@ test: build-docker-image
 		--env "CI=$(CI)" \
 		--env "GITHUB_TOKEN=$(GITHUB_TOKEN)" \
 		--privileged \
-		$(foreach variable, $(shell compgen -e | grep RESINOS_TESTS), \
+		$(foreach variable, $(shell compgen -e | grep BALENA_TESTS), \
 			--env "$(addsuffix =$(value $(variable)), $(variable))") \
 		$(DOCKER_TTY) \
 		$(DOCKER_INTERACTIVE) \
