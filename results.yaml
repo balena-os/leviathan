@@ -19,6 +19,26 @@ results:
           undefined
     author: null
     timestamp: '2018-10-30'
+    PS_UUID: a9286960-dc5c-11e8-9e92-0519a746a220
+  - provision_time: 1m 10s
+    image_size: 1724 Mb
+    balena_os_version: 2.21.0+rev1.prod
+    body: |-
+      # Tests 
+       - ✖ Enter running application container
+
+
+      # Summary
+      - planned: 1
+      - pass: 0
+      - fail: 1
+
+      # Fails
+      ## Enter running application container
+          ✖ Enter running application container
+          undefined
+    author: null
+    timestamp: '2018-10-30'
     PS_UUID: 9f2ff340-dc59-11e8-a624-15f72930e00c
   - provision_time: 1m 9s
     image_size: 1724 Mb
