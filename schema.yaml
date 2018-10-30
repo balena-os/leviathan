@@ -8,7 +8,7 @@
   type: Text
 - name: provision_time
   type: Text
-- name: resin_os_version
+- name: balena_os_version
   type: Semver
 - name: body
   type: Text
