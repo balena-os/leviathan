@@ -14,6 +14,53 @@ results:
        - ✖ Update supervisor through the API
        - ✔ Reload supervisor on a running device
        - ✔ Update device status with resin-device-progress
+       - ✖ Sync application container
+       - ✖ SSH error:
+
+
+      # Summary
+      - planned: 11
+      - pass: 8
+      - fail: 3
+
+      # Fails
+      ## Update supervisor through the API
+          ✖ Update supervisor through the API
+          undefined
+      ## Sync application container
+          ✖ Sync application container
+          undefined
+      ## SSH error:
+          ✖ SSH error:
+          {
+              "autoend": true,
+              "at": {
+                  "line": 84,
+                  "column": 16,
+                  "file": "lib/utils.js",
+                  "function": "ChildProcess.ssh.on"
+              },
+              "stack": "ChildProcess.ssh.on (lib/utils.js:84:16)\n",
+              "test": "TAP",
+              "source": "reject(new Error(`SSH error: ${stderr}`))\n"
+          }
+    author: null
+    timestamp: '2018-10-30'
+    PS_UUID: a2916890-dc6b-11e8-aada-9bd98dcaa23c
+  - provision_time: 1m 8s
+    image_size: 1724 Mb
+    balena_os_version: 2.21.0+rev1.prod
+    body: |-
+      # Tests 
+       - ✔ Device is online
+       - ✔ Device reported hostOS version
+       - ✔ Balena host OS update [2.21.0+rev1.prod -> 2.21.0+rev1.prod]
+       - ✔ Image filename format
+       - ✔ Push a mono-container to the application
+       - ✔ Push a multi-container application
+       - ✖ Update supervisor through the API
+       - ✔ Reload supervisor on a running device
+       - ✔ Update device status with resin-device-progress
        - ✖ SSH error:
 
 
