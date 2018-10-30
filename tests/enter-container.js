@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 resin.io
+ * Copyright 2017 balena
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,12 +25,12 @@ module.exports = {
     test.resolveMatch(utils.runManualTestCase({
       prepare: [
         `Ensure the device is running an application: ${context.dashboardUrl}. Clone one of the repos and change directory:`,
-        '"git clone https://github.com/resin-io-projects/resin-cpp-hello-world.git && cd resin-cpp-hello-world" or',
-        '"git clone https://github.com/resin-io-projects/simple-server-node.git && cd simple-server-node"',
-        `Add resin remote url: "git remote add resin ${options.gitUrl}"`,
-        'Push to application: "git push resin master"'
+        '"git clone https://github.com/balena-io-projects/balena-cpp-hello-world.git && cd balena-cpp-hello-world" or',
+        '"git clone https://github.com/balena-io-projects/simple-server-node.git && cd simple-server-node"',
+        `Add balena remote url: "git remote add balena ${options.gitUrl}"`,
+        'Push to application: "git push balena master"'
       ],
-      do: [ `Run "resin ssh ${context.uuid}"` ],
+      do: [ `Run "balena ssh ${context.uuid}"` ],
       assert: [
         'A shell prompt should appear after a few seconds',
         'Running "env | grep RESIN_DEVICE_NAME_AT_INIT" should return the device name listed in the dashboard'

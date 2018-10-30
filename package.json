@@ -1,7 +1,7 @@
 {
-  "name": "resinos-tests",
+  "name": "balena-tests",
   "version": "1.17.12",
-  "description": "Automated testing for ResinOS",
+  "description": "Automated testing for balenaOS",
   "private": true,
   "scripts": {
     "lint": "eslint lib scripts tests",
@@ -10,20 +10,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/resin-io/resinos-tests.git"
+    "url": "git+https://github.com/balena-io/balena-tests.git"
   },
   "keywords": [
-    "resinOS",
-    "testing",
-    "resin.io",
-    "resin"
+    "balenOS",
+    "testing"
   ],
-  "author": "Resin Inc. <hello@etcher.io>",
+  "author": "balena Inc. <hello@balena.io>",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/resin-io/resinos-tests/issues"
+    "url": "https://github.com/balena-io/balena-tests/issues"
   },
-  "homepage": "https://github.com/resin-io/resinos-tests",
+  "homepage": "https://github.com/balena-io/balena-tests",
   "dependencies": {
     "ajv": "^6.5.0",
     "bluebird": "^3.5.1",
@@ -43,7 +41,7 @@
     "randomstring": "^1.1.5",
     "resin-cli-visuals": "^1.4.0",
     "resin-image-fs": "^4.0.2",
-    "resin-sdk": "^10.0.4",
+    "balena-sdk": "^11.0.0",
     "resin-semver": "^1.4.0",
     "simple-git": "^1.85.0",
     "ssh-keygen": "^0.4.1",

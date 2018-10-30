@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 resin.io
+ * Copyright 2017 balena
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,16 +22,16 @@ const utils = require('../lib/utils')
 module.exports = {
   title: 'Update device status with resin-device-progress',
   run: async (test, context, options, components) => {
-    await components.resinio.sshHostOS('resin-device-progress -p 60 -s "resinOS test"',
+    await components.balena.sshHostOS('resin-device-progress -p 60 -s "balenaOS test"',
       context.uuid,
       context.key.privateKeyPath
     )
 
     await utils.waitUntil(async () => {
-      return !_.isEmpty(await components.resinio.getDeviceProvisioningState(context.uuid))
+      return !_.isEmpty(await components.balena.getDeviceProvisioningState(context.uuid))
     })
 
-    await test.resolveMatch(components.resinio.getDeviceProvisioningState(context.uuid), 'resinOS test')
-    await test.resolveMatch(components.resinio.getDeviceProvisioningProgress(context.uuid), 60)
+    await test.resolveMatch(components.balena.getDeviceProvisioningState(context.uuid), 'balenaOS test')
+    await test.resolveMatch(components.balena.getDeviceProvisioningProgress(context.uuid), 60)
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 resin.io
+ * Copyright 2017 balena
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 module.exports = {
   title: 'Device is online',
   run: async (test, context, options, components) => {
-    const isOnline = await components.resinio.isDeviceOnline(context.uuid)
+    const isOnline = await components.balena.isDeviceOnline(context.uuid)
     test.true(isOnline)
   }
 }

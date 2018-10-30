@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 resin.io
+ * Copyright 2017 balena
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,16 +45,16 @@ module.exports = {
     }
   },
   run: async (test, context, options, components) => {
-    const hash = await utils.pushAndWaitRepoToResinDevice({
+    const hash = await utils.pushAndWaitRepoToBalenaDevice({
       path: path.join(options.tmpdir, 'test-bluetooth'),
-      url: 'https://github.com/resin-io-playground/test-bluetooth.git',
+      url: 'https://github.com/balena-io-playground/test-bluetooth.git',
       uuid: context.uuid,
       key: context.key.privateKeyPath,
-      resinio: components.resinio,
+      balena: components.balena,
       applicationName: options.applicationName
     })
 
-    test.is(await components.resinio.getDeviceCommit(context.uuid), hash)
+    test.is(await components.balena.getDeviceCommit(context.uuid), hash)
 
     test.resolveMatch(utils.runManualTestCase({
       prepare: [ 'Have an activated and visible Bluetooth device around you (i.e your phone\'s bluetooth)' ],

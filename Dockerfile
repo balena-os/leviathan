@@ -23,7 +23,7 @@ RUN apt-get update && \
 RUN git config --global user.email "testbot@resin.io" && \
     git config --global user.name "Test Bot"
 
-RUN npm install -g resin-cli
+RUN npm install -g balena-cli
 
 WORKDIR /usr/app
 
