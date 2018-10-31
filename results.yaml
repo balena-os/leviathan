@@ -7,6 +7,30 @@ results:
       # Tests 
        - ✔ Device is online
        - ✔ Balena host OS update [2.21.0+rev1.prod -> 2.21.0+rev1.prod]
+       - ✖ Update supervisor through the API
+       - ✔ Reload supervisor on a running device
+       - ✔ Update device status with resin-device-progress
+
+
+      # Summary
+      - planned: 5
+      - pass: 4
+      - fail: 1
+
+      # Fails
+      ## Update supervisor through the API
+          ✖ Update supervisor through the API
+          undefined
+    author: null
+    timestamp: '2018-10-31'
+    PS_UUID: 63c665d0-dd32-11e8-ac9e-6ddeb5780232
+  - provision_time: 1m 34s
+    image_size: 1724 Mb
+    balena_os_version: 2.21.0+rev1.prod
+    body: |-
+      # Tests 
+       - ✔ Device is online
+       - ✔ Balena host OS update [2.21.0+rev1.prod -> 2.21.0+rev1.prod]
        - ✔ Update supervisor through the API
        - ✔ Reload supervisor on a running device
        - ✔ Update device status with resin-device-progress
