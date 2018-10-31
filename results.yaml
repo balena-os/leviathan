@@ -1,6 +1,26 @@
 results:
   -
+    provision_time: 0m 9s
+    image_size: 1724 Mb
+    balena_os_version: 2.21.0+rev1.prod
     body: |-
+      # Tests 
+       - ✖ Balena host OS update [2.21.0+rev1.prod -> 2.21.0+rev1.prod]
+
+
+      # Summary
+      - planned: 1
+      - pass: 0
+      - fail: 1
+
+      # Fails
+      ## Balena host OS update [2.21.0+rev1.prod -> 2.21.0+rev1.prod]
+          ✖ Balena host OS update [2.21.0+rev1.prod -> 2.21.0+rev1.prod]
+          undefined
+    author: null
+    timestamp: '2018-10-31'
+    PS_UUID: 79f1c040-dd0d-11e8-ba96-cd5526ba9185
+  - body: |-
       # Tests 
 
 
