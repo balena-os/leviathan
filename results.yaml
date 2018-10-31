@@ -1,6 +1,23 @@
 results:
   -
-    provision_time: 1m 8s
+    provision_time: 1m 19s
+    image_size: 1724 Mb
+    balena_os_version: 2.21.0+rev1.prod
+    body: |-
+      # Tests 
+       - ✔ Sync application container
+
+
+      # Summary
+      - planned: 1
+      - pass: 1
+      - fail: 0
+
+      # Fails
+    author: null
+    timestamp: '2018-10-31'
+    PS_UUID: d4b49c10-dcf3-11e8-b223-ddf5e23bbfbd
+  - provision_time: 1m 8s
     image_size: 1724 Mb
     balena_os_version: 2.21.0+rev1.prod
     body: |-
