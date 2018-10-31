@@ -61,7 +61,7 @@ module.exports = {
       context.key.privateKeyPath
     )
 
-    test.resolveMatch(components.balena.sshHostOS(
+    test.is(await components.balena.sshHostOS(
       'curl -s ' +
       `"${config.apiEndpoint}/v2/device(${config.deviceId})?apikey=${config.deviceApiKey}" ` +
       '-X PATCH ' +
@@ -69,10 +69,11 @@ module.exports = {
       context.uuid,
       context.key.privateKeyPath
     ), 'OK')
-    test.resolveMatch(components.balena.sshHostOS(
+
+    test.is(await components.balena.sshHostOS(
       'update-resin-supervisor | grep "Supervisor configuration found from API"',
       context.uuid,
       context.key.privateKeyPath
-    ), 'Supervisor configuration found from API')
+    ), 'Supervisor configuration found from API.')
   }
 }

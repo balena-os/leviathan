@@ -28,6 +28,8 @@ module.exports = {
     )
 
     await utils.waitUntil(async () => {
+      console.log('is_online:', await components.balena.isDeviceOnline(context.uuid))
+      console.log('getDeviceStatus:', await components.balena.getDeviceStatus(context.uuid))
       return !_.isEmpty(await components.balena.getDeviceProvisioningState(context.uuid))
     })
 

@@ -30,21 +30,32 @@ module.exports = {
       return `findmnt --noheadings --canonicalize --output SOURCE /mnt/sysroot/${mountpoint}`
     }
 
+    console.log('\n[Hostapp update] check activeBefore: ',
+      await components.balena.sshHostOS(testCmd('active'), context.uuid, context.key.privateKeyPath))
     const activeBefore = await components.balena.sshHostOS(testCmd('active'), context.uuid, context.key.privateKeyPath)
+    console.log('\n[Hostapp update] check inactiveBefore: ',
+      await components.balena.sshHostOS(testCmd('inactive'), context.uuid, context.key.privateKeyPath))
     const inactiveBefore = await components.balena.sshHostOS(testCmd('inactive'), context.uuid, context.key.privateKeyPath)
 
     const lastTimeOnline = await components.balena.getLastConnectedTime(context.uuid)
+    console.log(`\n[Hostapp update] last time Online: ${lastTimeOnline}`)
 
-    await components.balena.sshHostOS(`hostapp-update -r -i resin/resinos-staging:${dockerVersion}-${options.deviceType}`,
+    console.log(await components.balena.sshHostOS(
+      `hostapp-update -r -i resin/resinos-staging:${dockerVersion}-${options.deviceType}`,
       context.uuid,
       context.key.privateKeyPath
-    )
+    ))
 
     await utils.waitUntil(async () => {
+      console.log('\n[Hostapp update] get last connected time: ', await components.balena.getLastConnectedTime(context.uuid))
       return await components.balena.getLastConnectedTime(context.uuid) > lastTimeOnline
     })
 
+    console.log('\n[Hostapp update] check activeAfter',
+      await components.balena.sshHostOS(testCmd('active'), context.uuid, context.key.privateKeyPath))
     const activeAfter = await components.balena.sshHostOS(testCmd('active'), context.uuid, context.key.privateKeyPath)
+    console.log('\n[Hostapp update] check inactiveAfter',
+      await components.balena.sshHostOS(testCmd('inactive'), context.uuid, context.key.privateKeyPath))
     const inactiveAfter = await components.balena.sshHostOS(testCmd('inactive'), context.uuid, context.key.privateKeyPath)
 
     test.deepEqual([ activeBefore, inactiveBefore ], [ inactiveAfter, activeAfter ])

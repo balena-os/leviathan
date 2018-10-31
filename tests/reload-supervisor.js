@@ -30,20 +30,26 @@ module.exports = {
       context.uuid,
       context.key.privateKeyPath
     )
-    await components.balena.sshHostOS(`balena rmi -f $(balena images -q resin/${context.deviceType.data.arch}-supervisor)`,
+    console.log(await
+    components.balena.sshHostOS(`balena rmi -f $(balena images -q resin/${context.deviceType.data.arch}-supervisor)`,
       context.uuid,
       context.key.privateKeyPath
-    )
+    ))
     test.rejects(components.balena.pingSupervisor(context.uuid))
 
     // Pull and start the supervisor
-    await components.balena.sshHostOS('update-resin-supervisor',
+    console.log(await components.balena.sshHostOS('update-resin-supervisor',
       context.uuid,
       context.key.privateKeyPath
-    )
+    ))
 
     // Wait for the supervisor to be marked as healthy
     await utils.waitUntil(async () => {
+      console.log('balena state health: ', await components.balena.sshHostOS('balena ' +
+    'inspect --format \'{{.State.Health.Status}}\' resin_supervisor',
+      context.uuid,
+      context.key.privateKeyPath
+      ))
       return await components.balena.sshHostOS('balena inspect --format \'{{.State.Health.Status}}\' resin_supervisor',
         context.uuid,
         context.key.privateKeyPath
