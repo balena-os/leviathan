@@ -1,6 +1,27 @@
 results:
   -
-    provision_time: 1m 16s
+    provision_time: 1m 34s
+    image_size: 1724 Mb
+    balena_os_version: 2.21.0+rev1.prod
+    body: |-
+      # Tests 
+       - ✔ Device is online
+       - ✔ Balena host OS update [2.21.0+rev1.prod -> 2.21.0+rev1.prod]
+       - ✔ Update supervisor through the API
+       - ✔ Reload supervisor on a running device
+       - ✔ Update device status with resin-device-progress
+
+
+      # Summary
+      - planned: 5
+      - pass: 5
+      - fail: 0
+
+      # Fails
+    author: null
+    timestamp: 2018-11-1
+    PS_UUID: cff4e9b0-ddba-11e8-b6c5-2d3fa45ac735
+  - provision_time: 1m 16s
     image_size: 1724 Mb
     balena_os_version: 2.21.0+rev1.prod
     body: |-
