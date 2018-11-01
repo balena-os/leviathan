@@ -1,6 +1,26 @@
 results:
   -
-    provision_time: 0m 37s
+    provision_time: 1m 11s
+    image_size: 1724 Mb
+    balena_os_version: 2.21.0+rev1.prod
+    body: |-
+      # Tests 
+       - ✖ Update supervisor through the API
+
+
+      # Summary
+      - planned: 1
+      - pass: 0
+      - fail: 1
+
+      # Fails
+      ## Update supervisor through the API
+          ✖ Update supervisor through the API
+          undefined
+    author: null
+    timestamp: 2018-11-1
+    PS_UUID: bc3d6de0-ddbd-11e8-95e4-8757dcc3dd2c
+  - provision_time: 0m 37s
     image_size: 1724 Mb
     balena_os_version: 2.21.0+rev1.prod
     body: |-
