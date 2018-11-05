@@ -24,6 +24,7 @@
   "homepage": "https://github.com/balena-io/balena-tests",
   "dependencies": {
     "ajv": "^6.5.0",
+    "balena-sdk": "^11.0.0",
     "bluebird": "^3.5.1",
     "bluebird-retry": "^0.11.0",
     "data-store": "^3.0.0",
@@ -39,9 +40,9 @@
     "pensieve-sdk": "^1.0.0",
     "progress-stream": "^2.0.0",
     "randomstring": "^1.1.5",
+    "request-promise": "^4.2.2",
     "resin-cli-visuals": "^1.4.0",
     "resin-image-fs": "^4.0.2",
-    "balena-sdk": "^11.0.0",
     "resin-semver": "^1.4.0",
     "simple-git": "^1.85.0",
     "ssh-keygen": "^0.4.1",

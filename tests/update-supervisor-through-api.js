@@ -16,6 +16,9 @@
 
 'use strict'
 
+const _ = require('lodash')
+const request = require('request-promise')
+
 module.exports = {
   title: 'Update supervisor through the API',
   run: async (test, context, options, components) => {
@@ -50,25 +53,24 @@ module.exports = {
     ))
 
     // Get Supervisor ID
-    const supervisorId = await components.balena.sshHostOS(
-      'curl -s ' +
-      `"${config.apiEndpoint}/v3/supervisor_release?` +
-        '\\$select=id,image_name&' +
-        `\\$filter=((device_type%20eq%20'${config.deviceType}')%20and%20(supervisor_version%20eq%20'${supervisorTag}'))&` +
-        `apikey=${config.deviceApiKey}" ` +
-      '| jq -e -r \'.d[0].id\'',
-      context.uuid,
-      context.key.privateKeyPath
-    )
+    const supervisorId = _.filter(JSON.parse(await request.get(`${config.apiEndpoint}/v3/supervisor_release`, {
+      auth: {
+        bearer: config.deviceApiKey
+      }
+    })).d, {
+      device_type: config.deviceType,
+      supervisor_version: supervisorTag
+    })[0].id
 
-    test.resolveMatch(components.balena.sshHostOS(
-      'curl -s ' +
-      `"${config.apiEndpoint}/v2/device(${config.deviceId})?apikey=${config.deviceApiKey}" ` +
-      '-X PATCH ' +
-      `--data-urlencode "supervisor_release=${supervisorId}"`,
-      context.uuid,
-      context.key.privateKeyPath
-    ), 'OK')
+    test.is(await request.patch(`${config.apiEndpoint}/v2/device(${config.deviceId})`, {
+      auth: {
+        bearer: config.deviceApiKey
+      },
+      form: {
+        supervisor_release: supervisorId
+      }
+    }), 'OK')
+
     test.resolveMatch(components.balena.sshHostOS(
       'update-resin-supervisor | grep "Supervisor configuration found from API"',
       context.uuid,
