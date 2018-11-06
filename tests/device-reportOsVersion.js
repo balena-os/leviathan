@@ -22,6 +22,6 @@ module.exports = {
     const hostOSVersion = await components.balena.getDeviceHostOSVersion(context.uuid)
     const hostOSVariant = await components.balena.getDeviceHostOSVariant(context.uuid)
 
-    test.is(`${hostOSVersion}.${hostOSVariant}`, `Resin OS ${options.balenaOSVersion}`)
+    test.is(`${hostOSVersion}.${hostOSVariant}`, `balenaOS ${options.balenaOSVersion}`)
   }
 }
