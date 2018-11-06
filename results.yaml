@@ -1,6 +1,18 @@
 results:
   -
-    provision_time: 0m 36s
+    body: |-
+      # Tests 
+
+
+      # Summary
+      - planned: 0
+      - pass: 0
+      - fail: 0
+
+      # Fails
+    timestamp: 2018-11-6
+    PS_UUID: 4a511fe0-e1de-11e8-b61a-3fdf0b078e23
+  - provision_time: 0m 36s
     image_size: 1724 Mb
     balena_os_version: 2.19.0+rev1.prod
     body: |-
