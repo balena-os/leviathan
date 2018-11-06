@@ -16,9 +16,6 @@
 
 'use strict'
 
-const _ = require('lodash')
-const request = require('request-promise')
-
 module.exports = {
   title: 'Update supervisor through the API',
   run: async (test, context, options, components) => {
@@ -53,21 +50,22 @@ module.exports = {
     ))
 
     // Get Supervisor ID
-    const supervisorId = _.filter(JSON.parse(await request.get(`${config.apiEndpoint}/v3/supervisor_release`, {
-      auth: {
-        bearer: config.deviceApiKey
+    const supervisorId = (await components.balena.pine.get({
+      resource: 'supervisor_release',
+      options: {
+        $select: 'id',
+        $filter: {
+          device_type: config.deviceType,
+          supervisor_version: supervisorTag
+        }
       }
-    })).d, {
-      device_type: config.deviceType,
-      supervisor_version: supervisorTag
-    })[0].id
+    }))[0].id
 
-    test.is(await request.patch(`${config.apiEndpoint}/v2/device(${config.deviceId})`, {
-      auth: {
-        bearer: config.deviceApiKey
-      },
-      form: {
-        supervisor_release: supervisorId
+    test.is(await components.balena.pine.patch({
+      resource: 'device',
+      id: config.deviceId,
+      body: {
+        should_be_managed_by__supervisor_release: supervisorId
       }
     }), 'OK')
 
