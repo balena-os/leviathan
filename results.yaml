@@ -1,6 +1,62 @@
 results:
   -
-    provision_time: 1m 8s
+    body: >-
+      # Tests 
+       - ✔ Device is online
+       - ✔ Push a mono-container to the application
+       - ✔ Identification LED
+       - ✔ Enter running application container
+       - ✔ Sync application container
+       - ✔ Update device status with resin-device-progress
+       - ✔ Update supervisor through the API
+       - ✔ Push a multi-container application
+       - ✖ General Bluetooth test
+       - ✔ Reload supervisor on a running device
+       - ✖ Boot/Shutdown splash screen
+       - ✖ child test left in queue: t.test Kernel boot logo/Reboot splash screen
+       - ✖ child test left in queue: t.test Reboot while application is running
+       - ✖ child test left in queue: t.test Enable serial port on UART0/ttyAMA0
+       - ✖ child test left in queue: t.test Enable serial port on UART1/MiniUART/ttyS0
+       - ✖ child test left in queue: t.test Set device service variable when application is running
+
+
+      # Summary
+
+      - planned: 11
+
+      - pass: 9
+
+      - fail: 7
+
+
+      # Fails
+
+      ## General Bluetooth test
+          ✖ General Bluetooth test
+          undefined
+      ## Boot/Shutdown splash screen
+          ✖ Boot/Shutdown splash screen
+          undefined
+      ## child test left in queue: t.test Kernel boot logo/Reboot splash screen
+          ✖ child test left in queue: t.test Kernel boot logo/Reboot splash screen
+          undefined
+      ## child test left in queue: t.test Reboot while application is running
+          ✖ child test left in queue: t.test Reboot while application is running
+          undefined
+      ## child test left in queue: t.test Enable serial port on UART0/ttyAMA0
+          ✖ child test left in queue: t.test Enable serial port on UART0/ttyAMA0
+          undefined
+      ## child test left in queue: t.test Enable serial port on
+      UART1/MiniUART/ttyS0
+          ✖ child test left in queue: t.test Enable serial port on UART1/MiniUART/ttyS0
+          undefined
+      ## child test left in queue: t.test Set device service variable when
+      application is running
+          ✖ child test left in queue: t.test Set device service variable when application is running
+          undefined
+    timestamp: 2018-11-7
+    PS_UUID: 4631fa70-e27d-11e8-ad1c-59ff3429b746
+  - provision_time: 1m 8s
     image_size: 1724 Mb
     balena_os_version: 2.21.0+rev1.prod
     body: |-
