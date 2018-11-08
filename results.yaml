@@ -3,6 +3,61 @@ results:
     body: >-
       # Tests 
        - ✔ Device is online
+       - ✔ Image filename format
+       - ✔ Device reported hostOS version
+       - ✖ Balena host OS update [2.26.0+rev1.prod -> 2.26.0+rev1.prod]
+       - ✔ Push a mono-container to the application
+       - ✔ Add a device environment variable
+       - ✔ Identification LED
+       - ✔ Enter running application container
+       - ✔ Sync application container
+       - ✔ Update device status with resin-device-progress
+       - ✔ Update supervisor through the API
+       - ✔ Push a multi-container application
+       - ✔ Reload supervisor on a running device
+       - ✔ General Bluetooth test
+       - ✖ Boot/Shutdown splash screen
+       - ✖ child test left in queue: t.test Kernel boot logo/Reboot splash screen
+       - ✖ child test left in queue: t.test Reboot while application is running
+       - ✖ child test left in queue: t.test Enable serial port on UART0/ttyAMA0
+       - ✖ child test left in queue: t.test Enable serial port on UART1/MiniUART/ttyS0
+
+
+      # Summary
+
+      - planned: 15
+
+      - pass: 13
+
+      - fail: 6
+
+
+      # Fails
+
+      ## Balena host OS update [2.26.0+rev1.prod -> 2.26.0+rev1.prod]
+          ✖ Balena host OS update [2.26.0+rev1.prod -> 2.26.0+rev1.prod]
+          undefined
+      ## Boot/Shutdown splash screen
+          ✖ Boot/Shutdown splash screen
+          undefined
+      ## child test left in queue: t.test Kernel boot logo/Reboot splash screen
+          ✖ child test left in queue: t.test Kernel boot logo/Reboot splash screen
+          undefined
+      ## child test left in queue: t.test Reboot while application is running
+          ✖ child test left in queue: t.test Reboot while application is running
+          undefined
+      ## child test left in queue: t.test Enable serial port on UART0/ttyAMA0
+          ✖ child test left in queue: t.test Enable serial port on UART0/ttyAMA0
+          undefined
+      ## child test left in queue: t.test Enable serial port on
+      UART1/MiniUART/ttyS0
+          ✖ child test left in queue: t.test Enable serial port on UART1/MiniUART/ttyS0
+          undefined
+    timestamp: 2018-11-8
+    PS_UUID: c1510120-e38f-11e8-acde-b934f1cbfae5
+  - body: >-
+      # Tests 
+       - ✔ Device is online
        - ✔ Balena host OS update [2.15.1+rev2.prod -> 2.26.0+rev1.prod]
        - ✖ Identification LED
        - ✖ child test left in queue: t.test Push a mono-container to the application
