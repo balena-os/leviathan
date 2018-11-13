@@ -5,6 +5,46 @@ results:
        - ✔ Device is online
        - ✔ Image filename format
        - ✔ Device reported hostOS version
+       - ✖ Balena host OS update [2.26.0+rev1.prod -> 2.26.0+rev1.prod]
+       - ✔ Push a mono-container to the application
+       - ✔ Add a device environment variable
+       - ✔ Identification LED
+       - ✔ Enter running application container
+       - ✔ Sync application container
+       - ✔ Update device status with resin-device-progress
+       - ✔ Update supervisor through the API
+       - ✔ Push a multi-container application
+       - ✔ Reload supervisor on a running device
+       - ✖ Boot/Shutdown splash screen
+       - ✖ child test left in queue: t.test Kernel boot logo/Reboot splash screen
+       - ✖ child test left in queue: t.test Reboot while application is running
+
+
+      # Summary
+      - planned: 14
+      - pass: 12
+      - fail: 4
+
+      # Fails
+      ## Balena host OS update [2.26.0+rev1.prod -> 2.26.0+rev1.prod]
+          ✖ Balena host OS update [2.26.0+rev1.prod -> 2.26.0+rev1.prod]
+          undefined
+      ## Boot/Shutdown splash screen
+          ✖ Boot/Shutdown splash screen
+          undefined
+      ## child test left in queue: t.test Kernel boot logo/Reboot splash screen
+          ✖ child test left in queue: t.test Kernel boot logo/Reboot splash screen
+          undefined
+      ## child test left in queue: t.test Reboot while application is running
+          ✖ child test left in queue: t.test Reboot while application is running
+          undefined
+    timestamp: '2018-11-13'
+    PS_UUID: 32ae61b0-e727-11e8-ba3d-fd50cf7c06dc
+  - body: |-
+      # Tests 
+       - ✔ Device is online
+       - ✔ Image filename format
+       - ✔ Device reported hostOS version
        - ✔ Balena host OS update [2.26.0+rev1.prod -> 2.26.0+rev1.prod]
        - ✔ Push a mono-container to the application
        - ✔ Add a device environment variable
