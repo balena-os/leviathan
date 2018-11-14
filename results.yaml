@@ -1,6 +1,87 @@
 results:
   -
-    body: |-
+    body: >-
+      # Tests 
+       - ✔ Device is online
+       - ✖ General Bluetooth test
+       - ✖ child test left in queue: t.test Reboot while application is running
+       - ✖ child test left in queue: t.test Image filename format
+       - ✖ child test left in queue: t.test Device reported hostOS version
+       - ✖ child test left in queue: t.test Balena host OS update [2.15.1+rev2.prod -> 2.26.0+rev1.prod]
+       - ✖ child test left in queue: t.test Push a mono-container to the application
+       - ✖ child test left in queue: t.test Add a device environment variable
+       - ✖ child test left in queue: t.test Enter running application container
+       - ✖ child test left in queue: t.test Sync application container
+       - ✖ child test left in queue: t.test Update device status with resin-device-progress
+       - ✖ child test left in queue: t.test Update supervisor through the API
+       - ✖ child test left in queue: t.test Push a multi-container application
+       - ✖ child test left in queue: t.test Reload supervisor on a running device
+       - ✖ child test left in queue: t.test Boot/Shutdown splash screen
+       - ✖ child test left in queue: t.test Kernel boot logo/Reboot splash screen
+
+
+      # Summary
+
+      - planned: 2
+
+      - pass: 1
+
+      - fail: 15
+
+
+      # Fails
+
+      ## General Bluetooth test
+          ✖ General Bluetooth test
+          undefined
+      ## child test left in queue: t.test Reboot while application is running
+          ✖ child test left in queue: t.test Reboot while application is running
+          undefined
+      ## child test left in queue: t.test Image filename format
+          ✖ child test left in queue: t.test Image filename format
+          undefined
+      ## child test left in queue: t.test Device reported hostOS version
+          ✖ child test left in queue: t.test Device reported hostOS version
+          undefined
+      ## child test left in queue: t.test Balena host OS update
+      [2.15.1+rev2.prod -> 2.26.0+rev1.prod]
+          ✖ child test left in queue: t.test Balena host OS update [2.15.1+rev2.prod -> 2.26.0+rev1.prod]
+          undefined
+      ## child test left in queue: t.test Push a mono-container to the
+      application
+          ✖ child test left in queue: t.test Push a mono-container to the application
+          undefined
+      ## child test left in queue: t.test Add a device environment variable
+          ✖ child test left in queue: t.test Add a device environment variable
+          undefined
+      ## child test left in queue: t.test Enter running application container
+          ✖ child test left in queue: t.test Enter running application container
+          undefined
+      ## child test left in queue: t.test Sync application container
+          ✖ child test left in queue: t.test Sync application container
+          undefined
+      ## child test left in queue: t.test Update device status with
+      resin-device-progress
+          ✖ child test left in queue: t.test Update device status with resin-device-progress
+          undefined
+      ## child test left in queue: t.test Update supervisor through the API
+          ✖ child test left in queue: t.test Update supervisor through the API
+          undefined
+      ## child test left in queue: t.test Push a multi-container application
+          ✖ child test left in queue: t.test Push a multi-container application
+          undefined
+      ## child test left in queue: t.test Reload supervisor on a running device
+          ✖ child test left in queue: t.test Reload supervisor on a running device
+          undefined
+      ## child test left in queue: t.test Boot/Shutdown splash screen
+          ✖ child test left in queue: t.test Boot/Shutdown splash screen
+          undefined
+      ## child test left in queue: t.test Kernel boot logo/Reboot splash screen
+          ✖ child test left in queue: t.test Kernel boot logo/Reboot splash screen
+          undefined
+    timestamp: '2018-11-14'
+    PS_UUID: ef90c580-e820-11e8-a117-8d4db2d399d2
+  - body: |-
       # Tests 
        - ✔ Device is online
        - ✔ Push a mono-container to the application
