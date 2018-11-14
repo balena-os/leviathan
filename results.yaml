@@ -1,6 +1,40 @@
 results:
   -
-    body: >-
+    body: |-
+      # Tests 
+       - ✔ Device is online
+       - ✔ Push a mono-container to the application
+       - ✔ Update device status with resin-device-progress
+       - ✔ Update supervisor through the API
+       - ✔ Push a multi-container application
+       - ✔ Reload supervisor on a running device
+       - ✖ General Bluetooth test
+       - ✖ child test left in queue: t.test Boot/Shutdown splash screen
+       - ✖ child test left in queue: t.test Kernel boot logo/Reboot splash screen
+       - ✖ child test left in queue: t.test Reboot while application is running
+
+
+      # Summary
+      - planned: 7
+      - pass: 6
+      - fail: 4
+
+      # Fails
+      ## General Bluetooth test
+          ✖ General Bluetooth test
+          undefined
+      ## child test left in queue: t.test Boot/Shutdown splash screen
+          ✖ child test left in queue: t.test Boot/Shutdown splash screen
+          undefined
+      ## child test left in queue: t.test Kernel boot logo/Reboot splash screen
+          ✖ child test left in queue: t.test Kernel boot logo/Reboot splash screen
+          undefined
+      ## child test left in queue: t.test Reboot while application is running
+          ✖ child test left in queue: t.test Reboot while application is running
+          undefined
+    timestamp: '2018-11-14'
+    PS_UUID: c8e23150-e81e-11e8-807e-b539140fd1ca
+  - body: >-
       # Tests 
        - ✔ Device is online
        - ✔ Reboot while application is running
