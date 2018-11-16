@@ -35,6 +35,42 @@ results:
           ✖ child test left in queue: t.test Reboot while application is running
           undefined
     timestamp: '2018-11-16'
+    PS_UUID: 718ad640-e9a5-11e8-b978-4f8eb555c105
+  - body: |-
+      # Tests 
+       - ✔ Device is online
+       - ✔ Image filename format
+       - ✔ Device reported hostOS version
+       - ✔ Balena host OS update [2.26.0+rev3.prod -> 2.26.0+rev3.prod]
+       - ✔ Push a mono-container to the application
+       - ✔ Add a device environment variable
+       - ✔ Enter running application container
+       - ✔ Sync application container
+       - ✔ Update device status with resin-device-progress
+       - ✔ Update supervisor through the API
+       - ✔ Push a multi-container application
+       - ✔ Reload supervisor on a running device
+       - ✖ Boot/Shutdown splash screen
+       - ✖ child test left in queue: t.test Kernel boot logo/Reboot splash screen
+       - ✖ child test left in queue: t.test Reboot while application is running
+
+
+      # Summary
+      - planned: 13
+      - pass: 12
+      - fail: 3
+
+      # Fails
+      ## Boot/Shutdown splash screen
+          ✖ Boot/Shutdown splash screen
+          undefined
+      ## child test left in queue: t.test Kernel boot logo/Reboot splash screen
+          ✖ child test left in queue: t.test Kernel boot logo/Reboot splash screen
+          undefined
+      ## child test left in queue: t.test Reboot while application is running
+          ✖ child test left in queue: t.test Reboot while application is running
+          undefined
+    timestamp: '2018-11-16'
     PS_UUID: 840533a0-e9a1-11e8-9538-4fa76901bd64
   - body: |-
       # Tests 
