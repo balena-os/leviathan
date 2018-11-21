@@ -1,6 +1,72 @@
 results:
   -
-    body: |-
+    body: >-
+      # Tests 
+       - ✔ Device is online
+       - ✖ Image filename format
+       - ✖ Device reported hostOS version
+       - ✔ Balena host OS update [2.19.0+rev1.prod -> 2.26.0+rev1.prod]
+       - ✔ Push a mono-container to the application
+       - ✔ Add a device environment variable
+       - ✖ Enter running application container
+       - ✖ child test left in queue: t.test Sync application container
+       - ✖ child test left in queue: t.test Update device status with resin-device-progress
+       - ✖ child test left in queue: t.test Update supervisor through the API
+       - ✖ child test left in queue: t.test Push a multi-container application
+       - ✖ child test left in queue: t.test Reload supervisor on a running device
+       - ✖ child test left in queue: t.test Boot/Shutdown splash screen
+       - ✖ child test left in queue: t.test Kernel boot logo/Reboot splash screen
+       - ✖ child test left in queue: t.test Reboot while application is running
+
+
+      # Summary
+
+      - planned: 7
+
+      - pass: 4
+
+      - fail: 11
+
+
+      # Fails
+
+      ## Image filename format
+          ✖ Image filename format
+          undefined
+      ## Device reported hostOS version
+          ✖ Device reported hostOS version
+          undefined
+      ## Enter running application container
+          ✖ Enter running application container
+          undefined
+      ## child test left in queue: t.test Sync application container
+          ✖ child test left in queue: t.test Sync application container
+          undefined
+      ## child test left in queue: t.test Update device status with
+      resin-device-progress
+          ✖ child test left in queue: t.test Update device status with resin-device-progress
+          undefined
+      ## child test left in queue: t.test Update supervisor through the API
+          ✖ child test left in queue: t.test Update supervisor through the API
+          undefined
+      ## child test left in queue: t.test Push a multi-container application
+          ✖ child test left in queue: t.test Push a multi-container application
+          undefined
+      ## child test left in queue: t.test Reload supervisor on a running device
+          ✖ child test left in queue: t.test Reload supervisor on a running device
+          undefined
+      ## child test left in queue: t.test Boot/Shutdown splash screen
+          ✖ child test left in queue: t.test Boot/Shutdown splash screen
+          undefined
+      ## child test left in queue: t.test Kernel boot logo/Reboot splash screen
+          ✖ child test left in queue: t.test Kernel boot logo/Reboot splash screen
+          undefined
+      ## child test left in queue: t.test Reboot while application is running
+          ✖ child test left in queue: t.test Reboot while application is running
+          undefined
+    timestamp: '2018-11-21'
+    PS_UUID: c4f721c0-ed7f-11e8-ab62-7537c5eb04ea
+  - body: |-
       # Tests 
        - ✔ Device is online
        - ✔ Image filename format
