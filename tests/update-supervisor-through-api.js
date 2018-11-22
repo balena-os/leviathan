@@ -20,19 +20,19 @@ module.exports = {
   title: 'Update supervisor through the API',
   run: async (test, context, options, components) => {
     // Get supervisor update info
-    const supervisorImage = await components.balena.sshHostOS(
+    const supervisorImage = await components.balena.executeCommandInHostOS(
       'source /etc/resin-supervisor/supervisor.conf ; echo $SUPERVISOR_IMAGE',
       context.uuid,
       context.key.privateKeyPath
     )
-    const supervisorTag = await components.balena.sshHostOS(
+    const supervisorTag = await components.balena.executeCommandInHostOS(
       'source /etc/resin-supervisor/supervisor.conf ; echo $SUPERVISOR_TAG',
       context.uuid,
       context.key.privateKeyPath
     )
 
     // Get config.json path
-    const configPath = await components.balena.sshHostOS(
+    const configPath = await components.balena.executeCommandInHostOS(
       'systemctl show config-json.path --no-pager | grep PathChanged | cut -d \'=\' -f 2',
       context.uuid,
       context.key.privateKeyPath
@@ -43,7 +43,7 @@ module.exports = {
     test.isNot(configPath, '')
 
     // Get config.json content
-    const config = JSON.parse(await components.balena.sshHostOS(
+    const config = JSON.parse(await components.balena.executeCommandInHostOS(
       `cat ${configPath}`,
       context.uuid,
       context.key.privateKeyPath
@@ -69,7 +69,7 @@ module.exports = {
       }
     }), 'OK')
 
-    test.resolveMatch(components.balena.sshHostOS(
+    test.resolveMatch(components.balena.executeCommandInHostOS(
       'update-resin-supervisor | grep "Supervisor configuration found from API"',
       context.uuid,
       context.key.privateKeyPath

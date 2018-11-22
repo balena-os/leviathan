@@ -22,29 +22,31 @@ module.exports = {
   title: 'Reload supervisor on a running device',
   run: async (test, context, options, components) => {
     // Delete current supervisor
-    await components.balena.sshHostOS('systemctl stop resin-supervisor',
+    await components.balena.executeCommandInHostOS('systemctl stop resin-supervisor',
       context.uuid,
       context.key.privateKeyPath
     )
-    await components.balena.sshHostOS('balena rm resin_supervisor',
+    await components.balena.executeCommandInHostOS('balena rm resin_supervisor',
       context.uuid,
       context.key.privateKeyPath
     )
-    await components.balena.sshHostOS(`balena rmi -f $(balena images -q resin/${context.deviceType.data.arch}-supervisor)`,
+    await components.balena.executeCommandInHostOS(
+      `balena rmi -f $(balena images -q resin/${context.deviceType.data.arch}-supervisor)`,
       context.uuid,
       context.key.privateKeyPath
     )
     test.rejects(components.balena.pingSupervisor(context.uuid))
 
     // Pull and start the supervisor
-    await components.balena.sshHostOS('update-resin-supervisor',
+    await components.balena.executeCommandInHostOS('update-resin-supervisor',
       context.uuid,
       context.key.privateKeyPath
     )
 
     // Wait for the supervisor to be marked as healthy
     await utils.waitUntil(async () => {
-      return await components.balena.sshHostOS('balena inspect --format \'{{.State.Health.Status}}\' resin_supervisor',
+      return await components.balena.executeCommandInHostOS(
+        'balena inspect --format \'{{.State.Health.Status}}\' resin_supervisor',
         context.uuid,
         context.key.privateKeyPath
       ) === 'healthy'

@@ -22,7 +22,7 @@ const utils = require('../lib/utils')
 module.exports = {
   title: 'Update device status with resin-device-progress',
   run: async (test, context, options, components) => {
-    await components.balena.sshHostOS('resin-device-progress -p 60 -s "balenaOS test"',
+    await components.balena.executeCommandInHostOS('resin-device-progress -p 60 -s "balenaOS test"',
       context.uuid,
       context.key.privateKeyPath
     )
