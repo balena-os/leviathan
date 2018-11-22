@@ -2,6 +2,46 @@ results:
   -
     body: |-
       # Tests 
+       - ✔ Device is online
+       - ✔ Image filename format
+       - ✔ Device reported hostOS version
+       - ✔ Balena host OS update [2.26.0+rev2.prod -> 2.26.0+rev2.prod]
+       - ✔ Push a mono-container to the application
+       - ✔ Add a device environment variable
+       - ✔ Enter running application container
+       - ✔ Sync application container
+       - ✔ Update device status with resin-device-progress
+       - ✔ Update supervisor through the API
+       - ✔ Push a multi-container application
+       - ✔ Reload supervisor on a running device
+       - ✖ General Bluetooth test
+       - ✖ child test left in queue: t.test Boot/Shutdown splash screen
+       - ✖ child test left in queue: t.test Kernel boot logo/Reboot splash screen
+       - ✖ child test left in queue: t.test Reboot while application is running
+
+
+      # Summary
+      - planned: 13
+      - pass: 12
+      - fail: 4
+
+      # Fails
+      ## General Bluetooth test
+          ✖ General Bluetooth test
+          undefined
+      ## child test left in queue: t.test Boot/Shutdown splash screen
+          ✖ child test left in queue: t.test Boot/Shutdown splash screen
+          undefined
+      ## child test left in queue: t.test Kernel boot logo/Reboot splash screen
+          ✖ child test left in queue: t.test Kernel boot logo/Reboot splash screen
+          undefined
+      ## child test left in queue: t.test Reboot while application is running
+          ✖ child test left in queue: t.test Reboot while application is running
+          undefined
+    timestamp: '2018-11-22'
+    PS_UUID: 1a33d2a0-ee48-11e8-891e-b7c2294db002
+  - body: |-
+      # Tests 
 
 
       # Summary
