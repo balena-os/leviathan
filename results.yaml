@@ -11,6 +11,18 @@ results:
 
       # Fails
     timestamp: '2018-11-23'
+    PS_UUID: 401508d0-ef07-11e8-b87a-8908ab767dd5
+  - body: |-
+      # Tests 
+
+
+      # Summary
+      - planned: 0
+      - pass: 0
+      - fail: 0
+
+      # Fails
+    timestamp: '2018-11-23'
     PS_UUID: b4f27170-ef06-11e8-a45c-23a519b2936b
   - body: |-
       # Tests 
