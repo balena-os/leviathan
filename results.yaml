@@ -1,6 +1,58 @@
 results:
   -
-    body: |-
+    body: >-
+      # Tests 
+       - ✔ Device is online
+       - ✔ Add a device environment variable
+       - ✖ Identification LED
+       - ✖ child test left in queue: t.test Enter running application container
+       - ✖ child test left in queue: t.test Sync application container
+       - ✖ child test left in queue: t.test Boot/Shutdown splash screen
+       - ✖ child test left in queue: t.test Kernel boot logo/Reboot splash screen
+       - ✖ child test left in queue: t.test Reboot while application is running
+       - ✖ child test left in queue: t.test Enable serial port on UART0/ttyAMA0
+       - ✖ child test left in queue: t.test Enable serial port on UART1/MiniUART/ttyS0
+
+
+      # Summary
+
+      - planned: 3
+
+      - pass: 2
+
+      - fail: 8
+
+
+      # Fails
+
+      ## Identification LED
+          ✖ Identification LED
+          undefined
+      ## child test left in queue: t.test Enter running application container
+          ✖ child test left in queue: t.test Enter running application container
+          undefined
+      ## child test left in queue: t.test Sync application container
+          ✖ child test left in queue: t.test Sync application container
+          undefined
+      ## child test left in queue: t.test Boot/Shutdown splash screen
+          ✖ child test left in queue: t.test Boot/Shutdown splash screen
+          undefined
+      ## child test left in queue: t.test Kernel boot logo/Reboot splash screen
+          ✖ child test left in queue: t.test Kernel boot logo/Reboot splash screen
+          undefined
+      ## child test left in queue: t.test Reboot while application is running
+          ✖ child test left in queue: t.test Reboot while application is running
+          undefined
+      ## child test left in queue: t.test Enable serial port on UART0/ttyAMA0
+          ✖ child test left in queue: t.test Enable serial port on UART0/ttyAMA0
+          undefined
+      ## child test left in queue: t.test Enable serial port on
+      UART1/MiniUART/ttyS0
+          ✖ child test left in queue: t.test Enable serial port on UART1/MiniUART/ttyS0
+          undefined
+    timestamp: '2018-11-26'
+    PS_UUID: 87a1e320-f188-11e8-94be-495292f731aa
+  - body: |-
       # Tests 
 
 
