@@ -1,6 +1,18 @@
 results:
   -
-    body: >-
+    body: |-
+      # Tests 
+
+
+      # Summary
+      - planned: 0
+      - pass: 0
+      - fail: 0
+
+      # Fails
+    timestamp: '2018-11-26'
+    PS_UUID: 132dede0-f18d-11e8-b2c6-87a0687ac239
+  - body: >-
       # Tests 
        - ✔ Device is online
        - ✔ Balena host OS update [2.26.0+rev1.prod -> 2.26.0+rev4.prod]
