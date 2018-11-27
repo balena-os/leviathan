@@ -11,6 +11,18 @@ results:
 
       # Fails
     timestamp: '2018-11-27'
+    PS_UUID: d421efe0-f266-11e8-95a8-5ffed0aadb17
+  - body: |-
+      # Tests 
+
+
+      # Summary
+      - planned: 0
+      - pass: 0
+      - fail: 0
+
+      # Fails
+    timestamp: '2018-11-27'
     PS_UUID: f0b89f10-f265-11e8-9b55-bf685ac123a4
   - provision_time: 1m 8s
     image_size: 1724 Mb
