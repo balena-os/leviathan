@@ -29,11 +29,8 @@ module.exports = {
     const supervisorVersion = await components.balena.getSupervisorVersion(context.uuid)
     const hostOsVersion = (await components.balena.getDeviceHostOSVersion(context.uuid)).split(' ')
     const filename = basename(await realpath(context.os.image))
+    const downloadApi = options.apiStagingUrl.split('.')[0]
 
-    // BalenaOS is yet to rename
-    // const apiUrl = (await components.balena.getApiUrl()).split('.')
-    // test.is(filename, `${apiUrl[1]}-${options.deviceType}-${hostOsVersion[2]}-v${supervisorVersion}.img`)
-
-    test.is(filename, `resin-${options.deviceType}-${hostOsVersion[1]}-v${supervisorVersion}.img`)
+    test.is(filename, `${downloadApi}-${options.deviceType}-${hostOsVersion[1]}-v${supervisorVersion}.img`)
   }
 }
