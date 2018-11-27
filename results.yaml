@@ -1,6 +1,6 @@
 results:
   -
-    provision_time: 2m 23s
+    provision_time: 1m 38s
     image_size: 1724 Mb
     balena_os_version: 2.27.0+rev1.prod
     body: |-
@@ -8,7 +8,7 @@ results:
        - ✔ Device is online
        - ✔ Image filename format
        - ✔ Device reported hostOS version
-       - ✖ Balena host OS update [2.27.0+rev1.prod -> 2.27.0+rev1.prod]
+       - ✔ Balena host OS update [2.27.0+rev1.prod -> 2.27.0+rev1.prod]
        - ✔ Push a mono-container to the application
        - ✔ Add a device environment variable
        - ✔ Identification LED
@@ -28,19 +28,16 @@ results:
 
       # Summary
       - planned: 19
-      - pass: 17
-      - fail: 2
+      - pass: 18
+      - fail: 1
 
       # Fails
-      ## Balena host OS update [2.27.0+rev1.prod -> 2.27.0+rev1.prod]
-          ✖ Balena host OS update [2.27.0+rev1.prod -> 2.27.0+rev1.prod]
-          undefined
       ## Reload supervisor on a running device
           ✖ Reload supervisor on a running device
           undefined
     author: null
     timestamp: '2018-11-27'
-    PS_UUID: 5e17c910-f251-11e8-864c-7d421a534eb6
+    PS_UUID: 6099e010-f251-11e8-a5bd-adb667702738
   - provision_time: 1m 6s
     image_size: 1724 Mb
     balena_os_version: 2.26.0+rev1.prod
