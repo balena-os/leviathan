@@ -34,6 +34,6 @@ module.exports = {
     // const apiUrl = (await components.balena.getApiUrl()).split('.')
     // test.is(filename, `${apiUrl[1]}-${options.deviceType}-${hostOsVersion[2]}-v${supervisorVersion}.img`)
 
-    test.is(filename, `resin-${options.deviceType}-${hostOsVersion[2]}-v${supervisorVersion}.img`)
+    test.is(filename, `resin-${options.deviceType}-${hostOsVersion[1]}-v${supervisorVersion}.img`)
   }
 }
