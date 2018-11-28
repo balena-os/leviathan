@@ -31,6 +31,6 @@ module.exports = {
       applicationName: options.applicationName
     })
 
-    test.resolveMatch(components.balena.getDeviceCommit(context.uuid), hash)
+    test.resolveMatch(components.balena.sdk.getDeviceCommit(context.uuid), hash)
   }
 }

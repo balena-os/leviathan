@@ -30,35 +30,35 @@ module.exports = {
       return `findmnt --noheadings --canonicalize --output SOURCE /mnt/sysroot/${mountpoint}`
     }
 
-    const activeBefore = await components.balena.executeCommandInHostOS(
+    const activeBefore = await components.balena.sdk.executeCommandInHostOS(
       testCmd('active'),
       context.uuid,
       context.key.privateKeyPath
     )
-    const inactiveBefore = await components.balena.executeCommandInHostOS(
+    const inactiveBefore = await components.balena.sdk.executeCommandInHostOS(
       testCmd('inactive'),
       context.uuid,
       context.key.privateKeyPath
     )
 
-    const lastTimeOnline = await components.balena.getLastConnectedTime(context.uuid)
+    const lastTimeOnline = await components.balena.sdk.getLastConnectedTime(context.uuid)
 
-    await components.balena.executeCommandInHostOS(
+    await components.balena.sdk.executeCommandInHostOS(
       `hostapp-update -r -i resin/resinos-staging:${dockerVersion}-${options.deviceType}`,
       context.uuid,
       context.key.privateKeyPath
     )
 
     await utils.waitUntil(async () => {
-      return await components.balena.getLastConnectedTime(context.uuid) > lastTimeOnline
+      return await components.balena.sdk.getLastConnectedTime(context.uuid) > lastTimeOnline
     })
 
-    const activeAfter = await components.balena.executeCommandInHostOS(
+    const activeAfter = await components.balena.sdk.executeCommandInHostOS(
       testCmd('active'),
       context.uuid,
       context.key.privateKeyPath
     )
-    const inactiveAfter = await components.balena.executeCommandInHostOS(
+    const inactiveAfter = await components.balena.sdk.executeCommandInHostOS(
       testCmd('inactive'),
       context.uuid,
       context.key.privateKeyPath

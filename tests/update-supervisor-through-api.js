@@ -20,19 +20,19 @@ module.exports = {
   title: 'Update supervisor through the API',
   run: async (test, context, options, components) => {
     // Get supervisor update info
-    const supervisorImage = await components.balena.executeCommandInHostOS(
+    const supervisorImage = await components.balena.sdk.executeCommandInHostOS(
       'source /etc/resin-supervisor/supervisor.conf ; echo $SUPERVISOR_IMAGE',
       context.uuid,
       context.key.privateKeyPath
     )
-    const supervisorTag = await components.balena.executeCommandInHostOS(
+    const supervisorTag = await components.balena.sdk.executeCommandInHostOS(
       'source /etc/resin-supervisor/supervisor.conf ; echo $SUPERVISOR_TAG',
       context.uuid,
       context.key.privateKeyPath
     )
 
     // Get config.json path
-    const configPath = await components.balena.executeCommandInHostOS(
+    const configPath = await components.balena.sdk.executeCommandInHostOS(
       'systemctl show config-json.path --no-pager | grep PathChanged | cut -d \'=\' -f 2',
       context.uuid,
       context.key.privateKeyPath
@@ -43,14 +43,14 @@ module.exports = {
     test.isNot(configPath, '')
 
     // Get config.json content
-    const config = JSON.parse(await components.balena.executeCommandInHostOS(
+    const config = JSON.parse(await components.balena.sdk.executeCommandInHostOS(
       `cat ${configPath}`,
       context.uuid,
       context.key.privateKeyPath
     ))
 
     // Get Supervisor ID
-    const supervisorId = (await components.balena.pine.get({
+    const supervisorId = (await components.balena.sdk.pine.get({
       resource: 'supervisor_release',
       options: {
         $select: 'id',
@@ -61,7 +61,7 @@ module.exports = {
       }
     }))[0].id
 
-    test.is(await components.balena.pine.patch({
+    test.is(await components.balena.sdk.pine.patch({
       resource: 'device',
       id: config.deviceId,
       body: {
@@ -69,7 +69,7 @@ module.exports = {
       }
     }), 'OK')
 
-    test.resolveMatch(components.balena.executeCommandInHostOS(
+    test.resolveMatch(components.balena.sdk.executeCommandInHostOS(
       'update-resin-supervisor | grep "Supervisor configuration found from API"',
       context.uuid,
       context.key.privateKeyPath

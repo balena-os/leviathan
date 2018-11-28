@@ -22,16 +22,16 @@ const utils = require('../lib/utils')
 module.exports = {
   title: 'Update device status with resin-device-progress',
   run: async (test, context, options, components) => {
-    await components.balena.executeCommandInHostOS('resin-device-progress -p 60 -s "balenaOS test"',
+    await components.balena.sdk.executeCommandInHostOS('resin-device-progress -p 60 -s "balenaOS test"',
       context.uuid,
       context.key.privateKeyPath
     )
 
     await utils.waitUntil(async () => {
-      return !_.isEmpty(await components.balena.getDeviceProvisioningState(context.uuid))
+      return !_.isEmpty(await components.balena.sdk.getDeviceProvisioningState(context.uuid))
     })
 
-    await test.resolveMatch(components.balena.getDeviceProvisioningState(context.uuid), 'balenaOS test')
-    await test.resolveMatch(components.balena.getDeviceProvisioningProgress(context.uuid), 60)
+    await test.resolveMatch(components.balena.sdk.getDeviceProvisioningState(context.uuid), 'balenaOS test')
+    await test.resolveMatch(components.balena.sdk.getDeviceProvisioningProgress(context.uuid), 60)
   }
 }
