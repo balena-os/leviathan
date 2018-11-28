@@ -30,12 +30,21 @@ module.exports = {
       return `findmnt --noheadings --canonicalize --output SOURCE /mnt/sysroot/${mountpoint}`
     }
 
-    const activeBefore = await components.balena.sshHostOS(testCmd('active'), context.uuid, context.key.privateKeyPath)
-    const inactiveBefore = await components.balena.sshHostOS(testCmd('inactive'), context.uuid, context.key.privateKeyPath)
+    const activeBefore = await components.balena.executeCommandInHostOS(
+      testCmd('active'),
+      context.uuid,
+      context.key.privateKeyPath
+    )
+    const inactiveBefore = await components.balena.executeCommandInHostOS(
+      testCmd('inactive'),
+      context.uuid,
+      context.key.privateKeyPath
+    )
 
     const lastTimeOnline = await components.balena.getLastConnectedTime(context.uuid)
 
-    await components.balena.sshHostOS(`hostapp-update -r -i resin/resinos-staging:${dockerVersion}-${options.deviceType}`,
+    await components.balena.executeCommandInHostOS(
+      `hostapp-update -r -i resin/resinos-staging:${dockerVersion}-${options.deviceType}`,
       context.uuid,
       context.key.privateKeyPath
     )
@@ -44,8 +53,16 @@ module.exports = {
       return await components.balena.getLastConnectedTime(context.uuid) > lastTimeOnline
     })
 
-    const activeAfter = await components.balena.sshHostOS(testCmd('active'), context.uuid, context.key.privateKeyPath)
-    const inactiveAfter = await components.balena.sshHostOS(testCmd('inactive'), context.uuid, context.key.privateKeyPath)
+    const activeAfter = await components.balena.executeCommandInHostOS(
+      testCmd('active'),
+      context.uuid,
+      context.key.privateKeyPath
+    )
+    const inactiveAfter = await components.balena.executeCommandInHostOS(
+      testCmd('inactive'),
+      context.uuid,
+      context.key.privateKeyPath
+    )
 
     test.deepEqual([ activeBefore, inactiveBefore ], [ inactiveAfter, activeAfter ])
   }
