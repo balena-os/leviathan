@@ -1,6 +1,26 @@
 results:
   -
-    provision_time: 1m 13s
+    provision_time: 1m 11s
+    image_size: 1724 Mb
+    balena_os_version: 2.26.0+rev1.prod
+    body: |-
+      # Tests 
+       - ✖ Enter running application container
+
+
+      # Summary
+      - planned: 1
+      - pass: 0
+      - fail: 1
+
+      # Fails
+      ## Enter running application container
+          ✖ Enter running application container
+          undefined
+    author: null
+    timestamp: '2018-11-28'
+    PS_UUID: bb6da260-f314-11e8-9fbd-b33f5c6db6a3
+  - provision_time: 1m 13s
     image_size: 1724 Mb
     balena_os_version: 2.26.0+rev1.prod
     body: |-
