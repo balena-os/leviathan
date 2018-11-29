@@ -31,7 +31,7 @@ module.exports = {
       context.key.privateKeyPath
     )
     await components.balena.sdk.executeCommandInHostOS(
-      `balena rmi -f $(balena images -q resin/${context.deviceType.data.arch}-supervisor)`,
+      `balena rmi -f $(balena images | grep -E "(balena|resin)"/${context.deviceType.data.arch}-supervisor | awk '{print $3}')`,
       context.uuid,
       context.key.privateKeyPath
     )
