@@ -1,6 +1,98 @@
 results:
   -
-    provision_time: 1m 7s
+    body: >-
+      # Tests 
+       - ✔ Device is online
+       - ✔ Reload supervisor on a running device
+       - ✖ General Bluetooth test
+       - ✖ Enter running application container
+       - ✖ child test left in queue: t.test Device reported hostOS version
+       - ✖ child test left in queue: t.test Balena host OS update [2.27.0+rev1.prod -> 2.27.0+rev1.prod]
+       - ✖ child test left in queue: t.test Identification LED
+       - ✖ child test left in queue: t.test Kernel boot logo/Reboot splash screen
+       - ✖ child test left in queue: t.test Image filename format
+       - ✖ child test left in queue: t.test Push a mono-container to the application
+       - ✖ child test left in queue: t.test Push a multi-container application
+       - ✖ child test left in queue: t.test Reboot while application is running
+       - ✖ child test left in queue: t.test Update supervisor through the API
+       - ✖ child test left in queue: t.test Update device status with resin-device-progress
+       - ✖ child test left in queue: t.test Boot/Shutdown splash screen
+       - ✖ child test left in queue: t.test Sync application container
+       - ✖ child test left in queue: t.test Enable serial port on UART0/ttyAMA0
+       - ✖ child test left in queue: t.test Enable serial port on UART1/MiniUART/ttyS0
+       - ✖ child test left in queue: t.test Set device service variable when application is running
+
+
+      # Summary
+
+      - planned: 4
+
+      - pass: 2
+
+      - fail: 17
+
+
+      # Fails
+
+      ## General Bluetooth test
+          ✖ General Bluetooth test
+          undefined
+      ## Enter running application container
+          ✖ Enter running application container
+          undefined
+      ## child test left in queue: t.test Device reported hostOS version
+          ✖ child test left in queue: t.test Device reported hostOS version
+          undefined
+      ## child test left in queue: t.test Balena host OS update
+      [2.27.0+rev1.prod -> 2.27.0+rev1.prod]
+          ✖ child test left in queue: t.test Balena host OS update [2.27.0+rev1.prod -> 2.27.0+rev1.prod]
+          undefined
+      ## child test left in queue: t.test Identification LED
+          ✖ child test left in queue: t.test Identification LED
+          undefined
+      ## child test left in queue: t.test Kernel boot logo/Reboot splash screen
+          ✖ child test left in queue: t.test Kernel boot logo/Reboot splash screen
+          undefined
+      ## child test left in queue: t.test Image filename format
+          ✖ child test left in queue: t.test Image filename format
+          undefined
+      ## child test left in queue: t.test Push a mono-container to the
+      application
+          ✖ child test left in queue: t.test Push a mono-container to the application
+          undefined
+      ## child test left in queue: t.test Push a multi-container application
+          ✖ child test left in queue: t.test Push a multi-container application
+          undefined
+      ## child test left in queue: t.test Reboot while application is running
+          ✖ child test left in queue: t.test Reboot while application is running
+          undefined
+      ## child test left in queue: t.test Update supervisor through the API
+          ✖ child test left in queue: t.test Update supervisor through the API
+          undefined
+      ## child test left in queue: t.test Update device status with
+      resin-device-progress
+          ✖ child test left in queue: t.test Update device status with resin-device-progress
+          undefined
+      ## child test left in queue: t.test Boot/Shutdown splash screen
+          ✖ child test left in queue: t.test Boot/Shutdown splash screen
+          undefined
+      ## child test left in queue: t.test Sync application container
+          ✖ child test left in queue: t.test Sync application container
+          undefined
+      ## child test left in queue: t.test Enable serial port on UART0/ttyAMA0
+          ✖ child test left in queue: t.test Enable serial port on UART0/ttyAMA0
+          undefined
+      ## child test left in queue: t.test Enable serial port on
+      UART1/MiniUART/ttyS0
+          ✖ child test left in queue: t.test Enable serial port on UART1/MiniUART/ttyS0
+          undefined
+      ## child test left in queue: t.test Set device service variable when
+      application is running
+          ✖ child test left in queue: t.test Set device service variable when application is running
+          undefined
+    timestamp: '2018-11-29'
+    PS_UUID: 4856b2c0-f3e2-11e8-a2e6-87177df7adf5
+  - provision_time: 1m 7s
     image_size: 1724 Mb
     balena_os_version: 2.26.0+rev1.prod
     body: |-
