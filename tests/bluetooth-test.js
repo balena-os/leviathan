@@ -54,7 +54,7 @@ module.exports = {
       applicationName: options.applicationName
     })
 
-    test.is(await components.balena.getDeviceCommit(context.uuid), hash)
+    test.is(await components.balena.sdk.getDeviceCommit(context.uuid), hash)
 
     test.resolveMatch(utils.runManualTestCase({
       prepare: [ 'Have an activated and visible Bluetooth device around you (i.e your phone\'s bluetooth)' ],
