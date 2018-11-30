@@ -1,6 +1,50 @@
 results:
   -
-    provision_time: 2m 47s
+    body: |-
+      # Tests 
+       - ✔ Device is online
+       - ✔ Image filename format
+       - ✔ Device reported hostOS version
+       - ✔ Balena host OS update [2.27.0+rev1.prod -> 2.27.0+rev1.prod]
+       - ✔ Push a mono-container to the application
+       - ✔ Add a device environment variable
+       - ✔ Identification LED
+       - ✔ Enter running application container
+       - ✔ Sync application container
+       - ✔ Update device status with resin-device-progress
+       - ✔ Update supervisor through the API
+       - ✖ Push a multi-container application
+       - ✔ Reload supervisor on a running device
+       - ✖ Boot/Shutdown splash screen
+       - ✖ Kernel boot logo/Reboot splash screen
+       - ✖ Reboot while application is running
+       - ✖ child test left in queue: t.test Deactivate HDMI to use UART5
+
+
+      # Summary
+      - planned: 16
+      - pass: 12
+      - fail: 5
+
+      # Fails
+      ## Push a multi-container application
+          ✖ Push a multi-container application
+          undefined
+      ## Boot/Shutdown splash screen
+          ✖ Boot/Shutdown splash screen
+          undefined
+      ## Kernel boot logo/Reboot splash screen
+          ✖ Kernel boot logo/Reboot splash screen
+          undefined
+      ## Reboot while application is running
+          ✖ Reboot while application is running
+          undefined
+      ## child test left in queue: t.test Deactivate HDMI to use UART5
+          ✖ child test left in queue: t.test Deactivate HDMI to use UART5
+          undefined
+    timestamp: '2018-11-30'
+    PS_UUID: 3209d410-f4ab-11e8-af47-c3db52785d15
+  - provision_time: 2m 47s
     image_size: 2596 Mb
     balena_os_version: 2.27.0+rev1.prod
     body: |-
