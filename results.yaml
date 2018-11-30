@@ -1,5 +1,8 @@
 results:
   -
+    provision_time: 2m 47s
+    image_size: 2596 Mb
+    balena_os_version: 2.27.0+rev1.prod
     body: |-
       # Tests 
        - ✔ Device is online
@@ -15,32 +18,22 @@ results:
        - ✔ Update supervisor through the API
        - ✔ Push a multi-container application
        - ✔ Reload supervisor on a running device
-       - ✖ Boot/Shutdown splash screen
-       - ✖ child test left in queue: t.test Kernel boot logo/Reboot splash screen
-       - ✖ child test left in queue: t.test Reboot while application is running
-       - ✖ child test left in queue: t.test Deactivate HDMI to use UART5
+       - ✖ General Bluetooth test
+       - ✔ Reboot while application is running
 
 
       # Summary
-      - planned: 14
-      - pass: 13
-      - fail: 4
+      - planned: 15
+      - pass: 14
+      - fail: 1
 
       # Fails
-      ## Boot/Shutdown splash screen
-          ✖ Boot/Shutdown splash screen
+      ## General Bluetooth test
+          ✖ General Bluetooth test
           undefined
-      ## child test left in queue: t.test Kernel boot logo/Reboot splash screen
-          ✖ child test left in queue: t.test Kernel boot logo/Reboot splash screen
-          undefined
-      ## child test left in queue: t.test Reboot while application is running
-          ✖ child test left in queue: t.test Reboot while application is running
-          undefined
-      ## child test left in queue: t.test Deactivate HDMI to use UART5
-          ✖ child test left in queue: t.test Deactivate HDMI to use UART5
-          undefined
+    author: null
     timestamp: '2018-11-30'
-    PS_UUID: 2ab881c0-f4ab-11e8-96dc-5f779feeea73
+    PS_UUID: 2e666e90-f4ab-11e8-b496-2387415c08b3
   - provision_time: 1m 8s
     image_size: 1724 Mb
     balena_os_version: 2.26.0+rev1.prod
