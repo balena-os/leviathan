@@ -2,6 +2,18 @@ results:
   -
     body: |-
       # Tests 
+
+
+      # Summary
+      - planned: 0
+      - pass: 0
+      - fail: 0
+
+      # Fails
+    timestamp: '2018-11-30'
+    PS_UUID: 1a257aa0-f4b2-11e8-b4e5-29150d825309
+  - body: |-
+      # Tests 
        - ✔ Device is online
        - ✔ Image filename format
        - ✔ Device reported hostOS version
