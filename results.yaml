@@ -25,6 +25,32 @@ results:
       # Fails
     author: null
     timestamp: 2018-12-3
+    PS_UUID: 5ef7dec0-f705-11e8-8bea-793210e32fe5
+  - provision_time: 1m 6s
+    image_size: 1724 Mb
+    balena_os_version: 2.26.0+rev1.prod
+    body: |-
+      # Tests 
+       - ✔ Device is online
+       - ✔ Device reported hostOS version
+       - ✔ Balena host OS update [2.26.0+rev1.prod -> 2.26.0+rev1.prod]
+       - ✔ Image filename format
+       - ✔ Push a mono-container to the application
+       - ✔ Push a multi-container application
+       - ✔ Update supervisor through the API
+       - ✔ Reload supervisor on a running device
+       - ✔ Update device status with resin-device-progress
+       - ✔ Sync application container
+
+
+      # Summary
+      - planned: 10
+      - pass: 10
+      - fail: 0
+
+      # Fails
+    author: null
+    timestamp: 2018-12-3
     PS_UUID: eb2126d0-f6fc-11e8-94b0-cb1ba5108db3
   - provision_time: 1m 6s
     image_size: 1724 Mb
