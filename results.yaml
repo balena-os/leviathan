@@ -1,6 +1,54 @@
 results:
   -
-    provision_time: null
+    body: >-
+      # Tests 
+       - ✔ General Bluetooth test
+       - ✔ Device is online
+       - ✔ Image filename format
+       - ✔ Device reported hostOS version
+       - ✔ Balena host OS update [2.27.0+rev1.prod -> 2.27.0+rev1.prod]
+       - ✔ Sync application container
+       - ✔ Update device status with resin-device-progress
+       - ✔ Update supervisor through the API
+       - ✔ Push a multi-container application
+       - ✔ Reload supervisor on a running device
+       - ✖ Boot/Shutdown splash screen
+       - ✖ child test left in queue: t.test Reboot while application is running
+       - ✖ child test left in queue: t.test Enter running application container
+       - ✖ child test left in queue: t.test Kernel boot logo/Reboot splash screen
+       - ✖ child test left in queue: t.test Set device service variable when application is running
+
+
+      # Summary
+
+      - planned: 11
+
+      - pass: 10
+
+      - fail: 5
+
+
+      # Fails
+
+      ## Boot/Shutdown splash screen
+          ✖ Boot/Shutdown splash screen
+          undefined
+      ## child test left in queue: t.test Reboot while application is running
+          ✖ child test left in queue: t.test Reboot while application is running
+          undefined
+      ## child test left in queue: t.test Enter running application container
+          ✖ child test left in queue: t.test Enter running application container
+          undefined
+      ## child test left in queue: t.test Kernel boot logo/Reboot splash screen
+          ✖ child test left in queue: t.test Kernel boot logo/Reboot splash screen
+          undefined
+      ## child test left in queue: t.test Set device service variable when
+      application is running
+          ✖ child test left in queue: t.test Set device service variable when application is running
+          undefined
+    timestamp: 2018-12-4
+    PS_UUID: 6fdf4660-f7cd-11e8-aae9-7b8afacd1b04
+  - provision_time: null
     image_size: null
     balena_os_version: 2.26.0+rev1.prod
     body: |-
