@@ -43,11 +43,11 @@ module.exports = {
 
     const lastTimeOnline = await components.balena.sdk.getLastConnectedTime(context.uuid)
 
-    await components.balena.sdk.executeCommandInHostOS(
+    console.log(await components.balena.sdk.executeCommandInHostOS(
       `hostapp-update -r -i resin/resinos-staging:${dockerVersion}-${options.deviceType}`,
       context.uuid,
       context.key.privateKeyPath
-    )
+    ))
 
     await utils.waitUntil(async () => {
       return await components.balena.sdk.getLastConnectedTime(context.uuid) > lastTimeOnline
