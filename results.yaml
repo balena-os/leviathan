@@ -1,6 +1,62 @@
 results:
   -
+    provision_time: null
+    image_size: null
+    balena_os_version: 2.26.0+rev1.prod
     body: |-
+      # Tests 
+       - ✖ Device is online
+       - ✖ Device reported hostOS version
+       - ✖ Balena host OS update [2.26.0+rev1.prod -> 2.26.0+rev1.prod]
+       - ✖ Image filename format
+       - ✖ Push a mono-container to the application
+       - ✖ Push a multi-container application
+       - ✖ Update supervisor through the API
+       - ✖ Reload supervisor on a running device
+       - ✖ Update device status with resin-device-progress
+       - ✖ Sync application container
+
+
+      # Summary
+      - planned: 10
+      - pass: 0
+      - fail: 10
+
+      # Fails
+      ## Device is online
+          ✖ Device is online
+          undefined
+      ## Device reported hostOS version
+          ✖ Device reported hostOS version
+          undefined
+      ## Balena host OS update [2.26.0+rev1.prod -> 2.26.0+rev1.prod]
+          ✖ Balena host OS update [2.26.0+rev1.prod -> 2.26.0+rev1.prod]
+          undefined
+      ## Image filename format
+          ✖ Image filename format
+          undefined
+      ## Push a mono-container to the application
+          ✖ Push a mono-container to the application
+          undefined
+      ## Push a multi-container application
+          ✖ Push a multi-container application
+          undefined
+      ## Update supervisor through the API
+          ✖ Update supervisor through the API
+          undefined
+      ## Reload supervisor on a running device
+          ✖ Reload supervisor on a running device
+          undefined
+      ## Update device status with resin-device-progress
+          ✖ Update device status with resin-device-progress
+          undefined
+      ## Sync application container
+          ✖ Sync application container
+          undefined
+    author: null
+    timestamp: 2018-12-4
+    PS_UUID: 53bef0c0-f7af-11e8-a108-c744adce4378
+  - body: |-
       # Tests 
 
 
