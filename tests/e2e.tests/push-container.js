@@ -17,20 +17,20 @@
 'use strict'
 
 const path = require('path')
-const utils = require('../lib/utils')
+const utils = require('../../lib/utils')
 
 module.exports = {
   title: 'Push a mono-container to the application',
-  run: async (test, context, options, components) => {
+  run: async (test, context, options) => {
     const hash = await utils.pushAndWaitRepoToBalenaDevice({
       path: path.join(options.tmpdir, 'test'),
       url: 'https://github.com/balena-io-projects/balena-cpp-hello-world.git',
-      uuid: context.uuid,
-      key: context.key.privateKeyPath,
-      balena: components.balena,
+      uuid: context.balena.uuid,
+      key: context.sshKeyPath,
+      balena: context.balena,
       applicationName: options.applicationName
     })
 
-    test.resolveMatch(components.balena.sdk.getDeviceCommit(context.uuid), hash)
+    test.resolveMatch(context.balena.sdk.getDeviceCommit(context.balena.uuid), hash)
   }
 }

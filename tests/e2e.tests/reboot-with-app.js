@@ -16,37 +16,18 @@
 
 'use strict'
 
-const utils = require('../lib/utils')
+const utils = require('../../lib/utils')
 
 module.exports = {
-  title: 'Boot/Shutdown splash screen',
+  title: 'Reboot while application is running',
   interactive: true,
-  deviceType: {
-    type: 'object',
-    required: [ 'data' ],
-    properties: {
-      data: {
-        type: 'object',
-        required: [ 'hdmi' ],
-        properties: {
-          hdmi: {
-            type: 'boolean',
-            const: true
-          }
-        }
-      }
-    }
-  },
   run: async (test, context, options) => {
     test.resolveMatch(utils.runManualTestCase({
-      prepare: [ 'Plug a monitor in the device\'s HDMI output' ],
-      do: [
-        'Shutdown the device',
-        'Power back on the device'
-      ],
+      prepare: [ 'Ensure the device is running an application' ],
+      do: [ 'Reboot device' ],
       assert: [
-        'The balena logo splash screen should be visible when the board initiates shutdown',
-        'The balena logo splash screen should be visible during boot-up'
+        'Ensure the device is online',
+        'Ensure the device is running an application'
       ]
     }), true)
   }

@@ -16,11 +16,11 @@
 
 'use strict'
 
-const utils = require('../lib/utils')
+const utils = require('../../lib/utils')
 
 module.exports = {
   title: 'Balena host OS update [<%= options.balenaOSVersion %> -> <%= options.balenaOSVersionUpdate %>]',
-  run: async (test, context, options, components) => {
+  run: async (test, context, options) => {
     const dockerVersion = options.balenaOSVersionUpdate
       .replace('+', '_')
       .replace(/\.(prod|dev)$/, '')
@@ -30,38 +30,38 @@ module.exports = {
       return `findmnt --noheadings --canonicalize --output SOURCE /mnt/sysroot/${mountpoint}`
     }
 
-    const activeBefore = await components.balena.sdk.executeCommandInHostOS(
+    const activeBefore = await context.balena.sdk.executeCommandInHostOS(
       testCmd('active'),
-      context.uuid,
-      context.key.privateKeyPath
+      context.balena.uuid,
+      context.sshKeyPath
     )
-    const inactiveBefore = await components.balena.sdk.executeCommandInHostOS(
+    const inactiveBefore = await context.balena.sdk.executeCommandInHostOS(
       testCmd('inactive'),
-      context.uuid,
-      context.key.privateKeyPath
+      context.balena.uuid,
+      context.sshKeyPath
     )
 
-    const lastTimeOnline = await components.balena.sdk.getLastConnectedTime(context.uuid)
+    const lastTimeOnline = await context.balena.sdk.getLastConnectedTime(context.balena.uuid)
 
-    await components.balena.sdk.executeCommandInHostOS(
+    await context.balena.sdk.executeCommandInHostOS(
       `hostapp-update -r -i resin/resinos-staging:${dockerVersion}-${options.deviceType}`,
-      context.uuid,
-      context.key.privateKeyPath
+      context.balena.uuid,
+      context.sshKeyPath
     )
 
     await utils.waitUntil(async () => {
-      return await components.balena.sdk.getLastConnectedTime(context.uuid) > lastTimeOnline
+      return await context.balena.sdk.getLastConnectedTime(context.balena.uuid) > lastTimeOnline
     })
 
-    const activeAfter = await components.balena.sdk.executeCommandInHostOS(
+    const activeAfter = await context.balena.sdk.executeCommandInHostOS(
       testCmd('active'),
-      context.uuid,
-      context.key.privateKeyPath
+      context.balena.uuid,
+      context.sshKeyPath
     )
-    const inactiveAfter = await components.balena.sdk.executeCommandInHostOS(
+    const inactiveAfter = await context.balena.sdk.executeCommandInHostOS(
       testCmd('inactive'),
-      context.uuid,
-      context.key.privateKeyPath
+      context.balena.uuid,
+      context.sshKeyPath
     )
 
     test.deepEqual([ activeBefore, inactiveBefore ], [ inactiveAfter, activeAfter ])

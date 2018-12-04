@@ -17,7 +17,7 @@
 'use strict'
 
 const path = require('path')
-const utils = require('../lib/utils')
+const utils = require('../../lib/utils')
 
 module.exports = {
   title: 'General Bluetooth test',
@@ -44,17 +44,17 @@ module.exports = {
       }
     }
   },
-  run: async (test, context, options, components) => {
+  run: async (test, context, options) => {
     const hash = await utils.pushAndWaitRepoToBalenaDevice({
       path: path.join(options.tmpdir, 'test-bluetooth'),
       url: 'https://github.com/balena-io-playground/test-bluetooth.git',
-      uuid: context.uuid,
-      key: context.key.privateKeyPath,
-      balena: components.balena,
+      uuid: context.balena.uuid,
+      key: context.sshKeyPath,
+      balena: context.balena,
       applicationName: options.applicationName
     })
 
-    test.is(await components.balena.sdk.getDeviceCommit(context.uuid), hash)
+    test.is(await context.balena.sdk.getDeviceCommit(context.balena.uuid), hash)
 
     test.resolveMatch(utils.runManualTestCase({
       prepare: [ 'Have an activated and visible Bluetooth device around you (i.e your phone\'s bluetooth)' ],

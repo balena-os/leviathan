@@ -18,24 +18,24 @@
 
 module.exports = {
   title: 'Update supervisor through the API',
-  run: async (test, context, options, components) => {
+  run: async (test, context, options) => {
     // Get supervisor update info
-    const supervisorImage = await components.balena.sdk.executeCommandInHostOS(
+    const supervisorImage = await context.balena.sdk.executeCommandInHostOS(
       'source /etc/resin-supervisor/supervisor.conf ; echo $SUPERVISOR_IMAGE',
-      context.uuid,
-      context.key.privateKeyPath
+      context.balena.uuid,
+      context.sshKeyPath
     )
-    const supervisorTag = await components.balena.sdk.executeCommandInHostOS(
+    const supervisorTag = await context.balena.sdk.executeCommandInHostOS(
       'source /etc/resin-supervisor/supervisor.conf ; echo $SUPERVISOR_TAG',
-      context.uuid,
-      context.key.privateKeyPath
+      context.balena.uuid,
+      context.sshKeyPath
     )
 
     // Get config.json path
-    const configPath = await components.balena.sdk.executeCommandInHostOS(
+    const configPath = await context.balena.sdk.executeCommandInHostOS(
       'systemctl show config-json.path --no-pager | grep PathChanged | cut -d \'=\' -f 2',
-      context.uuid,
-      context.key.privateKeyPath
+      context.balena.uuid,
+      context.sshKeyPath
     )
 
     test.isNot(supervisorImage, '')
@@ -43,14 +43,14 @@ module.exports = {
     test.isNot(configPath, '')
 
     // Get config.json content
-    const config = JSON.parse(await components.balena.sdk.executeCommandInHostOS(
+    const config = JSON.parse(await context.balena.sdk.executeCommandInHostOS(
       `cat ${configPath}`,
-      context.uuid,
-      context.key.privateKeyPath
+      context.balena.uuid,
+      context.sshKeyPath
     ))
 
     // Get Supervisor ID
-    const supervisorId = (await components.balena.sdk.pine.get({
+    const supervisorId = (await context.balena.sdk.pine.get({
       resource: 'supervisor_release',
       options: {
         $select: 'id',
@@ -61,7 +61,7 @@ module.exports = {
       }
     }))[0].id
 
-    test.is(await components.balena.sdk.pine.patch({
+    test.is(await context.balena.sdk.pine.patch({
       resource: 'device',
       id: config.deviceId,
       body: {
@@ -69,10 +69,10 @@ module.exports = {
       }
     }), 'OK')
 
-    test.resolveMatch(components.balena.sdk.executeCommandInHostOS(
+    test.resolveMatch(context.balena.sdk.executeCommandInHostOS(
       'update-resin-supervisor | grep "Supervisor configuration found from API"',
-      context.uuid,
-      context.key.privateKeyPath
+      context.balena.uuid,
+      context.sshKeyPath
     ), 'Supervisor configuration found from API')
   }
 }

@@ -16,7 +16,7 @@
 
 'use strict'
 
-const utils = require('../lib/utils')
+const utils = require('../../lib/utils')
 
 module.exports = {
   title: 'Deactivate HDMI to use UART5',

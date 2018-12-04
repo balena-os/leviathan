@@ -16,10 +16,21 @@
 
 'use strict'
 
+const path = require('path')
+const utils = require('../../lib/utils')
+
 module.exports = {
-  title: 'Device is online',
-  run: async (test, context, options, components) => {
-    const isOnline = await components.balena.sdk.isDeviceOnline(context.uuid)
-    test.true(isOnline)
+  title: 'Push a multi-container application',
+  run: async (test, context, options) => {
+    const hash = await utils.pushAndWaitRepoToBalenaDevice({
+      path: path.join(options.tmpdir, 'multi-test'),
+      url: 'https://github.com/balena-io-projects/multicontainer-getting-started.git',
+      uuid: context.balena.uuid,
+      key: context.sshKeyPath,
+      balena: context.balena,
+      applicationName: options.applicationName
+    })
+
+    test.resolveMatch(context.balena.sdk.getDeviceCommit(context.balena.uuid), hash)
   }
 }

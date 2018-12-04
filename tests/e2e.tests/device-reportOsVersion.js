@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 balena
+ * Copyright 2018 balena
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,12 @@
 
 'use strict'
 
-const utils = require('../lib/utils')
-
 module.exports = {
-  title: 'Reboot while application is running',
-  interactive: true,
+  title: 'Device reported hostOS version',
   run: async (test, context, options) => {
-    test.resolveMatch(utils.runManualTestCase({
-      prepare: [ 'Ensure the device is running an application' ],
-      do: [ 'Reboot device' ],
-      assert: [
-        'Ensure the device is online',
-        'Ensure the device is running an application'
-      ]
-    }), true)
+    const hostOSVersion = await context.balena.sdk.getDeviceHostOSVersion(context.balena.uuid)
+    const hostOSVariant = await context.balena.sdk.getDeviceHostOSVariant(context.balena.uuid)
+
+    test.is(`${hostOSVersion}.${hostOSVariant}`, `balenaOS ${options.balenaOSVersion}`)
   }
 }

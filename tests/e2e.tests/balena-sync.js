@@ -19,25 +19,25 @@
 const _ = require('lodash')
 const path = require('path')
 const request = require('request-promise')
-const utils = require('../lib/utils')
+const utils = require('../../lib/utils')
 
 module.exports = {
   title: 'Sync application container',
-  run: async (test, context, options, components) => {
+  run: async (test, context, options) => {
     const clonePath = path.join(options.tmpdir, 'test-sync')
     const hash = await utils.pushAndWaitRepoToBalenaDevice({
       path: clonePath,
       url: 'https://github.com/balena-io-projects/simple-server-python.git',
-      uuid: context.uuid,
-      key: context.key.privateKeyPath,
-      balena: components.balena,
+      uuid: context.balena.uuid,
+      key: context.sshKeyPath,
+      balena: context.balena,
       applicationName: options.applicationName
     })
 
-    test.is(await components.balena.sdk.getDeviceCommit(context.uuid), hash)
+    test.is(await context.balena.sdk.getDeviceCommit(context.balena.uuid), hash)
 
-    await components.balena.sdk.enableDeviceUrl(context.uuid)
-    const deviceUrl = await components.balena.sdk.getDeviceUrl(context.uuid)
+    await context.balena.sdk.enableDeviceUrl(context.balena.uuid)
+    const deviceUrl = await context.balena.sdk.getDeviceUrl(context.balena.uuid)
 
     test.is(await request(deviceUrl), 'Hello World!')
 
@@ -47,10 +47,10 @@ module.exports = {
       '\'Hello World Synced!\''
     )
 
-    await components.balena.sync.remote(context.uuid, clonePath, '/usr/src/app')
+    await context.balena.sync.remote(context.balena.uuid, clonePath, '/usr/src/app')
 
     await utils.waitUntil(async () => {
-      const services = await components.balena.sdk.getAllServicesProperties(context.uuid, [ 'status' ])
+      const services = await context.balena.sdk.getAllServicesProperties(context.balena.uuid, [ 'status' ])
 
       if (_.isEmpty(services)) {
         return false
@@ -64,7 +64,7 @@ module.exports = {
     test.is(await request(deviceUrl), 'Hello World Synced!')
 
     test.tearDown(async () => {
-      await components.balena.sdk.disableDeviceUrl(context.uuid)
+      await context.balena.sdk.disableDeviceUrl(context.balena.uuid)
     })
   }
 }

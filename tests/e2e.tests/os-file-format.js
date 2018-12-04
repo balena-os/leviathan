@@ -25,11 +25,11 @@ const {
 
 module.exports = {
   title: 'Image filename format',
-  run: async (test, context, options, components) => {
-    const supervisorVersion = await components.balena.sdk.getSupervisorVersion(context.uuid)
-    const hostOsVersion = (await components.balena.sdk.getDeviceHostOSVersion(context.uuid)).split(' ')
+  run: async (test, context, options) => {
+    const supervisorVersion = await context.balena.sdk.getSupervisorVersion(context.balena.uuid)
+    const hostOsVersion = (await context.balena.sdk.getDeviceHostOSVersion(context.balena.uuid)).split(' ')
     const filename = basename(await realpath(context.os.image))
-    const downloadApi = options.apiStagingUrl.split('.')[0]
+    const downloadApi = options.download.split('.')[0]
 
     test.is(filename, `${downloadApi}-${options.deviceType}-${hostOsVersion[1]}-v${supervisorVersion}.img`)
   }

@@ -16,21 +16,20 @@
 
 'use strict'
 
-const path = require('path')
-const utils = require('../lib/utils')
+const utils = require('../../lib/utils')
 
 module.exports = {
-  title: 'Push a multi-container application',
-  run: async (test, context, options, components) => {
-    const hash = await utils.pushAndWaitRepoToBalenaDevice({
-      path: path.join(options.tmpdir, 'multi-test'),
-      url: 'https://github.com/balena-io-projects/multicontainer-getting-started.git',
-      uuid: context.uuid,
-      key: context.key.privateKeyPath,
-      balena: components.balena,
-      applicationName: options.applicationName
-    })
-
-    test.resolveMatch(components.balena.sdk.getDeviceCommit(context.uuid), hash)
+  title: 'Set device service variable when application is running',
+  interactive: true,
+  run: async (test, context, options) => {
+    test.resolveMatch(utils.runManualTestCase({
+      prepare: [ 'Ensure the device is running an application' ],
+      do: [
+        'Set a device service variable',
+        'Wait for a couple of seconds'
+      ],
+      assert: [ 'Open the Web Service Terminal, run "env", and ensure the new device variable is there' ],
+      cleanup: [ 'Close the Web Terminal' ]
+    }), true)
   }
 }

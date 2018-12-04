@@ -16,42 +16,42 @@
 
 'use strict'
 
-const utils = require('../lib/utils')
+const utils = require('../../lib/utils')
 
 module.exports = {
   title: 'Reload supervisor on a running device',
-  run: async (test, context, options, components) => {
+  run: async (test, context, options) => {
     // Delete current supervisor
-    await components.balena.sdk.executeCommandInHostOS('systemctl stop resin-supervisor',
-      context.uuid,
-      context.key.privateKeyPath
+    await context.balena.sdk.executeCommandInHostOS('systemctl stop resin-supervisor',
+      context.balena.uuid,
+      context.sshKeyPath
     )
-    await components.balena.sdk.executeCommandInHostOS('balena rm resin_supervisor',
-      context.uuid,
-      context.key.privateKeyPath
+    await context.balena.sdk.executeCommandInHostOS('balena rm resin_supervisor',
+      context.balena.uuid,
+      context.sshKeyPath
     )
-    await components.balena.sdk.executeCommandInHostOS(
+    await context.balena.sdk.executeCommandInHostOS(
       `balena rmi -f $(balena images | grep -E "(balena|resin)"/${context.deviceType.data.arch}-supervisor | awk '{print $3}')`,
-      context.uuid,
-      context.key.privateKeyPath
+      context.balena.uuid,
+      context.sshKeyPath
     )
-    test.rejects(components.balena.sdk.pingSupervisor(context.uuid))
+    test.rejects(context.balena.sdk.pingSupervisor(context.balena.uuid))
 
     // Pull and start the supervisor
-    await components.balena.sdk.executeCommandInHostOS('update-resin-supervisor',
-      context.uuid,
-      context.key.privateKeyPath
+    await context.balena.sdk.executeCommandInHostOS('update-resin-supervisor',
+      context.balena.uuid,
+      context.sshKeyPath
     )
 
     // Wait for the supervisor to be marked as healthy
     await utils.waitUntil(async () => {
-      return await components.balena.sdk.executeCommandInHostOS(
+      return await context.balena.sdk.executeCommandInHostOS(
         'balena inspect --format \'{{.State.Health.Status}}\' resin_supervisor',
-        context.uuid,
-        context.key.privateKeyPath
+        context.balena.uuid,
+        context.sshKeyPath
       ) === 'healthy'
     })
 
-    test.resolves(components.balena.sdk.pingSupervisor(context.uuid))
+    test.resolves(context.balena.sdk.pingSupervisor(context.balena.uuid))
   }
 }

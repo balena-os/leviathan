@@ -16,20 +16,31 @@
 
 'use strict'
 
-const utils = require('../lib/utils')
+const utils = require('../../lib/utils')
 
 module.exports = {
-  title: 'Set device service variable when application is running',
+  title: 'Identification LED',
   interactive: true,
+  deviceType: {
+    type: 'object',
+    required: [ 'data' ],
+    properties: {
+      data: {
+        type: 'object',
+        required: [ 'led' ],
+        properties: {
+          led: {
+            type: 'boolean',
+            const: true
+          }
+        }
+      }
+    }
+  },
   run: async (test, context, options) => {
     test.resolveMatch(utils.runManualTestCase({
-      prepare: [ 'Ensure the device is running an application' ],
-      do: [
-        'Set a device service variable',
-        'Wait for a couple of seconds'
-      ],
-      assert: [ 'Open the Web Service Terminal, run "env", and ensure the new device variable is there' ],
-      cleanup: [ 'Close the Web Terminal' ]
+      do: [ `Click the "Identify" button from the dashboard: ${context.dashboardUrl}` ],
+      assert: [ 'The device\'s identification LEDs should blink for a couple of seconds' ]
     }), true)
   }
 }

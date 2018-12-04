@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint lib scripts tests",
     "test": "npm run lint",
-    "start": "node lib/runner.js"
+    "start": "node lib/main.js"
   },
   "repository": {
     "type": "git",
@@ -25,6 +25,7 @@
   "dependencies": {
     "ajv": "^6.5.0",
     "balena-sdk": "^11.0.0",
+    "balena-sync": "^10.0.0",
     "bluebird": "^3.5.1",
     "bluebird-retry": "^0.11.0",
     "data-store": "^3.0.0",
@@ -45,19 +46,19 @@
     "resin-cli-visuals": "^1.4.0",
     "resin-image-fs": "^4.0.2",
     "resin-semver": "^1.4.0",
-    "balena-sync": "^10.0.0",
     "simple-git": "^1.85.0",
     "ssh-keygen": "^0.4.1",
     "string-to-stream": "^1.1.1",
     "symbols": "0.0.6",
     "tap": "^12.0.1",
-    "tap-parser": "^7.0.0"
+    "tap-parser": "^7.0.0",
+    "winston": "^3.1.0"
   },
   "devDependencies": {
     "eslint": "^4.18.1",
     "eslint-config-standard": "^11.0.0",
     "eslint-plugin-import": "^2.9.0",
-    "eslint-plugin-jsdoc": "^3.5.0",
+    "eslint-plugin-jsdoc": "^3.9.1",
     "eslint-plugin-lodash": "^2.6.1",
     "eslint-plugin-node": "^6.0.0",
     "eslint-plugin-promise": "^3.6.0",

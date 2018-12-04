@@ -16,7 +16,7 @@
 
 'use strict'
 
-const utils = require('../lib/utils')
+const utils = require('../../lib/utils')
 
 module.exports = {
   title: 'Enable serial port on UART1/MiniUART/ttyS0',

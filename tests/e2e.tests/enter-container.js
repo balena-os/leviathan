@@ -16,7 +16,7 @@
 
 'use strict'
 
-const utils = require('../lib/utils')
+const utils = require('../../lib/utils')
 
 module.exports = {
   title: 'Enter running application container',
@@ -30,7 +30,7 @@ module.exports = {
         `Add balena remote url: "git remote add balena ${options.gitUrl}"`,
         'Push to application: "git push balena master"'
       ],
-      do: [ `Run "balena ssh ${context.uuid}"` ],
+      do: [ `Run "balena ssh ${context.balena.uuid}"` ],
       assert: [
         'A shell prompt should appear after a few seconds',
         'Running "env | grep RESIN_DEVICE_NAME_AT_INIT" should return the device name listed in the dashboard'
