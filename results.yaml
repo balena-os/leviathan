@@ -1,6 +1,42 @@
 results:
   -
-    provision_time: 1m 7s
+    provision_time: 1m 15s
+    image_size: 2588 Mb
+    balena_os_version: 2.28.0+rev1.prod
+    body: |-
+      # Tests 
+       - ✔ Device is online
+       - ✔ Image filename format
+       - ✔ Device reported hostOS version
+       - ✔ Balena host OS update [2.28.0+rev1.prod -> 2.28.0+rev1.prod]
+       - ✔ Sync application container
+       - ✔ Test setting a device environment variable
+       - ✔ Update device status with resin-device-progress
+       - ✔ Update supervisor through the API
+       - ✔ Push a multi-container application
+       - ✔ Move device between applications
+       - ✔ Reload supervisor on a running device
+       - ✔ General Bluetooth test
+       - ✔ Enter running application container
+       - ✔ Kernel boot logo/Reboot splash screen
+       - ✔ Boot/Shutdown splash screen
+       - ✔ Reboot while application is running
+       - ✖ Balena host OS update [2.13.6+rev2.prod -> 2.28.0+rev1.prod]
+
+
+      # Summary
+      - planned: 17
+      - pass: 16
+      - fail: 1
+
+      # Fails
+      ## Balena host OS update [2.13.6+rev2.prod -> 2.28.0+rev1.prod]
+          ✖ Balena host OS update [2.13.6+rev2.prod -> 2.28.0+rev1.prod]
+          undefined
+    author: null
+    timestamp: 2018-12-6
+    PS_UUID: df075eb0-f967-11e8-ba05-6df2c484046c
+  - provision_time: 1m 7s
     image_size: 1724 Mb
     balena_os_version: 2.26.0+rev1.prod
     body: |-
