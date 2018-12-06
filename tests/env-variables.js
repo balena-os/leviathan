@@ -22,16 +22,16 @@ const utils = require('../lib/utils')
 module.exports = {
   title: 'Test setting a device environment variable',
   run: async (test, context, options, components) => {
-    const hash = await utils.pushAndWaitRepoToBalenaDevice({
-      path: path.join(options.tmpdir, 'test'),
-      url: 'https://github.com/balena-io-projects/balena-cpp-hello-world.git',
-      uuid: context.uuid,
-      key: context.key.privateKeyPath,
-      balena: components.balena,
-      applicationName: options.applicationName
-    })
-
-    test.is(await components.balena.sdk.getDeviceCommit(context.uuid), hash)
+    // const hash = await utils.pushAndWaitRepoToBalenaDevice({
+    //   path: path.join(options.tmpdir, 'test'),
+    //   url: 'https://github.com/balena-io-projects/balena-cpp-hello-world.git',
+    //   uuid: context.uuid,
+    //   key: context.key.privateKeyPath,
+    //   balena: components.balena,
+    //   applicationName: options.applicationName
+    // })
+    //
+    // test.is(await components.balena.sdk.getDeviceCommit(context.uuid), hash)
 
     const applicationInfo = await components.balena.sdk.getApplicationInfo(context.uuid)
 
@@ -61,8 +61,8 @@ module.exports = {
 
     // To do: ssh to application and check the variable was set
 
-    test.tearDown(async () => {
-      await components.balena.sdk.removeDeviceEnvVariable(context.uuid, 'FOO')
-    })
+    // test.tearDown(async () => {
+    //   await components.balena.sdk.removeDeviceEnvVariable(context.uuid, 'FOO')
+    // })
   }
 }
