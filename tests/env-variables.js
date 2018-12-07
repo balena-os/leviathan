@@ -47,7 +47,7 @@ module.exports = {
       context.key.privateKeyPath
     )
 
-    await components.balena.sdk.setDeviceEnvVariable(context.uuid, 'FOO', 'bar')
+    await components.balena.sdk.setDeviceEnvVariable(context.uuid, 'WFOO', 'bar')
 
     await utils.waitUntil(async () => {
       return await components.balena.sdk.executeCommandInHostOS(
@@ -57,12 +57,12 @@ module.exports = {
       ) > applicationContainerLastTimeStartedAtState
     })
 
-    await test.is(await components.balena.sdk.getDeviceEnvVariable(context.uuid, 'FOO'), 'bar')
+    await test.is(await components.balena.sdk.getDeviceEnvVariable(context.uuid, 'WFOO'), 'bar')
 
     // To do: ssh to application and check the variable was set
 
     // test.tearDown(async () => {
-    //   await components.balena.sdk.removeDeviceEnvVariable(context.uuid, 'FOO')
+    //   await components.balena.sdk.removeDeviceEnvVariable(context.uuid, 'WFOO')
     // })
   }
 }
