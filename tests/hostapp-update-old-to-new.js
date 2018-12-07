@@ -28,6 +28,12 @@ const Worker = utils.getWorker(options.worker)
 
 const deviceTypeContract = require(`../contracts/contracts/hw.device-type/${options.deviceType}/contract.json`)
 
+const Bluebird = require('bluebird')
+const realpath = Bluebird.promisify(require('fs').realpath)
+const {
+  basename
+} = require('path')
+
 module.exports = {
   title: 'Balena host OS update [<%= options.balenaOSVersionHostUpdateOldToNew %> -> <%= options.balenaOSVersionUpdate %>]',
   run: async (test, context, options, components) => {
@@ -46,6 +52,7 @@ module.exports = {
     )
 
     context.os = new BalenaOS({
+      imageName: 'hostUpdate',
       tmpdir: options.tmpdir,
       configuration: balenaConfiguration,
       deviceType: options.deviceType,
@@ -54,6 +61,8 @@ module.exports = {
     })
 
     await context.os.fetch()
+
+    console.log(basename(await realpath(context.os.image)))
 
     context.worker = new Worker('main worker', deviceTypeContract, {
       devicePath: options.device
