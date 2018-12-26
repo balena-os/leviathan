@@ -16,11 +16,9 @@
 
 'use strict'
 
-const utils = require('../../lib/utils')
-
 module.exports = {
   title: 'Reload supervisor on a running device',
-  run: async (test, context, options) => {
+  run: async function (context, options) {
     // Delete current supervisor
     await context.balena.sdk.executeCommandInHostOS('systemctl stop resin-supervisor',
       context.balena.uuid,
@@ -35,7 +33,7 @@ module.exports = {
       context.balena.uuid,
       context.sshKeyPath
     )
-    test.rejects(context.balena.sdk.pingSupervisor(context.balena.uuid))
+    this.rejects(context.balena.sdk.pingSupervisor(context.balena.uuid))
 
     // Pull and start the supervisor
     await context.balena.sdk.executeCommandInHostOS('update-resin-supervisor',
@@ -44,7 +42,7 @@ module.exports = {
     )
 
     // Wait for the supervisor to be marked as healthy
-    await utils.waitUntil(async () => {
+    await context.utils.waitUntil(async () => {
       return await context.balena.sdk.executeCommandInHostOS(
         'balena inspect --format \'{{.State.Health.Status}}\' resin_supervisor',
         context.balena.uuid,
@@ -52,6 +50,6 @@ module.exports = {
       ) === 'healthy'
     })
 
-    test.resolves(context.balena.sdk.pingSupervisor(context.balena.uuid))
+    this.resolves(context.balena.sdk.pingSupervisor(context.balena.uuid))
   }
 }

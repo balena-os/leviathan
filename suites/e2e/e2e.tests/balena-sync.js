@@ -19,13 +19,12 @@
 const _ = require('lodash')
 const path = require('path')
 const request = require('request-promise')
-const utils = require('../../lib/utils')
 
 module.exports = {
   title: 'Sync application container',
-  run: async (test, context, options) => {
+  run: async function (context, options) {
     const clonePath = path.join(options.tmpdir, 'test-sync')
-    const hash = await utils.pushAndWaitRepoToBalenaDevice({
+    const hash = await context.utils.pushAndWaitRepoToBalenaDevice({
       path: clonePath,
       url: 'https://github.com/balena-io-projects/simple-server-python.git',
       uuid: context.balena.uuid,
@@ -34,14 +33,14 @@ module.exports = {
       applicationName: options.applicationName
     })
 
-    test.is(await context.balena.sdk.getDeviceCommit(context.balena.uuid), hash)
+    this.is(await context.balena.sdk.getDeviceCommit(context.balena.uuid), hash)
 
     await context.balena.sdk.enableDeviceUrl(context.balena.uuid)
     const deviceUrl = await context.balena.sdk.getDeviceUrl(context.balena.uuid)
 
-    test.is(await request(deviceUrl), 'Hello World!')
+    this.is(await request(deviceUrl), 'Hello World!')
 
-    await utils.searchAndReplace(
+    await context.utils.searchAndReplace(
       path.join(clonePath, 'src/main.py'),
       '\'Hello World!\'',
       '\'Hello World Synced!\''
@@ -49,7 +48,7 @@ module.exports = {
 
     await context.balena.sync.remote(context.balena.uuid, clonePath, '/usr/src/app')
 
-    await utils.waitUntil(async () => {
+    await context.utils.waitUntil(async () => {
       const services = await context.balena.sdk.getAllServicesProperties(context.balena.uuid, [ 'status' ])
 
       if (_.isEmpty(services)) {
@@ -61,9 +60,9 @@ module.exports = {
       })
     })
 
-    test.is(await request(deviceUrl), 'Hello World Synced!')
+    this.is(await request(deviceUrl), 'Hello World Synced!')
 
-    test.tearDown(async () => {
+    this.tearDown(async () => {
       await context.balena.sdk.disableDeviceUrl(context.balena.uuid)
     })
   }

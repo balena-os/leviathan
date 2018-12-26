@@ -17,21 +17,20 @@
 'use strict'
 
 const _ = require('lodash')
-const utils = require('../../lib/utils')
 
 module.exports = {
   title: 'Update device status with resin-device-progress',
-  run: async (test, context, options) => {
+  run: async function (context, options) {
     await context.balena.sdk.executeCommandInHostOS('resin-device-progress -p 60 -s "balenaOS test"',
       context.balena.uuid,
       context.sshKeyPath
     )
 
-    await utils.waitUntil(async () => {
+    await context.utils.waitUntil(async () => {
       return !_.isEmpty(await context.balena.sdk.getDeviceProvisioningState(context.balena.uuid))
     })
 
-    await test.resolveMatch(context.balena.sdk.getDeviceProvisioningState(context.balena.uuid), 'balenaOS test')
-    await test.resolveMatch(context.balena.sdk.getDeviceProvisioningProgress(context.balena.uuid), 60)
+    this.resolveMatch(context.balena.sdk.getDeviceProvisioningState(context.balena.uuid), 'balenaOS test')
+    this.resolveMatch(context.balena.sdk.getDeviceProvisioningProgress(context.balena.uuid), 60)
   }
 }

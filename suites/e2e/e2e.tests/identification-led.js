@@ -16,8 +16,6 @@
 
 'use strict'
 
-const utils = require('../../lib/utils')
-
 module.exports = {
   title: 'Identification LED',
   interactive: true,
@@ -37,8 +35,8 @@ module.exports = {
       }
     }
   },
-  run: async (test, context, options) => {
-    test.resolveMatch(utils.runManualTestCase({
+  run: async function (context, options) {
+    this.resolveMatch(context.utils.runManualTestCase({
       do: [ `Click the "Identify" button from the dashboard: ${context.dashboardUrl}` ],
       assert: [ 'The device\'s identification LEDs should blink for a couple of seconds' ]
     }), true)

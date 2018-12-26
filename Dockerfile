@@ -33,7 +33,7 @@ COPY contracts contracts
 COPY .eslintrc.yml ./
 
 COPY lib lib
-COPY tests tests
+COPY suites suites
 COPY entry.sh ./
 
 CMD [ "./entry.sh" ]

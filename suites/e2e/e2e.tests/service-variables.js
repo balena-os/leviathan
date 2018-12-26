@@ -17,9 +17,17 @@
 'use strict'
 
 module.exports = {
-  title: 'Device is online',
-  run: async (test, context, options) => {
-    const isOnline = await context.balena.sdk.isDeviceOnline(context.balena.uuid)
-    test.true(isOnline)
+  title: 'Set device service variable when application is running',
+  interactive: true,
+  run: async function (context, options) {
+    this.resolveMatch(context.utils.runManualTestCase({
+      prepare: [ 'Ensure the device is running an application' ],
+      do: [
+        'Set a device service variable',
+        'Wait for a couple of seconds'
+      ],
+      assert: [ 'Open the Web Service Terminal, run "env", and ensure the new device variable is there' ],
+      cleanup: [ 'Close the Web Terminal' ]
+    }), true)
   }
 }

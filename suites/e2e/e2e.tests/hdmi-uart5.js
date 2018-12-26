@@ -16,8 +16,6 @@
 
 'use strict'
 
-const utils = require('../../lib/utils')
-
 module.exports = {
   title: 'Deactivate HDMI to use UART5',
   interactive: true,
@@ -31,8 +29,8 @@ module.exports = {
       }
     }
   },
-  run: async (test, context, options) => {
-    test.resolveMatch(utils.runManualTestCase({
+  run: async function (context, options) {
+    this.resolveMatch(context.utils.runManualTestCase({
       do: [
         'Download a new Beaglebone Black flasher image from the dashboard',
         'Append `fdtfile=am335x-boneblack-emmc-overlay.dtb` to `uEnv.txt_internal`',

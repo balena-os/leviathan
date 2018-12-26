@@ -16,11 +16,9 @@
 
 'use strict'
 
-const utils = require('../../lib/utils')
-
 module.exports = {
   title: 'Balena host OS update [<%= options.balenaOSVersion %> -> <%= options.balenaOSVersionUpdate %>]',
-  run: async (test, context, options) => {
+  run: async function (context, options) {
     const dockerVersion = options.balenaOSVersionUpdate
       .replace('+', '_')
       .replace(/\.(prod|dev)$/, '')
@@ -49,7 +47,7 @@ module.exports = {
       context.sshKeyPath
     )
 
-    await utils.waitUntil(async () => {
+    await context.utils.waitUntil(async () => {
       return await context.balena.sdk.getLastConnectedTime(context.balena.uuid) > lastTimeOnline
     })
 
@@ -64,6 +62,6 @@ module.exports = {
       context.sshKeyPath
     )
 
-    test.deepEqual([ activeBefore, inactiveBefore ], [ inactiveAfter, activeAfter ])
+    this.deepEqual([ activeBefore, inactiveBefore ], [ inactiveAfter, activeAfter ])
   }
 }

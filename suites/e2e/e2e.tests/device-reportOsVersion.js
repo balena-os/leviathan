@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 balena
+ * Copyright 2018 balena
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,12 @@
 
 'use strict'
 
-const utils = require('../../lib/utils')
-
 module.exports = {
-  title: 'Set device service variable when application is running',
-  interactive: true,
-  run: async (test, context, options) => {
-    test.resolveMatch(utils.runManualTestCase({
-      prepare: [ 'Ensure the device is running an application' ],
-      do: [
-        'Set a device service variable',
-        'Wait for a couple of seconds'
-      ],
-      assert: [ 'Open the Web Service Terminal, run "env", and ensure the new device variable is there' ],
-      cleanup: [ 'Close the Web Terminal' ]
-    }), true)
+  title: 'Device reported hostOS version',
+  run: async function (context, options) {
+    const hostOSVersion = await context.balena.sdk.getDeviceHostOSVersion(context.balena.uuid)
+    const hostOSVariant = await context.balena.sdk.getDeviceHostOSVariant(context.balena.uuid)
+
+    this.is(`${hostOSVersion}.${hostOSVariant}`, `balenaOS ${options.balenaOSVersion}`)
   }
 }

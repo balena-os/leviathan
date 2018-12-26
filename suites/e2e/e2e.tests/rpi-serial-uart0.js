@@ -16,10 +16,8 @@
 
 'use strict'
 
-const utils = require('../../lib/utils')
-
 module.exports = {
-  title: 'Enable serial port on UART1/MiniUART/ttyS0',
+  title: 'Enable serial port on UART0/ttyAMA0',
   interactive: true,
   deviceType: {
     type: 'object',
@@ -38,22 +36,20 @@ module.exports = {
       }
     }
   },
-  run: async (test, context, options) => {
-    test.resolveMatch(utils.runManualTestCase({
+  run: async function (context, options) {
+    this.resolveMatch(context.utils.runManualTestCase({
       prepare: [
         'Set "console=serial0,115200" in /mnt/boot/cmdline.txt so that the kernel outputs logs to serial',
         'Make sure there are no "Device Configuration" variables configured'
       ],
       do: [
         'Run `minicom -b 115200 -o -D /dev/tty***`, replacing the tty device accordingly to your host',
-        'Set `RESIN_HOST_CONFIG_enable_uart=0` as a "Device Configuration" variable',
-        'The device should reboot. Wait until its back online',
-        'Set `RESIN_HOST_CONFIG_enable_uart=1` as a "Device Configuration" variable. The device should reboot',
-        'The device should reboot. Wait until its back online'
+        'Set `RESIN_HOST_CONFIG_dtoverlay=pi3-miniuart-bt` as a "Device Configuration" variable'
       ],
       assert: [
-        'No messages should be seen on the serial debug connection when setting `RESIN_HOST_CONFIG_enable_uart` to 0',
-        'You should see the boot messages on the serial debug connection'
+        'The device should reboot',
+        'You should see booting messages on serial',
+        '`getty` should be advertised as spawned on `ttyAMA0` with a login message like: Resin OS X.X raspberrypi3 ttyAMA0'
       ]
     }), true)
   }

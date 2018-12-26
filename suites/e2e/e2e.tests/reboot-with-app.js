@@ -16,13 +16,11 @@
 
 'use strict'
 
-const utils = require('../../lib/utils')
-
 module.exports = {
   title: 'Reboot while application is running',
   interactive: true,
-  run: async (test, context, options) => {
-    test.resolveMatch(utils.runManualTestCase({
+  run: async function (context, options) {
+    this.resolveMatch(context.utils.runManualTestCase({
       prepare: [ 'Ensure the device is running an application' ],
       do: [ 'Reboot device' ],
       assert: [

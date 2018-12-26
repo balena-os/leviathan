@@ -18,7 +18,7 @@
 
 module.exports = {
   title: 'Update supervisor through the API',
-  run: async (test, context, options) => {
+  run: async function (context, options) {
     // Get supervisor update info
     const supervisorImage = await context.balena.sdk.executeCommandInHostOS(
       'source /etc/resin-supervisor/supervisor.conf ; echo $SUPERVISOR_IMAGE',
@@ -38,9 +38,9 @@ module.exports = {
       context.sshKeyPath
     )
 
-    test.isNot(supervisorImage, '')
-    test.isNot(supervisorTag, '')
-    test.isNot(configPath, '')
+    this.isNot(supervisorImage, '')
+    this.isNot(supervisorTag, '')
+    this.isNot(configPath, '')
 
     // Get config.json content
     const config = JSON.parse(await context.balena.sdk.executeCommandInHostOS(
@@ -61,7 +61,7 @@ module.exports = {
       }
     }))[0].id
 
-    test.is(await context.balena.sdk.pine.patch({
+    this.is(await context.balena.sdk.pine.patch({
       resource: 'device',
       id: config.deviceId,
       body: {
@@ -69,7 +69,7 @@ module.exports = {
       }
     }), 'OK')
 
-    test.resolveMatch(context.balena.sdk.executeCommandInHostOS(
+    this.resolveMatch(context.balena.sdk.executeCommandInHostOS(
       'update-resin-supervisor | grep "Supervisor configuration found from API"',
       context.balena.uuid,
       context.sshKeyPath

@@ -8,28 +8,28 @@
 
 module.exports = {
   descriptin: 'This suite runs our release tests',
-  setup: async (options) => {
+  setup: async (root, options) => {
     const _ = require('lodash')
     const Bluebird = require('bluebird')
+    const fse = require('fs-extra')
     const {
       join
     } = require('path')
     const {
       homedir
     } = require('os')
-    const {
-      ensureDirSync
-    } = require('fs-extra')
-    const utils = require('../lib/utils')
+
+    const utils = require(join(root, 'common/utils'))
+    const Teardown = require(join(root, 'common/teardown'))
+    const Worker = require(join(root, `workers/${options.worker}`))
     const BalenaOS = utils.requireComponent('os', 'balenaos')
     const Balena = utils.requireComponent('balena', 'sdk')
-    const Worker = require(`../lib/workers/${options.worker}`)
 
-    const teardown = new utils.Teardown()
+    const teardown = new Teardown()
 
     return Bluebird.try(async () => {
-      ensureDirSync(options.tmpdir)
-      const deviceType = require(`../contracts/contracts/hw.device-type/${options.deviceType}/contract.json`)
+      fse.ensureDirSync(options.tmpdir)
+      const deviceType = require(join(root, `../contracts/contracts/hw.device-type/${options.deviceType}/contract.json`))
       const sshKeyPath = join(homedir(), 'id')
 
       const sdk = new Balena(options.apiUrl)
@@ -103,6 +103,7 @@ module.exports = {
           uuid,
           sync: utils.requireComponent('balena', 'sync')
         },
+        utils,
         os,
         worker,
         sshKeyPath,
@@ -134,7 +135,7 @@ module.exports = {
     'balena-splash-screen.js',
     'reboot-with-app.js',
     'rpi-serial-uart0.js',
-    'rpi-serial-uart1.js'
+    'rpi-serial-uart1.js',
     'hdmi-uart5.js'
   ]
 }
