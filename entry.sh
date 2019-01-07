@@ -6,5 +6,6 @@ function start_udev() {
   udevadm settle &> /dev/null
 }
 
+eval $(ssh-agent)
 start_udev
 npm start

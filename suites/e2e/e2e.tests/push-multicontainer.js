@@ -25,7 +25,6 @@ module.exports = {
       path: path.join(context.tmpdir, 'multi-test'),
       url: 'https://github.com/balena-io-projects/multicontainer-getting-started.git',
       uuid: context.balena.uuid,
-      key: context.sshKeyPath,
       balena: context.balena,
       applicationName: context.balena.application.name
     })

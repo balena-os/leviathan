@@ -26,21 +26,18 @@ module.exports = {
 
     const activeBefore = await context.balena.sdk.executeCommandInHostOS(
       testCmd('active'),
-      context.balena.uuid,
-      context.sshKeyPath
+      context.balena.uuid
     )
     const inactiveBefore = await context.balena.sdk.executeCommandInHostOS(
       testCmd('inactive'),
-      context.balena.uuid,
-      context.sshKeyPath
+      context.balena.uuid
     )
 
     const lastTimeOnline = await context.balena.sdk.getLastConnectedTime(context.balena.uuid)
 
     await context.balena.sdk.executeCommandInHostOS(
       context.os.hostappCommand(),
-      context.balena.uuid,
-      context.sshKeyPath
+      context.balena.uuid
     )
 
     await context.utils.waitUntil(async () => {
@@ -49,13 +46,11 @@ module.exports = {
 
     const activeAfter = await context.balena.sdk.executeCommandInHostOS(
       testCmd('active'),
-      context.balena.uuid,
-      context.sshKeyPath
+      context.balena.uuid
     )
     const inactiveAfter = await context.balena.sdk.executeCommandInHostOS(
       testCmd('inactive'),
-      context.balena.uuid,
-      context.sshKeyPath
+      context.balena.uuid
     )
 
     this.deepEqual([ activeBefore, inactiveBefore ], [ inactiveAfter, activeAfter ])

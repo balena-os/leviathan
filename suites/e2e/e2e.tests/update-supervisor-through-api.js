@@ -22,20 +22,17 @@ module.exports = {
     // Get supervisor update info
     const supervisorImage = await context.balena.sdk.executeCommandInHostOS(
       'source /etc/resin-supervisor/supervisor.conf ; echo $SUPERVISOR_IMAGE',
-      context.balena.uuid,
-      context.sshKeyPath
+      context.balena.uuid
     )
     const supervisorTag = await context.balena.sdk.executeCommandInHostOS(
       'source /etc/resin-supervisor/supervisor.conf ; echo $SUPERVISOR_TAG',
-      context.balena.uuid,
-      context.sshKeyPath
+      context.balena.uuid
     )
 
     // Get config.json path
     const configPath = await context.balena.sdk.executeCommandInHostOS(
       'systemctl show config-json.path --no-pager | grep PathChanged | cut -d \'=\' -f 2',
-      context.balena.uuid,
-      context.sshKeyPath
+      context.balena.uuid
     )
 
     this.isNot(supervisorImage, '')
@@ -45,8 +42,7 @@ module.exports = {
     // Get config.json content
     const config = JSON.parse(await context.balena.sdk.executeCommandInHostOS(
       `cat ${configPath}`,
-      context.balena.uuid,
-      context.sshKeyPath
+      context.balena.uuid
     ))
 
     // Get Supervisor ID
@@ -71,8 +67,7 @@ module.exports = {
 
     this.resolveMatch(context.balena.sdk.executeCommandInHostOS(
       'update-resin-supervisor | grep "Supervisor configuration found from API"',
-      context.balena.uuid,
-      context.sshKeyPath
+      context.balena.uuid
     ), 'Supervisor configuration found from API')
   }
 }

@@ -22,23 +22,19 @@ module.exports = {
     // Delete current supervisor
     await context.balena.sdk.executeCommandInHostOS('systemctl stop resin-supervisor',
       context.balena.uuid,
-      context.sshKeyPath
     )
     await context.balena.sdk.executeCommandInHostOS('balena rm resin_supervisor',
-      context.balena.uuid,
-      context.sshKeyPath
+      context.balena.uuid
     )
     await context.balena.sdk.executeCommandInHostOS(
       `balena rmi -f $(balena images | grep -E "(balena|resin)"/${context.deviceType.data.arch}-supervisor | awk '{print $3}')`,
-      context.balena.uuid,
-      context.sshKeyPath
+      context.balena.uuid
     )
     this.rejects(context.balena.sdk.pingSupervisor(context.balena.uuid))
 
     // Pull and start the supervisor
     await context.balena.sdk.executeCommandInHostOS('update-resin-supervisor',
-      context.balena.uuid,
-      context.sshKeyPath
+      context.balena.uuid
     )
 
     // Wait for the supervisor to be marked as healthy
@@ -46,7 +42,6 @@ module.exports = {
       return await context.balena.sdk.executeCommandInHostOS(
         'balena inspect --format \'{{.State.Health.Status}}\' resin_supervisor',
         context.balena.uuid,
-        context.sshKeyPath
       ) === 'healthy'
     })
 

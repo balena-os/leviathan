@@ -28,7 +28,6 @@ module.exports = {
       path: clonePath,
       url: 'https://github.com/balena-io-projects/simple-server-python.git',
       uuid: context.balena.uuid,
-      key: context.sshKeyPath,
       balena: context.balena,
       applicationName: context.balena.application.name
     })

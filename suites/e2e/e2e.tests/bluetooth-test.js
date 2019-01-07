@@ -48,7 +48,6 @@ module.exports = {
       path: path.join(context.options.tmpdir, 'test-bluetooth'),
       url: 'https://github.com/balena-io-playground/test-bluetooth.git',
       uuid: context.balena.uuid,
-      key: context.sshKeyPath,
       balena: context.balena,
       applicationName: context.balena.application.name
     })

@@ -25,7 +25,6 @@ module.exports = {
       path: path.join(context.tmpdir, 'test'),
       url: 'https://github.com/balena-io-projects/balena-cpp-hello-world.git',
       uuid: context.balena.uuid,
-      key: context.sshKeyPath,
       balena: context.balena,
       applicationName: context.balena.application.name
     })

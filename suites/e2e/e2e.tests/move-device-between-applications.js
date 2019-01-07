@@ -25,7 +25,6 @@ module.exports = {
       path: path.join(context.tmpdir, 'test'),
       url: 'https://github.com/balena-io-projects/balena-cpp-hello-world.git',
       uuid: context.balena.uuid,
-      key: context.privateKeyPath,
       balena: context.balena,
       applicationName: context.balena.application.name
     })
@@ -40,7 +39,6 @@ module.exports = {
     const hashMoveDevice = await context.utils.pushRepoToApplication({
       path: path.join(context.tmpdir, 'test'),
       url: 'https://github.com/balena-io-projects/simple-server-node',
-      key: context.privateKeyPath,
       balena: context.balena,
       applicationName: applicationNameMoveDevice
     })
