@@ -18,10 +18,10 @@
 
 module.exports = {
   title: 'Device reported hostOS version',
-  run: async function (context, options) {
+  run: async function (context) {
     const hostOSVersion = await context.balena.sdk.getDeviceHostOSVersion(context.balena.uuid)
     const hostOSVariant = await context.balena.sdk.getDeviceHostOSVariant(context.balena.uuid)
 
-    this.is(`${hostOSVersion}.${hostOSVariant}`, `balenaOS ${options.balenaOSVersion}`)
+    this.is(`${hostOSVersion}.${hostOSVariant}`, `balenaOS ${context.os.image.version}`)
   }
 }

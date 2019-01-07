@@ -19,7 +19,7 @@
 module.exports = {
   title: 'Set device service variable when application is running',
   interactive: true,
-  run: async function (context, options) {
+  run: async function (context) {
     this.resolveMatch(context.utils.runManualTestCase({
       prepare: [ 'Ensure the device is running an application' ],
       do: [

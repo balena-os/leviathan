@@ -19,7 +19,7 @@
 module.exports = {
   title: 'Enter running application container',
   interactive: true,
-  run: async function (context, options) {
+  run: async function (context) {
     this.resolveMatch(context.utils.runManualTestCase({
       prepare: [
         `Ensure the device is running an application: ${context.dashboardUrl}. Clone one of the repos and change directory:`,

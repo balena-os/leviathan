@@ -17,12 +17,8 @@
 'use strict'
 
 module.exports = {
-  title: 'Balena host OS update [<%= options.balenaOSVersion %> -> <%= options.balenaOSVersionUpdate %>]',
-  run: async function (context, options) {
-    const dockerVersion = options.balenaOSVersionUpdate
-      .replace('+', '_')
-      .replace(/\.(prod|dev)$/, '')
-
+  title: 'Balena host OS update [<%= options.os.image.version%> -> latest]',
+  run: async function (context) {
     // This command will find the source (e.g. mmcblk0p2) for a given mountpoint
     const testCmd = (mountpoint) => {
       return `findmnt --noheadings --canonicalize --output SOURCE /mnt/sysroot/${mountpoint}`
@@ -42,7 +38,7 @@ module.exports = {
     const lastTimeOnline = await context.balena.sdk.getLastConnectedTime(context.balena.uuid)
 
     await context.balena.sdk.executeCommandInHostOS(
-      `hostapp-update -r -i resin/resinos-staging:${dockerVersion}-${options.deviceType}`,
+      context.os.hostappCommand(),
       context.balena.uuid,
       context.sshKeyPath
     )

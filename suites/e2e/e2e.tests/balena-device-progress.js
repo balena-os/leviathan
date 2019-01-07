@@ -20,7 +20,7 @@ const _ = require('lodash')
 
 module.exports = {
   title: 'Update device status with resin-device-progress',
-  run: async function (context, options) {
+  run: async function (context) {
     await context.balena.sdk.executeCommandInHostOS('resin-device-progress -p 60 -s "balenaOS test"',
       context.balena.uuid,
       context.sshKeyPath

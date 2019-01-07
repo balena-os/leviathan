@@ -18,7 +18,7 @@
 
 module.exports = {
   title: 'Reload supervisor on a running device',
-  run: async function (context, options) {
+  run: async function (context) {
     // Delete current supervisor
     await context.balena.sdk.executeCommandInHostOS('systemctl stop resin-supervisor',
       context.balena.uuid,

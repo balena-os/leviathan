@@ -18,7 +18,7 @@
 
 module.exports = {
   title: 'Update supervisor through the API',
-  run: async function (context, options) {
+  run: async function (context) {
     // Get supervisor update info
     const supervisorImage = await context.balena.sdk.executeCommandInHostOS(
       'source /etc/resin-supervisor/supervisor.conf ; echo $SUPERVISOR_IMAGE',
@@ -55,7 +55,7 @@ module.exports = {
       options: {
         $select: 'id',
         $filter: {
-          device_type: config.deviceType,
+          device_type: context.deviceType.slug,
           supervisor_version: supervisorTag
         }
       }

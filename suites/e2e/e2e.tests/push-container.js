@@ -20,14 +20,14 @@ const path = require('path')
 
 module.exports = {
   title: 'Push a mono-container to the application',
-  run: async function (context, options) {
+  run: async function (context) {
     const hash = await context.utils.pushAndWaitRepoToBalenaDevice({
-      path: path.join(options.tmpdir, 'test'),
+      path: path.join(context.tmpdir, 'test'),
       url: 'https://github.com/balena-io-projects/balena-cpp-hello-world.git',
       uuid: context.balena.uuid,
       key: context.sshKeyPath,
       balena: context.balena,
-      applicationName: options.applicationName
+      applicationName: context.balena.application.name
     })
 
     this.resolveMatch(context.balena.sdk.getDeviceCommit(context.balena.uuid), hash)

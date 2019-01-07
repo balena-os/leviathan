@@ -43,14 +43,14 @@ module.exports = {
       }
     }
   },
-  run: async function (context, options) {
+  run: async function (context) {
     const hash = await context.utils.pushAndWaitRepoToBalenaDevice({
-      path: path.join(options.tmpdir, 'test-bluetooth'),
+      path: path.join(context.options.tmpdir, 'test-bluetooth'),
       url: 'https://github.com/balena-io-playground/test-bluetooth.git',
       uuid: context.balena.uuid,
       key: context.sshKeyPath,
       balena: context.balena,
-      applicationName: options.applicationName
+      applicationName: context.balena.application.name
     })
 
     this.is(await context.balena.sdk.getDeviceCommit(context.balena.uuid), hash)

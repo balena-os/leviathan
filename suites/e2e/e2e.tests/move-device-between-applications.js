@@ -17,53 +17,54 @@
 'use strict'
 
 const path = require('path')
-const utils = require('../lib/utils')
 
 module.exports = {
   title: 'Move device between applications',
-  run: async (test, context, options, components) => {
-    const hash = await utils.pushAndWaitRepoToBalenaDevice({
-      path: path.join(options.tmpdir, 'test'),
+  run: async function (context) {
+    const hash = await context.utils.pushAndWaitRepoToBalenaDevice({
+      path: path.join(context.tmpdir, 'test'),
       url: 'https://github.com/balena-io-projects/balena-cpp-hello-world.git',
-      uuid: context.uuid,
-      key: context.key.privateKeyPath,
-      balena: components.balena,
-      applicationName: options.applicationName
+      uuid: context.balena.uuid,
+      key: context.privateKeyPath,
+      balena: context.balena,
+      applicationName: context.balena.application.name
     })
 
-    test.is(await components.balena.sdk.getDeviceCommit(context.uuid), hash)
+    this.is(await context.balena.sdk.getDeviceCommit(context.balena.uuid), hash)
 
-    const applicationNameMoveDevice = `${options.applicationName}_MoveDevice`
-    await components.balena.sdk.createApplication(applicationNameMoveDevice, options.deviceType)
+    const applicationNameMoveDevice = `${context.balena.application.name}_MoveDevice`
+    await context.balena.sdk.createApplication(applicationNameMoveDevice, context.deviceType.slug, {
+      delta: context.balena.application.env.delta
+    })
 
-    const hashMoveDevice = await utils.pushRepoToApplication({
-      path: path.join(options.tmpdir, 'test'),
+    const hashMoveDevice = await context.utils.pushRepoToApplication({
+      path: path.join(context.tmpdir, 'test'),
       url: 'https://github.com/balena-io-projects/simple-server-node',
-      key: context.key.privateKeyPath,
-      balena: components.balena,
+      key: context.privateKeyPath,
+      balena: context.balena,
       applicationName: applicationNameMoveDevice
     })
 
-    test.is(await components.balena.sdk.getApplicationCommit(applicationNameMoveDevice), hashMoveDevice)
+    this.is(await context.balena.sdk.getApplicationCommit(applicationNameMoveDevice), hashMoveDevice)
 
-    await utils.moveDeviceToApplication({
-      uuid: context.uuid,
-      balena: components.balena,
+    await context.utils.moveDeviceToApplication({
+      uuid: context.balena.uuid,
+      balena: context.balena,
       applicationName: applicationNameMoveDevice
     })
 
-    test.is(await components.balena.sdk.getDeviceCommit(context.uuid), hashMoveDevice)
+    this.is(await context.balena.sdk.getDeviceCommit(context.balena.uuid), hashMoveDevice)
 
-    await utils.moveDeviceToApplication({
-      uuid: context.uuid,
-      balena: components.balena,
-      applicationName: options.applicationName
+    await context.utils.moveDeviceToApplication({
+      uuid: context.balena.uuid,
+      balena: context.balena,
+      applicationName: context.balena.application.name
     })
 
-    test.is(await components.balena.sdk.getDeviceCommit(context.uuid), hash)
+    this.is(await context.balena.sdk.getDeviceCommit(context.balena.uuid), hash)
 
-    test.tearDown(async () => {
-      await components.balena.sdk.removeApplication(applicationNameMoveDevice)
+    this.tearDown(async () => {
+      await context.balena.sdk.removeApplication(applicationNameMoveDevice)
     })
   }
 }

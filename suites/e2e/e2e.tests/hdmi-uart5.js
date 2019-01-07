@@ -29,7 +29,7 @@ module.exports = {
       }
     }
   },
-  run: async function (context, options) {
+  run: async function (context) {
     this.resolveMatch(context.utils.runManualTestCase({
       do: [
         'Download a new Beaglebone Black flasher image from the dashboard',

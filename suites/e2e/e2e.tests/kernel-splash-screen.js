@@ -35,7 +35,7 @@ module.exports = {
       }
     }
   },
-  run: async function (context, options) {
+  run: async function (context) {
     this.resolveMatch(context.utils.runManualTestCase({
       prepare: [ 'Plug a monitor in the device\'s HDMI output' ],
       do: [ 'Reboot the device' ],

@@ -22,15 +22,15 @@ const request = require('request-promise')
 
 module.exports = {
   title: 'Sync application container',
-  run: async function (context, options) {
-    const clonePath = path.join(options.tmpdir, 'test-sync')
+  run: async function (context) {
+    const clonePath = path.join(context.tmpdir, 'test-sync')
     const hash = await context.utils.pushAndWaitRepoToBalenaDevice({
       path: clonePath,
       url: 'https://github.com/balena-io-projects/simple-server-python.git',
       uuid: context.balena.uuid,
       key: context.sshKeyPath,
       balena: context.balena,
-      applicationName: options.applicationName
+      applicationName: context.balena.application.name
     })
 
     this.is(await context.balena.sdk.getDeviceCommit(context.balena.uuid), hash)

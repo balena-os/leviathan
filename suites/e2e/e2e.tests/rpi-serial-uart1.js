@@ -36,7 +36,7 @@ module.exports = {
       }
     }
   },
-  run: async function (context, options) {
+  run: async function (context) {
     this.resolveMatch(context.utils.runManualTestCase({
       prepare: [
         'Set "console=serial0,115200" in /mnt/boot/cmdline.txt so that the kernel outputs logs to serial',

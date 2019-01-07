@@ -21,7 +21,7 @@ module.exports = {
 
     const utils = require(join(root, 'common/utils'))
     const Teardown = require(join(root, 'common/teardown'))
-    const Worker = require(join(root, `workers/${options.worker}`))
+    const Worker = require(join(root, `workers/${options.worker.type}`))
     const BalenaOS = utils.requireComponent('os', 'balenaos')
     const Balena = utils.requireComponent('balena', 'sdk')
 
@@ -30,22 +30,23 @@ module.exports = {
     return Bluebird.try(async () => {
       fse.ensureDirSync(options.tmpdir)
       const deviceType = require(join(root, `../contracts/contracts/hw.device-type/${options.deviceType}/contract.json`))
+
       const sshKeyPath = join(homedir(), 'id')
 
-      const sdk = new Balena(options.apiUrl)
+      const sdk = new Balena(options.balena.apiUrl)
 
-      await sdk.loginWithToken(options.apiKey)
+      await sdk.loginWithToken(options.balena.apiKey)
       teardown.register(() => {
         return sdk.logout().catch({
           code: 'BalenaNotLoggedIn'
         }, _.noop)
       })
 
-      await sdk.createApplication(options.applicationName, options.deviceType, {
-        delta: false
+      await sdk.createApplication(options.balena.application.name, deviceType.slug, {
+        delta: options.balena.application.env.delta
       })
       teardown.register(() => {
-        return sdk.removeApplication(options.applicationName)
+        return sdk.removeApplication(options.balena.application.name)
           .catch({
             code: 'BalenaNotLoggedIn'
           }, _.noop)
@@ -54,36 +55,34 @@ module.exports = {
           }, _.noop)
       })
 
-      await sdk.addSSHKey(options.sshKeyLabel, await utils.createSSHKey(sshKeyPath))
+      await sdk.addSSHKey(options.balena.sshKeyLabel, await utils.createSSHKey(sshKeyPath))
       teardown.register(() => {
-        return Bluebird.resolve(sdk.removeSSHKey(options.sshKeyLabel)).catch({
+        return Bluebird.resolve(sdk.removeSSHKey(options.balena.sshKeyLabel)).catch({
           code: 'BalenaNotLoggedIn'
         }, _.noop)
       })
 
       const uuid = await sdk.generateUUID()
-      const deviceApiKey = await sdk.register(options.applicationName, uuid)
+      const deviceApiKey = await sdk.register(options.balena.application.name, uuid)
 
       const os = new BalenaOS({
-        tmpdir: options.tmpdir,
-        deviceType: options.deviceType,
-        version: options.balenaOSVersion,
-        configuration: {
-          balena: await sdk.getDeviceOSConfiguration(
-            uuid, deviceApiKey, _.assign({
-              version: options.balenaOSVersion
-            }, options.configuration)
-          ),
-          download: new Balena(options.download),
-          network: options.network
-        }
+        deviceType: deviceType.slug,
+        download: {
+          type: options.balenaOS.download.type,
+          version: options.balenaOS.download.version,
+          source: options.balenaOS.download.source
+        },
+        network: options.balenaOS.network
       })
 
-      await os.fetch()
-
-      const worker = new Worker('main worker', options.deviceType, {
-        devicePath: options.device
+      const worker = new Worker('main worker', deviceType.slug, {
+        devicePath: options.worker.device
       })
+
+      await os.fetch(options.tmpdir)
+
+      os.balena.configJson = await sdk.getDeviceOSConfiguration(uuid, deviceApiKey, os.image.version)
+
 
       await worker.ready()
       await worker.flash(os)
@@ -99,6 +98,9 @@ module.exports = {
 
       return {
         balena: {
+          application: {
+            name: options.balena.application.name
+          },
           sdk,
           uuid,
           sync: utils.requireComponent('balena', 'sync')
@@ -108,7 +110,8 @@ module.exports = {
         worker,
         sshKeyPath,
         deviceType,
-        teardown
+        teardown,
+        tmpdir: options.tmpdir
       }
     }).catch(async (error) => {
       await teardown.run(setImmediate)
