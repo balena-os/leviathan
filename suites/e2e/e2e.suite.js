@@ -19,9 +19,9 @@ module.exports = {
       homedir
     } = require('os')
 
-    const utils = require(join(root, 'common/utils'))
-    const Teardown = require(join(root, 'common/teardown'))
-    const Worker = require(join(root, `workers/${options.worker.type}`))
+    const utils = require(join(root, 'lib/common/utils'))
+    const Teardown = require(join(root, 'lib/common/teardown'))
+    const Worker = require(join(root, `lib/workers/${options.worker.type}`))
     const BalenaOS = utils.requireComponent('os', 'balenaos')
     const Balena = utils.requireComponent('balena', 'sdk')
 
@@ -29,7 +29,7 @@ module.exports = {
 
     return Bluebird.try(async () => {
       fse.ensureDirSync(options.tmpdir)
-      const deviceType = require(join(root, `../contracts/contracts/hw.device-type/${options.deviceType}/contract.json`))
+      const deviceType = require(join(root, `contracts/contracts/hw.device-type/${options.deviceType}/contract.json`))
 
       const sshKeyPath = join(homedir(), 'id')
 
@@ -98,9 +98,7 @@ module.exports = {
 
       return {
         balena: {
-          application: {
-            name: options.balena.application.name
-          },
+          application: options.balena.application,
           sdk,
           uuid,
           sync: utils.requireComponent('balena', 'sync')
