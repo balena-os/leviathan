@@ -16,19 +16,29 @@
 
 'use strict'
 
-const utils = require('../lib/utils')
-
 module.exports = {
-  title: 'Reboot while application is running',
+  title: 'Identification LED',
   interactive: true,
-  run: async (test, context, options) => {
-    test.resolveMatch(utils.runManualTestCase({
-      prepare: [ 'Ensure the device is running an application' ],
-      do: [ 'Reboot device' ],
-      assert: [
-        'Ensure the device is online',
-        'Ensure the device is running an application'
-      ]
+  deviceType: {
+    type: 'object',
+    required: [ 'data' ],
+    properties: {
+      data: {
+        type: 'object',
+        required: [ 'led' ],
+        properties: {
+          led: {
+            type: 'boolean',
+            const: true
+          }
+        }
+      }
+    }
+  },
+  run: async function (context) {
+    this.resolveMatch(context.utils.runManualTestCase({
+      do: [ `Click the "Identify" button from the dashboard: ${context.dashboardUrl}` ],
+      assert: [ 'The device\'s identification LEDs should blink for a couple of seconds' ]
     }), true)
   }
 }

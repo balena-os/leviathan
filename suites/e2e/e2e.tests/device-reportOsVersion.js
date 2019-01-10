@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 balena
+ * Copyright 2018 balena
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,11 @@
 'use strict'
 
 module.exports = {
-  title: 'Device is online',
-  run: async (test, context, options, components) => {
-    const isOnline = await components.balena.sdk.isDeviceOnline(context.uuid)
-    test.true(isOnline)
+  title: 'Device reported hostOS version',
+  run: async function (context) {
+    const hostOSVersion = await context.balena.sdk.getDeviceHostOSVersion(context.balena.uuid)
+    const hostOSVariant = await context.balena.sdk.getDeviceHostOSVariant(context.balena.uuid)
+
+    this.is(`${hostOSVersion}.${hostOSVariant}`, `balenaOS ${context.os.image.version}`)
   }
 }

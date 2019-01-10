@@ -16,10 +16,8 @@
 
 'use strict'
 
-const utils = require('../lib/utils')
-
 module.exports = {
-  title: 'Boot/Shutdown splash screen',
+  title: 'Kernel boot logo/Reboot splash screen',
   interactive: true,
   deviceType: {
     type: 'object',
@@ -37,15 +35,13 @@ module.exports = {
       }
     }
   },
-  run: async (test, context, options) => {
-    test.resolveMatch(utils.runManualTestCase({
+  run: async function (context) {
+    this.resolveMatch(context.utils.runManualTestCase({
       prepare: [ 'Plug a monitor in the device\'s HDMI output' ],
-      do: [
-        'Shutdown the device',
-        'Power back on the device'
-      ],
+      do: [ 'Reboot the device' ],
       assert: [
-        'The balena logo splash screen should be visible when the board initiates shutdown',
+        'The balena logo splash screen should be visible when the board initiates reboot',
+        'The Tux (Linux) logo should not be visible on the screen while device is booting',
         'The balena logo splash screen should be visible during boot-up'
       ]
     }), true)

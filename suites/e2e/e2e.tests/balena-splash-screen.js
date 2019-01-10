@@ -16,10 +16,8 @@
 
 'use strict'
 
-const utils = require('../lib/utils')
-
 module.exports = {
-  title: 'Identification LED',
+  title: 'Boot/Shutdown splash screen',
   interactive: true,
   deviceType: {
     type: 'object',
@@ -27,9 +25,9 @@ module.exports = {
     properties: {
       data: {
         type: 'object',
-        required: [ 'led' ],
+        required: [ 'hdmi' ],
         properties: {
-          led: {
+          hdmi: {
             type: 'boolean',
             const: true
           }
@@ -37,10 +35,17 @@ module.exports = {
       }
     }
   },
-  run: async (test, context, options) => {
-    test.resolveMatch(utils.runManualTestCase({
-      do: [ `Click the "Identify" button from the dashboard: ${context.dashboardUrl}` ],
-      assert: [ 'The device\'s identification LEDs should blink for a couple of seconds' ]
+  run: async function (context) {
+    this.resolveMatch(context.utils.runManualTestCase({
+      prepare: [ 'Plug a monitor in the device\'s HDMI output' ],
+      do: [
+        'Shutdown the device',
+        'Power back on the device'
+      ],
+      assert: [
+        'The balena logo splash screen should be visible when the board initiates shutdown',
+        'The balena logo splash screen should be visible during boot-up'
+      ]
     }), true)
   }
 }

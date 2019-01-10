@@ -405,11 +405,11 @@ rules:
   jsdoc/check-param-names:
     - error
   jsdoc/check-tag-names:
-    - error
+    - off
   jsdoc/newline-after-description:
     - error
   jsdoc/require-example:
-    - error
+    - warn
   jsdoc/require-hyphen-before-param-description:
     - error
   jsdoc/require-param:
