@@ -32,5 +32,12 @@ module.exports = {
     })
 
     test.resolveMatch(components.balena.sdk.getDeviceCommit(context.uuid), hash)
+
+    const deviceLogs = await utils.getDeviceLogs({
+      balena: components.balena,
+      uuid: context.uuid
+    })
+
+    test.match([ deviceLogs ], [ /Hello, world!/ ], 'Application device logs output "Hello, world!"')
   }
 }
