@@ -78,7 +78,7 @@ module.exports = {
 
     if (options.worker === 'manual') {
       test.is(await utils.runManualTestCase({
-        prepare: [ `Please have a flash drive inserted...` ],
+        prepare: [ 'Please have a flash drive inserted...' ]
       }), true)
     }
 
@@ -93,7 +93,7 @@ module.exports = {
     context.uuid1 = placeholder.uuid
 
     test.is(await utils.runManualTestCase({
-      prepare: [ `Update balenaOS from dashboard...` ],
+      prepare: [ 'Update balenaOS from dashboard...' ]
     }), true)
 
     test.tearDown(async () => {

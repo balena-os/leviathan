@@ -38,6 +38,6 @@ module.exports = {
       uuid: context.uuid
     })
 
-    test.match([ deviceLogs ], [ /Hello, world!/ ], 'Application device logs output "Hello, world!"')
+    test.match([ deviceLogs ], [ /Hello, world!/ ], 'Application log outputs "Hello, world!"')
   }
 }
