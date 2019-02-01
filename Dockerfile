@@ -17,6 +17,7 @@ RUN echo 'deb http://ftp.debian.org/debian jessie-backports main' >> /etc/apt/so
 # Avoid using a ssh agent by using GIT_SSH_COMMAND (requires git v2.10+)
 RUN apt-get update && \
     apt-get install -y qemu-system-x86 qemu-kvm && \
+    curl -sSL https://get.docker.com/ | sh && \
     apt-get install -y -t jessie-backports jq git vim rsync && \
     rm -rf /var/lib/apt/lists/*
 
@@ -35,5 +36,10 @@ COPY .eslintrc.yml ./
 COPY lib lib
 COPY tests tests
 COPY entry.sh ./
+
+# wrapper script which mounts cgroups pseudo-filesystems
+ADD wrapdocker /usr/local/bin/wrapdocker
+# /var/lib/docker cannot be on AUFS, so we make it a volume
+VOLUME /var/lib/docker
 
 CMD [ "./entry.sh" ]
