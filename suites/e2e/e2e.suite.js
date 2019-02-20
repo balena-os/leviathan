@@ -7,7 +7,6 @@
 'use strict';
 
 module.exports = {
-  descriptin: 'This suite runs our release tests',
   setup: async (root, options) => {
     const noop = require('lodash/noop');
 
@@ -16,11 +15,11 @@ module.exports = {
     const { join } = require('path');
     const { homedir } = require('os');
 
-    const utils = require(join(root, 'lib/common/utils'));
-    const Teardown = require(join(root, 'lib/common/teardown'));
-    const Worker = require(join(root, `lib/workers/${options.worker.type}`));
-    const BalenaOS = utils.requireComponent('os', 'balenaos');
-    const Balena = utils.requireComponent('balena', 'sdk');
+    const utils = require(join(root, 'lib', 'common', 'utils'));
+    const Teardown = require(join(root, 'lib', 'common', 'teardown'));
+    const Worker = require(join(root, 'lib', 'workers', options.worker.type));
+    const BalenaOS = require(join(root, 'lib', 'components', 'os', 'balenaos'));
+    const Balena = require(join(root, 'lib', 'components', 'balena', 'sdk'));
 
     const teardown = new Teardown();
 
@@ -28,7 +27,11 @@ module.exports = {
       fse.ensureDirSync(options.tmpdir);
       const deviceType = require(join(
         root,
-        `contracts/contracts/hw.device-type/${options.deviceType}/contract.json`
+        'contracts',
+        'contracts',
+        'hw.device-type',
+        options.deviceType,
+        'contract.json'
       ));
 
       const sshKeyPath = join(homedir(), 'id');
@@ -117,7 +120,7 @@ module.exports = {
           application: options.balena.application,
           sdk,
           uuid,
-          sync: utils.requireComponent('balena', 'sync')
+          sync: require(join(root, 'lib', 'components', 'balena', 'sync'))
         },
         utils,
         os,
