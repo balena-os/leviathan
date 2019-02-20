@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-'use strict'
+'use strict';
 
 module.exports = {
   title: 'Set device service variable when application is running',
   interactive: true,
-  run: async function (context) {
-    this.resolveMatch(context.utils.runManualTestCase({
-      prepare: [ 'Ensure the device is running an application' ],
-      do: [
-        'Set a device service variable',
-        'Wait for a couple of seconds'
-      ],
-      assert: [ 'Open the Web Service Terminal, run "env", and ensure the new device variable is there' ],
-      cleanup: [ 'Close the Web Terminal' ]
-    }), true)
+  run: async function(context) {
+    this.resolveMatch(
+      context.utils.runManualTestCase({
+        prepare: ['Ensure the device is running an application'],
+        do: ['Set a device service variable', 'Wait for a couple of seconds'],
+        assert: [
+          'Open the Web Service Terminal, run "env", and ensure the new device variable is there'
+        ],
+        cleanup: ['Close the Web Terminal']
+      }),
+      true
+    );
   }
-}
+};

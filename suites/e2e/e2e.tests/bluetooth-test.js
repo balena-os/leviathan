@@ -14,52 +14,60 @@
  * limitations under the License.
  */
 
-'use strict'
+'use strict';
 
-const path = require('path')
+const path = require('path');
 
 module.exports = {
   title: 'General Bluetooth test',
   interactive: true,
   deviceType: {
     type: 'object',
-    required: [ 'data' ],
+    required: ['data'],
     properties: {
       data: {
         type: 'object',
-        required: [ 'connectivity' ],
+        required: ['connectivity'],
         properties: {
           connectivity: {
             type: 'object',
-            required: [ 'bluetooth' ],
+            required: ['bluetooth'],
             properties: {
               bluetooth: {
                 type: 'boolean',
-                const: true
-              }
-            }
-          }
-        }
-      }
-    }
+                const: true,
+              },
+            },
+          },
+        },
+      },
+    },
   },
-  run: async function (context) {
+  run: async function(context) {
     const hash = await context.utils.pushAndWaitRepoToBalenaDevice({
       path: path.join(context.options.tmpdir, 'test-bluetooth'),
       url: 'https://github.com/balena-io-playground/test-bluetooth.git',
       uuid: context.balena.uuid,
       balena: context.balena,
-      applicationName: context.balena.application.name
-    })
+      applicationName: context.balena.application.name,
+    });
 
-    this.is(await context.balena.sdk.getDeviceCommit(context.balena.uuid), hash)
+    this.is(
+      await context.balena.sdk.getDeviceCommit(context.balena.uuid),
+      hash,
+    );
 
-    this.resolveMatch(utils.runManualTestCase({
-      prepare: [ 'Have an activated and visible Bluetooth device around you (i.e your phone\'s bluetooth)' ],
-      assert: [
-        'Check the device dashboard\'s logs. The last log message should be: TEST PASSED',
-        'Restart application if test fails'
-      ]
-    }), true)
-  }
-}
+    this.resolveMatch(
+      utils.runManualTestCase({
+        prepare: [
+          "Have an activated and visible Bluetooth device around you (i.e your phone's bluetooth)",
+        ],
+        assert: [
+          "Check the device dashboard's logs. The last log message should be: TEST PASSED",
+          'Restart application if test fails',
+        ],
+      }),
+      true,
+    );
+  },
+};

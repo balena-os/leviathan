@@ -14,45 +14,45 @@
  * limitations under the License.
  */
 
-'use strict'
+'use strict';
 
 module.exports = {
   title: 'Balena host OS update [<%= options.os.image.version%> -> latest]',
-  run: async function (context) {
+  run: async function(context) {
     // This command will find the source (e.g. mmcblk0p2) for a given mountpoint
-    const testCmd = (mountpoint) => {
-      return `findmnt --noheadings --canonicalize --output SOURCE /mnt/sysroot/${mountpoint}`
-    }
+    const testCmd = mountpoint => {
+      return `findmnt --noheadings --canonicalize --output SOURCE /mnt/sysroot/${mountpoint}`;
+    };
 
     const activeBefore = await context.balena.sdk.executeCommandInHostOS(
       testCmd('active'),
       context.balena.uuid
-    )
+    );
     const inactiveBefore = await context.balena.sdk.executeCommandInHostOS(
       testCmd('inactive'),
       context.balena.uuid
-    )
+    );
 
-    const lastTimeOnline = await context.balena.sdk.getLastConnectedTime(context.balena.uuid)
+    const lastTimeOnline = await context.balena.sdk.getLastConnectedTime(context.balena.uuid);
 
     await context.balena.sdk.executeCommandInHostOS(
       context.os.hostappCommand(),
       context.balena.uuid
-    )
+    );
 
     await context.utils.waitUntil(async () => {
-      return await context.balena.sdk.getLastConnectedTime(context.balena.uuid) > lastTimeOnline
-    })
+      return (await context.balena.sdk.getLastConnectedTime(context.balena.uuid)) > lastTimeOnline;
+    });
 
     const activeAfter = await context.balena.sdk.executeCommandInHostOS(
       testCmd('active'),
       context.balena.uuid
-    )
+    );
     const inactiveAfter = await context.balena.sdk.executeCommandInHostOS(
       testCmd('inactive'),
       context.balena.uuid
-    )
+    );
 
-    this.deepEqual([ activeBefore, inactiveBefore ], [ inactiveAfter, activeAfter ])
+    this.deepEqual([activeBefore, inactiveBefore], [inactiveAfter, activeAfter]);
   }
-}
+};

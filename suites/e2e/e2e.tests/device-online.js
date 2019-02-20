@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-'use strict'
+'use strict';
 
 module.exports = {
   title: 'Device is online',
-  run: async function (context) {
-    const isOnline = await context.balena.sdk.isDeviceOnline(context.balena.uuid)
-    this.true(isOnline)
-  }
-}
+  run: async function(context) {
+    const isOnline = await context.balena.sdk.isDeviceOnline(
+      context.balena.uuid,
+    );
+    this.true(isOnline);
+  },
+};

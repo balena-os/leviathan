@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-'use strict'
+'use strict';
 
 module.exports = {
   title: 'Enable serial port on UART0/ttyAMA0',
   interactive: true,
   deviceType: {
     type: 'object',
-    required: [ 'slug' ],
+    required: ['slug'],
     properties: {
       slug: {
         type: 'string',
@@ -36,21 +36,24 @@ module.exports = {
       }
     }
   },
-  run: async function (context) {
-    this.resolveMatch(context.utils.runManualTestCase({
-      prepare: [
-        'Set "console=serial0,115200" in /mnt/boot/cmdline.txt so that the kernel outputs logs to serial',
-        'Make sure there are no "Device Configuration" variables configured'
-      ],
-      do: [
-        'Run `minicom -b 115200 -o -D /dev/tty***`, replacing the tty device accordingly to your host',
-        'Set `RESIN_HOST_CONFIG_dtoverlay=pi3-miniuart-bt` as a "Device Configuration" variable'
-      ],
-      assert: [
-        'The device should reboot',
-        'You should see booting messages on serial',
-        '`getty` should be advertised as spawned on `ttyAMA0` with a login message like: Resin OS X.X raspberrypi3 ttyAMA0'
-      ]
-    }), true)
+  run: async function(context) {
+    this.resolveMatch(
+      context.utils.runManualTestCase({
+        prepare: [
+          'Set "console=serial0,115200" in /mnt/boot/cmdline.txt so that the kernel outputs logs to serial',
+          'Make sure there are no "Device Configuration" variables configured'
+        ],
+        do: [
+          'Run `minicom -b 115200 -o -D /dev/tty***`, replacing the tty device accordingly to your host',
+          'Set `RESIN_HOST_CONFIG_dtoverlay=pi3-miniuart-bt` as a "Device Configuration" variable'
+        ],
+        assert: [
+          'The device should reboot',
+          'You should see booting messages on serial',
+          '`getty` should be advertised as spawned on `ttyAMA0` with a login message like: Resin OS X.X raspberrypi3 ttyAMA0'
+        ]
+      }),
+      true
+    );
   }
-}
+};

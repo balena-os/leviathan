@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-'use strict'
+'use strict';
 
-const randomstring = require('randomstring')
-const path = require('path')
+const randomstring = require('randomstring');
+const path = require('path');
 
 const id = `${path.basename(__dirname)}_${randomstring.generate({
   length: 5,
   charset: 'alphabetic'
-})}`
+})}`;
 
-module.exports = (options) => {
+module.exports = options => {
   return {
     balenaOS: {
       download: {
@@ -48,11 +48,11 @@ module.exports = (options) => {
       },
       sshKeyLabel: id,
       apiKey: options.BALENA_TESTS_API_KEY,
-      apiUrl: options.BALENA_TESTS_API_URL,
+      apiUrl: options.BALENA_TESTS_API_URL
     },
     worker: {
       type: options.BALENA_TESTS_WORKER,
       device: options.BALENA_TESTS_DEVICE
     }
-  }
-}
+  };
+};

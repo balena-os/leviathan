@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-'use strict'
+'use strict';
 
 module.exports = {
   title: 'Identification LED',
   interactive: true,
   deviceType: {
     type: 'object',
-    required: [ 'data' ],
+    required: ['data'],
     properties: {
       data: {
         type: 'object',
-        required: [ 'led' ],
+        required: ['led'],
         properties: {
           led: {
             type: 'boolean',
@@ -35,10 +35,13 @@ module.exports = {
       }
     }
   },
-  run: async function (context) {
-    this.resolveMatch(context.utils.runManualTestCase({
-      do: [ `Click the "Identify" button from the dashboard: ${context.dashboardUrl}` ],
-      assert: [ 'The device\'s identification LEDs should blink for a couple of seconds' ]
-    }), true)
+  run: async function(context) {
+    this.resolveMatch(
+      context.utils.runManualTestCase({
+        do: [`Click the "Identify" button from the dashboard: ${context.dashboardUrl}`],
+        assert: ["The device's identification LEDs should blink for a couple of seconds"]
+      }),
+      true
+    );
   }
-}
+};

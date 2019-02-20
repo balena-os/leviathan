@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-'use strict'
+'use strict';
 
 module.exports = {
   title: 'Reboot while application is running',
   interactive: true,
-  run: async function (context) {
-    this.resolveMatch(context.utils.runManualTestCase({
-      prepare: [ 'Ensure the device is running an application' ],
-      do: [ 'Reboot device' ],
-      assert: [
-        'Ensure the device is online',
-        'Ensure the device is running an application'
-      ]
-    }), true)
+  run: async function(context) {
+    this.resolveMatch(
+      context.utils.runManualTestCase({
+        prepare: ['Ensure the device is running an application'],
+        do: ['Reboot device'],
+        assert: ['Ensure the device is online', 'Ensure the device is running an application']
+      }),
+      true
+    );
   }
-}
+};

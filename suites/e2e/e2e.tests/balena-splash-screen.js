@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-'use strict'
+'use strict';
 
 module.exports = {
   title: 'Boot/Shutdown splash screen',
   interactive: true,
   deviceType: {
     type: 'object',
-    required: [ 'data' ],
+    required: ['data'],
     properties: {
       data: {
         type: 'object',
-        required: [ 'hdmi' ],
+        required: ['hdmi'],
         properties: {
           hdmi: {
             type: 'boolean',
@@ -35,17 +35,17 @@ module.exports = {
       }
     }
   },
-  run: async function (context) {
-    this.resolveMatch(context.utils.runManualTestCase({
-      prepare: [ 'Plug a monitor in the device\'s HDMI output' ],
-      do: [
-        'Shutdown the device',
-        'Power back on the device'
-      ],
-      assert: [
-        'The balena logo splash screen should be visible when the board initiates shutdown',
-        'The balena logo splash screen should be visible during boot-up'
-      ]
-    }), true)
+  run: async function(context) {
+    this.resolveMatch(
+      context.utils.runManualTestCase({
+        prepare: ["Plug a monitor in the device's HDMI output"],
+        do: ['Shutdown the device', 'Power back on the device'],
+        assert: [
+          'The balena logo splash screen should be visible when the board initiates shutdown',
+          'The balena logo splash screen should be visible during boot-up'
+        ]
+      }),
+      true
+    );
   }
-}
+};

@@ -14,21 +14,25 @@
  * limitations under the License.
  */
 
-'use strict'
+'use strict';
 
-const path = require('path')
+const path = require('path');
 
 module.exports = {
   title: 'Push a multi-container application',
-  run: async function (context) {
+  run: async function(context) {
     const hash = await context.utils.pushAndWaitRepoToBalenaDevice({
       path: path.join(context.tmpdir, 'multi-test'),
-      url: 'https://github.com/balena-io-projects/multicontainer-getting-started.git',
+      url:
+        'https://github.com/balena-io-projects/multicontainer-getting-started.git',
       uuid: context.balena.uuid,
       balena: context.balena,
-      applicationName: context.balena.application.name
-    })
+      applicationName: context.balena.application.name,
+    });
 
-    this.resolveMatch(context.balena.sdk.getDeviceCommit(context.balena.uuid), hash)
-  }
-}
+    this.resolveMatch(
+      context.balena.sdk.getDeviceCommit(context.balena.uuid),
+      hash,
+    );
+  },
+};
