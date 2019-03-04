@@ -54,7 +54,7 @@ module.exports = {
     context.os = new BalenaOS({
       imageName: 'hostUpdate',
       tmpdir: options.tmpdir,
-      configuration: balenaConfiguration,
+      configuration: _.assign(balenaConfiguration, options.configuration),
       deviceType: options.deviceType,
       version: options.balenaOSVersionHostUpdateOldToNew,
       url: options.apiStagingUrl

@@ -57,7 +57,7 @@ module.exports = {
     context.os = new BalenaOS({
       imageName: 'LocalMode',
       tmpdir: options.tmpdir,
-      configuration: balenaConfiguration,
+      configuration: _.assign(balenaConfiguration, options.configuration),
       deviceType: options.deviceType,
       version: balenaOSVersionDevEdition,
       url: options.apiStagingUrl
