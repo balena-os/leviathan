@@ -52,7 +52,7 @@ module.exports = {
 
     /* Reboot device 10 times */
     let iterate = 0
-    while (iterate < 6) {
+    while (iterate < 4) {
       lastTimeOnline = await components.balena.sdk.getLastConnectedTime(context.uuid)
       await components.balena.sdk.rebootDevice(context.uuid)
       await utils.waitUntil(async () => {
