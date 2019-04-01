@@ -28,6 +28,7 @@ COPY --from=npm-install /tmp/node ./
 
 COPY contracts contracts
 COPY .eslintrc.json ./
+COPY .prettierrc ./
 
 COPY lib lib
 COPY suites suites

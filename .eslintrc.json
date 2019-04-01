@@ -6,7 +6,7 @@
     "node": true
   },
   "plugins": ["lodash", "jsdoc", "prettier"],
-  "extends": ["standard", "plugin:lodash/recommended", "plugin:prettier/recommended"],
+  "extends": ["standard", "plugin:prettier/recommended"],
   "parserOptions": {
     "sourceType": "module"
   },
