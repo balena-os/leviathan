@@ -14,36 +14,35 @@
  * limitations under the License.
  */
 
-'use strict'
+'use strict';
 
 module.exports = {
   title: 'Update supervisor through the API',
-  run: async function (context) {
+  run: async function(context) {
     // Get supervisor update info
     const supervisorImage = await context.balena.sdk.executeCommandInHostOS(
       'source /etc/resin-supervisor/supervisor.conf ; echo $SUPERVISOR_IMAGE',
       context.balena.uuid
-    )
+    );
     const supervisorTag = await context.balena.sdk.executeCommandInHostOS(
       'source /etc/resin-supervisor/supervisor.conf ; echo $SUPERVISOR_TAG',
       context.balena.uuid
-    )
+    );
 
     // Get config.json path
     const configPath = await context.balena.sdk.executeCommandInHostOS(
-      'systemctl show config-json.path --no-pager | grep PathChanged | cut -d \'=\' -f 2',
+      "systemctl show config-json.path --no-pager | grep PathChanged | cut -d '=' -f 2",
       context.balena.uuid
-    )
+    );
 
-    this.isNot(supervisorImage, '')
-    this.isNot(supervisorTag, '')
-    this.isNot(configPath, '')
+    this.isNot(supervisorImage, '');
+    this.isNot(supervisorTag, '');
+    this.isNot(configPath, '');
 
     // Get config.json content
-    const config = JSON.parse(await context.balena.sdk.executeCommandInHostOS(
-      `cat ${configPath}`,
-      context.balena.uuid
-    ))
+    const config = JSON.parse(
+      await context.balena.sdk.executeCommandInHostOS(`cat ${configPath}`, context.balena.uuid)
+    );
 
     // Get Supervisor ID
     const supervisorId = (await context.balena.sdk.pine.get({
@@ -55,19 +54,25 @@ module.exports = {
           supervisor_version: supervisorTag
         }
       }
-    }))[0].id
+    }))[0].id;
 
-    this.is(await context.balena.sdk.pine.patch({
-      resource: 'device',
-      id: config.deviceId,
-      body: {
-        should_be_managed_by__supervisor_release: supervisorId
-      }
-    }), 'OK')
+    this.is(
+      await context.balena.sdk.pine.patch({
+        resource: 'device',
+        id: config.deviceId,
+        body: {
+          should_be_managed_by__supervisor_release: supervisorId
+        }
+      }),
+      'OK'
+    );
 
-    this.resolveMatch(context.balena.sdk.executeCommandInHostOS(
-      'update-resin-supervisor | grep "Supervisor configuration found from API"',
-      context.balena.uuid
-    ), 'Supervisor configuration found from API')
+    this.resolveMatch(
+      context.balena.sdk.executeCommandInHostOS(
+        'update-resin-supervisor | grep "Supervisor configuration found from API"',
+        context.balena.uuid
+      ),
+      'Supervisor configuration found from API'
+    );
   }
-}
+};

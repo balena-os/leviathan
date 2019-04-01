@@ -1,9 +1,13 @@
 SHELL = /bin/bash
 DOCKER_IMAGE = balena-tests
 
+ifdef IMAGES
+	DOCKER_MOUNT = --mount type=bind,source=$(IMAGES),target=/mnt
+endif
+
 ifndef CI
-	DOCKER_TTY = '--tty'
-	DOCKER_INTERACTIVE = '--interactive'
+	DOCKER_TTY = --tty
+	DOCKER_INTERACTIVE = --interactive
 endif
 
 ifdef BALENA_TESTS_DISK
@@ -22,6 +26,7 @@ test: build-docker-image
 		--privileged \
 		$(foreach variable, $(shell compgen -e | grep BALENA_TESTS), \
 			--env "$(addsuffix =$(value $(variable)), $(variable))") \
+		$(DOCKER_MOUNT) \
 		$(DOCKER_TTY) \
 		$(DOCKER_INTERACTIVE) \
 		$(DEVICE) \

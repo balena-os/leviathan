@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-'use strict'
+'use strict';
 
 module.exports = {
   title: 'Deactivate HDMI to use UART5',
   interactive: true,
   deviceType: {
     type: 'object',
-    required: [ 'slug' ],
+    required: ['slug'],
     properties: {
       slug: {
         type: 'string',
@@ -29,19 +29,22 @@ module.exports = {
       }
     }
   },
-  run: async function (context) {
-    this.resolveMatch(context.utils.runManualTestCase({
-      do: [
-        'Download a new Beaglebone Black flasher image from the dashboard',
-        'Append `fdtfile=am335x-boneblack-emmc-overlay.dtb` to `uEnv.txt_internal`',
-        'Provision a new Beaglebone Black device using the above edited image',
-        'Load the cape by running `echo BB-UART5 > /sys/devices/platform/bone_capemgr/slots` in the host OS'
-      ],
-      assert: [
-        'The `uEnv.txt` file in the boot partition should contain `fdtfile=am335x-boneblack-emmc-overlay.dtb`',
-        'Check that the UART5 is loaded by running `cat /sys/devices/platform/bone_capemgr/slots`',
-        'Check that there are no HDMI conflict errors by running `dmesg | grep "could not request pin"`'
-      ]
-    }), true)
+  run: async function(context) {
+    this.resolveMatch(
+      context.utils.runManualTestCase({
+        do: [
+          'Download a new Beaglebone Black flasher image from the dashboard',
+          'Append `fdtfile=am335x-boneblack-emmc-overlay.dtb` to `uEnv.txt_internal`',
+          'Provision a new Beaglebone Black device using the above edited image',
+          'Load the cape by running `echo BB-UART5 > /sys/devices/platform/bone_capemgr/slots` in the host OS'
+        ],
+        assert: [
+          'The `uEnv.txt` file in the boot partition should contain `fdtfile=am335x-boneblack-emmc-overlay.dtb`',
+          'Check that the UART5 is loaded by running `cat /sys/devices/platform/bone_capemgr/slots`',
+          'Check that there are no HDMI conflict errors by running `dmesg | grep "could not request pin"`'
+        ]
+      }),
+      true
+    );
   }
-}
+};

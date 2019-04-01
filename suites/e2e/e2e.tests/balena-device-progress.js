@@ -14,22 +14,26 @@
  * limitations under the License.
  */
 
-'use strict'
+'use strict';
 
-const _ = require('lodash')
+const isEmpty = require('lodash/isEmpty');
 
 module.exports = {
   title: 'Update device status with resin-device-progress',
-  run: async function (context) {
-    await context.balena.sdk.executeCommandInHostOS('resin-device-progress -p 60 -s "balenaOS test"',
+  run: async function(context) {
+    await context.balena.sdk.executeCommandInHostOS(
+      'resin-device-progress -p 60 -s "balenaOS test"',
       context.balena.uuid
-    )
+    );
 
     await context.utils.waitUntil(async () => {
-      return !_.isEmpty(await context.balena.sdk.getDeviceProvisioningState(context.balena.uuid))
-    })
+      return !isEmpty(await context.balena.sdk.getDeviceProvisioningState(context.balena.uuid));
+    });
 
-    this.resolveMatch(context.balena.sdk.getDeviceProvisioningState(context.balena.uuid), 'balenaOS test')
-    this.resolveMatch(context.balena.sdk.getDeviceProvisioningProgress(context.balena.uuid), 60)
+    this.resolveMatch(
+      context.balena.sdk.getDeviceProvisioningState(context.balena.uuid),
+      'balenaOS test'
+    );
+    this.resolveMatch(context.balena.sdk.getDeviceProvisioningProgress(context.balena.uuid), 60);
   }
-}
+};

@@ -14,55 +14,58 @@
  * limitations under the License.
  */
 
-'use strict'
+'use strict';
 
-const path = require('path')
+const path = require('path');
 
 module.exports = {
   title: 'Move device between applications',
-  run: async function (context) {
+  run: async function(context) {
     const hash = await context.utils.pushAndWaitRepoToBalenaDevice({
       path: path.join(context.tmpdir, 'test'),
       url: 'https://github.com/balena-io-projects/balena-cpp-hello-world.git',
       uuid: context.balena.uuid,
       balena: context.balena,
       applicationName: context.balena.application.name
-    })
+    });
 
-    this.is(await context.balena.sdk.getDeviceCommit(context.balena.uuid), hash)
+    this.is(await context.balena.sdk.getDeviceCommit(context.balena.uuid), hash);
 
-    const applicationNameMoveDevice = `${context.balena.application.name}_MoveDevice`
+    const applicationNameMoveDevice = `${context.balena.application.name}_MoveDevice`;
     await context.balena.sdk.createApplication(applicationNameMoveDevice, context.deviceType.slug, {
       delta: context.balena.application.env.delta
-    })
+    });
 
     const hashMoveDevice = await context.utils.pushRepoToApplication({
       path: path.join(context.tmpdir, 'test'),
       url: 'https://github.com/balena-io-projects/simple-server-node',
       balena: context.balena,
       applicationName: applicationNameMoveDevice
-    })
+    });
 
-    this.is(await context.balena.sdk.getApplicationCommit(applicationNameMoveDevice), hashMoveDevice)
+    this.is(
+      await context.balena.sdk.getApplicationCommit(applicationNameMoveDevice),
+      hashMoveDevice
+    );
 
     await context.utils.moveDeviceToApplication({
       uuid: context.balena.uuid,
       balena: context.balena,
       applicationName: applicationNameMoveDevice
-    })
+    });
 
-    this.is(await context.balena.sdk.getDeviceCommit(context.balena.uuid), hashMoveDevice)
+    this.is(await context.balena.sdk.getDeviceCommit(context.balena.uuid), hashMoveDevice);
 
     await context.utils.moveDeviceToApplication({
       uuid: context.balena.uuid,
       balena: context.balena,
       applicationName: context.balena.application.name
-    })
+    });
 
-    this.is(await context.balena.sdk.getDeviceCommit(context.balena.uuid), hash)
+    this.is(await context.balena.sdk.getDeviceCommit(context.balena.uuid), hash);
 
     this.tearDown(async () => {
-      await context.balena.sdk.removeApplication(applicationNameMoveDevice)
-    })
+      await context.balena.sdk.removeApplication(applicationNameMoveDevice);
+    });
   }
-}
+};

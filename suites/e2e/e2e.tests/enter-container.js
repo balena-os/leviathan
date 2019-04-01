@@ -14,26 +14,31 @@
  * limitations under the License.
  */
 
-'use strict'
+'use strict';
 
 module.exports = {
   title: 'Enter running application container',
   interactive: true,
-  run: async function (context) {
-    this.resolveMatch(context.utils.runManualTestCase({
-      prepare: [
-        `Ensure the device is running an application: ${context.dashboardUrl}. Clone one of the repos and change directory:`,
-        '"git clone https://github.com/balena-io-projects/balena-cpp-hello-world.git && cd balena-cpp-hello-world" or',
-        '"git clone https://github.com/balena-io-projects/simple-server-node.git && cd simple-server-node"',
-        `Add balena remote url: "git remote add balena ${options.gitUrl}"`,
-        'Push to application: "git push balena master"'
-      ],
-      do: [ `Run "balena ssh ${context.balena.uuid}"` ],
-      assert: [
-        'A shell prompt should appear after a few seconds',
-        'Running "env | grep RESIN_DEVICE_NAME_AT_INIT" should return the device name listed in the dashboard'
-      ],
-      cleanup: [ 'Exit shell' ]
-    }), true)
+  run: async function(context) {
+    this.resolveMatch(
+      context.utils.runManualTestCase({
+        prepare: [
+          `Ensure the device is running an application: ${
+            context.dashboardUrl
+          }. Clone one of the repos and change directory:`,
+          '"git clone https://github.com/balena-io-projects/balena-cpp-hello-world.git && cd balena-cpp-hello-world" or',
+          '"git clone https://github.com/balena-io-projects/simple-server-node.git && cd simple-server-node"',
+          `Add balena remote url: "git remote add balena ${context.options.gitUrl}"`,
+          'Push to application: "git push balena master"'
+        ],
+        do: [`Run "balena ssh ${context.balena.uuid}"`],
+        assert: [
+          'A shell prompt should appear after a few seconds',
+          'Running "env | grep RESIN_DEVICE_NAME_AT_INIT" should return the device name listed in the dashboard'
+        ],
+        cleanup: ['Exit shell']
+      }),
+      true
+    );
   }
-}
+};

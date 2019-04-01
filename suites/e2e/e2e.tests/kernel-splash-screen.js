@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-'use strict'
+'use strict';
 
 module.exports = {
   title: 'Kernel boot logo/Reboot splash screen',
   interactive: true,
   deviceType: {
     type: 'object',
-    required: [ 'data' ],
+    required: ['data'],
     properties: {
       data: {
         type: 'object',
-        required: [ 'hdmi' ],
+        required: ['hdmi'],
         properties: {
           hdmi: {
             type: 'boolean',
@@ -35,15 +35,18 @@ module.exports = {
       }
     }
   },
-  run: async function (context) {
-    this.resolveMatch(context.utils.runManualTestCase({
-      prepare: [ 'Plug a monitor in the device\'s HDMI output' ],
-      do: [ 'Reboot the device' ],
-      assert: [
-        'The balena logo splash screen should be visible when the board initiates reboot',
-        'The Tux (Linux) logo should not be visible on the screen while device is booting',
-        'The balena logo splash screen should be visible during boot-up'
-      ]
-    }), true)
+  run: async function(context) {
+    this.resolveMatch(
+      context.utils.runManualTestCase({
+        prepare: ["Plug a monitor in the device's HDMI output"],
+        do: ['Reboot the device'],
+        assert: [
+          'The balena logo splash screen should be visible when the board initiates reboot',
+          'The Tux (Linux) logo should not be visible on the screen while device is booting',
+          'The balena logo splash screen should be visible during boot-up'
+        ]
+      }),
+      true
+    );
   }
-}
+};

@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
-'use strict'
+'use strict';
 
-const Bluebird = require('bluebird')
-const realpath = Bluebird.promisify(require('fs').realpath)
-
-const {
-  basename
-} = require('path')
+const split = require('lodash/split');
 
 module.exports = {
   title: 'Image filename format',
-  run: async function (context) {
-    const supervisorVersion = await context.balena.sdk.getSupervisorVersion(context.balena.uuid)
-    const hostOsVersion = (await context.balena.sdk.getDeviceHostOSVersion(context.balena.uuid)).split(' ')
-    const downloadApi = context.os.download.source.split('.')[0]
+  run: async function(context) {
+    const supervisorVersion = await context.balena.sdk.getSupervisorVersion(context.balena.uuid);
+    const hostOsVersion = (split(
+      await context.balena.sdk.getDeviceHostOSVersion(context.balena.uuid)
+    ),
+    ' ');
+    const downloadApi = split(context.os.download.source, '.')[0];
 
-    this.is(context.os.image.filename, `${downloadApi}-${context.deviceType.slug}-${hostOsVersion[1]}-v${supervisorVersion}.img`)
+    this.is(
+      context.os.image.filename,
+      `${downloadApi}-${context.deviceType.slug}-${hostOsVersion[1]}-v${supervisorVersion}.img`
+    );
   }
-}
+};

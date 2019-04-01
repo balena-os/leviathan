@@ -30,7 +30,7 @@ WORKDIR /usr/app
 COPY --from=npm-install /tmp/node ./
 
 COPY contracts contracts
-COPY .eslintrc.yml ./
+COPY .eslintrc.json ./
 
 COPY lib lib
 COPY suites suites

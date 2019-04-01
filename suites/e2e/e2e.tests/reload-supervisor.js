@@ -14,37 +14,41 @@
  * limitations under the License.
  */
 
-'use strict'
+'use strict';
 
 module.exports = {
   title: 'Reload supervisor on a running device',
-  run: async function (context) {
+  run: async function(context) {
     // Delete current supervisor
-    await context.balena.sdk.executeCommandInHostOS('systemctl stop resin-supervisor',
-      context.balena.uuid,
-    )
-    await context.balena.sdk.executeCommandInHostOS('balena rm resin_supervisor',
-      context.balena.uuid
-    )
     await context.balena.sdk.executeCommandInHostOS(
-      `balena rmi -f $(balena images | grep -E "(balena|resin)"/${context.deviceType.data.arch}-supervisor | awk '{print $3}')`,
+      'systemctl stop resin-supervisor',
       context.balena.uuid
-    )
-    this.rejects(context.balena.sdk.pingSupervisor(context.balena.uuid))
+    );
+    await context.balena.sdk.executeCommandInHostOS(
+      'balena rm resin_supervisor',
+      context.balena.uuid
+    );
+    await context.balena.sdk.executeCommandInHostOS(
+      `balena rmi -f $(balena images | grep -E "(balena|resin)"/${
+        context.deviceType.data.arch
+      }-supervisor | awk '{print $3}')`,
+      context.balena.uuid
+    );
+    this.rejects(context.balena.sdk.pingSupervisor(context.balena.uuid));
 
     // Pull and start the supervisor
-    await context.balena.sdk.executeCommandInHostOS('update-resin-supervisor',
-      context.balena.uuid
-    )
+    await context.balena.sdk.executeCommandInHostOS('update-resin-supervisor', context.balena.uuid);
 
     // Wait for the supervisor to be marked as healthy
     await context.utils.waitUntil(async () => {
-      return await context.balena.sdk.executeCommandInHostOS(
-        'balena inspect --format \'{{.State.Health.Status}}\' resin_supervisor',
-        context.balena.uuid,
-      ) === 'healthy'
-    })
+      return (
+        (await context.balena.sdk.executeCommandInHostOS(
+          "balena inspect --format '{{.State.Health.Status}}' resin_supervisor",
+          context.balena.uuid
+        )) === 'healthy'
+      );
+    });
 
-    this.resolves(context.balena.sdk.pingSupervisor(context.balena.uuid))
+    this.resolves(context.balena.sdk.pingSupervisor(context.balena.uuid));
   }
-}
+};
