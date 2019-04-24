@@ -165,6 +165,7 @@ module.exports = {
     'i-override-lock',
     'i-persistent-logging',
     'i-no-deltas',
-    'i-with-deltas'
+    'i-with-deltas',
+    'i-provision-with-deltas'
   ]
 };
