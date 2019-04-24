@@ -163,6 +163,7 @@ module.exports = {
     'i-modem',
     'i-preload',
     'i-hostapp-update-old-to-new',
-    'i-http-proxy'
+    'i-http-proxy',
+    'i-socks-proxy'
   ]
 };
