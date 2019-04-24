@@ -162,6 +162,7 @@ module.exports = {
     'i-local-mode',
     'i-modem',
     'i-preload',
-    'i-hostapp-update-old-to-new'
+    'i-hostapp-update-old-to-new',
+    'i-http-proxy'
   ]
 };
