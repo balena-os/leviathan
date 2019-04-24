@@ -162,6 +162,7 @@ module.exports = {
     'i-hostapp-update-old-to-new',
     'i-http-proxy',
     'i-socks-proxy',
-    'i-override-lock'
+    'i-override-lock',
+    'i-persistent-logging'
   ]
 };
