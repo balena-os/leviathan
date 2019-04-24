@@ -161,6 +161,7 @@ module.exports = {
     'i-hdmi-uart5.js',
     'i-local-mode',
     'i-modem',
-    'i-preload'
+    'i-preload',
+    'i-hostapp-update-old-to-new'
   ]
 };
