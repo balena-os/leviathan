@@ -147,6 +147,7 @@ module.exports = {
     'push-multicontainer.js',
     'move-device-between-applications.js',
     'reload-supervisor.js',
+    'chrony-ntp-time-sync',
     'i-service-variables.js',
     'i-bluetooth-test.js',
     'i-enter-container.js',
