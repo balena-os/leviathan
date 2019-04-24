@@ -158,6 +158,7 @@ module.exports = {
     'i-reboot-with-app.js',
     'i-rpi-serial-uart0.js',
     'i-rpi-serial-uart1.js',
-    'i-hdmi-uart5.js'
+    'i-hdmi-uart5.js',
+    'i-local-mode'
   ]
 };
