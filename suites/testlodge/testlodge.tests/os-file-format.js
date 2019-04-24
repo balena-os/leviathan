@@ -19,7 +19,7 @@
 const split = require('lodash/split');
 
 module.exports = {
-  title: 'Image filename format',
+  title: 'TC05 - Downloaded image format',
   run: async function(context) {
     const supervisorVersion = await context.balena.sdk.getSupervisorVersion(context.balena.uuid);
     const hostOsVersion = (split(

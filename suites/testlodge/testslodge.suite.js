@@ -136,7 +136,6 @@ module.exports = {
     });
   },
   tests: [
-    'device-online.js',
     'os-file-format.js',
     'device-reportOsVersion.js',
     //  'hostapp-update.js',
@@ -149,13 +148,11 @@ module.exports = {
     'reload-supervisor.js',
     'chrony-ntp-time-sync',
     'kernel-module-build',
-    'i-service-variables.js',
     'i-bluetooth-test.js',
     'i-enter-container.js',
     'i-kernel-splash-screen.js',
     'i-identification-led.js',
     'i-balena-splash-screen.js',
-    'i-reboot-with-app.js',
     'i-rpi-serial-uart0.js',
     'i-rpi-serial-uart1.js',
     'i-hdmi-uart5.js',

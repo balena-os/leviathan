@@ -19,7 +19,7 @@
 const isEmpty = require('lodash/isEmpty');
 
 module.exports = {
-  title: 'Update device status with resin-device-progress',
+  title: 'TC31 - resin-device-progress test',
   run: async function(context) {
     await context.balena.sdk.executeCommandInHostOS(
       'resin-device-progress -p 60 -s "balenaOS test"',

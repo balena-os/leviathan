@@ -19,7 +19,7 @@
 const path = require('path');
 
 module.exports = {
-  title: 'Push a mono-container to the application',
+  title: 'TC06 - Push simple python application',
   run: async function(context) {
     const hash = await context.utils.pushAndWaitRepoToBalenaDevice({
       path: path.join(context.tmpdir, 'test'),

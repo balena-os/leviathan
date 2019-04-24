@@ -21,7 +21,7 @@ const path = require('path');
 const request = require('request-promise');
 
 module.exports = {
-  title: 'Sync application container',
+  title: 'TC14 - Sync application container',
   run: async function(context) {
     const clonePath = path.join(context.tmpdir, 'test-sync');
     const hash = await context.utils.pushAndWaitRepoToBalenaDevice({
@@ -29,38 +29,28 @@ module.exports = {
       url: 'https://github.com/balena-io-projects/simple-server-python.git',
       uuid: context.balena.uuid,
       balena: context.balena,
-      applicationName: context.balena.application.name,
+      applicationName: context.balena.application.name
     });
 
-    this.is(
-      await context.balena.sdk.getDeviceCommit(context.balena.uuid),
-      hash,
-    );
+    this.is(await context.balena.sdk.getDeviceCommit(context.balena.uuid), hash);
 
     await context.balena.sdk.enableDeviceUrl(context.balena.uuid);
-    const deviceUrl = await context.balena.sdk.getDeviceUrl(
-      context.balena.uuid,
-    );
+    const deviceUrl = await context.balena.sdk.getDeviceUrl(context.balena.uuid);
 
     this.is(await request(deviceUrl), 'Hello World!');
 
     await context.utils.searchAndReplace(
       path.join(clonePath, 'src/main.py'),
       "'Hello World!'",
-      "'Hello World Synced!'",
+      "'Hello World Synced!'"
     );
 
-    await context.balena.sync.remote(
-      context.balena.uuid,
-      clonePath,
-      '/usr/src/app',
-    );
+    await context.balena.sync.remote(context.balena.uuid, clonePath, '/usr/src/app');
 
     await context.utils.waitUntil(async () => {
-      const services = await context.balena.sdk.getAllServicesProperties(
-        context.balena.uuid,
-        ['status'],
-      );
+      const services = await context.balena.sdk.getAllServicesProperties(context.balena.uuid, [
+        'status'
+      ]);
 
       if (_.isEmpty(services)) {
         return false;
@@ -76,5 +66,5 @@ module.exports = {
     this.tearDown(async () => {
       await context.balena.sdk.disableDeviceUrl(context.balena.uuid);
     });
-  },
+  }
 };

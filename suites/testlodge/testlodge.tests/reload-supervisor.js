@@ -17,7 +17,7 @@
 'use strict';
 
 module.exports = {
-  title: 'Reload supervisor on a running device',
+  title: 'TC26 - Supervisor reload test',
   run: async function(context) {
     // Delete current supervisor
     await context.balena.sdk.executeCommandInHostOS(

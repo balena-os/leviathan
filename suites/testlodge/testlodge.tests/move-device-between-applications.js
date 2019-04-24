@@ -19,7 +19,7 @@
 const path = require('path');
 
 module.exports = {
-  title: 'Move device between applications',
+  title: 'TC38 - Move device between applications',
   run: async function(context) {
     const hash = await context.utils.pushAndWaitRepoToBalenaDevice({
       path: path.join(context.tmpdir, 'test'),

@@ -17,18 +17,11 @@
 'use strict';
 
 module.exports = {
-  title: 'Device reported hostOS version',
+  title: 'TC12 - Provisioned device should show the tested host OS version in dashboard',
   run: async function(context) {
-    const hostOSVersion = await context.balena.sdk.getDeviceHostOSVersion(
-      context.balena.uuid,
-    );
-    const hostOSVariant = await context.balena.sdk.getDeviceHostOSVariant(
-      context.balena.uuid,
-    );
+    const hostOSVersion = await context.balena.sdk.getDeviceHostOSVersion(context.balena.uuid);
+    const hostOSVariant = await context.balena.sdk.getDeviceHostOSVariant(context.balena.uuid);
 
-    this.is(
-      `${hostOSVersion}.${hostOSVariant}`,
-      `balenaOS ${context.os.image.version}`,
-    );
-  },
+    this.is(`${hostOSVersion}.${hostOSVariant}`, `balenaOS ${context.os.image.version}`);
+  }
 };

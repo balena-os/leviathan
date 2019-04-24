@@ -17,7 +17,7 @@
 'use strict';
 
 module.exports = {
-  title: 'Boot/Shutdown splash screen',
+  title: 'TC07 - Boot/reboot/shutdown splash screen',
   interactive: true,
   deviceType: {
     type: 'object',

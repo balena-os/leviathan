@@ -17,7 +17,7 @@
 'use strict';
 
 module.exports = {
-  title: 'Identification LED',
+  title: 'TC03 - Identification LED',
   interactive: true,
   deviceType: {
     type: 'object',

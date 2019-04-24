@@ -17,7 +17,7 @@
 'use strict';
 
 module.exports = {
-  title: 'Kernel boot logo/Reboot splash screen',
+  title: 'TC08 - Kernel boot logo',
   interactive: true,
   deviceType: {
     type: 'object',
