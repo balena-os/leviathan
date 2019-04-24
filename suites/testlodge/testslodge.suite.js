@@ -164,6 +164,7 @@ module.exports = {
     'i-socks-proxy',
     'i-override-lock',
     'i-persistent-logging',
-    'i-no-deltas'
+    'i-no-deltas',
+    'i-with-deltas'
   ]
 };
