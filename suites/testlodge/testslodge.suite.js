@@ -160,6 +160,7 @@ module.exports = {
     'i-rpi-serial-uart1.js',
     'i-hdmi-uart5.js',
     'i-local-mode',
-    'i-modem'
+    'i-modem',
+    'i-preload'
   ]
 };
