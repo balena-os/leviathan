@@ -16,17 +16,16 @@
 
 'use strict';
 
-const split = require('lodash/split');
-
 module.exports = {
   title: 'TC05 - Downloaded image format',
   run: async function(context) {
     const supervisorVersion = await context.balena.sdk.getSupervisorVersion(context.balena.uuid);
-    const hostOsVersion = (split(
-      await context.balena.sdk.getDeviceHostOSVersion(context.balena.uuid)
-    ),
-    ' ');
-    const downloadApi = split(context.os.download.source, '.')[0];
+    const hostOsVersion = (await context.balena.sdk.getDeviceHostOSVersion(
+      context.balena.uuid
+    )).split(' ');
+
+    console.log('HERE' + (await context.balena.sdk.getDeviceHostOSVersion(context.balena.uuid)));
+    const downloadApi = context.os.download.source.split('.')[0];
 
     this.is(
       context.os.image.filename,

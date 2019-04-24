@@ -147,7 +147,7 @@ module.exports = {
     'move-device-between-applications.js',
     'reload-supervisor.js',
     'chrony-ntp-time-sync',
-    'kernel-module-build',
+    //  'kernel-module-build',
     'i-bluetooth-test.js',
     'i-enter-container.js',
     'i-kernel-splash-screen.js',

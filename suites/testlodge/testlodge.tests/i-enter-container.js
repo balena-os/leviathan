@@ -28,7 +28,7 @@ module.exports = {
           }. Clone one of the repos and change directory:`,
           '"git clone https://github.com/balena-io-projects/balena-cpp-hello-world.git && cd balena-cpp-hello-world" or',
           '"git clone https://github.com/balena-io-projects/simple-server-node.git && cd simple-server-node"',
-          `Add balena remote url: "git remote add balena ${context.options.gitUrl}"`,
+          `Add balena remote url: "git remote add balena <git-url>"`,
           'Push to application: "git push balena master"'
         ],
         do: [`Run "balena ssh ${context.balena.uuid}"`],

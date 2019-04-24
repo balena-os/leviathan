@@ -28,8 +28,7 @@ module.exports = {
 
     const timedatectlLog = await context.balena.sdk.executeCommandInHostOS(
       'timedatectl',
-      context.balena.uuid,
-      context.key.privateKeyPath
+      context.balena.uuid
     );
     this.match(
       [timedatectlLog],

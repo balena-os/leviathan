@@ -50,7 +50,7 @@ module.exports = {
 
     this.is(await context.balena.sdk.getDeviceCommit(context.balena.uuid), hash);
 
-    const deviceLogs = (await utils.getDeviceLogs({
+    const deviceLogs = (await context.utils.getDeviceLogs({
       balena: context.balena,
       uuid: context.balena.uuid
     })).map(elment => {

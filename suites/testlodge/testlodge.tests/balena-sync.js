@@ -24,7 +24,7 @@ module.exports = {
   title: 'TC14 - Sync application container',
   run: async function(context) {
     const clonePath = path.join(context.tmpdir, 'test-sync');
-    const hash = await context.utils.pushAndWaitRepoToBalenaDevice({
+    const hash = await context.utils.clonePushWaitRepoToBalenaDevice({
       path: clonePath,
       url: 'https://github.com/balena-io-projects/simple-server-python.git',
       uuid: context.balena.uuid,

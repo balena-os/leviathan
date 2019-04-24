@@ -21,7 +21,7 @@ const path = require('path');
 module.exports = {
   title: 'TC32 - Multicontainer sample project',
   run: async function(context) {
-    const hash = await context.utils.pushAndWaitRepoToBalenaDevice({
+    const hash = await context.utils.clonePushWaitRepoToBalenaDevice({
       path: path.join(context.tmpdir, 'multi-test'),
       url: 'https://github.com/balena-io-projects/multicontainer-getting-started.git',
       uuid: context.balena.uuid,
