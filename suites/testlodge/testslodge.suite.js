@@ -137,9 +137,9 @@ module.exports = {
   },
   tests: [
     'device-online.js',
-    //    'os-file-format.js',
+    'os-file-format.js',
     'device-reportOsVersion.js',
-    //    'hostapp-update.js',
+    //  'hostapp-update.js',
     'balena-sync.js',
     'push-container.js',
     'balena-device-progress.js',
