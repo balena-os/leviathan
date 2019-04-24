@@ -163,6 +163,7 @@ module.exports = {
     'i-http-proxy',
     'i-socks-proxy',
     'i-override-lock',
-    'i-persistent-logging'
+    'i-persistent-logging',
+    'i-no-deltas'
   ]
 };
