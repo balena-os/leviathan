@@ -17,14 +17,33 @@
 'use strict';
 
 module.exports = {
-  title: 'Reboot while application is running',
+  title: 'TC07 - Boot/reboot/shutdown splash screen',
   interactive: true,
+  deviceType: {
+    type: 'object',
+    required: ['data'],
+    properties: {
+      data: {
+        type: 'object',
+        required: ['hdmi'],
+        properties: {
+          hdmi: {
+            type: 'boolean',
+            const: true
+          }
+        }
+      }
+    }
+  },
   run: async function(context) {
     this.resolveMatch(
       context.utils.runManualTestCase({
-        prepare: ['Ensure the device is running an application'],
-        do: ['Reboot device'],
-        assert: ['Ensure the device is online', 'Ensure the device is running an application']
+        prepare: ["Plug a monitor in the device's HDMI output"],
+        do: ['Shutdown the device', 'Power back on the device'],
+        assert: [
+          'The balena logo splash screen should be visible when the board initiates shutdown',
+          'The balena logo splash screen should be visible during boot-up'
+        ]
       }),
       true
     );

@@ -17,7 +17,7 @@
 'use strict';
 
 module.exports = {
-  title: 'Update supervisor through the API',
+  title: 'TC34 - Supervisor update through API',
   run: async function(context) {
     // Get supervisor update info
     const supervisorImage = await context.balena.sdk.executeCommandInHostOS(

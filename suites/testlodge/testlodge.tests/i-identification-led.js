@@ -16,21 +16,32 @@
 
 'use strict';
 
-const split = require('lodash/split');
-
 module.exports = {
-  title: 'Image filename format',
+  title: 'TC03 - Identification LED',
+  interactive: true,
+  deviceType: {
+    type: 'object',
+    required: ['data'],
+    properties: {
+      data: {
+        type: 'object',
+        required: ['led'],
+        properties: {
+          led: {
+            type: 'boolean',
+            const: true
+          }
+        }
+      }
+    }
+  },
   run: async function(context) {
-    const supervisorVersion = await context.balena.sdk.getSupervisorVersion(context.balena.uuid);
-    const hostOsVersion = (split(
-      await context.balena.sdk.getDeviceHostOSVersion(context.balena.uuid)
-    ),
-    ' ');
-    const downloadApi = split(context.os.download.source, '.')[0];
-
-    this.is(
-      context.os.image.filename,
-      `${downloadApi}-${context.deviceType.slug}-${hostOsVersion[1]}-v${supervisorVersion}.img`
+    this.resolveMatch(
+      context.utils.runManualTestCase({
+        do: [`Click the "Identify" button from the dashboard: ${context.dashboardUrl}`],
+        assert: ["The device's identification LEDs should blink for a couple of seconds"]
+      }),
+      true
     );
   }
 };

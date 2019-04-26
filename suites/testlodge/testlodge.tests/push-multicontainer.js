@@ -16,20 +16,19 @@
 
 'use strict';
 
+const path = require('path');
+
 module.exports = {
-  title: 'Set device service variable when application is running',
-  interactive: true,
+  title: 'TC32 - Multicontainer sample project',
   run: async function(context) {
-    this.resolveMatch(
-      context.utils.runManualTestCase({
-        prepare: ['Ensure the device is running an application'],
-        do: ['Set a device service variable', 'Wait for a couple of seconds'],
-        assert: [
-          'Open the Web Service Terminal, run "env", and ensure the new device variable is there'
-        ],
-        cleanup: ['Close the Web Terminal']
-      }),
-      true
-    );
+    const hash = await context.utils.clonePushWaitRepoToBalenaDevice({
+      path: path.join(context.tmpdir, 'multi-test'),
+      url: 'https://github.com/balena-io-projects/multicontainer-getting-started.git',
+      uuid: context.balena.uuid,
+      balena: context.balena,
+      applicationName: context.balena.application.name
+    });
+
+    this.resolveMatch(context.balena.sdk.getDeviceCommit(context.balena.uuid), hash);
   }
 };

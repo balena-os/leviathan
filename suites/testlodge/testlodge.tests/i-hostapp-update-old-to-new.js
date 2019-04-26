@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 balena
+ * Copyright 2019 balena
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,33 +17,25 @@
 'use strict';
 
 module.exports = {
-  title: 'Kernel boot logo/Reboot splash screen',
+  title:
+    'TC28 - Test old to new resin host OS update (old hostapps enabled OS updated to current hostapps enabled OS)',
   interactive: true,
-  deviceType: {
-    type: 'object',
-    required: ['data'],
-    properties: {
-      data: {
-        type: 'object',
-        required: ['hdmi'],
-        properties: {
-          hdmi: {
-            type: 'boolean',
-            const: true
-          }
-        }
-      }
-    }
-  },
   run: async function(context) {
     this.resolveMatch(
       context.utils.runManualTestCase({
-        prepare: ["Plug a monitor in the device's HDMI output"],
-        do: ['Reboot the device'],
+        prepare: ['Provision a device with a previous balenaOS version.'],
+
+        do: [
+          'On the balena device:',
+          '\thostapp-update -r -i <DOCKERHUB_ACCOUNT>/<DOCKERHUB_REPO>:<TAG>',
+          'e.g.: resin/resinos-staging:2.7.2_rev2-intel-edison (note that “2.7.2+rev2” becomes “2.7.2_rev2” for the purpose of the tag.)'
+        ],
         assert: [
-          'The balena logo splash screen should be visible when the board initiates reboot',
-          'The Tux (Linux) logo should not be visible on the screen while device is booting',
-          'The balena logo splash screen should be visible during boot-up'
+          'On the balena device:',
+          '\tcat /etc/os-release',
+          'The above command should report the correct new version',
+          '\tls -al /dev/disk/by-state/',
+          'The above command should have moved the active partition to p3'
         ]
       }),
       true

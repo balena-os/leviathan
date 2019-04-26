@@ -16,12 +16,24 @@
 
 'use strict';
 
+const isEmpty = require('lodash/isEmpty');
+
 module.exports = {
-  title: 'Device is online',
+  title: 'TC31 - resin-device-progress test',
   run: async function(context) {
-    const isOnline = await context.balena.sdk.isDeviceOnline(
-      context.balena.uuid,
+    await context.balena.sdk.executeCommandInHostOS(
+      'resin-device-progress -p 60 -s "balenaOS test"',
+      context.balena.uuid
     );
-    this.true(isOnline);
-  },
+
+    await context.utils.waitUntil(async () => {
+      return !isEmpty(await context.balena.sdk.getDeviceProvisioningState(context.balena.uuid));
+    });
+
+    this.resolveMatch(
+      context.balena.sdk.getDeviceProvisioningState(context.balena.uuid),
+      'balenaOS test'
+    );
+    this.resolveMatch(context.balena.sdk.getDeviceProvisioningProgress(context.balena.uuid), 60);
+  }
 };

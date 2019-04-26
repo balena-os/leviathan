@@ -16,24 +16,19 @@
 
 'use strict';
 
-const isEmpty = require('lodash/isEmpty');
+const path = require('path');
 
 module.exports = {
-  title: 'Update device status with resin-device-progress',
+  title: 'TC06 - Push simple python application',
   run: async function(context) {
-    await context.balena.sdk.executeCommandInHostOS(
-      'resin-device-progress -p 60 -s "balenaOS test"',
-      context.balena.uuid
-    );
-
-    await context.utils.waitUntil(async () => {
-      return !isEmpty(await context.balena.sdk.getDeviceProvisioningState(context.balena.uuid));
+    const hash = await context.utils.clonePushWaitRepoToBalenaDevice({
+      path: path.join(context.tmpdir, 'test'),
+      url: 'https://github.com/balena-io-projects/balena-cpp-hello-world.git',
+      uuid: context.balena.uuid,
+      balena: context.balena,
+      applicationName: context.balena.application.name
     });
 
-    this.resolveMatch(
-      context.balena.sdk.getDeviceProvisioningState(context.balena.uuid),
-      'balenaOS test'
-    );
-    this.resolveMatch(context.balena.sdk.getDeviceProvisioningProgress(context.balena.uuid), 60);
+    this.resolveMatch(context.balena.sdk.getDeviceCommit(context.balena.uuid), hash);
   }
 };

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 balena
+ * Copyright 2019 balena
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,33 +17,17 @@
 'use strict';
 
 module.exports = {
-  title: 'Boot/Shutdown splash screen',
+  title: 'TC41 - Test Persistent Logging',
   interactive: true,
-  deviceType: {
-    type: 'object',
-    required: ['data'],
-    properties: {
-      data: {
-        type: 'object',
-        required: ['hdmi'],
-        properties: {
-          hdmi: {
-            type: 'boolean',
-            const: true
-          }
-        }
-      }
-    }
-  },
-  run: async function(context) {
+  run: async context => {
     this.resolveMatch(
       context.utils.runManualTestCase({
-        prepare: ["Plug a monitor in the device's HDMI output"],
-        do: ['Shutdown the device', 'Power back on the device'],
-        assert: [
-          'The balena logo splash screen should be visible when the board initiates shutdown',
-          'The balena logo splash screen should be visible during boot-up'
-        ]
+        prepare: [
+          "In Device Configuration activate variable RESIN_SUPERVISOR_PERSISTENT_LOGGING and set it's state to Enabled.",
+          'This will reboot the device'
+        ],
+        do: ['On your balena device:', '\treboot', '\tjournalctl --list-boots'],
+        assert: ['The journaltctl should show two logged boot entries ']
       }),
       true
     );

@@ -136,10 +136,9 @@ module.exports = {
     });
   },
   tests: [
-    'device-online.js',
-    //    'os-file-format.js',
+    'os-file-format.js',
     'device-reportOsVersion.js',
-    //    'hostapp-update.js',
+    //  'hostapp-update.js',
     'balena-sync.js',
     'push-container.js',
     'balena-device-progress.js',
@@ -147,15 +146,26 @@ module.exports = {
     'push-multicontainer.js',
     'move-device-between-applications.js',
     'reload-supervisor.js',
-    'i-service-variables.js',
+    'chrony-ntp-time-sync',
+    //  'kernel-module-build',
     'i-bluetooth-test.js',
     'i-enter-container.js',
     'i-kernel-splash-screen.js',
     'i-identification-led.js',
     'i-balena-splash-screen.js',
-    'i-reboot-with-app.js',
     'i-rpi-serial-uart0.js',
     'i-rpi-serial-uart1.js',
-    'i-hdmi-uart5.js'
+    'i-hdmi-uart5.js',
+    'i-local-mode',
+    'i-modem',
+    'i-preload',
+    'i-hostapp-update-old-to-new',
+    'i-http-proxy',
+    'i-socks-proxy',
+    'i-override-lock',
+    'i-persistent-logging',
+    'i-no-deltas',
+    'i-with-deltas',
+    'i-provision-with-deltas'
   ]
 };

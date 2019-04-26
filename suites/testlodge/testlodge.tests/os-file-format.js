@@ -17,31 +17,19 @@
 'use strict';
 
 module.exports = {
-  title: 'Identification LED',
-  interactive: true,
-  deviceType: {
-    type: 'object',
-    required: ['data'],
-    properties: {
-      data: {
-        type: 'object',
-        required: ['led'],
-        properties: {
-          led: {
-            type: 'boolean',
-            const: true
-          }
-        }
-      }
-    }
-  },
+  title: 'TC05 - Downloaded image format',
   run: async function(context) {
-    this.resolveMatch(
-      context.utils.runManualTestCase({
-        do: [`Click the "Identify" button from the dashboard: ${context.dashboardUrl}`],
-        assert: ["The device's identification LEDs should blink for a couple of seconds"]
-      }),
-      true
+    const supervisorVersion = await context.balena.sdk.getSupervisorVersion(context.balena.uuid);
+    const hostOsVersion = (await context.balena.sdk.getDeviceHostOSVersion(
+      context.balena.uuid
+    )).split(' ');
+
+    console.log('HERE' + (await context.balena.sdk.getDeviceHostOSVersion(context.balena.uuid)));
+    const downloadApi = context.os.download.source.split('.')[0];
+
+    this.is(
+      context.os.image.filename,
+      `${downloadApi}-${context.deviceType.slug}-${hostOsVersion[1]}-v${supervisorVersion}.img`
     );
   }
 };

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 balena
+ * Copyright 2018 balena
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +16,12 @@
 
 'use strict';
 
-const path = require('path');
-
 module.exports = {
-  title: 'Push a multi-container application',
+  title: 'TC12 - Provisioned device should show the tested host OS version in dashboard',
   run: async function(context) {
-    const hash = await context.utils.pushAndWaitRepoToBalenaDevice({
-      path: path.join(context.tmpdir, 'multi-test'),
-      url:
-        'https://github.com/balena-io-projects/multicontainer-getting-started.git',
-      uuid: context.balena.uuid,
-      balena: context.balena,
-      applicationName: context.balena.application.name,
-    });
+    const hostOSVersion = await context.balena.sdk.getDeviceHostOSVersion(context.balena.uuid);
+    const hostOSVariant = await context.balena.sdk.getDeviceHostOSVariant(context.balena.uuid);
 
-    this.resolveMatch(
-      context.balena.sdk.getDeviceCommit(context.balena.uuid),
-      hash,
-    );
-  },
+    this.is(`${hostOSVersion}.${hostOSVariant}`, `balenaOS ${context.os.image.version}`);
+  }
 };

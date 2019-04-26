@@ -19,9 +19,9 @@
 const path = require('path');
 
 module.exports = {
-  title: 'Move device between applications',
+  title: 'TC38 - Move device between applications',
   run: async function(context) {
-    const hash = await context.utils.pushAndWaitRepoToBalenaDevice({
+    const hash = await context.utils.clonePushWaitRepoToBalenaDevice({
       path: path.join(context.tmpdir, 'test'),
       url: 'https://github.com/balena-io-projects/balena-cpp-hello-world.git',
       uuid: context.balena.uuid,
