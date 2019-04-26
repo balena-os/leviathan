@@ -1,6 +1,6 @@
 {
   "name": "balena-tests",
-  "version": "1.19.3",
+  "version": "1.19.4",
   "description": "Automated testing for balenaOS",
   "private": true,
   "scripts": {
