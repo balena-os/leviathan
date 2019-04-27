@@ -27,15 +27,13 @@ module.exports = {
           'Push an update to the application (for example, change what is outputted to the console).'
         ],
         assert: [
-          // eslint-disable-next-line no-multi-str
-          'The device should appear on the dashboard and correctly download the image for the app. \
-          The application should run as expected. \
-          Opening an app container web terminal should allow execution of commands.',
-
-          // eslint-disable-next-line no-multi-str
-          'The dashboard logs should display: "Downloading delta for image ..." \
-           The application update should be downloaded and then the updated app should be started. \
-           Opening an app container web terminal should allow execution of commands.'
+          'The device should appear on the dashboard and correctly download the image for the app.',
+          'The application should run as expected.',
+          'Opening an app container web terminal should allow execution of commands.',
+          '',
+          'The dashboard logs should display: "Downloading delta for image ..."',
+          'The application update should be downloaded and then the updated app should be started.',
+          'Opening an app container web terminal should allow execution of commands.'
         ]
       }),
       true
