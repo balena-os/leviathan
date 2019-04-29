@@ -28,11 +28,10 @@ module.exports = {
           'Push an update to the application (e.g. changing what is outputted to the console).'
         ],
         assert: [
-          // eslint-disable-next-line no-multi-str
-          'When setting RESIN_SUPERVISOR_DELTA, the device should not restart the app. \
-           The device should download the update correctly after pushing and the updated application should start running successfully. \
-           The dashboard logs should display: "Downloading delta for image ..." \
-           Opening an app container web terminal should allow execution of commands. '
+          'When setting RESIN_SUPERVISOR_DELTA, the device should not restart the app.',
+          'The device should download the update correctly after pushing and the updated application should start running successfully.',
+          'The dashboard logs should display: "Downloading delta for image ..."',
+          'Opening an app container web terminal should allow execution of commands.'
         ]
       }),
       true

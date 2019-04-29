@@ -29,13 +29,12 @@ module.exports = {
           'Set an environment variable FOO=bar.'
         ],
         assert: [
-          // eslint-disable-next-line no-multi-str
-          'Device should appear on the dashboard. \
-           Device should download the application and run it. \
-           LED should blink. (if available) \
-           The app container Web Terminal should open and allow running commands. \
-           When the env var is set, the device should restart the application so that it can use the new var if needed. \
-           Opening an app container web terminal and running "env" should show the variable is correctly set. '
+          'Device should appear on the dashboard.',
+          'Device should download the application and run it.',
+          'LED should blink. (if available)',
+          'The app container Web Terminal should open and allow running commands.',
+          'When the env var is set, the device should restart the application so that it can use the new var if needed.',
+          'Opening an app container web terminal and running "env" should show the variable is correctly set.'
         ]
       }),
       true

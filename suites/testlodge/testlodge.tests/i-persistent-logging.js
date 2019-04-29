@@ -19,7 +19,7 @@
 module.exports = {
   title: 'TC41 - Test Persistent Logging',
   interactive: true,
-  run: async context => {
+  run: async function(context) {
     this.resolveMatch(
       context.utils.runManualTestCase({
         prepare: [
