@@ -53,6 +53,7 @@ module.exports = options => {
     worker: {
       type: options.BALENA_TESTS_WORKER,
       device: options.BALENA_TESTS_DEVICE
-    }
+    },
+    tmpdir: options.BALENA_TESTS_TMPDIR
   };
 };
