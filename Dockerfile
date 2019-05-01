@@ -12,9 +12,9 @@ FROM node:9-stretch
 
 ENV npm_config_unsafe_perm=true
 
-# Avoid using a ssh agent by using GIT_SSH_COMMAND (requires git v2.10+)
 RUN apt-get update && \
     apt-get install -y qemu-system-x86 qemu-kvm jq git vim rsync && \
+    curl -sSL https://get.docker.com/ | sh && \
     rm -rf /var/lib/apt/lists/*
 
 RUN git config --global user.email "testbot@resin.io" && \

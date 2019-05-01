@@ -18,6 +18,8 @@ module.exports = [
       const Worker = require(join(this.frameworkPath, 'workers', this.options.worker.type));
       const BalenaOS = require(join(this.frameworkPath, 'components', 'os', 'balenaos'));
       const Balena = require(join(this.frameworkPath, 'components', 'balena', 'sdk'));
+      const CLI = require(join(this.frameworkPath, 'components', 'balena', 'cli'));
+      const DeviceApplication = require(join(this.frameworkPath, 'components', 'balena', 'utils'));
 
       this.context = { utils: require(join(this.frameworkPath, 'common', 'utils')) };
 
@@ -89,7 +91,12 @@ module.exports = [
         );
       });
 
-      this.context = { balena: { uuid: await this.context.balena.sdk.generateUUID() } };
+      this.context = {
+        worker: new Worker('main worker', this.context.deviceType.slug, {
+          devicePath: this.options.worker.device
+        })
+      };
+
       this.context = {
         os: new BalenaOS({
           deviceType: this.context.deviceType.slug,
@@ -102,14 +109,49 @@ module.exports = [
         })
       };
 
-      this.context = {
-        worker: new Worker('main worker', this.context.deviceType.slug, {
-          devicePath: this.options.worker.device
-        })
-      };
-
+      // Device Provision with preloaded application
       await this.context.os.fetch(this.options.tmpdir);
 
+      // Preload image
+      this.context = { balena: { deviceApplicationChain: new DeviceApplication().getChain() } };
+
+      await this.context.balena.deviceApplicationChain
+        .init({
+          url: 'https://github.com/balena-io-projects/balena-cpp-hello-world.git',
+          sdk: this.context.balena.sdk,
+          path: this.options.tmpdir
+        })
+        .then(chain => {
+          return chain.clone();
+        })
+        .then(async chain => {
+          return chain.push(
+            {
+              name: 'master'
+            },
+            {
+              name: 'balena',
+              url: await this.context.balena.sdk.getApplicationGitRemote(
+                this.context.balena.application.name
+              )
+            }
+          );
+        })
+        .then(chain => {
+          this.context = { preload: { hash: chain.getPushedCommit() } };
+          return chain.emptyCommit();
+        })
+        .then(chain => {
+          return chain.push({ name: 'master' });
+        });
+
+      await new CLI().preload(this.context.os.image.path, {
+        app: this.context.balena.application.name,
+        commit: this.context.preload.hash,
+        pin: true
+      });
+
+      this.context = { balena: { uuid: await this.context.balena.sdk.generateUUID() } };
       this.context.os.addCloudConfig(
         await this.context.balena.sdk.getDeviceOSConfiguration(
           this.context.balena.uuid,
@@ -121,10 +163,6 @@ module.exports = [
         )
       );
 
-      this.context = {
-        balena: { sync: require(join(this.frameworkPath, 'components', 'balena', 'sync')) }
-      };
-
       await this.context.worker.ready();
       await this.context.worker.flash(this.context.os);
       await this.context.worker.on();
@@ -132,11 +170,16 @@ module.exports = [
         return this.context.worker.off();
       });
 
+      // Checking if device is reachable
       console.log('Waiting for device to be online');
       await this.context.utils.waitUntil(() => {
         return this.context.balena.sdk.isDeviceOnline(this.context.balena.uuid);
       });
     },
-    tests: ['register']
+    tests: [
+      // Needs to be first because of the way we provision
+      'preload',
+      'register'
+    ]
   }
 ];

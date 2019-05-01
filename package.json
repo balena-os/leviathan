@@ -24,6 +24,7 @@
   "homepage": "https://github.com/balena-io/balena-tests",
   "dependencies": {
     "ajv": "^6.5.0",
+    "balena-cli": "^10.9.0",
     "balena-sdk": "^11.0.0",
     "balena-sync": "^10.0.0",
     "bluebird": "^3.5.1",
