@@ -179,7 +179,8 @@ module.exports = [
     tests: [
       // Needs to be first because of the way we provision
       'preload',
-      'register'
+      'register',
+      'move'
     ]
   }
 ];
