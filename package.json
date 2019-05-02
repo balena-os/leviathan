@@ -49,7 +49,7 @@
     "simple-git": "^1.85.0",
     "ssh-keygen": "^0.4.1",
     "string-to-stream": "^1.1.1",
-    "tap": "^12.0.1",
+    "tap": "^13.1.1",
     "tap-parser": "^7.0.0",
     "unzip": "^0.1.11"
   },
