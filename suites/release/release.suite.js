@@ -100,17 +100,16 @@ module.exports = [
       this.context = {
         os: new BalenaOS({
           deviceType: this.context.deviceType.slug,
-          download: {
-            type: this.options.balenaOS.download.type,
-            version: this.options.balenaOS.download.version,
-            source: this.options.balenaOS.download.source
-          },
           network: this.options.balenaOS.network
         })
       };
 
       // Device Provision with preloaded application
-      await this.context.os.fetch(this.options.tmpdir);
+      await this.context.os.fetch(this.options.tmpdir, {
+        type: this.options.balenaOS.download.type,
+        version: this.options.balenaOS.download.version,
+        source: this.options.balenaOS.download.source
+      });
 
       // Preload image
       this.context = { balena: { deviceApplicationChain: new DeviceApplication().getChain() } };
@@ -180,7 +179,8 @@ module.exports = [
       // Needs to be first because of the way we provision
       'preload',
       'register',
-      'move'
+      'move',
+      'hostapp'
     ]
   }
 ];
