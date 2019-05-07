@@ -175,12 +175,6 @@ module.exports = [
         return this.context.balena.sdk.isDeviceOnline(this.context.balena.uuid);
       });
     },
-    tests: [
-      // Needs to be first because of the way we provision
-      'preload',
-      'register',
-      'move',
-      'hostapp'
-    ]
+    tests: ['register', 'preload', 'move', 'hostapp']
   }
 ];

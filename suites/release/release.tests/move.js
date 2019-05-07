@@ -66,10 +66,9 @@ module.exports = {
         delta: this.context.balena.application.env.delta
       }
     );
-
     this.teardown.register(() => {
       return this.context.balena.sdk.removeApplication(moveApplicationName);
-    }, Symbol(test.title));
+    }, test.name);
 
     let moveHash;
 

@@ -81,6 +81,14 @@ module.exports = {
         // Run update
         await this.context.balena.sdk.startOsUpdate(this.context.balena.uuid, currentVersion);
 
+        subtest.has(
+          await this.context.balena.sdk.getOsUpdateStatus(this.context.balena.uuid),
+          {
+            status: 'in_progress'
+          },
+          'Update should be running'
+        );
+
         await this.context.utils.waitUntil(async () => {
           const online = await this.context.balena.sdk.isDeviceOnline(this.context.balena.uuid);
           const vpnTime = await this.context.balena.sdk.getLastConnectedTime(
@@ -91,7 +99,7 @@ module.exports = {
         });
 
         subtest.has(
-          await sdk.getOsUpdateStatus(this.context.balena.uuid),
+          await this.context.balena.sdk.getOsUpdateStatus(this.context.balena.uuid),
           { status: 'done' },
           'Update finished succesfully'
         );

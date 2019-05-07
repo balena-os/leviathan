@@ -21,6 +21,23 @@ module.exports = {
     this.subtest(test, {
       title: 'Pinning test',
       run: async function(subtest) {
+        this.teardown.register(async () => {
+          const commit = await this.context.balena.sdk.getLatestRelease(
+            this.context.balena.application.name
+          );
+
+          await this.context.balena.sdk.trackApplicationRelease(this.context.balena.uuid);
+          await this.context.balena.sdk.triggerUpdateCheck(this.context.balena.uuid);
+
+          await this.context.balena.deviceApplicationChain.getChain().waitServiceProperties(
+            {
+              commit,
+              status: 'Running'
+            },
+            this.context.balena.uuid
+          );
+        }, test.name);
+
         subtest.is(
           await this.context.balena.sdk.getDeviceCommit(this.context.balena.uuid),
           this.context.preload.hash,
