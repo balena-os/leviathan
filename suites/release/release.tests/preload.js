@@ -27,6 +27,12 @@ module.exports = {
           );
 
           await this.context.balena.sdk.trackApplicationRelease(this.context.balena.uuid);
+
+          await this.context.utils.waitUntil(async () => {
+            await this.context.balena.device.ping(this.context.balena.uuid);
+            return true;
+          });
+
           await this.context.balena.sdk.triggerUpdateCheck(this.context.balena.uuid);
 
           await this.context.balena.deviceApplicationChain.getChain().waitServiceProperties(
