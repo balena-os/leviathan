@@ -2,6 +2,7 @@
   "dependencies": {
     "bluebird": "^3.5.3",
     "lodash": "^4.17.11",
-    "mz": "^2.7.0"
+    "mz": "^2.7.0",
+    "request-promise": "^4.2.4"
   }
 }
