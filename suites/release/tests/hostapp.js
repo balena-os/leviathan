@@ -19,23 +19,28 @@ const { join } = require('path');
 
 module.exports = {
   title: 'Hostapp update tests',
-  run: async function(test) {
+  run: async function() {
     const sdk = new (require(join(this.frameworkPath, 'components', 'balena', 'sdk')))(
       this.options.balenaOS.download.source
     );
 
-    const currentVersion = this.context.os.image.version;
-    const updateVersion = await sdk.getMaxSatisfyingVersion(
-      this.context.deviceType.slug,
-      `<${this.context.os.image.version}`
-    );
-
-    this.subtest(test, {
-      title: `Test OS update from ${updateVersion} to ${currentVersion}`,
-      run: async function(subtest) {
+    this.context = {
+      local: {
+        currentVersion: this.context.os.image.version,
+        updateVersion: await sdk.getMaxSatisfyingVersion(
+          this.context.deviceType.slug,
+          `<${this.context.os.image.version}`
+        )
+      }
+    };
+  },
+  tests: [
+    {
+      title: 'Test OS update from old to new',
+      run: async function(test) {
         // This should have the same source as the image download we do later.
         // As the update should be contained by a singular environment.
-        if (updateVersion == null) {
+        if (this.context.local.updateVersion == null) {
           throw new Error(
             `Could not find any supported version previous to ${this.context.os.image.version}`
           );
@@ -47,7 +52,7 @@ module.exports = {
         // Re-provision device
         await this.context.os.fetch(this.options.tmpdir, {
           type: this.options.balenaOS.download.type,
-          version: updateVersion,
+          version: this.context.local.updateVersion,
           source: this.options.balenaOS.download.source
         });
 
@@ -71,7 +76,7 @@ module.exports = {
         });
 
         // Re-wire new device
-        this.context = { balena: { uuid } };
+        this.globalContext = { balena: { uuid } };
 
         // We look at vpn connect times to determine if a device has rebooted
         const lastTimeOnline = await this.context.balena.sdk.getLastConnectedTime(
@@ -79,9 +84,12 @@ module.exports = {
         );
 
         // Run update
-        await this.context.balena.sdk.startOsUpdate(this.context.balena.uuid, currentVersion);
+        await this.context.balena.sdk.startOsUpdate(
+          this.context.balena.uuid,
+          this.context.local.currentVersion
+        );
 
-        subtest.has(
+        test.has(
           await this.context.balena.sdk.getOsUpdateStatus(this.context.balena.uuid),
           {
             status: 'in_progress'
@@ -98,12 +106,12 @@ module.exports = {
           return vpnTime > lastTimeOnline && online;
         });
 
-        subtest.has(
+        test.has(
           await this.context.balena.sdk.getOsUpdateStatus(this.context.balena.uuid),
           { status: 'done' },
           'Update finished succesfully'
         );
       }
-    });
-  }
+    }
+  ]
 };

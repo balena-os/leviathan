@@ -44,6 +44,8 @@ module.exports = {
           );
         })
         .then(async chain => {
+          await this.context.balena.sdk.triggerDeviceUpdate(this.context.balena.uuid);
+
           hash = chain.getPushedCommit();
           return chain.waitServiceProperties(
             {
@@ -108,6 +110,7 @@ module.exports = {
       moveApplicationName
     );
 
+    await this.context.balena.sdk.triggerDeviceUpdate(this.context.balena.uuid);
     await this.context.balena.deviceApplicationChain.getChain().waitServiceProperties(
       {
         commit: moveHash,
@@ -127,6 +130,7 @@ module.exports = {
       this.context.balena.application.name
     );
 
+    await this.context.balena.sdk.triggerDeviceUpdate(this.context.balena.uuid);
     await this.context.balena.deviceApplicationChain.getChain().waitServiceProperties(
       {
         commit: hash,

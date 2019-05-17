@@ -18,31 +18,30 @@
 
 module.exports = {
   title: 'balenaCloud register tests',
-  run: async function(test) {
-    this.subtest(test, {
+  tests: [
+    {
       title: 'Pre-register test',
-      run: async function(subtest) {
+      run: async function(assert) {
         const devices = await this.context.balena.sdk.getDevices(
           this.context.balena.application.name
         );
 
         // Sanity check
-        subtest.equals(devices.length, 1, 'Only one device should be registered');
-        subtest.equals(
+        assert.equals(devices.length, 1, 'Only one device should be registered');
+        assert.equals(
           devices[0].uuid,
           this.context.balena.uuid,
           'Registered device should have the UUID we assigned'
         );
-        subtest.true(
+        assert.true(
           await this.context.balena.sdk.isDeviceOnline(this.context.balena.uuid),
           'Device should be marked as online'
         );
       }
-    });
-
-    this.subtest(test, {
+    },
+    {
       title: 'Normal register test',
-      run: async function(subtest) {
+      run: async function(assert) {
         const configuration = await this.context.balena.sdk.getApplicationOSConfiguration(
           this.context.balena.application.name,
           { version: this.context.os.image.version }
@@ -65,29 +64,29 @@ module.exports = {
         );
 
         // Sanity check
-        subtest.equals(devices.length, 2, 'We should have two devices registered');
+        assert.equals(devices.length, 2, 'We should have two devices registered');
         devices = devices.filter(device => {
           return device.uuid !== this.context.balena.uuid;
         });
         // Sanity check
-        subtest.equals(devices.length, 1, 'We should only have one other device registered');
+        assert.equals(devices.length, 1, 'We should only have one other device registered');
 
         await this.context.utils.waitUntil(() => {
           return this.context.balena.sdk.isDeviceOnline(devices[0].uuid);
         });
 
         // Sanity check
-        subtest.false(
+        assert.false(
           await this.context.balena.sdk.isDeviceOnline(this.context.balena.uuid),
           'Old device should be offline'
         );
 
         // Wire new registration in our context
         await this.context.balena.sdk.removeDevice(this.context.balena.uuid);
-        this.context = {
+        this.globalContext = {
           balena: { uuid: devices[0].uuid }
         };
       }
-    });
-  }
+    }
+  ]
 };

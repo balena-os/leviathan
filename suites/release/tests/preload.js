@@ -17,24 +17,17 @@
 
 module.exports = {
   title: 'Preload feature tests',
-  run: async function(test) {
-    this.subtest(test, {
+  tests: [
+    {
       title: 'Pinning test',
-      run: async function(subtest) {
+      run: async function(test) {
         this.teardown.register(async () => {
           const commit = await this.context.balena.sdk.getLatestRelease(
             this.context.balena.application.name
           );
 
           await this.context.balena.sdk.trackApplicationRelease(this.context.balena.uuid);
-
-          await this.context.utils.waitUntil(async () => {
-            await this.context.balena.device.ping(this.context.balena.uuid);
-            return true;
-          });
-
-          await this.context.balena.sdk.triggerUpdateCheck(this.context.balena.uuid);
-
+          await this.context.balena.sdk.triggerDeviceUpdate(this.context.balena.uuid);
           await this.context.balena.deviceApplicationChain.getChain().waitServiceProperties(
             {
               commit,
@@ -44,7 +37,7 @@ module.exports = {
           );
         }, test.name);
 
-        subtest.is(
+        test.is(
           await this.context.balena.sdk.getDeviceCommit(this.context.balena.uuid),
           this.context.preload.hash,
           'The API should report the preloaded commit hash'
@@ -56,13 +49,9 @@ module.exports = {
           return log.message;
         });
 
-        subtest.notMatch(
-          [deviceLogs],
-          [/Downloading/],
-          'Device logs shouldn\'t output "Downloading"'
-        );
-        subtest.match([deviceLogs], [/Hello, world!/], 'Application log outputs "Hello, world!"');
+        test.notMatch([deviceLogs], [/Downloading/], 'Device logs shouldn\'t output "Downloading"');
+        test.match([deviceLogs], [/Hello, world!/], 'Application log outputs "Hello, world!"');
       }
-    });
-  }
+    }
+  ]
 };
