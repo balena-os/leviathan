@@ -16,5 +16,6 @@
         "customTags": ["fulfil"]
       }
     }
-  }
+  },
+  "rules": { "standard/computed-property-even-spacing": "off" }
 }

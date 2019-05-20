@@ -178,6 +178,7 @@ module.exports = {
     './tests/register',
     './tests/move',
     './tests/supervisor-api',
-    './tests/hostapp'
+    './tests/hostapp',
+    './tests/download-strategies'
   ]
 };
