@@ -24,8 +24,8 @@
   "homepage": "https://github.com/balena-io/balena-tests",
   "dependencies": {
     "ajv": "^6.5.0",
-    "balena-cli": "^9.13.0",
-    "balena-sdk": "^11.0.0",
+    "balena-cli": "^9.15.2",
+    "balena-sdk": "^11.10.0",
     "balena-sync": "^10.0.0",
     "bluebird": "^3.5.1",
     "bluebird-retry": "^0.11.0",
@@ -51,7 +51,7 @@
     "ssh-keygen": "^0.4.1",
     "string-to-stream": "^1.1.1",
     "symbols": "0.0.6",
-    "tap": "^12.0.1",
+    "tap": "^12.6.1",
     "tap-parser": "^7.0.0"
   },
   "devDependencies": {
