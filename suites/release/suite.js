@@ -15,7 +15,7 @@ const { homedir } = require('os');
 module.exports = {
   title: 'BalenaOS release suite',
   run: async function() {
-    const Worker = require(join(this.frameworkPath, 'workers', this.options.worker.type));
+    const Worker = require(join(this.frameworkPath, 'common', 'worker'));
     const BalenaOS = require(join(this.frameworkPath, 'components', 'os', 'balenaos'));
     const Balena = require(join(this.frameworkPath, 'components', 'balena', 'sdk'));
     const CLI = require(join(this.frameworkPath, 'components', 'balena', 'cli'));
@@ -90,9 +90,7 @@ module.exports = {
     });
 
     this.globalContext = {
-      worker: new Worker('main worker', this.context.deviceType.slug, {
-        devicePath: this.options.worker.device
-      })
+      worker: new Worker(this.context.deviceType.slug, this.options.worker.url)
     };
 
     this.globalContext = {
@@ -160,7 +158,14 @@ module.exports = {
       )
     );
 
-    await this.context.worker.ready();
+    await this.context.worker.select({
+      type: this.options.worker.type
+    });
+    await this.context.worker.network({
+      wired: {
+        nat: true
+      }
+    });
     await this.context.worker.flash(this.context.os);
     await this.context.worker.on();
     this.teardown.register(() => {
@@ -174,11 +179,11 @@ module.exports = {
     });
   },
   tests: [
+    './tests/download-strategies',
     './tests/preload',
     './tests/register',
     './tests/move',
     './tests/supervisor-api',
-    './tests/hostapp',
-    './tests/download-strategies'
+    './tests/hostapp'
   ]
 };

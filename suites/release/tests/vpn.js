@@ -1,5 +1,4 @@
-/*
- * Copyright 2017 balena
+/* Copyright 2019 balena
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +15,7 @@
 
 'use strict';
 
-const path = require('path');
-
 module.exports = {
-  title: 'TC06 - Push simple python application',
-  run: async function(context) {
-    const hash = await context.utils.clonePushWaitRepoToBalenaDevice({
-      path: path.join(context.tmpdir, 'test'),
-      url: 'https://github.com/balena-io-projects/balena-cpp-hello-world.git',
-      uuid: context.balena.uuid,
-      balena: context.balena,
-      applicationName: context.balena.application.name
-    });
-
-    this.resolveMatch(context.balena.sdk.getDeviceCommit(context.balena.uuid), hash);
-  }
+  title: 'VPN control tests',
+  run: async function(test) {}
 };

@@ -54,8 +54,8 @@ module.exports = options => {
       apiUrl: options.BALENA_TESTS_API_URL
     },
     worker: {
-      type: options.BALENA_TESTS_WORKER,
-      device: options.BALENA_TESTS_DEVICE
+      url: options.BALENA_TESTS_WORKER_URL,
+      type: options.BALENA_TESTS_WORKER_TYPE
     }
   };
 };
