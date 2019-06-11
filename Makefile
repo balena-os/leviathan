@@ -14,6 +14,10 @@ ifdef BALENA_TESTS_DISK
 	DEVICE = '--device=$(BALENA_TESTS_DISK)'
 endif
 
+ifdef SSH_AUTH_SOCK
+	SSH_AGENT = --volume $(SSH_AUTH_SOCK):/ssh-agent --env SSH_AUTH_SOCK=/ssh-agent
+endif
+
 build-docker-image: Dockerfile
 	$(info Building docker image "$(DOCKER_IMAGE)"...)
 	@docker build --rm --tag $(DOCKER_IMAGE) .
@@ -30,6 +34,7 @@ test: build-docker-image
 		$(DOCKER_TTY) \
 		$(DOCKER_INTERACTIVE) \
 		$(DEVICE) \
+		$(SSH_AGENT) \
 		$(DOCKER_IMAGE)
 
 enter:
