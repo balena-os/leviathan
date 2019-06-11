@@ -50,7 +50,9 @@
     "string-to-stream": "^1.1.1",
     "tap": "^13.1.1",
     "tap-parser": "^7.0.0",
-    "unzip": "^0.1.11"
+    "unzip": "^0.1.11",
+    "websocket-stream": "^5.5.0",
+    "ws": "^7.0.0"
   },
   "devDependencies": {
     "eslint": "^4.19.1",
