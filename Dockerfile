@@ -13,14 +13,9 @@ FROM node:9-stretch
 ENV npm_config_unsafe_perm=true
 
 RUN apt-get update && \
-    apt-get install -y qemu-system-x86 qemu-kvm jq git vim rsync && \
+    apt-get install -y jq git vim rsync && \
     curl -sSL https://get.docker.com/ | sh && \
     rm -rf /var/lib/apt/lists/*
-
-RUN git config --global user.email "testbot@resin.io" && \
-    git config --global user.name "Test Bot"
-
-RUN npm install -g balena-cli
 
 WORKDIR /usr/app
 
