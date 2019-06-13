@@ -31,7 +31,7 @@ module.exports = {
 
     const currentVersion = this.context.os.image.version;
     const updateVersion = await sdk.getMaxSatisfyingVersion(
-      this.context.deviceType.slug,
+      this.deviceType.slug,
       `<${this.context.os.image.version}`
     );
 

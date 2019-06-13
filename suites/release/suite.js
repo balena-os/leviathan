@@ -24,17 +24,6 @@ module.exports = {
     this.globalContext = { utils: require(join(this.frameworkPath, 'common', 'utils')) };
 
     fse.ensureDirSync(this.options.tmpdir);
-    this.globalContext = {
-      deviceType: require(join(
-        this.frameworkPath,
-        '..',
-        'contracts',
-        'contracts',
-        'hw.device-type',
-        this.options.deviceType,
-        'contract.json'
-      ))
-    };
 
     this.globalContext = { sshKeyPath: join(homedir(), 'id') };
 
@@ -53,7 +42,7 @@ module.exports = {
     this.globalContext = { balena: { application: this.options.balena.application } };
 
     await this.context.balena.sdk
-      .createApplication(this.context.balena.application.name, this.context.deviceType.slug, {
+      .createApplication(this.context.balena.application.name, this.deviceType.slug, {
         delta: this.context.balena.application.env.delta
       })
       .catch(console.error);
@@ -90,12 +79,12 @@ module.exports = {
     });
 
     this.globalContext = {
-      worker: new Worker(this.context.deviceType.slug, this.options.worker.url)
+      worker: new Worker(this.deviceType.slug, this.options.worker.url)
     };
 
     this.globalContext = {
       os: new BalenaOS({
-        deviceType: this.context.deviceType.slug,
+        deviceType: this.deviceType.slug,
         network: this.options.balenaOS.network
       })
     };

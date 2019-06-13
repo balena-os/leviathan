@@ -59,13 +59,9 @@ module.exports = {
 
     const moveApplicationName = `${this.context.balena.application.name}_MoveDevice`;
 
-    await this.context.balena.sdk.createApplication(
-      moveApplicationName,
-      this.context.deviceType.slug,
-      {
-        delta: this.context.balena.application.env.delta
-      }
-    );
+    await this.context.balena.sdk.createApplication(moveApplicationName, this.deviceType.slug, {
+      delta: this.context.balena.application.env.delta
+    });
     this.teardown.register(() => {
       return this.context.balena.sdk.removeApplication(moveApplicationName);
     }, test.name);

@@ -36,6 +36,7 @@ module.exports = options => {
         source: options.BALENA_TESTS_DOWNLOAD_SOURCE
       },
       network: {
+        ethernet: options.BALENA_TESTS_ETHERNET,
         wifi: {
           ssid: options.BALENA_TESTS_WIFI_SSID,
           key: options.BALENA_TESTS_WIFI_KEY
