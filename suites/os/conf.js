@@ -39,6 +39,13 @@ module.exports = options => {
         type: options.BALENA_TESTS_DOWNLOAD_TYPE,
         version: options.BALENA_TESTS_DOWNLOAD_VERSION,
         source: options.BALENA_TESTS_DOWNLOAD_SOURCE
+      },
+      network: {
+        ethernet: options.BALENA_TESTS_ETHERNET,
+        wifi: {
+          ssid: options.BALENA_TESTS_WIFI_SSID,
+          key: options.BALENA_TESTS_WIFI_KEY
+        }
       }
     },
     worker: {

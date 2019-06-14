@@ -26,6 +26,22 @@ module.exports = {
       tests: ['ethernet', 'wifi'].map(adaptor => {
         return {
           title: `${adaptor.charAt(0).toUpperCase()}${adaptor.slice(1)} test`,
+          os: {
+            type: 'object',
+            required: ['network'],
+            properties: {
+              network: {
+                type: 'object',
+                required: [adaptor],
+                properties: {
+                  [adaptor]: {
+                    type: 'boolean',
+                    const: true
+                  }
+                }
+              }
+            }
+          },
           run: async function(test) {
             const iface = await this.context.worker.executeCommandInHostOS(
               `nmcli d  | grep ' ${adaptor} ' | awk '{print $1}'`,

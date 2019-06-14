@@ -21,18 +21,6 @@ module.exports = {
 
     fse.ensureDirSync(this.options.tmpdir);
 
-    this.globalContext = {
-      deviceType: require(join(
-        this.frameworkPath,
-        '..',
-        'contracts',
-        'contracts',
-        'hw.device-type',
-        this.options.deviceType,
-        'contract.json'
-      ))
-    };
-
     this.globalContext = { sshKeyPath: join(homedir(), 'id') };
 
     const config = {
@@ -51,12 +39,12 @@ module.exports = {
     };
 
     this.globalContext = {
-      worker: new Worker(this.context.deviceType.slug, this.options.worker.url)
+      worker: new Worker(this.deviceType.slug, this.options.worker.url)
     };
 
     this.globalContext = {
       os: new BalenaOS({
-        deviceType: this.context.deviceType.slug,
+        deviceType: this.deviceType.slug,
         network: this.options.balenaOS.network
       })
     };
@@ -87,13 +75,10 @@ module.exports = {
 
     console.log('Waiting for device to be reachable');
     assert.equal(
-      await this.context.worker.executeCommandInHostOS('cat /etc/hostname', this.context.link, {
-        interval: 1000,
-        tries: 6
-      }),
+      await this.context.worker.executeCommandInHostOS('cat /etc/hostname', this.context.link),
       this.context.link.split('.')[0],
       'Device should be reachable'
     );
   },
-  tests: ['./tests/i-boot-splash', './tests/connectivity']
+  tests: ['./tests/i-boot-splash', './tests/connectivity', './tests/config-json']
 };
