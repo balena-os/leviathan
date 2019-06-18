@@ -40,7 +40,7 @@ const {
 } = require('path')
 
 module.exports = {
-  title: 'Self served HostOS update [<%= options.balenaOSVersionHostUpdateOldToNew %> -> <%= options.balenaOSVersionUpdate %>]',
+  title: 'Self served HostOS update [<%= options.balenaOSVersionSelfUpdateOldToNew %> -> <%= options.balenaOSVersionUpdate %>]',
   run: async (test, context, options, components) => {
     console.log('Logging into balena-staging')
     await balena.sdk.loginWithToken(options.apiKeyStaging)
@@ -55,7 +55,7 @@ module.exports = {
     console.log(`Getting configuration for device ${placeholder.uuid}`)
     const balenaConfiguration = await balena.sdk.getDeviceOSConfiguration(
       placeholder.uuid, placeholder.deviceApiKey, _.assign({
-        version: options.balenaOSVersionHostUpdateOldToNew
+        version: options.balenaOSVersionSelfUpdateOldToNew
       }, options.configuration)
     )
 
@@ -64,7 +64,7 @@ module.exports = {
       tmpdir: options.tmpdir,
       configuration: _.assign(balenaConfiguration, options.configuration),
       deviceType: options.deviceType,
-      version: options.balenaOSVersionHostUpdateOldToNew,
+      version: options.balenaOSVersionSelfUpdateOldToNew,
       url: options.apiStagingUrl
     })
 
