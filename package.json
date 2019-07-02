@@ -25,7 +25,6 @@
   "dependencies": {
     "ajv": "^6.5.0",
     "ajv-semver": "git+https://github.com/balena-io-modules/ajv-semver.git#resin-semver",
-    "balena-cli": "^10.9.0",
     "balena-sdk": "^11.0.0",
     "balena-sync": "^10.0.0",
     "bluebird": "^3.5.1",
@@ -51,9 +50,7 @@
     "string-to-stream": "^1.1.1",
     "tap": "^13.1.1",
     "tap-parser": "^7.0.0",
-    "unzip": "^0.1.11",
-    "websocket-stream": "^5.5.0",
-    "ws": "^7.0.0"
+    "unzip": "^0.1.11"
   },
   "devDependencies": {
     "eslint": "^4.19.1",

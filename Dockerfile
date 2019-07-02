@@ -19,6 +19,8 @@ RUN apt-get update && \
 
 WORKDIR /usr/app
 
+RUN npm install balena-cli -g --production --unsafe-perm
+
 COPY --from=npm-install /tmp/node ./
 
 COPY contracts contracts
