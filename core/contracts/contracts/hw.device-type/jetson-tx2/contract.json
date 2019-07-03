@@ -1,0 +1,20 @@
+{
+  "slug": "jetson-tx2",
+  "version": "1",
+  "type": "hw.device-type",
+  "name": "Nvidia Jetson TX2",
+  "data": {
+    "arch": "aarch64",
+    "hdmi": true,
+    "led": false,
+    "connectivity": {
+      "bluetooth": false
+    },
+    "storage": {
+      "internal": false
+    },
+    "media": {
+      "installation": "sdcard"
+    }
+  }
+}

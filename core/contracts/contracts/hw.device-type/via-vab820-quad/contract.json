@@ -1,0 +1,20 @@
+{
+  "slug": "via-vab820-quad",
+  "version": "1",
+  "type": "hw.device-type",
+  "name": "VIA vab820",
+  "data": {
+    "arch": "armv7hf",
+    "hdmi": true,
+    "led": false,
+    "connectivity": {
+      "bluetooth": true
+    },
+    "storage": {
+      "internal": true
+    },
+    "media": {
+      "installation": "sdcard"
+    }
+  }
+}

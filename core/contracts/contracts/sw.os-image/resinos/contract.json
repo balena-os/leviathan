@@ -1,0 +1,17 @@
+{
+  "type": "sw.os-image",
+  "name": "ResinOS for Raspberry Pi 3",
+  "version": "2.3.0+rev1.dev",
+  "slug": "resinos",
+  "requires": [
+    {
+      "type": "hw.device-type",
+      "slug": "raspberrypi3"
+    }
+  ],
+  "assets": {
+    "url": "https://files.resin.io/resinos/raspberrypi3/{{version}}/image/resin.img.zip",
+    "checksumType": "sha256",
+    "checksum": "29c1fef73e8636c79ab1d835bc1d90f115d7683585eaf39874a2eab739b74baf"
+  }
+}

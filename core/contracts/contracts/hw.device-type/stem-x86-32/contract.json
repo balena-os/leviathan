@@ -1,0 +1,20 @@
+{
+  "slug": "stem-x86-32",
+  "version": "1",
+  "type": "hw.device-type",
+  "name": "Stem x86 32bit",
+  "data": {
+    "arch": "i386",
+    "hdmi": true,
+    "led": false,
+    "connectivity": {
+      "bluetooth": false
+    },
+    "storage": {
+      "internal": true
+    },
+    "media": {
+      "installation": "usbkey"
+    }
+  }
+}

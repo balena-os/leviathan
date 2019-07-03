@@ -1,0 +1,20 @@
+{
+  "slug": "generic-armv7ahf",
+  "version": "1",
+  "type": "hw.device-type",
+  "name": "Generic ARMv7-a HF",
+  "data": {
+    "arch": "armv7hf",
+    "hdmi": true,
+    "led": false,
+    "connectivity": {
+      "bluetooth": false
+    },
+    "storage": {
+      "internal": false
+    },
+    "media": {
+      "installation": "sdcard"
+    }
+  }
+}

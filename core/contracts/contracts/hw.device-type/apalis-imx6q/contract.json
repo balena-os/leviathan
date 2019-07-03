@@ -1,0 +1,20 @@
+{
+  "slug": "apalis-imx6q",
+  "version": "1",
+  "type": "hw.device-type",
+  "name": "Toradex Apalis",
+  "data": {
+    "arch": "armv7hf",
+    "hdmi": true,
+    "led": false,
+    "connectivity": {
+      "bluetooth": false
+    },
+    "storage": {
+      "internal": false
+    },
+    "media": {
+      "installation": "sdcard"
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "slug": "qemu",
+  "type": "sw.blob",
+  "version": "1",
+  "name": "QEMU v{{version}}",
+  "assets": {
+    "bin": {
+      "checksumType": "sha256"
+    }
+  },
+  "variants": [
+    {
+      "version": "3.0.0+resin-arm",
+      "assets": {
+        "bin": {
+          "name": "qemu-arm-static",
+          "url": "file://./assets/qemu-arm-static",
+          "checksum": "47ae430b0e7c25e1bde290ac447a720e2ea6c6e78cd84e44847edda289e020a8",
+          "main": "qemu-arm-static"
+        }
+      },
+      "requires": [
+        {
+          "or": [
+            { "type": "arch.sw", "slug": "armv7hf" },
+            { "type": "arch.sw", "slug": "rpi" },
+            { "type": "arch.sw", "slug": "armv5e" }
+          ]
+        }
+      ]
+    },
+    {
+      "version": "3.0.0+resin-aarch64",
+      "assets": {
+        "bin": {
+          "name": "qemu-aarch64-static",
+          "url": "file://./assets/qemu-aarch64-static",
+          "checksum": "a1ef52971537e11915565233f48aa179839f676008d7911c05b3ae94c08c4f5c",
+          "main": "qemu-aarch64-static"
+        }
+      },
+      "requires": [
+        { "type": "arch.sw", "slug": "aarch64" }
+      ]
+    }
+  ]
+}

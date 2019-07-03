@@ -1,0 +1,32 @@
+FROM balenalib/%%BALENA_MACHINE_NAME%%-node:9-stretch AS npm-install
+
+ENV npm_config_unsafe_perm=true
+
+WORKDIR /tmp/node
+
+COPY package.json .
+
+RUN npm install
+
+FROM balenalib/%%BALENA_MACHINE_NAME%%-node:9-stretch
+
+ENV npm_config_unsafe_perm=true
+
+RUN install_pacakges jq git vim rsync && \
+    curl -sSL https://get.docker.com/ | sh
+
+WORKDIR /usr/app
+
+RUN npm install balena-cli -g --production --unsafe-perm
+
+COPY --from=npm-install /tmp/node ./
+
+COPY contracts contracts
+COPY .eslintrc.json ./
+COPY .prettierrc ./
+
+COPY lib lib
+COPY suites suites
+COPY entry.sh ./
+
+CMD [ "./entry.sh" ]

@@ -1,0 +1,20 @@
+{
+  "slug": "artik10",
+  "version": "1",
+  "type": "hw.device-type",
+  "name": "Samsung Artik 10",
+  "data": {
+    "arch": "armv7hf",
+    "hdmi": true,
+    "led": false,
+    "connectivity": {
+      "bluetooth": false
+    },
+    "storage": {
+      "internal": false
+    },
+    "media": {
+      "installation": "sdcard"
+    }
+  }
+}

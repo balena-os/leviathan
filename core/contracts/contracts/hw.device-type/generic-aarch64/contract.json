@@ -1,0 +1,20 @@
+{
+  "slug": "generic-aarch64",
+  "version": "1",
+  "type": "hw.device-type",
+  "name": "Generic AARCH64",
+  "data": {
+    "arch": "aarch64",
+    "hdmi": true,
+    "led": false,
+    "connectivity": {
+      "bluetooth": false
+    },
+    "storage": {
+      "internal": false
+    },
+    "media": {
+      "installation": "sdcard"
+    }
+  }
+}

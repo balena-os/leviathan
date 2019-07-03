@@ -1,0 +1,20 @@
+{
+  "slug": "artik710",
+  "version": "1",
+  "type": "hw.device-type",
+  "name": "Samsung Artik 710",
+  "data": {
+    "arch": "aarch64",
+    "hdmi": true,
+    "led": true,
+    "connectivity": {
+      "bluetooth": true
+    },
+    "storage": {
+      "internal": false
+    },
+    "media": {
+      "installation": "sdcard"
+    }
+  }
+}

@@ -1,0 +1,10 @@
+version: '2'
+services:
+  worker:
+    privileged: true
+    build: .
+    pid: 'host'
+    network_mode: 'host'
+    ipc: 'host'
+    labels:
+      io.balena.features.dbus: '1'

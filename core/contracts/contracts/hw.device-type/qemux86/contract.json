@@ -1,0 +1,20 @@
+{
+  "slug": "qemux86",
+  "version": "1",
+  "type": "hw.device-type",
+  "name": "QEMU x86",
+  "data": {
+    "arch": "i386",
+    "hdmi": true,
+    "led": false,
+    "connectivity": {
+      "bluetooth": false
+    },
+    "storage": {
+      "internal": false
+    },
+    "media": {
+      "installation": "image"
+    }
+  }
+}

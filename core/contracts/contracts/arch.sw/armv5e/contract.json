@@ -1,0 +1,15 @@
+{
+  "slug": "armv5e",
+  "version": "1",
+  "type": "arch.sw",
+  "name": "ARM v5",
+  "data": { "arch": "armv5e" },
+  "requires": [
+    {
+      "type": "hw.device-type",
+      "data": {
+        "arch": "armv5e"
+      }
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "slug": "raspberrypi3",
+  "version": "1",
+  "type": "hw.device-type",
+  "name": "Raspberry Pi 3",
+  "data": {
+    "arch": "armv7hf",
+    "hdmi": true,
+    "led": true,
+    "connectivity": {
+      "bluetooth": true
+    },
+    "storage": {
+      "internal": false
+    },
+    "media": {
+      "installation": "sdcard"
+    }
+  }
+}
