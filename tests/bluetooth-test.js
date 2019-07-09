@@ -54,6 +54,8 @@ module.exports = {
       applicationName: options.applicationName
     })
 
+    console.log('DashboardURL: ', await components.balena.sdk.getDashboardUrl(context.uuid))
+
     test.is(await components.balena.sdk.getDeviceCommit(context.uuid), hash)
 
     test.resolveMatch(utils.runManualTestCase({

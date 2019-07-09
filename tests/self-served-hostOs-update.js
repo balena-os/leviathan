@@ -68,6 +68,8 @@ module.exports = {
       url: options.apiStagingUrl
     })
 
+    console.log('DashboardURL: ', await components.balena.sdk.getDashboardUrl(placeholder.uuid))
+
     await context.os.fetch()
 
     console.log(basename(await realpath(context.os.image)))
