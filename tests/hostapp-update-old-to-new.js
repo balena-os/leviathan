@@ -37,7 +37,7 @@ const {
 module.exports = {
   title: 'Balena host OS update [<%= options.balenaOSVersionHostUpdateOldToNew %> -> <%= options.balenaOSVersionUpdate %>]',
   run: async (test, context, options, components) => {
-    const applicationNameHostUpdate = `${options.applicationName}_HostUpdate`
+    const applicationNameHostUpdate = `${options.applicationName}_HUP`
     console.log(`Creating application: ${applicationNameHostUpdate} with device type ${options.deviceType}`)
     await components.balena.sdk.createApplication(applicationNameHostUpdate, options.deviceType)
 
@@ -60,6 +60,8 @@ module.exports = {
       url: options.apiStagingUrl
     })
 
+    console.log('DashboardURL: ', await components.balena.sdk.getDashboardUrl(placeholder.uuid))
+
     await context.os.fetch()
 
     console.log(basename(await realpath(context.os.image)))
@@ -70,7 +72,7 @@ module.exports = {
 
     if (options.worker === 'manual') {
       test.is(await utils.runManualTestCase({
-        prepare: [ `Please have a flash drive inserted...` ],
+        prepare: [ 'Please have a flash drive inserted...' ]
       }), true)
     }
 
@@ -88,6 +90,92 @@ module.exports = {
       .replace('+', '_')
       .replace(/\.(prod|dev)$/, '')
 
+    // Run rollback tests:
+    test.is(await utils.runManualTestCase({
+      prepare: [ 'Run the rollback tests...' ]
+    }), true)
+
+    console.log(await components.balena.sdk.executeCommandInHostOS(
+      `hostapp-update -i resin/resinos-staging:${dockerVersion}-${options.deviceType}`,
+      context.uuid1,
+      context.key.privateKeyPath
+    ))
+
+    const balenaEngineBinaryPath = await components.balena.sdk.executeCommandInHostOS(
+      'find /mnt/sysroot/inactive | grep "/usr/bin/balena-engine$"',
+      context.uuid1,
+      context.key.privateKeyPath
+    )
+    console.log('Balena Engine Binary: ', balenaEngineBinaryPath)
+
+    console.log('replace balena-engine with binary bash')
+    await components.balena.sdk.executeCommandInHostOS(`cp /bin/bash ${balenaEngineBinaryPath}`,
+      context.uuid1,
+      context.key.privateKeyPath
+    )
+
+    const rollbackHealthScriptPath = await components.balena.sdk.executeCommandInHostOS(
+      'find /mnt/sysroot/inactive | grep "bin/rollback-health"',
+      context.uuid1,
+      context.key.privateKeyPath
+    )
+    console.log('Rollback health script path: ', rollbackHealthScriptPath)
+    console.log('replace roolback healt script path COUNT 15 with 2')
+    await components.balena.sdk.executeCommandInHostOS(`sed -i "s/COUNT=.*/COUNT=2/g" ${rollbackHealthScriptPath}`,
+      context.uuid1,
+      context.key.privateKeyPath
+    )
+
+    console.log('Sync...')
+    await components.balena.sdk.executeCommandInHostOS('sync',
+      context.uuid1,
+      context.key.privateKeyPath
+    )
+
+    const lastTimeOnlineBeforeReboot = await components.balena.sdk.getLastConnectedTime(context.uuid1)
+    console.log(lastTimeOnlineBeforeReboot)
+
+    console.log('Rebooting device...')
+    await components.balena.sdk.executeCommandInHostOS('reboot',
+      context.uuid1,
+      context.key.privateKeyPath
+    )
+
+    await utils.waitUntil(async () => {
+      console.log(await components.balena.sdk.getLastConnectedTime(context.uuid1))
+      return await components.balena.sdk.getLastConnectedTime(context.uuid1) > lastTimeOnlineBeforeReboot
+    })
+
+    console.log('There should be rollback-*-breadcrumb files...')
+    console.log(await components.balena.sdk.executeCommandInHostOS('ls /mnt/state',
+      context.uuid1,
+      context.key.privateKeyPath
+    ))
+
+    console.log('Journal logs of rollback-health service. The device should trigger a rollback in 2 minutes...')
+    console.log(await components.balena.sdk.executeCommandInHostOS('journalctl -u rollback-health.service',
+      context.uuid1,
+      context.key.privateKeyPath
+    ))
+
+    console.log(`Get os-release file... It should show ${options.balenaOSVersion} ...`)
+    console.log(await components.balena.sdk.executeCommandInHostOS('cat /etc/os-release',
+      context.uuid1,
+      context.key.privateKeyPath
+    ))
+
+    // Wait for device to reboot after 2 minutes
+    const lastTimeOnlineAfterReboot = await components.balena.sdk.getLastConnectedTime(context.uuid1)
+    await utils.waitUntil(async () => {
+      console.log(await components.balena.sdk.getLastConnectedTime(context.uuid1))
+      return await components.balena.sdk.getLastConnectedTime(context.uuid1) > lastTimeOnlineAfterReboot
+    })
+
+    test.is(await utils.runManualTestCase({
+      prepare: [ 'Rollback test is done. Continue to test host update?' ]
+    }), true)
+
+    // Run hostapp update test
     // This command will find the source (e.g. mmcblk0p2) for a given mountpoint
     const testCmd = (mountpoint) => {
       return `findmnt --noheadings --canonicalize --output SOURCE /mnt/sysroot/${mountpoint}`
