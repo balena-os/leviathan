@@ -130,14 +130,14 @@ module.exports = class BalenaOS {
       local: async () => {
         const version = /VERSION="(.*)"/g.exec(
           await imagefs.readFile({
-            image: join('/mnt', download.source),
+            image: download.source,
             partition: 1,
             path: '/os-release'
           })
         );
         const variant = /VARIANT_ID="(.*)"/g.exec(
           await imagefs.readFile({
-            image: join('/mnt', download.source),
+            image: download.source,
             partition: 1,
             path: '/os-release'
           })
@@ -150,7 +150,7 @@ module.exports = class BalenaOS {
         return {
           version: version != null ? version[1] : null,
           variant: variant != null ? variant[1] : null,
-          stream: fs.createReadStream(join('/mnt', download.source))
+          stream: fs.createReadStream(download.source)
         };
       }
     };

@@ -1,8 +1,0 @@
-version: '2'
-services:
-  variables:
-    build: .
-    restart: on-failure
-    labels:
-      io.balena.features.balena-socket: '1'
-      io.balena.features.balena-api: '1'

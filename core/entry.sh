@@ -125,5 +125,5 @@ if [ -z SSH_AUTH_SOCK ]; then
 fi
 
 start_udev &>/dev/null
-LOG="file" start_docker
+#//LOG="file" start_docker
 npm start

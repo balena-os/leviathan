@@ -20,7 +20,9 @@ const { basename } = require('path');
 
 // Device identification
 function uid(a) {
-  return a ? (a ^ (Math.random() * 16)).toString(16) : ([1e15] + 1e15).replace(/[01]/g, uid);
+  return a
+    ? (a ^ (Math.random() * 16)).toString(16)
+    : ([1e15] + 1e15).replace(/[01]/g, uid);
 }
 // Test identification
 const id = `${basename(__dirname)}_${Math.random()
@@ -33,24 +35,24 @@ module.exports = options => {
     balenaOS: {
       config: {
         uuid: uid(),
-        pubKey: options.BALENA_TESTS_BALENAOS_SSH_PUBKEY
+        pubKey: options.BALENA_TESTS_BALENAOS_SSH_PUBKEY,
       },
       download: {
         type: options.BALENA_TESTS_DOWNLOAD_TYPE,
         version: options.BALENA_TESTS_DOWNLOAD_VERSION,
-        source: options.BALENA_TESTS_DOWNLOAD_SOURCE
+        source: options.BALENA_TESTS_DOWNLOAD_SOURCE,
       },
       network: {
         ethernet: options.BALENA_TESTS_ETHERNET,
         wifi: {
           ssid: options.BALENA_TESTS_WIFI_SSID,
-          key: options.BALENA_TESTS_WIFI_KEY
-        }
-      }
+          key: options.BALENA_TESTS_WIFI_KEY,
+        },
+      },
     },
     worker: {
       url: options.BALENA_TESTS_WORKER_URL,
-      type: options.BALENA_TESTS_WORKER_TYPE
-    }
+      type: options.BALENA_TESTS_WORKER_TYPE,
+    },
   };
 };

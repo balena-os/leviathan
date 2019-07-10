@@ -1,8 +1,12 @@
 version: '2'
 services:
+  core:
+    privileged: true
+    build: ./core
+    network_mode: 'host'
   worker:
     privileged: true
-    build: .
+    build: ./worker
     pid: 'host'
     network_mode: 'host'
     ipc: 'host'

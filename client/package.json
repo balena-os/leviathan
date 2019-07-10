@@ -1,0 +1,23 @@
+{
+  "name": "client",
+  "version": "0.0.1",
+  "description": "Simple client to connect to Leviathan core",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Theodor Gherzan",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.5.3",
+    "fs-extra": "^8.1.0",
+    "lodash": "^4.17.11",
+    "mz": "^2.7.0",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.4",
+    "tar-fs": "^2.0.0",
+    "websocket-stream": "^5.5.0",
+    "yargs": "^13.2.4"
+  }
+}

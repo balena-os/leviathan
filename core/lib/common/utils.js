@@ -28,6 +28,7 @@ const trim = require('lodash/trim');
 
 const Bluebird = require('bluebird');
 const exec = Bluebird.promisify(require('child_process').exec);
+const { fork } = require('child_process');
 const { fs } = require('mz');
 const inquirer = require('inquirer');
 const keygen = Bluebird.promisify(require('ssh-keygen'));
@@ -180,5 +181,8 @@ module.exports = {
       stream.on('finish', resolve);
       stream.on('error', reject);
     });
+  },
+  forkCode: (code, opts) => {
+    return fork(path.join(__dirname, 'vm.js'), [code], opts);
   }
 };

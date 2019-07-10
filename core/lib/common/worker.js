@@ -17,14 +17,12 @@
 'use strict';
 
 const retry = require('bluebird-retry');
-const { fs } = require('mz');
-const { promiseStream } = require('./utils');
-const { basename } = require('path');
-const { Progress } = require('resin-cli-visuals');
-const rp = require('request-promise');
-const Zip = require('node-zip');
-
 const utils = require('../common/utils');
+const isNumber = require('lodash/isNumber');
+const { fs } = require('mz');
+const rp = require('request-promise');
+const { Progress } = require('resin-cli-visuals');
+const { promiseStream } = require('./utils');
 
 module.exports = class Worker {
   constructor(deviceType, url) {
@@ -33,20 +31,12 @@ module.exports = class Worker {
   }
 
   flash(os) {
-    const zip = new Zip();
-
     return new Promise(async (resolve, reject) => {
       await os.configure();
 
-      console.log('Zipping image for upload');
-      const archivePath = `${os.image.path}.zip`;
-      zip.file(basename(os.image.path), await fs.readFile(os.image.path));
-      const data = zip.generate({ base64: false, compression: 'DEFLATE' });
-      await fs.writeFile(archivePath, data, 'binary');
-
       const progress = new Progress('Flashing image');
 
-      const req = rp.post({ uri: `https://${this.url}/dut/flash` });
+      const req = rp.post({ uri: `http://${this.url}/dut/flash` });
 
       req.catch(error => {
         reject(error);
@@ -71,9 +61,10 @@ module.exports = class Worker {
 
           if (computedLine[1] === 'progress') {
             // Hide any errors as the lines we get can be half written
-            try {
-              progress.update(JSON.parse(computedLine[2]));
-            } catch (err) {}
+            const state = JSON.parse(computedLine[2]);
+            if (state != null && isNumber(state.percentage)) {
+              progress.update(state);
+            }
           }
 
           if (computedLine[1] === 'status') {
@@ -82,75 +73,52 @@ module.exports = class Worker {
         }
       });
 
-      await promiseStream(fs.createReadStream(archivePath).pipe(req));
+      await promiseStream(fs.createReadStream(os.image.path).pipe(req));
     });
   }
 
   async select(worker) {
-    await rp.post({ uri: `https://${this.url}/select`, body: worker, json: true });
+    await rp.post({ uri: `http://${this.url}/select`, body: worker, json: true });
   }
 
   async on() {
-    await rp.post(`https://${this.url}/dut/on`);
+    await rp.post(`http://${this.url}/dut/on`);
   }
 
   async off() {
-    await rp.post(`https://${this.url}/dut/off`);
+    await rp.post(`http://${this.url}/dut/off`);
   }
 
   async network(network) {
-    await rp.post({ uri: `https://${this.url}/dut/network`, body: network, json: true });
+    await rp.post({ uri: `http://${this.url}/dut/network`, body: network, json: true });
   }
 
   async proxy(proxy) {
-    return rp.post({ uri: `https://${this.url}/proxy`, body: proxy, json: true });
+    return rp.post({ uri: `http://${this.url}/proxy`, body: proxy, json: true });
   }
 
-  async tunnel(
-    link,
-    portFrom,
-    portTo,
-    timeout = {
-      interval: 2000,
-      tries: 6
-    }
-  ) {
-    let body = {};
+  async ip(target) {
+    return rp.get({ uri: `http://${this.url}/dut/ip`, body: { target }, json: true });
+  }
 
-    if (link != null && portFrom != null && portTo != null) {
-      body = {
-        from: `localhost:${portFrom}`,
-        to: `${link}:${portTo}`
-      };
-    }
-
-    return retry(
-      async () => {
-        await rp.post({
-          uri: `https://${this.url}/dut/tunnel`,
-          body,
-          json: true
-        });
-      },
-      {
-        max_tries: timeout.tries,
-        interval: timeout.interval,
-        throw_original: true
-      }
-    );
+  async teardown() {
+    return rp.post({ uri: `http://${this.url}/teardown`, json: true });
   }
 
   async executeCommandInHostOS(
     command,
+    target,
     timeout = {
       interval: 10000,
-      tries: 20
+      tries: 30
     }
   ) {
     return retry(
       async () => {
+        let ip = /.*\.local/.test(target) ? await this.ip(target) : target;
+
         const result = await utils.executeCommandOverSSH(`source /etc/profile ; ${command}`, {
-          host: 'localhost',
+          host: ip,
           port: '22222',
           username: 'root'
         });

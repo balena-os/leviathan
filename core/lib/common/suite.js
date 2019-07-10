@@ -34,7 +34,6 @@ const fse = require('fs-extra');
 const npm = require('npm');
 const { tmpdir } = require('os');
 const path = require('path');
-const tap = require('tap');
 
 const utils = require('./utils');
 const Teardown = require('./teardown');
@@ -54,26 +53,20 @@ function cleanObject(object) {
 }
 
 module.exports = class Suite {
-  constructor(options) {
+  constructor(packdir) {
     this.frameworkPath = path.join(__dirname, '..');
 
-    this.suiteName = options.BALENA_TESTS_SUITE_NAME;
-    this.suitePath = path.join(
-      __dirname,
-      '..',
-      '..',
-      options.BALENA_TESTS_SUITES_PATH,
-      this.suiteName
-    );
+    const config = require(`${packdir}/config.json`);
+
     this.options = assignIn(
       {
-        tmpdir: options.BALENA_TESTS_TMPDIR || tmpdir(),
-        interactiveTests: options.BALENA_TESTS_ENABLE_INTERACTIVE_TESTS,
-        replOnFailure: options.BALENA_TESTS_REPL_ON_FAILURE
+        packdir: path.join(packdir, 'suite'),
+        tmpdir: config.BALENA_TESTS_TMPDIR || tmpdir(),
+        interactiveTests: config.BALENA_TESTS_ENABLE_INTERACTIVE_TESTS,
+        replOnFailure: config.BALENA_TESTS_REPL_ON_FAILURE
       },
-      require(path.join(this.suitePath, 'conf'))(options)
+      require(path.join(packdir, 'suite', 'conf'))(config)
     );
-
     cleanObject(this.options);
 
     // State
@@ -81,13 +74,19 @@ module.exports = class Suite {
     this.ctx = {};
     this.ctxGlobal = {};
     this.ctxStack = [];
-    this.rootTree = this.resolveTestTree(require(path.join(this.suitePath, 'suite')));
     this.deviceType = require(`../../contracts/contracts/hw.device-type/${
-      options.BALENA_TESTS_DEVICE_TYPE
+      config.BALENA_TESTS_DEVICE_TYPE
     }/contract.json`);
+  }
 
-    // Print queue
-    this.printRunQueueSummary();
+  async init() {
+    await Bluebird.try(async () => {
+      await this.installDependencies();
+      this.rootTree = this.resolveTestTree(path.join(this.options.packdir, 'suite'));
+    }).catch(async error => {
+      await this.removeDependencies();
+      throw error;
+    });
   }
 
   set globalContext(object) {
@@ -107,6 +106,9 @@ module.exports = class Suite {
   }
 
   async run() {
+    delete require.cache[require.resolve('tap')];
+    const tap = require('tap');
+
     // Recursive DFS
     const treeExpander = async ([
       { interactive, os, skip, deviceType, title, run, tests },
@@ -166,7 +168,6 @@ module.exports = class Suite {
     };
 
     await Bluebird.try(async () => {
-      await this.installDependencies();
       await treeExpander([this.rootTree, tap]);
     }).finally(async () => {
       await this.removeDependencies();
@@ -177,8 +178,10 @@ module.exports = class Suite {
 
   // DFS
   resolveTestTree(suite) {
+    const root = require(suite);
+
     const queue = [];
-    queue.push(suite);
+    queue.push(root);
 
     while (queue.length > 0) {
       const { tests } = queue.pop();
@@ -187,7 +190,7 @@ module.exports = class Suite {
         tests.forEach((test, i) => {
           if (isString(test)) {
             try {
-              test = tests[i] = require(path.join(this.suitePath, test));
+              test = tests[i] = require(path.join(this.options.packdir, test));
             } catch (error) {
               if (error.code === 'MODULE_NOT_FOUND') {
                 console.error('Could not resolve test path. Ignoring...');
@@ -201,7 +204,7 @@ module.exports = class Suite {
       }
     }
 
-    return suite;
+    return root;
   }
 
   // DFS with depth tracking
@@ -224,18 +227,18 @@ module.exports = class Suite {
   }
 
   async installDependencies() {
-    console.log(`Install npm dependencies for suite: ${this.suiteName}`);
+    console.log(`Install npm dependencies for suite: `);
     await Bluebird.promisify(npm.load)({
       loglevel: 'silent',
       progress: false,
-      prefix: this.suitePath,
+      prefix: this.options.packdir,
       'package-lock': false
     });
-    await Bluebird.promisify(npm.install)(this.suitePath);
+    await Bluebird.promisify(npm.install)(this.options.packdir);
   }
 
   async removeDependencies() {
-    console.log(`Removing npm dependencies for suite: ${this.suitePath}`);
-    await Bluebird.promisify(fse.remove)(path.join(this.suitePath, 'node_modules'));
+    console.log(`Removing npm dependencies for suite: `);
+    await Bluebird.promisify(fse.remove)(path.join(this.options.packdir, 'node_modules'));
   }
 };

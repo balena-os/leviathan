@@ -1,12 +1,1 @@
-version: '2'
-services:
-  core:
-    build: ./core
-  worker:
-    privileged: true
-    build: ./worker
-    pid: 'host'
-    network_mode: 'host'
-    ipc: 'host'
-    labels:
-      io.balena.features.dbus: '1'
+./compose/balena.yml

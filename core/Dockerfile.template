@@ -1,4 +1,4 @@
-FROM balenalib/%%BALENA_MACHINE_NAME%%-node:9-stretch AS npm-install
+FROM balenalib/%%BALENA_MACHINE_NAME%%-node:9-stretch-build AS npm-install
 
 ENV npm_config_unsafe_perm=true
 
@@ -8,11 +8,11 @@ COPY package.json .
 
 RUN npm install
 
-FROM balenalib/%%BALENA_MACHINE_NAME%%-node:9-stretch
+FROM balenalib/%%BALENA_MACHINE_NAME%%-node:9-stretch-build
 
 ENV npm_config_unsafe_perm=true
 
-RUN install_pacakges jq git vim rsync && \
+RUN install_packages jq git vim rsync python && \
     curl -sSL https://get.docker.com/ | sh
 
 WORKDIR /usr/app
@@ -26,7 +26,8 @@ COPY .eslintrc.json ./
 COPY .prettierrc ./
 
 COPY lib lib
-COPY suites suites
 COPY entry.sh ./
+
+EXPOSE 80
 
 CMD [ "./entry.sh" ]
