@@ -10,14 +10,19 @@ RUN npm install
 
 FROM balenalib/%%BALENA_MACHINE_NAME%%-node:9-stretch-build
 
+ENV UDEV=1
+
 ENV npm_config_unsafe_perm=true
 
-RUN install_packages jq git vim rsync python && \
-    curl -sSL https://get.docker.com/ | sh
+RUN install_packages jq git vim rsync python
 
 WORKDIR /usr/app
 
 RUN npm install balena-cli -g --production --unsafe-perm
+
+# If we have external storage enabled let's mount it
+RUN mkdir /mnt/storage
+RUN echo "LABEL=STORAGE /mnt/storage ext2 rw,relatime 0 2" >> /etc/fstab
 
 COPY --from=npm-install /tmp/node ./
 

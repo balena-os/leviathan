@@ -59,10 +59,6 @@ COPY --from=firmware /src/teensy_loader_cli/teensy_loader_cli /usr/local/bin
 COPY firmware/StandardFirmataPlus.ino.hex .
 COPY firmware/SDcardSwitch.ino.hex .
 
-# If we have external storage enabled let's mount it
-RUN mkdir /mnt/storage
-RUN echo "LABEL=STORAGE /mnt/storage ext2 rw,relatime 0 2" >> /etc/fstab
-
 WORKDIR /usr/app
 
 COPY entry.sh .
