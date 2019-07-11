@@ -1,0 +1,20 @@
+{
+  "slug": "artik533s",
+  "version": "1",
+  "type": "hw.device-type",
+  "name": "Samsung Artik 530s 1G",
+  "data": {
+    "arch": "armv7hf",
+    "hdmi": true,
+    "led": false,
+    "connectivity": {
+      "bluetooth": true
+    },
+    "storage": {
+      "internal": false
+    },
+    "media": {
+      "installation": "sdcard"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "slug": "fincm3",
+  "version": "1",
+  "type": "hw.device-type",
+  "name": "BALENA FIN",
+  "data": {
+    "arch": "armv7hf",
+    "hdmi": true,
+    "led": true,
+    "connectivity": {
+      "bluetooth": true
+    },
+    "storage": {
+      "internal": true
+    },
+    "media": {
+      "installation": "sdcard"
+    }
+  }
+}

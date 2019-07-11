@@ -1,0 +1,20 @@
+{
+  "slug": "revpi-core-3",
+  "version": "1",
+  "type": "hw.device-type",
+  "name": "Revolution Pi Core 3",
+  "data": {
+    "arch": "armv7hf",
+    "hdmi": true,
+    "led": true,
+    "connectivity": {
+      "bluetooth": false
+    },
+    "storage": {
+      "internal": false
+    },
+    "media": {
+      "installation": "sdcard"
+    }
+  }
+}

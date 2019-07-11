@@ -1,0 +1,20 @@
+{
+  "slug": "beaglebone-green-wifi",
+  "version": "1",
+  "type": "hw.device-type",
+  "name": "BeagleBone Green Wifi",
+  "data": {
+    "arch": "armv7hf",
+    "hdmi": false,
+    "led": true,
+    "connectivity": {
+      "bluetooth": true
+    },
+    "storage": {
+      "internal": true
+    },
+    "media": {
+      "installation": "sdcard"
+    }
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "slug": "alpine",
+  "type": "sw.os",
+  "version": "1",
+  "data": { "libc": "musl-libc" },
+  "name": "Alpine Linux {{version}}",
+  "requires": [
+    { "type": "sw.blob", "slug": "tini" },
+    { "type": "sw.blob", "slug": "resin-xbuild" },
+    { "type": "sw.blob", "slug": "entry" }
+  ],
+  "variants": [
+    {
+      "requires": [
+        { "type": "sw.blob", "slug": "qemu" },
+        {
+          "or": [
+            { "type": "arch.sw", "slug": "armv7hf" },
+            { "type": "arch.sw", "slug": "rpi" },
+            { "type": "arch.sw", "slug": "aarch64" }
+          ]
+        }
+      ],
+      "variants": [
+        { "version": "edge" },
+        { "version": "3.5" },
+        { "version": "3.6" },
+        { "version": "3.7" },
+        { "version": "3.8" }
+      ]
+    },
+    {
+      "requires": [
+        {
+          "or": [
+            { "type": "arch.sw", "slug": "i386" },
+            { "type": "arch.sw", "slug": "i386-nlp" },
+            { "type": "arch.sw", "slug": "amd64" }
+          ]
+        }
+      ],
+      "variants": [
+        { "version": "edge" },
+        { "version": "3.5" },
+        { "version": "3.6" },
+        { "version": "3.7" },
+        { "version": "3.8" }
+      ]
+    }
+  ]
+}

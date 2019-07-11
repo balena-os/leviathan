@@ -1,0 +1,20 @@
+{
+  "slug": "orangepi-plus2",
+  "version": "1",
+  "type": "hw.device-type",
+  "name": "Orange Pi Plus2",
+  "data": {
+    "arch": "armv7hf",
+    "hdmi": true,
+    "led": false,
+    "connectivity": {
+      "bluetooth": false
+    },
+    "storage": {
+      "internal": false
+    },
+    "media": {
+      "installation": "sdcard"
+    }
+  }
+}

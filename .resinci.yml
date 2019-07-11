@@ -1,3 +1,5 @@
 ---
 docker:
   publish: false
+npm:
+  run: false

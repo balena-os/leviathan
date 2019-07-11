@@ -1,0 +1,50 @@
+{
+  "slug": "ubuntu",
+  "type": "sw.os",
+  "version": "1",
+  "data": { "libc": "glibc" },
+  "name": "Ubuntu {{version}}",
+  "requires": [
+    { "type": "sw.blob", "slug": "tini" },
+    { "type": "sw.blob", "slug": "resin-xbuild" },
+    { "type": "sw.blob", "slug": "entry" }
+  ],
+  "variants": [
+    {
+      "requires": [
+        { "type": "sw.blob", "slug": "qemu" },
+        {
+          "or": [
+            { "type": "arch.sw", "slug": "armv7hf" },
+            { "type": "arch.sw", "slug": "aarch64" }
+          ]
+        }
+      ],
+      "variants": [
+        { "version": "trusty" },
+        { "version": "xenial" },
+        { "version": "artful" },
+        { "version": "bionic" },
+        { "version": "cosmic" }
+      ]
+    },
+    {
+      "requires": [
+        {
+          "or": [
+            { "type": "arch.sw", "slug": "i386" },
+            { "type": "arch.sw", "slug": "i386-nlp" },
+            { "type": "arch.sw", "slug": "amd64" }
+          ]
+        }
+      ],
+      "variants": [
+        { "version": "trusty" },
+        { "version": "xenial" },
+        { "version": "artful" },
+        { "version": "bionic" },
+        { "version": "cosmic" }
+      ]
+    }
+  ]
+}

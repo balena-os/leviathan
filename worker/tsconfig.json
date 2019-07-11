@@ -1,0 +1,25 @@
+{
+	"compilerOptions": {
+		"module": "commonjs",
+		"target": "es6",
+		"outDir": "build",
+		"experimentalDecorators": true,
+		"strict": true,
+		"strictPropertyInitialization": false,
+		"preserveConstEnums": true,
+		"declaration": true,
+		"pretty": true,
+		"sourceMap": true,
+		"skipLibCheck": true,
+		"resolveJsonModule": true,
+		"strictNullChecks": true,
+		"noImplicitAny": true
+	},
+	"include": [
+		"./typings/*.d.ts",
+		"./node_modules/etcher-sdk/typings/**/*.d.ts",
+		"./lib/**/*.ts",
+		"./test/**/*.ts",
+		"./bin/**/*.ts"
+	]
+}

@@ -1,0 +1,20 @@
+{
+  "slug": "beaglebone-green",
+  "version": "1",
+  "type": "hw.device-type",
+  "name": "BeagleBone Green",
+  "data": {
+    "arch": "armv7hf",
+    "led": true,
+    "hdmi": false,
+    "connectivity": {
+      "bluetooth": true
+    },
+    "storage": {
+      "internal": true
+    },
+    "media": {
+      "installation": "sdcard"
+    }
+  }
+}

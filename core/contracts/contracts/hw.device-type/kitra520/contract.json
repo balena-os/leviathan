@@ -1,0 +1,20 @@
+{
+  "slug": "kitra520",
+  "version": "1",
+  "type": "hw.device-type",
+  "name": "RushUp Kitra 520",
+  "data": {
+    "arch": "armv7hf",
+    "hdmi": true,
+    "led": false,
+    "connectivity": {
+      "bluetooth": false
+    },
+    "storage": {
+      "internal": false
+    },
+    "media": {
+      "installation": "sdcard"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "slug": "intel-edison",
+  "version": "1",
+  "type": "hw.device-type",
+  "name": "Intel Edison",
+  "data": {
+    "arch": "i386",
+    "hdmi": false,
+    "led": false,
+    "connectivity": {
+      "bluetooth": false
+    },
+    "storage": {
+      "internal": true
+    },
+    "media": {
+      "installation": "dfu"
+    }
+  }
+}
