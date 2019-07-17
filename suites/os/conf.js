@@ -51,7 +51,6 @@ module.exports = options => {
       },
     },
     worker: {
-      url: options.BALENA_TESTS_WORKER_URL,
       type: options.BALENA_TESTS_WORKER_TYPE,
     },
   };

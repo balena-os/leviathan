@@ -16,27 +16,26 @@
 
 'use strict';
 
-const Bluebird = require('bluebird');
 const { Mutex } = require('async-mutex');
 const express = require('express');
 const expressWebSocket = require('express-ws');
 const { forkCode, promiseStream } = require('./common/utils');
 const { move, pathExists, remove } = require('fs-extra');
-const { tmpdir } = require('os');
 const { join } = require('path');
 const tar = require('tar-fs');
 const webSocketStream = require('websocket-stream/stream');
+const { createGunzip } = require('zlib');
 
 async function setup() {
   const mutex = new Mutex();
 
-  const location = `${tmpdir()}/run`;
   const app = express();
 
   expressWebSocket(app, null, {
     perMessageDeflate: false
   });
 
+  const location = '/data';
   let child = null;
 
   app.ws('/start', async (ws, _req) => {
@@ -92,7 +91,7 @@ async function setup() {
     }
   });
 
-  app.post('/stop', async (req, res) => {
+  app.post('/stop', async (_req, res) => {
     try {
       if (child != null) {
         child.kill('SIGINT');
@@ -109,11 +108,11 @@ async function setup() {
   });
 
   app.post('/upload', async (req, res) => {
+    const downloadLocation = `${location}/download`;
     const release = await mutex.acquire();
-    const downloadLocation = join(location, '..', 'download');
 
     try {
-      await promiseStream(req.pipe(tar.extract(downloadLocation)));
+      await promiseStream(req.pipe(createGunzip()).pipe(tar.extract(downloadLocation)));
 
       // Cache check
       for (let name of ['image', 'suite', 'config.json']) {

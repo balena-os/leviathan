@@ -1,4 +1,4 @@
 #!/bin/bash
 
-mount -a
+eval $(ssh-agent)
 npm start

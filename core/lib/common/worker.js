@@ -25,9 +25,9 @@ const { Progress } = require('resin-cli-visuals');
 const { promiseStream } = require('./utils');
 
 module.exports = class Worker {
-  constructor(deviceType, url) {
+  constructor(deviceType) {
     this.deviceType = deviceType;
-    this.url = url;
+    this.url = 'localhost:2000';
   }
 
   flash(os) {
@@ -110,7 +110,7 @@ module.exports = class Worker {
     target,
     timeout = {
       interval: 10000,
-      tries: 30
+      tries: 60
     }
   ) {
     return retry(

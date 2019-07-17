@@ -7,6 +7,7 @@ const tar = require('tar-fs');
 const rp = require('request-promise');
 const pipeline = Bluebird.promisify(require('stream').pipeline);
 const websocket = require('websocket-stream');
+const zlib = require('zlib');
 
 const yargs = require('yargs')
   .usage('Usage: $0 [options]')
@@ -17,19 +18,16 @@ const yargs = require('yargs')
   .option('s', {
     alias: 'suite',
     description: 'path to test suite',
-    demandOption: true,
     type: 'string',
   })
   .option('i', {
     alias: 'image',
     description: 'path to unconfigured OS image',
-    demandOption: true,
     type: 'string',
   })
   .option('c', {
     alias: 'config',
     description: 'path to configuration file',
-    demandOption: true,
     type: 'string',
   })
   .option('w', {
@@ -64,7 +62,6 @@ const yargs = require('yargs')
       throw new Error(`${artifact.path} does not satisfy ${artifcat.type}`);
     }
   }
-
   await pipeline(
     tar.pack(yargs.workdir, {
       ignore: function(name) {
@@ -74,6 +71,7 @@ const yargs = require('yargs')
         return x.name;
       }),
     }),
+    zlib.createGzip({ level: 6 }),
     rp.post(`http://${yargs.url}/upload`),
   ).delay(100);
 

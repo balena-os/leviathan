@@ -34,9 +34,7 @@ module.exports = {
       uuid: this.options.balenaOS.config.uuid,
       os: {
         sskKeys: [
-          this.options.balenaOS.config.pubKey != null
-            ? this.options.balenaOS.config.pubKey
-            : await this.context.utils.createSSHKey(this.context.sshKeyPath),
+          await this.context.utils.createSSHKey(this.context.sshKeyPath),
         ],
       },
     };
@@ -46,7 +44,7 @@ module.exports = {
     };
 
     this.globalContext = {
-      worker: new Worker(this.deviceType.slug, this.options.worker.url),
+      worker: new Worker(this.deviceType.slug),
     };
     this.teardown.register(() => {
       console.log('Worker teardown');
@@ -60,8 +58,7 @@ module.exports = {
       }),
     };
 
-    // Device Provision with preloaded application
-    await this.context.os.fetch(this.options.tmpdir, {
+    await this.context.os.fetch(join(this.options.packdir, '..'), {
       type: this.options.balenaOS.download.type,
       version: this.options.balenaOS.download.version,
       source: join(this.options.packdir, '..', 'image'),
@@ -73,11 +70,11 @@ module.exports = {
     await this.context.worker.select({
       type: this.options.worker.type,
     });
-    await this.context.worker.network({
-      wired: {
-        nat: true,
-      },
-    });
+    //  await this.context.worker.network({
+    //    wired: {
+    //      nat: true,
+    //    },
+    //  });
     await this.context.worker.flash(this.context.os);
     await this.context.worker.on();
 

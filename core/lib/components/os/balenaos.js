@@ -182,6 +182,9 @@ module.exports = class BalenaOS {
     if (this.configJson) {
       await injectBalenaConfiguration(this.image.path, this.configJson);
     }
-    await injectNetworkConfiguration(this.image.path, this.network);
+    await injectNetworkConfiguration(this.image.path, {
+      wifiSsid: 'balena',
+      wifiKey: 'the spoon jumped over the moon'
+    });
   }
 };

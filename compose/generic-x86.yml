@@ -1,9 +1,14 @@
 version: '2'
+volumes:
+  core-storage:
+  worker-storage:
 services:
   core:
     privileged: true
     build: ./core
     network_mode: 'host'
+    volumes:
+      - 'core-storage:/data'
   worker:
     privileged: true
     build: ./worker
@@ -12,3 +17,4 @@ services:
     ipc: 'host'
     volumes:
       - '/var/run/dbus:/host/run/dbus:rw'
+      - 'core-storage:/data'
