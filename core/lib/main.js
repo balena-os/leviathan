@@ -39,6 +39,10 @@ async function setup() {
   let child = null;
 
   app.ws('/start', async (ws, _req) => {
+    // Keep the socket alive
+    const interval = setInterval(function timeout() {
+      ws.ping('heartbeat');
+    }, 1000);
     const wsStream = webSocketStream(ws);
 
     try {
@@ -53,7 +57,6 @@ async function setup() {
           release();
         });
 
-        let stderr = [];
         child = forkCode(
           `const Suite = require('${require.resolve('./common/suite')}');
 
@@ -68,9 +71,6 @@ async function setup() {
           }
         );
 
-        child.stderr.on('data', data => {
-          stderr.push(data.toString('utf-8'));
-        });
         wsStream.pipe(child.stdin);
         child.stdout.pipe(wsStream);
         child.stderr.pipe(wsStream);
@@ -87,6 +87,7 @@ async function setup() {
     } catch (e) {
       console.error(e);
     } finally {
+      clearInterval(interval);
       ws.close();
     }
   });
@@ -94,13 +95,12 @@ async function setup() {
   app.post('/stop', async (_req, res) => {
     try {
       if (child != null) {
+        child.on('exit', () => {
+          child = null;
+          res.send('OK');
+        });
         child.kill('SIGINT');
       }
-
-      child.on('exit', () => {
-        child = null;
-        res.send('OK');
-      });
     } catch (e) {
       res.status(500);
       res.send(e.stack);

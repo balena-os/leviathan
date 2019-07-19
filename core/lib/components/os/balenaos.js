@@ -18,17 +18,16 @@
 
 const assignIn = require('lodash/assignIn');
 const mapValues = require('lodash/mapValues');
-const split = require('lodash/split');
 
 const Bluebird = require('bluebird');
 const imagefs = require('resin-image-fs');
 const path = require('path');
 const fs = Bluebird.promisifyAll(require('fs'));
 const { join } = require('path');
+const pipeline = Bluebird.promisify(require('stream').pipeline);
+const { SpinnerPromise } = require('resin-cli-visuals');
 const unzip = require('unzip');
-
-const utils = require('../../common/utils');
-const Balena = require('../balena/sdk');
+const zlib = require('zlib');
 
 // TODO: This function should be implemented using Reconfix
 const injectBalenaConfiguration = (image, configuration) => {
@@ -98,46 +97,34 @@ module.exports = class BalenaOS {
   unpack(download) {
     const types = {
       jenkins: async () => {
-        const supervisorVersion = await fs.readFileAsync(path.join(download.source, 'VERSION'));
+        await pipeline(
+          fs.createReadStream(path.join(download.source, 'resin.img.zip')),
+          unzip.Parse()
+        );
+
         const version = await fs.readFileAsync(path.join(download.source, 'VERSION_HOSTOS'));
 
         return {
-          version,
-          stream: fs
-            .createReadStream(path.join(download.source, 'resin.img.zip'))
-            .pipe(unzip.Parse()),
-          filename: `balena-${this.deviceType}-${version}-v${supervisorVersion}.img`
-        };
-      },
-      imageMaker: async () => {
-        const sdk = new Balena(download.source);
-        const version = await sdk.getMaxSatisfyingVersion(this.deviceType, download.version);
-
-        if (version == null) {
-          throw new Error(`Could not find version ${download.version} for ${this.deviceType}`);
-        }
-
-        const stream = await sdk.getDownloadStream(this.deviceType, version);
-
-        const filename = split(stream.response.headers._headers['content-disposition'][0], '"')[1];
-
-        return {
-          version,
-          filename,
-          stream
+          version
         };
       },
       local: async () => {
+        await pipeline(
+          fs.createReadStream(download.source),
+          zlib.createGunzip(),
+          fs.createWriteStream(this.image.path)
+        );
+
         const version = /VERSION="(.*)"/g.exec(
           await imagefs.readFile({
-            image: download.source,
+            image: this.image.path,
             partition: 1,
             path: '/os-release'
           })
         );
         const variant = /VARIANT_ID="(.*)"/g.exec(
           await imagefs.readFile({
-            image: download.source,
+            image: this.image.path,
             partition: 1,
             path: '/os-release'
           })
@@ -149,8 +136,7 @@ module.exports = class BalenaOS {
 
         return {
           version: version != null ? version[1] : null,
-          variant: variant != null ? variant[1] : null,
-          stream: fs.createReadStream(download.source)
+          variant: variant != null ? variant[1] : null
         };
       }
     };
@@ -159,17 +145,15 @@ module.exports = class BalenaOS {
   }
 
   async fetch(destination, download) {
-    console.log('Fetching Operating System...');
     this.image.path = join(destination, 'balena.img');
-
-    const { variant, version, stream } = await this.unpack(download);
-
-    assignIn(this.contract, {
-      version,
-      variant
-    });
-
-    return utils.promiseStream(stream.pipe(fs.createWriteStream(this.image.path)));
+    assignIn(
+      this.contract,
+      await new SpinnerPromise({
+        promise: this.unpack(download),
+        startMessage: 'Unpacking Operating System',
+        stopMessage: 'Operating system sucesfully unpacked'
+      })
+    );
   }
 
   addCloudConfig(configJson) {
