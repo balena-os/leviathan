@@ -92,7 +92,18 @@ class TestBot extends EventEmitter implements Leviathan.Worker {
       // Allow for the sketch to run
       await Bluebird.delay(15000);
       await exec('udevadm', ['settle'], '.');
-      await exec('usbsdmux-configure', [await fs.realpath(UNCONFIGURED_USB), '1234'], '.');
+      await exec(
+        'usbsdmux-configure',
+        [
+          await retry(() => fs.readlink(UNCONFIGURED_USB), {
+            interval: 1000,
+            max_tries: 10,
+            throw_original: true
+          }),
+          '1234'
+        ],
+        '.'
+      );
     } finally {
       // Flash firmata
       await retry(
@@ -252,11 +263,11 @@ class TestBot extends EventEmitter implements Leviathan.Worker {
 
     if (configuration.wired != null) {
       this.internalState.network = {
-        wired: await this.net.addWirelessConnection(configuration.wired)
+        wired: await this.net.addWiredConnection(configuration.wired)
       };
     } else {
       await this.net.removeWiredConnection();
-      this.internalState.network.wireless = undefined;
+      this.internalState.network.wired = undefined;
     }
   }
 
@@ -309,8 +320,16 @@ class TestBot extends EventEmitter implements Leviathan.Worker {
     if (this.activeFlash != null) {
       this.activeFlash.cancel();
     }
-    await this.powerOff();
-    this.board.serialClose(HW_SERIAL5);
+
+    if (this.net != null) {
+      await this.net.teardown();
+    }
+
+    // This property is missing from the board property, PR on definetly typed to follow
+    if ((<any>this.board).isReady) {
+      await this.powerOff();
+      this.board.serialClose(HW_SERIAL5);
+    }
 
     if (signal != null) {
       process.kill(process.pid, signal);

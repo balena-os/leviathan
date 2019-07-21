@@ -1,4 +1,4 @@
-import * as dbus from 'dbus-as-promised';
+import * as dbus from 'dbus-next';
 import * as os from 'os';
 
 type ActiveConnection = string;
@@ -23,7 +23,7 @@ class NetworkManager {
     conn: Connection;
   };
 
-  constructor(private options: Leviathan.Options['network'], private bus = dbus.getBus('system')) {
+  constructor(private options: Leviathan.Options['network'], private bus = dbus.systemBus()) {
     // Cleanup code
     process.on('SIGINT', this.teardown);
   }
@@ -57,69 +57,64 @@ class NetworkManager {
   private static wirelessTemplate(method: string, ssid: string, psk: string) {
     return {
       connection: {
-        id: NetworkManager.generateId(),
-        type: '802-11-wireless',
-        autoconnect: false
+        id: new dbus.Variant('s', NetworkManager.generateId()),
+        type: new dbus.Variant('s', '802-11-wireless'),
+        autoconnect: new dbus.Variant('b', false)
       },
       '802-11-wireless': {
-        mode: 'ap',
-        ssid: NetworkManager.stringToArrayOfBytes(ssid)
+        mode: new dbus.Variant('s', 'ap'),
+        ssid: new dbus.Variant('ay', NetworkManager.stringToArrayOfBytes(ssid))
       },
       '802-11-wireless-security': {
-        'key-mgmt': 'wpa-psk',
-        psk
+        'key-mgmt': new dbus.Variant('s', 'wpa-psk'),
+        psk: new dbus.Variant('s', psk)
       },
-      ipv4: { method },
-      ipv6: { method: 'ignore' }
+      ipv4: { method: new dbus.Variant('s', method) },
+      ipv6: { method: new dbus.Variant('s', 'ignore') }
     };
   }
 
   private async addConnection(connection: any): Promise<string> {
-    const con = await this.bus.getInterface(
+    const con = (await this.bus.getProxyObject(
       'org.freedesktop.NetworkManager',
-      '/org/freedesktop/NetworkManager/Settings',
-      'org.freedesktop.NetworkManager.Settings'
-    );
+      '/org/freedesktop/NetworkManager/Settings'
+    )).getInterface('org.freedesktop.NetworkManager.Settings');
 
     return con.AddConnectionUnsaved(connection);
   }
 
   private async removeConnection(reference: Connection): Promise<void> {
-    const con = await this.bus.getInterface(
+    const con = (await this.bus.getProxyObject(
       'org.freedesktop.NetworkManager',
-      reference,
-      'org.freedesktop.NetworkManager.Settings.Connection'
-    );
+      reference
+    )).getInterface('org.freedesktop.NetworkManager.Settings.Connection');
 
     await con.Delete();
   }
 
   private async getDevice(iface: string): Promise<string> {
-    const con = await this.bus.getInterface(
+    const con = (await this.bus.getProxyObject(
       'org.freedesktop.NetworkManager',
-      '/org/freedesktop/NetworkManager',
-      'org.freedesktop.NetworkManager'
-    );
+      '/org/freedesktop/NetworkManager'
+    )).getInterface('org.freedesktop.NetworkManager');
 
     return con.GetDeviceByIpIface(iface);
   }
 
   private async activateConnection(reference: Connection, device: string): Promise<string> {
-    const con = await this.bus.getInterface(
+    const con = (await this.bus.getProxyObject(
       'org.freedesktop.NetworkManager',
-      '/org/freedesktop/NetworkManager',
-      'org.freedesktop.NetworkManager'
-    );
+      '/org/freedesktop/NetworkManager'
+    )).getInterface('org.freedesktop.NetworkManager');
 
     return con.ActivateConnection(reference, device, '/');
   }
 
   private async deactivateConnection(reference: ActiveConnection): Promise<void> {
-    const con = await this.bus.getInterface(
+    const con = (await this.bus.getProxyObject(
       'org.freedesktop.NetworkManager',
-      '/org/freedesktop/NetworkManager',
-      'org.freedesktop.NetworkManager'
-    );
+      '/org/freedesktop/NetworkManager'
+    )).getInterface('org.freedesktop.NetworkManager');
 
     await con.DeactivateConnection(reference);
   }
@@ -176,7 +171,6 @@ class NetworkManager {
         options.psk
       )
     );
-    console.log(conn);
 
     const activeConn = await this.activateConnection(
       conn,
@@ -199,21 +193,19 @@ class NetworkManager {
   }
 
   public async removeWirelessConnection(): Promise<void> {
+    console.log(this.wirelessReference);
     if (this.wirelessReference) {
       await this.deactivateConnection(this.wirelessReference.activeConn);
       await this.removeConnection(this.wirelessReference.conn);
+      console.log('done');
       this.wirelessReference = undefined;
     }
   }
 
   public async teardown(signal?: NodeJS.Signals) {
-    console.log('teardown');
-    if (this.bus.connected) {
-      await this.removeWiredConnection();
-      await this.removeWirelessConnection();
-      this.bus.disconnect();
-    }
-
+    await this.removeWiredConnection();
+    await this.removeWirelessConnection();
+    this.bus.disconnect();
     process.removeListener('SIGINT', this.teardown);
 
     if (signal === 'SIGINT') {
