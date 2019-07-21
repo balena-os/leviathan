@@ -25,7 +25,7 @@ function uid(a) {
     : ([1e15] + 1e15).replace(/[01]/g, uid);
 }
 // Test identification
-const id = `${basename(__dirname)}_${Math.random()
+const id = `${Math.random()
   .toString(36)
   .substring(2, 10)}`;
 
@@ -43,11 +43,8 @@ module.exports = options => {
         source: options.BALENA_TESTS_DOWNLOAD_SOURCE,
       },
       network: {
-        ethernet: options.BALENA_TESTS_ETHERNET,
-        wifi: {
-          ssid: options.BALENA_TESTS_WIFI_SSID,
-          key: options.BALENA_TESTS_WIFI_KEY,
-        },
+        wired: options.BALENA_TESTS_NETWORK_WIRED,
+        wireless: options.BALENA_TESTS_NETWORK_WIRELESS,
       },
     },
     worker: {

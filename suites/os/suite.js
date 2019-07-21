@@ -51,6 +51,35 @@ module.exports = {
       return this.context.worker.teardown();
     });
 
+    console.log('Setting up worker');
+    await this.context.worker.select({
+      type: this.options.worker.type,
+      options: {
+        network: {
+          wireless: 'wlan0',
+        },
+      },
+    });
+
+    if (this.options.balenaOS.network.wired === true) {
+      this.options.balenaOS.network.wired = {
+        nat: true,
+      };
+    } else {
+      delete this.options.balenaOS.network.wired;
+    }
+
+    if (this.options.balenaOS.network.wireless === true) {
+      this.options.balenaOS.network.wireless = {
+        ssid: this.options.id,
+        psk: `${this.options.id}_psk`,
+        nat: true,
+      };
+    } else {
+      delete this.options.balenaOS.network.wireless;
+    }
+    await this.context.worker.network(this.options.balenaOS.network);
+
     this.globalContext = {
       os: new BalenaOS({
         deviceType: this.deviceType.slug,
@@ -66,15 +95,6 @@ module.exports = {
 
     this.context.os.addCloudConfig(config);
 
-    console.log('Setting up worker');
-    await this.context.worker.select({
-      type: this.options.worker.type,
-    });
-    //  await this.context.worker.network({
-    //    wired: {
-    //      nat: true,
-    //    },
-    //  });
     await this.context.worker.flash(this.context.os);
     await this.context.worker.on();
 

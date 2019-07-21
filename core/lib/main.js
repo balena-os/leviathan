@@ -41,7 +41,9 @@ async function setup() {
   app.ws('/start', async (ws, _req) => {
     // Keep the socket alive
     const interval = setInterval(function timeout() {
-      ws.ping('heartbeat');
+      if (ws.readyState === 1) {
+        ws.ping('heartbeat');
+      }
     }, 1000);
     const wsStream = webSocketStream(ws);
 
@@ -51,6 +53,7 @@ async function setup() {
       await new Promise((resolve, reject) => {
         wsStream.on('error', console.error);
         wsStream.on('close', () => {
+          clearInterval(interval);
           if (child != null) {
             child.kill('SIGINT');
           }
@@ -87,7 +90,6 @@ async function setup() {
     } catch (e) {
       console.error(e);
     } finally {
-      clearInterval(interval);
       ws.close();
     }
   });

@@ -42,9 +42,12 @@ const injectBalenaConfiguration = (image, configuration) => {
 };
 
 // TODO: This function should be implemented using Reconfix
-const injectNetworkConfiguration = (image, configuration) => {
-  if (configuration == null || configuration.type === 'ethernet') {
-    return Bluebird.resolve();
+const injectNetworkConfiguration = async (image, configuration) => {
+  if (configuration.wireless == null) {
+    return;
+  }
+  if (configuration.wireless.ssid == null) {
+    throw new Error(`Invalide wireless configuration: ${configuration.wireless}`);
   }
 
   const wifiConfiguration = [
@@ -54,7 +57,7 @@ const injectNetworkConfiguration = (image, configuration) => {
     '[wifi]',
     'hidden=true',
     'mode=infrastructure',
-    `ssid=${configuration.wifiSsid}`,
+    `ssid=${configuration.wireless.ssid}`,
     '[ipv4]',
     'method=auto',
     '[ipv6]',
@@ -62,16 +65,16 @@ const injectNetworkConfiguration = (image, configuration) => {
     'method=auto'
   ];
 
-  if (configuration.wifiKey) {
+  if (configuration.wireless.psk) {
     Reflect.apply(wifiConfiguration.push, wifiConfiguration, [
       '[wifi-security]',
       'auth-alg=open',
       'key-mgmt=wpa-psk',
-      `psk=${configuration.wifiKey}`
+      `psk=${configuration.wireless.psk}`
     ]);
   }
 
-  return imagefs.writeFile(
+  await imagefs.writeFile(
     {
       image,
       partition: 1,
@@ -89,7 +92,7 @@ module.exports = class BalenaOS {
     this.configJson = {};
     this.contract = {
       network: mapValues(this.network, value => {
-        return true;
+        return typeof value === 'boolean' ? value : true;
       })
     };
   }
@@ -162,13 +165,9 @@ module.exports = class BalenaOS {
 
   async configure() {
     console.log(`Configuring balenaOS image: ${this.image.path}`);
-
     if (this.configJson) {
       await injectBalenaConfiguration(this.image.path, this.configJson);
     }
-    await injectNetworkConfiguration(this.image.path, {
-      wifiSsid: 'balena',
-      wifiKey: 'the spoon jumped over the moon'
-    });
+    await injectNetworkConfiguration(this.image.path, this.network);
   }
 };

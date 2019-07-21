@@ -36,16 +36,16 @@ module.exports = {
                 properties: {
                   [adaptor]: {
                     type: 'boolean',
-                    const: true
-                  }
-                }
-              }
-            }
+                    const: true,
+                  },
+                },
+              },
+            },
           },
           run: async function(test) {
             const iface = await this.context.worker.executeCommandInHostOS(
               `nmcli d  | grep ' ${adaptor} ' | awk '{print $1}'`,
-              this.context.link
+              this.context.link,
             );
 
             if (iface === '') {
@@ -54,13 +54,13 @@ module.exports = {
 
             await this.context.worker.executeCommandInHostOS(
               `ping -c 10 -I ${iface} ${URL_TEST}`,
-              this.context.link
+              this.context.link,
             );
 
             test.true(`${URL_TEST} responded over ${adaptor}`);
-          }
+          },
         };
-      })
+      }),
     },
     {
       title: 'Proxy tests',
@@ -72,11 +72,11 @@ module.exports = {
 
             await this.context.worker.executeCommandInHostOS(
               'mkdir -p /mnt/boot/system-proxy',
-              this.context.link
+              this.context.link,
             );
 
             const internalIp = await this.context.worker.proxy({
-              port: PROXY_PORT
+              port: PROXY_PORT,
             });
 
             await this.context.worker.executeCommandInHostOS(
@@ -95,64 +95,64 @@ module.exports = {
                 'local_ip = 127.0.0.1; \n' +
                 'local_port = 12345; \n' +
                 '} \n" > /mnt/boot/system-proxy/redsocks.conf',
-              this.context.link
+              this.context.link,
             );
 
             // Start reboot check
             const boot0 = new Date(
               await this.context.worker.executeCommandInHostOS(
                 `date -d "$(</proc/uptime awk '{print $1}') seconds ago" --rfc-3339=seconds`,
-                this.context.link
-              )
+                this.context.link,
+              ),
             );
             await this.context.worker.executeCommandInHostOS(
               'nohup bash -c "sleep 1 ; reboot &"',
-              this.context.link
+              this.context.link,
             );
             assert(
               new Date(
                 await this.context.worker.executeCommandInHostOS(
                   `date -d "$(</proc/uptime awk '{print $1}') seconds ago" --rfc-3339=seconds`,
-                  this.context.link
-                )
+                  this.context.link,
+                ),
               ) > boot0,
-              'Device should have rebooted'
+              'Device should have rebooted',
             );
 
             await this.context.worker.executeCommandInHostOS(
               `ping -c 10 ${URL_TEST}`,
-              this.context.link
+              this.context.link,
             );
             test.true(`${URL_TEST} responded over ${proxy} proxy`);
 
             await this.context.worker.executeCommandInHostOS(
               'rm -rf /mnt/boot/system-proxy',
-              this.context.link
+              this.context.link,
             );
 
             // Start reboot check
             const boot1 = new Date(
               await this.context.worker.executeCommandInHostOS(
                 `date -d "$(</proc/uptime awk '{print $1}') seconds ago" --rfc-3339=seconds`,
-                this.context.link
-              )
+                this.context.link,
+              ),
             );
             await this.context.worker.executeCommandInHostOS(
               'nohup bash -c "sleep 1 ; reboot &"',
-              this.context.link
+              this.context.link,
             );
             assert(
               new Date(
                 await this.context.worker.executeCommandInHostOS(
                   `date -d "$(</proc/uptime awk '{print $1}') seconds ago" --rfc-3339=seconds`,
-                  this.context.link
-                )
+                  this.context.link,
+                ),
               ) > boot1,
-              'Device should have rebooted'
+              'Device should have rebooted',
             );
-          }
+          },
         };
-      })
-    }
-  ]
+      }),
+    },
+  ],
 };

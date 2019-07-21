@@ -193,11 +193,9 @@ class NetworkManager {
   }
 
   public async removeWirelessConnection(): Promise<void> {
-    console.log(this.wirelessReference);
     if (this.wirelessReference) {
       await this.deactivateConnection(this.wirelessReference.activeConn);
       await this.removeConnection(this.wirelessReference.conn);
-      console.log('done');
       this.wirelessReference = undefined;
     }
   }
