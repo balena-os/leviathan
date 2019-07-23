@@ -7,10 +7,11 @@ ENV npm_config_unsafe_perm=true
 WORKDIR /tmp/node
 
 COPY package.json .
+COPY package-lock.json .
 
 RUN wget https://github.com/balena-io/balena-cli/releases/download/v11.7.0/balena-cli-v11.7.0-linux-x64-standalone.zip && unzip balena-cli-v11.7.0-linux-x64-standalone.zip
 
-RUN npm install
+RUN npm ci 
 
 FROM balenalib/%%BALENA_MACHINE_NAME%%-node:10-stretch-build
 
