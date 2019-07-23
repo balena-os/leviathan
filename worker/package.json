@@ -50,7 +50,6 @@
     "multicast-dns": "git+https://github.com/resin-io-modules/multicast-dns#listen-on-all-interfaces",
     "mz": "^2.7.0",
     "resin-cli-visuals": "^1.4.2",
-    "ws": "^7.0.0",
     "xml-js": "^1.6.11"
   },
   "devDependencies": {
