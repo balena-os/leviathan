@@ -54,7 +54,8 @@ const getSSHClientDisposer = config => {
       new SSH().connect(
         assignIn(
           {
-            agent: process.env.SSH_AUTH_SOCK
+            agent: process.env.SSH_AUTH_SOCK,
+            keepaliveInterval: 2000
           },
           conf
         )
@@ -70,35 +71,30 @@ const getSSHClientDisposer = config => {
 module.exports = {
   executeCommandOverSSH: async (command, config) => {
     return Bluebird.using(getSSHClientDisposer(config), client => {
-      return client
-        .exec(command, [], {
-          stream: 'both'
-        })
-        .catch(x => {
-          console.log(x);
-          throw x;
+      return new Bluebird(async (resolve, reject) => {
+        client.connection.on('error', err => {
+          reject(err);
         });
+        resolve(
+          await client
+            .exec(command, [], {
+              stream: 'both'
+            })
+            .catch(x => {
+              reject(x);
+            })
+        );
+      });
     });
   },
   waitUntil: async (promise, _times = 20, _delay = 30000) => {
-    // Here is where we will store the failure of the promise if any
-    let error;
-
     const _waitUntil = async timesR => {
       if (timesR === 0) {
         throw new Error(`Condition ${promise} timed out`);
       }
 
-      try {
-        const result = await promise();
-
-        error = null;
-
-        if (result) {
-          return;
-        }
-      } catch (err) {
-        error = err;
+      if (await promise()) {
+        return;
       }
 
       await Bluebird.delay(_delay);
@@ -106,15 +102,7 @@ module.exports = {
       return _waitUntil(timesR - 1);
     };
 
-    try {
-      await _waitUntil(_times);
-    } catch (err) {
-      if (error != null) {
-        throw error;
-      }
-
-      throw err;
-    }
+    await _waitUntil(_times);
   },
   runManualTestCase: async testCase => {
     // Some padding space to make it easier to the eye

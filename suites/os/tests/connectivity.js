@@ -14,6 +14,7 @@
 
 'use strict';
 
+const { delay } = require('bluebird');
 const assert = require('assert');
 
 const URL_TEST = 'www.google.com';
@@ -75,7 +76,7 @@ module.exports = {
               this.context.link,
             );
 
-            const internalIp = await this.context.worker.proxy({
+            const proxyState = await this.context.worker.proxy({
               port: PROXY_PORT,
             });
 
@@ -90,7 +91,7 @@ module.exports = {
                 '} \n' +
                 'redsocks { \n' +
                 `type = ${proxy}; \n` +
-                `ip = ${internalIp}; \n` +
+                `ip = ${proxyState.ip}; \n` +
                 `port = ${PROXY_PORT}; \n` +
                 'local_ip = 127.0.0.1; \n' +
                 'local_port = 12345; \n' +
@@ -106,9 +107,17 @@ module.exports = {
               ),
             );
             await this.context.worker.executeCommandInHostOS(
-              'nohup bash -c "sleep 1 ; reboot &"',
+              'shutdown -r now',
               this.context.link,
             );
+            await this.context.utils.waitUntil(async () => {
+              return (
+                (await this.context.worker.executeCommandInHostOS(
+                  "timedatectl | grep synchronized | cut -d ':' -f 2",
+                  this.context.link,
+                )) === 'yes'
+              );
+            });
             assert(
               new Date(
                 await this.context.worker.executeCommandInHostOS(
@@ -138,9 +147,17 @@ module.exports = {
               ),
             );
             await this.context.worker.executeCommandInHostOS(
-              'nohup bash -c "sleep 1 ; reboot &"',
+              'shutdown -r now',
               this.context.link,
             );
+            await this.context.utils.waitUntil(async () => {
+              return (
+                (await this.context.worker.executeCommandInHostOS(
+                  "timedatectl | grep synchronized | cut -d ':' -f 2",
+                  this.context.link,
+                )) === 'yes'
+              );
+            });
             assert(
               new Date(
                 await this.context.worker.executeCommandInHostOS(

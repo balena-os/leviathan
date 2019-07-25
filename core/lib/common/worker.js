@@ -127,7 +127,7 @@ module.exports = class Worker {
           username: 'root'
         });
 
-        if (result.code !== 0) {
+        if (typeof result.code === 'number' && result.code !== 0) {
           throw new Error(
             `"${command}" failed. stderr: ${result.stderr}, stdout: ${result.stdout}, code: ${
               result.code
