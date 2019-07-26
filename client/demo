@@ -1,0 +1,3 @@
+#!/bin/bash
+
+node index.js -s ../suites/os -c ../../demo/$1/config.json -u $2.balena-devices.com

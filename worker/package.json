@@ -1,92 +1,91 @@
 {
-	"name": "leviathan-worker",
-	"version": "0.0.7",
-	"description": "RESTful API to send commands to a testbot",
-	"main": "build/index.js",
-	"directories": {
-		"lib": "lib",
-		"bin": "bin",
-		"test": "test"
-	},
-	"scripts": {
-		"clean": "rm -rf build",
-		"prettify": "prettier --config ./node_modules/resin-lint/config/.prettierrc --write \"{lib,test}/**/*.ts\"",
-		"test": "npm run prettify && npm run lint && npm run test:cov",
-		"lint": "resin-lint --typescript lib/ test/ && tsc --noEmit",
-		"build": "npm run clean && npm run prettify && tsc",
-		"build:test": "npm run clean && tsc --project . && cp -r test/assets/image.zip build/test",
-		"start": "node ./build/bin",
-		"test:cov": "npm run build:test && nyc mocha",
-		"test:fast": "npm run build:test && mocha"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/balena-io/leviathan-worker.git"
-	},
-	"keywords": [
-		"testbot",
-		"leviathan",
-		"worker"
-	],
-	"author": "Theodor Gherzan",
-	"license": "Apache-2.0",
-	"bugs": {
-		"url": "https://github.com/balena-io/leviathan-worker/issues"
-	},
-	"homepage": "https://github.com/balena-io/leviathan-worker#readme",
-	"dependencies": {
-		"@types/bluebird": "^3.5.25",
-		"async-mutex": "^0.1.3",
-		"bluebird": "^3.5.3",
-		"bluebird-retry": "^0.11.0",
-		"body-parser": "^1.18.3",
-		"dbus-as-promised": "^0.1.1",
-		"drivelist": "^8.0.6",
-		"etcher-sdk": "^1.3.1",
-		"express": "^4.16.4",
-		"firmata": "^2.0.0",
-		"libvirt": "^1.2.1",
-		"lodash": "^4.17.11",
-		"multicast-dns": "git+https://github.com/resin-io-modules/multicast-dns#listen-on-all-interfaces",
-		"mz": "^2.7.0",
-		"resin-cli-visuals": "^1.4.2",
-		"ws": "^7.0.0",
-		"xml-js": "^1.6.11"
-	},
-	"devDependencies": {
-		"@types/bluebird-retry": "^0.11.2",
-		"@types/chai": "^4.1.7",
-		"@types/chai-as-promised": "^7.1.0",
-		"@types/chai-http": "^3.0.5",
-		"@types/express": "^4.16.1",
-		"@types/firmata": "^0.19.0",
-		"@types/lodash": "^4.14.120",
-		"@types/mocha": "^5.2.5",
-		"@types/mz": "0.0.32",
-		"@types/node": "^10.12.18",
-		"@types/request-promise": "^4.1.42",
-		"@types/sinon": "^7.0.11",
-		"@types/uuid": "^3.4.4",
-		"@types/ws": "^6.0.1",
-		"chai": "^4.2.0",
-		"chai-as-promised": "^7.1.1",
-		"chai-http": "^4.2.1",
-		"husky": "^1.3.1",
-		"lint-staged": "^8.1.0",
-		"mocha": "^5.2.0",
-		"nyc": "^13.2.0",
-		"prettier": "^1.16.1",
-		"request": "^2.88.0",
-		"request-promise": "^4.2.4",
-		"resin-lint": "^2.0.1",
-		"sinon": "^7.2.3",
-		"tmp-promise": "^1.0.5",
-		"ts-mock-imports": "^1.2.2",
-		"typescript": "^3.2.4"
-	},
-	"husky": {
-		"hooks": {
-			"pre-commit": "lint-staged"
-		}
-	}
+  "name": "leviathan-worker",
+  "version": "0.0.7",
+  "description": "RESTful API to send commands to a testbot",
+  "main": "build/index.js",
+  "directories": {
+    "lib": "lib",
+    "bin": "bin",
+    "test": "test"
+  },
+  "scripts": {
+    "clean": "rm -rf build",
+    "prettify": "prettier --config ./node_modules/resin-lint/config/.prettierrc --write \"{lib,test}/**/*.ts\"",
+    "test": "npm run prettify && npm run lint && npm run test:cov",
+    "lint": "resin-lint --typescript lib/ test/ && tsc --noEmit",
+    "build": "npm run clean && npm run prettify && tsc",
+    "build:test": "npm run clean && tsc --project . && cp -r test/assets/image.zip build/test",
+    "start": "node ./build/bin",
+    "test:cov": "npm run build:test && nyc mocha",
+    "test:fast": "npm run build:test && mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/balena-io/leviathan-worker.git"
+  },
+  "keywords": [
+    "testbot",
+    "leviathan",
+    "worker"
+  ],
+  "author": "Theodor Gherzan",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/balena-io/leviathan-worker/issues"
+  },
+  "homepage": "https://github.com/balena-io/leviathan-worker#readme",
+  "dependencies": {
+    "@types/bluebird": "^3.5.25",
+    "async-mutex": "^0.1.3",
+    "bluebird": "^3.5.3",
+    "bluebird-retry": "^0.11.0",
+    "body-parser": "^1.18.3",
+    "dbus-next": "^0.7.1",
+    "drivelist": "^8.0.6",
+    "etcher-sdk": "^1.3.1",
+    "express": "^4.16.4",
+    "firmata": "^2.0.0",
+    "libvirt": "^1.2.1",
+    "lodash": "^4.17.11",
+    "multicast-dns": "git+https://github.com/resin-io-modules/multicast-dns#listen-on-all-interfaces",
+    "mz": "^2.7.0",
+    "resin-cli-visuals": "^1.4.2",
+    "xml-js": "^1.6.11"
+  },
+  "devDependencies": {
+    "@types/bluebird-retry": "^0.11.2",
+    "@types/chai": "^4.1.7",
+    "@types/chai-as-promised": "^7.1.0",
+    "@types/chai-http": "^3.0.5",
+    "@types/express": "^4.16.1",
+    "@types/firmata": "^0.19.0",
+    "@types/lodash": "^4.14.120",
+    "@types/mocha": "^5.2.5",
+    "@types/mz": "0.0.32",
+    "@types/node": "^10.12.18",
+    "@types/request-promise": "^4.1.42",
+    "@types/sinon": "^7.0.11",
+    "@types/uuid": "^3.4.4",
+    "@types/ws": "^6.0.1",
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "chai-http": "^4.2.1",
+    "husky": "^1.3.1",
+    "lint-staged": "^8.1.0",
+    "mocha": "^5.2.0",
+    "nyc": "^13.2.0",
+    "prettier": "^1.16.1",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.4",
+    "resin-lint": "^2.0.1",
+    "sinon": "^7.2.3",
+    "tmp-promise": "^1.0.5",
+    "ts-mock-imports": "^1.2.2",
+    "typescript": "^3.2.4"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  }
 }

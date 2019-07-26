@@ -7,6 +7,7 @@ const tar = require('tar-fs');
 const rp = require('request-promise');
 const pipeline = Bluebird.promisify(require('stream').pipeline);
 const websocket = require('websocket-stream');
+const zlib = require('zlib');
 
 const yargs = require('yargs')
   .usage('Usage: $0 [options]')
@@ -17,19 +18,16 @@ const yargs = require('yargs')
   .option('s', {
     alias: 'suite',
     description: 'path to test suite',
-    demandOption: true,
     type: 'string',
   })
   .option('i', {
     alias: 'image',
     description: 'path to unconfigured OS image',
-    demandOption: true,
     type: 'string',
   })
   .option('c', {
     alias: 'config',
     description: 'path to configuration file',
-    demandOption: true,
     type: 'string',
   })
   .option('w', {
@@ -51,8 +49,16 @@ const yargs = require('yargs')
 (async () => {
   await emptyDir(yargs.workdir);
 
+  // Handle Image seperatly as it requires extra compression
+  if ((await fs.stat(yargs.image))['isFile']) {
+    await pipeline(
+      fs.createReadStream(yargs.image),
+      zlib.createGzip({ level: 6 }),
+      fs.createWriteStream(join(yargs.workdir, 'image')),
+    );
+  }
+
   const artifacts = [
-    { path: yargs.image, type: 'isFile', name: 'image' },
     { path: yargs.suite, type: 'isDirectory', name: 'suite' },
     { path: yargs.config, type: 'isFile', name: 'config.json' },
   ];
@@ -64,20 +70,26 @@ const yargs = require('yargs')
       throw new Error(`${artifact.path} does not satisfy ${artifcat.type}`);
     }
   }
-
   await pipeline(
     tar.pack(yargs.workdir, {
       ignore: function(name) {
         return /.*node_modules.*/.test(name);
       },
-      entries: artifacts.map(x => {
-        return x.name;
-      }),
+      entries: artifacts
+        .map(x => {
+          return x.name;
+        })
+        .concat(['image']),
     }),
+    zlib.createGzip({ level: 6 }),
     rp.post(`http://${yargs.url}/upload`),
   ).delay(100);
 
   const ws = websocket(`ws://${yargs.url}/start`);
+  // Keep the websocket alive
+  ws.socket.on('ping', () => {
+    ws.socket.pong('heartbeat');
+  });
   process.on('SIGINT', async () => {
     await rp.post(`http://${yargs.url}/stop`);
     process.exit(128 + constants.signals.SIGINT);

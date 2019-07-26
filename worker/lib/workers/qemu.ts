@@ -11,11 +11,16 @@ import { join, dirname } from 'path';
 import * as Stream from 'stream';
 import * as xml from 'xml-js';
 
+Bluebird.config({
+  cancellation: true
+});
+
 class Qemu extends EventEmitter implements Leviathan.Worker {
   private image: string;
   private hypervisor: any;
   private libvirtdProc?: ChildProcess;
   private virtlogdProc?: ChildProcess;
+  private activeFlash?: Bluebird<void>;
   private signalHandler: (signal: NodeJS.Signals) => Promise<void>;
 
   private references: { domain?: any; network?: any; pool?: any };
@@ -365,6 +370,10 @@ class Qemu extends EventEmitter implements Leviathan.Worker {
   }
 
   public async teardown(signal?: NodeJS.Signals): Promise<void> {
+    if (this.activeFlash != null) {
+      this.activeFlash.cancel();
+    }
+
     if (this.references.domain != null) {
       await this.references.domain.destroyAsync();
       this.references.domain = undefined;
@@ -405,26 +414,32 @@ class Qemu extends EventEmitter implements Leviathan.Worker {
   }
 
   public async flash(stream: Stream.Readable): Promise<void> {
-    await this.powerOff();
+    this.activeFlash = new Bluebird(async (resolve, reject) => {
+      await this.powerOff();
 
-    const source = new sdk.sourceDestination.SingleUseStreamSource(stream);
+      const source = new sdk.sourceDestination.SingleUseStreamSource(stream);
 
-    const destination = new sdk.sourceDestination.File(
-      this.image,
-      sdk.sourceDestination.File.OpenFlags.ReadWrite
-    );
+      const destination = new sdk.sourceDestination.File(
+        this.image,
+        sdk.sourceDestination.File.OpenFlags.ReadWrite
+      );
 
-    await sdk.multiWrite.pipeSourceToDestinations(
-      source,
-      [destination],
-      (_destination, error) => {
-        console.error(error);
-      },
-      (progress: sdk.multiWrite.MultiDestinationProgress) => {
-        this.emit('progress', progress);
-      },
-      true
-    );
+      await sdk.multiWrite.pipeSourceToDestinations(
+        source,
+        [destination],
+        (_destination, error) => {
+          reject(error);
+        },
+        (progress: sdk.multiWrite.MultiDestinationProgress) => {
+          this.emit('progress', progress);
+        },
+        true
+      );
+      resolve();
+    });
+
+    await this.activeFlash;
+    this.activeFlash = undefined;
   }
   public async powerOn(): Promise<void> {
     this.references.domain = await this.hypervisor.createDomainAsync(

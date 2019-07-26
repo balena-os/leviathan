@@ -24,9 +24,17 @@ const rebootDevice = async that => {
     ),
   );
   await that.context.worker.executeCommandInHostOS(
-    'nohup bash -c "sleep 1 ; reboot &"',
+    'shutdown -r now',
     that.context.link,
   );
+  await that.context.utils.waitUntil(async () => {
+    return (
+      (await that.context.worker.executeCommandInHostOS(
+        "timedatectl | grep synchronized | cut -d ':' -f 2",
+        that.context.link,
+      )) === 'yes'
+    );
+  });
   assert(
     new Date(
       await that.context.worker.executeCommandInHostOS(
@@ -62,9 +70,17 @@ module.exports = {
           ),
         );
         await this.context.worker.executeCommandInHostOS(
-          'nohup bash -c "sleep 1 ; reboot &"',
+          'shutdown -r now',
           this.context.link,
         );
+        await this.context.utils.waitUntil(async () => {
+          return (
+            (await this.context.worker.executeCommandInHostOS(
+              "timedatectl | grep synchronized | cut -d ':' -f 2",
+              `${hostname}.local`,
+            )) === 'yes'
+          );
+        });
         assert(
           new Date(
             await this.context.worker.executeCommandInHostOS(
@@ -97,9 +113,17 @@ module.exports = {
           ),
         );
         await this.context.worker.executeCommandInHostOS(
-          'nohup bash -c "sleep 1 ; reboot &"',
+          'shutdown -r now',
           `${hostname}.local`,
         );
+        await this.context.utils.waitUntil(async () => {
+          return (
+            (await this.context.worker.executeCommandInHostOS(
+              "timedatectl | grep synchronized | cut -d ':' -f 2",
+              this.context.link,
+            )) === 'yes'
+          );
+        });
         assert(
           new Date(
             await this.context.worker.executeCommandInHostOS(
@@ -166,7 +190,7 @@ module.exports = {
     {
       title: 'ntpServer test',
       run: async function(test) {
-        const ntpServer = '127.127.1.0';
+        const ntpServer = 'chronos.csr.net';
 
         await this.context.worker.executeCommandInHostOS(
           `tmp=$(mktemp)&&cat /mnt/boot/config.json | jq '.ntpServers="${ntpServer}"' > $tmp&&mv "$tmp" /mnt/boot/config.json`,
@@ -184,7 +208,7 @@ module.exports = {
         );
 
         await this.context.worker.executeCommandInHostOS(
-          'tmp=$(mktemp)&&cat /mnt/boot/config.json | jq "del(.ntpServers)" > $tmp&&mv "$tmp" /mnt/boot/config.json',
+          'tmp=$(mktemp)&&cat /mnt/boot/config.json | jq "del(.ntpServer)" > $tmp&&mv "$tmp" /mnt/boot/config.json',
           this.context.link,
         );
       },
@@ -222,7 +246,7 @@ module.exports = {
         );
 
         await this.context.worker.executeCommandInHostOS(
-          'tmp=$(mktemp)&&cat /mnt/boot/config.json | jq "del(.dnsServers)" > $tmp&&mv "$tmp" /mnt/boot/config.json',
+          'tmp=$(mktemp)&&cat /mnt/boot/config.json | jq "del(.dnsServer)" > $tmp&&mv "$tmp" /mnt/boot/config.json',
           this.context.link,
         );
       },

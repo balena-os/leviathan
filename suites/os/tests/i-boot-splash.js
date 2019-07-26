@@ -29,11 +29,11 @@ module.exports = {
         properties: {
           hdmi: {
             type: 'boolean',
-            const: true
-          }
-        }
-      }
-    }
+            const: true,
+          },
+        },
+      },
+    },
   },
   tests: [
     {
@@ -44,12 +44,12 @@ module.exports = {
             prepare: ["Plug a monitor in the device's HDMI output"],
             do: ['Reboot the device'],
             assert: [
-              'The balena logo splash screen should be visible when the board initiates reboot'
-            ]
+              'The balena logo splash screen should be visible when the board initiates reboot',
+            ],
           }),
-          true
+          true,
         );
-      }
+      },
     },
     {
       title: 'Shutdown test',
@@ -61,28 +61,12 @@ module.exports = {
             assert: [
               'The balena logo splash screen should be visible when the board initiates the shutdown',
               'The Tux (Linux) logo should not be visible on the screen while device is booting',
-              'The balena logo splash screen should be visible during boot-up'
-            ]
+              'The balena logo splash screen should be visible during boot-up',
+            ],
           }),
-          true
+          true,
         );
-      }
+      },
     },
-    {
-      title: 'Shutdown test',
-      run: async function(test) {
-        test.resolveMatch(
-          this.context.utils.runManualTestCase({
-            prepare: ["Plug a monitor in the device's HDMI output"],
-            do: ['Boot the device'],
-            assert: [
-              'The Tux (Linux) logo should not be visible on the screen while device is booting',
-              'The balena logo splash screen should be visible during boot-up'
-            ]
-          }),
-          true
-        );
-      }
-    }
-  ]
+  ],
 };

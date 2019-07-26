@@ -21,18 +21,21 @@ const utils = require('../common/utils');
 const isNumber = require('lodash/isNumber');
 const { fs } = require('mz');
 const rp = require('request-promise');
-const { Progress } = require('resin-cli-visuals');
+const { Spinner, Progress } = require('resin-cli-visuals');
 const { promiseStream } = require('./utils');
 
 module.exports = class Worker {
-  constructor(deviceType, url) {
+  constructor(deviceType) {
     this.deviceType = deviceType;
-    this.url = url;
+    this.url = 'localhost:2000';
   }
 
   flash(os) {
     return new Promise(async (resolve, reject) => {
       await os.configure();
+
+      const spinner = new Spinner('Preparing flash');
+      spinner.start();
 
       const progress = new Progress('Flashing image');
 
@@ -63,6 +66,7 @@ module.exports = class Worker {
             // Hide any errors as the lines we get can be half written
             const state = JSON.parse(computedLine[2]);
             if (state != null && isNumber(state.percentage)) {
+              spinner.stop();
               progress.update(state);
             }
           }
@@ -110,7 +114,7 @@ module.exports = class Worker {
     target,
     timeout = {
       interval: 10000,
-      tries: 30
+      tries: 60
     }
   ) {
     return retry(
@@ -123,7 +127,7 @@ module.exports = class Worker {
           username: 'root'
         });
 
-        if (result.code !== 0) {
+        if (typeof result.code === 'number' && result.code !== 0) {
           throw new Error(
             `"${command}" failed. stderr: ${result.stderr}, stdout: ${result.stdout}, code: ${
               result.code

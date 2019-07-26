@@ -70,7 +70,7 @@ module.exports = {
     };
 
     // Device Provision with preloaded application
-    await this.context.os.fetch(this.options.tmpdir, {
+    await this.context.os.fetch(join(this.options.packdir, '..'), {
       type: this.options.balenaOS.download.type,
       version: this.options.balenaOS.download.version,
       source: join(this.options.packdir, '..', 'image'),

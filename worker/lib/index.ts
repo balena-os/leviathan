@@ -218,7 +218,6 @@ async function setup(): Promise<express.Application> {
 
     try {
       worker.on('progress', onProgress);
-
       await worker.flash(req);
     } catch (e) {
       res.write(`error: ${e.message}`);

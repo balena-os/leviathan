@@ -1,14 +1,21 @@
 version: '2'
+volumes:
+  core-storage:
+  worker-storage:
 services:
   core:
     privileged: true
     build: ./core
     network_mode: 'host'
+    volumes:
+      - 'core-storage:/data'
   worker:
     privileged: true
     build: ./worker
     pid: 'host'
     network_mode: 'host'
     ipc: 'host'
+    volumes:
+      - 'worker-storage:/data'
     labels:
       io.balena.features.dbus: '1'

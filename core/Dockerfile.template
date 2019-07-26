@@ -1,30 +1,33 @@
-FROM balenalib/%%BALENA_MACHINE_NAME%%-node:9-stretch-build AS npm-install
+FROM balenalib/%%BALENA_MACHINE_NAME%%-node:10-stretch-build AS npm-install
+
+RUN install_packages unzip
 
 ENV npm_config_unsafe_perm=true
 
 WORKDIR /tmp/node
 
 COPY package.json .
+COPY package-lock.json .
 
-RUN npm install
+RUN wget https://github.com/balena-io/balena-cli/releases/download/v11.7.0/balena-cli-v11.7.0-linux-x64-standalone.zip && unzip balena-cli-v11.7.0-linux-x64-standalone.zip
 
-FROM balenalib/%%BALENA_MACHINE_NAME%%-node:9-stretch-build
+RUN npm ci 
+
+FROM balenalib/%%BALENA_MACHINE_NAME%%-node:10-stretch-build
 
 ENV UDEV=1
 
 ENV npm_config_unsafe_perm=true
 
-RUN install_packages jq git vim rsync python
+RUN install_packages jq git vim rsync
 
 WORKDIR /usr/app
 
-RUN npm install balena-cli -g --production --unsafe-perm
-
-# If we have external storage enabled let's mount it
-RUN mkdir /mnt/storage
-RUN echo "LABEL=STORAGE /mnt/storage ext2 rw,relatime 0 2" >> /etc/fstab
 
 COPY --from=npm-install /tmp/node ./
+
+# Give global access to balena-cli
+RUN ln -sf $(pwd)/balena-cli/balena /usr/local/balena
 
 COPY contracts contracts
 COPY .eslintrc.json ./
