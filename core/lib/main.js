@@ -16,13 +16,17 @@
 
 'use strict';
 
+const Bluebird = require('bluebird');
 const { Mutex } = require('async-mutex');
+const { forkCode, getFilesFromDirectory } = require('./common/utils');
 const express = require('express');
 const expressWebSocket = require('express-ws');
-const { forkCode, promiseStream } = require('./common/utils');
-const { move, pathExists, remove } = require('fs-extra');
+const { pathExists } = require('fs-extra');
+const md5 = require('md5-file/promise');
+const { fs, crypto } = require('mz');
 const { join } = require('path');
 const tar = require('tar-fs');
+const pipeline = Bluebird.promisify(require('stream').pipeline);
 const webSocketStream = require('websocket-stream/stream');
 const { createGunzip } = require('zlib');
 
@@ -110,25 +114,73 @@ async function setup() {
   });
 
   app.post('/upload', async (req, res) => {
-    const downloadLocation = `${location}/download`;
     const release = await mutex.acquire();
 
-    try {
-      await promiseStream(req.pipe(createGunzip()).pipe(tar.extract(downloadLocation)));
+    res.writeHead(202, {
+      'Content-Type': 'text/event-stream',
+      Connection: 'keep-alive'
+    });
 
-      // Cache check
-      for (let name of ['image', 'suite', 'config.json']) {
-        if (await pathExists(join(downloadLocation, name))) {
-          await move(join(downloadLocation, name), join(location, name), { overwrite: true });
+    try {
+      const artifact = {
+        name: req.headers['x-artifact'],
+        path: join(location, req.headers['x-artifact']),
+        hash: req.headers['x-artifact-hash']
+      };
+      const ignore = ['node_modules', 'package-lock.json'];
+
+      let hash = null;
+      if (await pathExists(artifact.path)) {
+        const stat = await fs.stat(artifact.path);
+
+        if (stat.isFile()) {
+          hash = await md5(artifact.path);
+        }
+        if (stat.isDirectory()) {
+          const struct = await getFilesFromDirectory(artifact.path, ignore);
+
+          const expand = await Promise.all(
+            struct.map(async entry => {
+              return {
+                path: entry.replace(join(artifact.path, '/'), join(artifact.name, '/')),
+                md5: await md5(entry)
+              };
+            })
+          );
+
+          expand.sort((a, b) => {
+            const splitA = a.path.split('/');
+            const splitB = b.path.split('/');
+            return splitA.every((sub, i) => {
+              return sub <= splitB[i];
+            })
+              ? -1
+              : 1;
+          });
+          hash = crypto
+            .Hash('md5')
+            .update(
+              expand.reduce((acc, value) => {
+                return acc + value.md5;
+              }, '')
+            )
+            .digest('hex');
         }
       }
 
-      res.status(200);
+      if (hash === artifact.hash) {
+        res.write('upload: cache');
+      } else {
+        const line = pipeline(req, createGunzip(), tar.extract(location));
+        req.on('close', () => {
+          line.cancel();
+        });
+        await line;
+        res.write('upload: done');
+      }
     } catch (e) {
       res.write(`error: ${e.message}`);
-      res.status(500);
     } finally {
-      await remove(downloadLocation);
       res.end();
       release();
     }
