@@ -13,9 +13,12 @@
     "bluebird": "^3.5.3",
     "fs-extra": "^8.1.0",
     "lodash": "^4.17.11",
+    "md5-file": "^4.0.0",
     "mz": "^2.7.0",
+    "progress-stream": "^2.0.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
+    "resin-cli-visuals": "^1.4.3",
     "tar-fs": "^2.0.0",
     "websocket-stream": "^5.5.0",
     "yargs": "^13.2.4"

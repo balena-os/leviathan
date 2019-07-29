@@ -16,13 +16,14 @@
 
 'use strict';
 
+const Bluebird = require('bluebird');
 const retry = require('bluebird-retry');
 const utils = require('../common/utils');
 const isNumber = require('lodash/isNumber');
 const { fs } = require('mz');
+const pipeline = Bluebird.promisify(require('stream').pipeline);
 const rp = require('request-promise');
 const { Spinner, Progress } = require('resin-cli-visuals');
-const { promiseStream } = require('./utils');
 
 module.exports = class Worker {
   constructor(deviceType) {
@@ -77,7 +78,7 @@ module.exports = class Worker {
         }
       });
 
-      await promiseStream(fs.createReadStream(os.image.path).pipe(req));
+      await pipeline(fs.createReadStream(os.image.path), req);
     });
   }
 

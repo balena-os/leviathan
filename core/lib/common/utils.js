@@ -164,13 +164,33 @@ module.exports = {
       .get('pubKey')
       .then(trim);
   },
-  promiseStream: stream => {
-    return new Bluebird((resolve, reject) => {
-      stream.on('finish', resolve);
-      stream.on('error', reject);
-    });
-  },
   forkCode: (code, opts) => {
     return fork(path.join(__dirname, 'vm.js'), [code], opts);
+  },
+  getFilesFromDirectory(basePath, ignore = []) {
+    async function _recursive(_basePath, _ignore = []) {
+      let files = [];
+      const entries = await fs.readdir(_basePath);
+
+      for (const entry of entries) {
+        if (_ignore.includes(entry)) {
+          continue;
+        }
+
+        const stat = await fs.stat(path.join(_basePath, entry));
+
+        if (stat.isFile()) {
+          files.push(path.join(_basePath, entry));
+        }
+
+        if (stat.isDirectory()) {
+          files = files.concat(await _recursive(path.join(_basePath, entry), _ignore));
+        }
+      }
+
+      return files;
+    }
+
+    return _recursive(basePath, ignore);
   }
 };
