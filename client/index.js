@@ -172,18 +172,11 @@ async function getFilesFromDirectory(basePath, ignore = []) {
 
     await new Promise(async (resolve, reject) => {
       const stat = await fs.stat(artifact.path);
+      const bar = new Progress('Uploading');
       const str = progStream({
         length: stat.size,
         time: 100,
       });
-      const bar = new Progress('Uploading');
-      str.on('progress', progress => {
-        bar.update({
-          percentage: progress.percentage,
-          eta: progress.eta,
-        });
-      });
-
       const req = rp.post({
         uri: `http://${yargs.url}/upload`,
         headers: {
@@ -192,31 +185,9 @@ async function getFilesFromDirectory(basePath, ignore = []) {
         },
       });
 
-      req.finally(() => {
-        resolve();
-      });
-      req.on('error', reject);
-      req.on('data', async data => {
-        const computedLine = RegExp('^([a-z]*): (.*)').exec(data.toString());
-
-        if (computedLine[1] === 'error') {
-          req.cancel();
-          reject(new Error(computedLine[2]));
-        }
-
-        if (computedLine[1] === 'upload') {
-          if (computedLine[2] === 'cache') {
-            console.log('[Cache used]');
-            resolve();
-          }
-
-          if (computedLine[2] === 'done') {
-            resolve();
-          }
-        }
-      });
-
-      await pipeline(
+      // We need to record the end of our pipe, so we can unpipe in case cache will be used
+      const pipeEnd = zlib.createGzip({ level: 6 });
+      const line = pipeline(
         tar.pack(dirname(artifact.path), {
           ignore: function(name) {
             return ignore.some(value => {
@@ -234,9 +205,48 @@ async function getFilesFromDirectory(basePath, ignore = []) {
           entries: [basename(artifact.path)],
         }),
         str,
-        zlib.createGzip({ level: 6 }),
-        req,
+        pipeEnd,
       ).delay(1000);
+      pipeEnd.pipe(req);
+
+      req.finally(() => {
+        resolve();
+      });
+      req.on('error', reject);
+      req.on('data', async data => {
+        const computedLine = RegExp('^([a-z]*): (.*)').exec(data.toString());
+
+        if (computedLine[1] === 'error') {
+          req.cancel();
+          reject(new Error(computedLine[2]));
+        }
+        if (computedLine[1] === 'upload') {
+          switch (computedLine[2]) {
+            case 'start':
+              str.on('progress', progress => {
+                bar.update({
+                  percentage: progress.percentage,
+                  eta: progress.eta,
+                });
+              });
+              await line;
+              break;
+            case 'cache':
+              pipeEnd.unpipe(req);
+              console.log('[Cache used]');
+              resolve();
+              break;
+            case 'done':
+              // For uploads that are to fast we will to not even catch the end, so let's display it now
+              bar.update({
+                percentage: 100,
+              });
+              pipeEnd.unpipe(req);
+              resolve();
+              break;
+          }
+        }
+      });
     });
   }
 
