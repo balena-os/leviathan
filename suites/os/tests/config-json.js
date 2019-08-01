@@ -22,7 +22,7 @@ const rebootDevice = async that => {
     that.context.link,
   ),
     await that.context.worker.executeCommandInHostOS(
-      'shutdown -r now',
+      'systemd-run --on-active=2 /sbin/reboot',
       that.context.link,
     );
   assert(
@@ -57,7 +57,7 @@ module.exports = {
           this.context.link,
         );
         await this.context.worker.executeCommandInHostOS(
-          'shutdown -r now',
+          'systemd-run --on-active=2 /sbin/reboot',
           this.context.link,
         );
         assert(
@@ -90,7 +90,7 @@ module.exports = {
           `${hostname}.local`,
         ),
           await this.context.worker.executeCommandInHostOS(
-            'shutdown -r now',
+            'systemd-run --on-active=2 /sbin/reboot',
             `${hostname}.local`,
           );
         assert(
