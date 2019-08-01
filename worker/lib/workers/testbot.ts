@@ -325,7 +325,6 @@ class TestBot extends EventEmitter implements Leviathan.Worker {
       await this.net.teardown();
     }
 
-    // This property is missing from types definition, will open PR upstream
     if (this.board != null) {
       await this.powerOff();
       this.board.serialClose(HW_SERIAL5);

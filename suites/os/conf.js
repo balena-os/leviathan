@@ -16,8 +16,6 @@
 
 'use strict';
 
-const { basename } = require('path');
-
 // Device identification
 function uid(a) {
   return a
