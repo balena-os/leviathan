@@ -17,31 +17,20 @@
 const assert = require('assert');
 
 const rebootDevice = async that => {
-  const timestamp = new Date(
+  await that.context.worker.executeCommandInHostOS(
+    'touch /tmp/reboot-check',
+    that.context.link,
+  ),
     await that.context.worker.executeCommandInHostOS(
-      `date -d "$(</proc/uptime awk '{print $1}') seconds ago" --rfc-3339=seconds`,
+      'shutdown -r now',
+      that.context.link,
+    );
+  assert(
+    await that.context.worker.executeCommandInHostOS(
+      '[[ ! -f /tmp/reboot-check ]] && echo "pass"',
       that.context.link,
     ),
-  );
-  await that.context.worker.executeCommandInHostOS(
-    'shutdown -r now',
-    that.context.link,
-  );
-  await that.context.utils.waitUntil(async () => {
-    return (
-      (await that.context.worker.executeCommandInHostOS(
-        "timedatectl | grep synchronized | cut -d ':' -f 2",
-        that.context.link,
-      )) === 'yes'
-    );
-  });
-  assert(
-    new Date(
-      await that.context.worker.executeCommandInHostOS(
-        `date -d "$(</proc/uptime awk '{print $1}') seconds ago" --rfc-3339=seconds`,
-        that.context.link,
-      ),
-    ) > timestamp,
+    'pass',
     'Device should have rebooted',
   );
 };
@@ -63,33 +52,23 @@ module.exports = {
         );
 
         // Start reboot check
-        const boot0 = new Date(
-          await this.context.worker.executeCommandInHostOS(
-            `date -d "$(</proc/uptime awk '{print $1}') seconds ago" --rfc-3339=seconds`,
-            this.context.link,
-          ),
+        await this.context.worker.executeCommandInHostOS(
+          'touch /tmp/reboot-check',
+          this.context.link,
         );
         await this.context.worker.executeCommandInHostOS(
           'shutdown -r now',
           this.context.link,
         );
-        await this.context.utils.waitUntil(async () => {
-          return (
-            (await this.context.worker.executeCommandInHostOS(
-              "timedatectl | grep synchronized | cut -d ':' -f 2",
-              `${hostname}.local`,
-            )) === 'yes'
-          );
-        });
         assert(
-          new Date(
-            await this.context.worker.executeCommandInHostOS(
-              `date -d "$(</proc/uptime awk '{print $1}') seconds ago" --rfc-3339=seconds`,
-              `${hostname}.local`,
-            ),
-          ) > boot0,
+          await this.context.worker.executeCommandInHostOS(
+            '[[ ! -f /tmp/reboot-check ]] && echo "pass"',
+            `${hostname}.local`,
+          ),
+          'pass',
           'Device should have rebooted',
         );
+
         test.equal(
           await this.context.worker.executeCommandInHostOS(
             'cat /etc/hostname',
@@ -106,94 +85,59 @@ module.exports = {
         );
 
         // Start reboot check
-        const boot1 = new Date(
-          await this.context.worker.executeCommandInHostOS(
-            `date -d "$(</proc/uptime awk '{print $1}') seconds ago" --rfc-3339=seconds`,
-            `${hostname}.local`,
-          ),
-        );
         await this.context.worker.executeCommandInHostOS(
-          'shutdown -r now',
+          'touch /tmp/reboot-check',
           `${hostname}.local`,
-        );
-        await this.context.utils.waitUntil(async () => {
-          return (
-            (await this.context.worker.executeCommandInHostOS(
-              "timedatectl | grep synchronized | cut -d ':' -f 2",
-              this.context.link,
-            )) === 'yes'
-          );
-        });
-        assert(
-          new Date(
-            await this.context.worker.executeCommandInHostOS(
-              `date -d "$(</proc/uptime awk '{print $1}') seconds ago" --rfc-3339=seconds`,
-              this.context.link,
-            ),
-          ) > boot1,
-          'Device should have rebooted',
-        );
-
-        test.equal(
+        ),
           await this.context.worker.executeCommandInHostOS(
-            'cat /etc/hostname',
+            'shutdown -r now',
+            `${hostname}.local`,
+          );
+        assert(
+          await this.context.worker.executeCommandInHostOS(
+            '[[ ! -f /tmp/reboot-check ]] && echo "pass"',
             this.context.link,
           ),
-          this.context.link.split('.')[0],
-          'Device should have old hostname',
+          'pass',
+          'Device should have rebooted',
         );
       },
     },
     {
       title: 'persistentLogging configuration test',
       run: async function(test) {
-        const getBootCount = async () => {
-          return parseInt(
+        //Clean all the previous logs, pretending this was the first boot
+        await this.context.worker.executeCommandInHostOS(
+          'rm -rf /mnt/state/root-overlay/var/log/journal/*',
+          this.context.link,
+        );
+        await this.context.worker.executeCommandInHostOS(
+          'journalctl --flush',
+          this.context.link,
+        );
+
+        await rebootDevice(this);
+        test.is(
+          parseInt(
             await this.context.worker.executeCommandInHostOS(
               'journalctl --list-boot | wc -l',
               this.context.link,
             ),
-          );
-        };
-
-        await this.context.worker.executeCommandInHostOS(
-          'tmp=$(mktemp)&&cat /mnt/boot/config.json | jq ".persistentLogging=true" > $tmp&&mv "$tmp" /mnt/boot/config.json',
-          this.context.link,
-        );
-
-        await rebootDevice(this);
-
-        const bootCount = await getBootCount();
-
-        await rebootDevice(this);
-
-        test.is(
-          await getBootCount(),
-          bootCount + 1,
+          ),
+          2,
           'Device should show previous boot records',
-        );
-
-        await this.context.worker.executeCommandInHostOS(
-          'tmp=$(mktemp)&&cat /mnt/boot/config.json | jq "del(.persistentLogging)" > $tmp&&mv "$tmp" /mnt/boot/config.json',
-          this.context.link,
-        );
-
-        await rebootDevice(this);
-
-        test.is(
-          await getBootCount(),
-          1,
-          'Device should only show current boot records',
         );
       },
     },
     {
       title: 'ntpServer test',
       run: async function(test) {
-        const ntpServer = 'chronos.csr.net';
+        const ntpServer = (regex = '') => {
+          return `time${regex}.google.com`;
+        };
 
         await this.context.worker.executeCommandInHostOS(
-          `tmp=$(mktemp)&&cat /mnt/boot/config.json | jq '.ntpServers="${ntpServer}"' > $tmp&&mv "$tmp" /mnt/boot/config.json`,
+          `tmp=$(mktemp)&&cat /mnt/boot/config.json | jq '.ntpServers="${ntpServer()}"' > $tmp&&mv "$tmp" /mnt/boot/config.json`,
           this.context.link,
         );
 
@@ -201,14 +145,14 @@ module.exports = {
 
         await test.resolves(
           this.context.worker.executeCommandInHostOS(
-            `chronyc sources | grep ${ntpServer}`,
+            `chronyc sources | grep ${ntpServer('.*')}`,
             this.context.link,
           ),
           'Device should show one record with our ntp server',
         );
 
         await this.context.worker.executeCommandInHostOS(
-          'tmp=$(mktemp)&&cat /mnt/boot/config.json | jq "del(.ntpServer)" > $tmp&&mv "$tmp" /mnt/boot/config.json',
+          'tmp=$(mktemp)&&cat /mnt/boot/config.json | jq "del(.ntpServers)" > $tmp&&mv "$tmp" /mnt/boot/config.json',
           this.context.link,
         );
       },
@@ -235,6 +179,7 @@ module.exports = {
           `tmp=$(mktemp)&&cat /mnt/boot/config.json | jq '.dnsServers="${dnsServer}"' > $tmp&&mv "$tmp" /mnt/boot/config.json`,
           this.context.link,
         );
+
         await rebootDevice(this);
 
         test.is(
@@ -246,7 +191,7 @@ module.exports = {
         );
 
         await this.context.worker.executeCommandInHostOS(
-          'tmp=$(mktemp)&&cat /mnt/boot/config.json | jq "del(.dnsServer)" > $tmp&&mv "$tmp" /mnt/boot/config.json',
+          'tmp=$(mktemp)&&cat /mnt/boot/config.json | jq "del(.dnsServers)" > $tmp&&mv "$tmp" /mnt/boot/config.json',
           this.context.link,
         );
       },
@@ -285,23 +230,9 @@ module.exports = {
         );
 
         test.is(
-          /uri=.*$/.exec(config),
+          /uri=(.*)\n/.exec(config)[1],
           connectivity.uri,
           `NetworkManager should be configured with uri: ${connectivity.uri}`,
-        );
-        test.is(
-          /interval=.*$/.exec(config),
-          null,
-          `NetworkManager should be configured with interval: ${
-            connectivity.interval
-          }`,
-        );
-        test.is(
-          /response=.*$/.exec(config),
-          null,
-          `NetworkManager should be configured with the response: ${
-            connectivity.response
-          }`,
         );
 
         await this.context.worker.executeCommandInHostOS(

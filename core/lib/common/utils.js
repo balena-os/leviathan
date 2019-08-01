@@ -158,6 +158,7 @@ module.exports = {
         const keys = await keygen({
           location: keyPath
         });
+        await exec('ssh-add -D');
         await exec(`ssh-add ${keyPath}`);
         return keys;
       })

@@ -171,6 +171,7 @@ async function setup() {
       if (hash === artifact.hash) {
         res.write('upload: cache');
       } else {
+        res.write('upload: start');
         const line = pipeline(req, createGunzip(), tar.extract(location));
         req.on('close', () => {
           line.cancel();
