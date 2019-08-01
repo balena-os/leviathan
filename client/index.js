@@ -216,11 +216,11 @@ async function getFilesFromDirectory(basePath, ignore = []) {
       req.on('data', async data => {
         const computedLine = RegExp('^([a-z]*): (.*)').exec(data.toString());
 
-        if (computedLine[1] === 'error') {
+        if (computedLine != null && computedLine[1] === 'error') {
           req.cancel();
           reject(new Error(computedLine[2]));
         }
-        if (computedLine[1] === 'upload') {
+        if (computedLine != null && computedLine[1] === 'upload') {
           switch (computedLine[2]) {
             case 'start':
               str.on('progress', progress => {
