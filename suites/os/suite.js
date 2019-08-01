@@ -13,7 +13,7 @@ const { homedir } = require('os');
 
 module.exports = {
   title: 'BalenaOS release suite',
-  run: async function(test) {
+  run: async function() {
     const Worker = require(join(this.frameworkPath, 'common', 'worker'));
     const BalenaOS = require(join(
       this.frameworkPath,
@@ -33,10 +33,12 @@ module.exports = {
     const config = {
       uuid: this.options.balenaOS.config.uuid,
       os: {
-        sskKeys: [
+        sshKeys: [
           await this.context.utils.createSSHKey(this.context.sshKeyPath),
         ],
       },
+      // persistentLogging is managed by the supervisor and only read at first boot
+      persistentLogging: true,
     };
 
     this.globalContext = {
