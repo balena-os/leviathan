@@ -1,1 +1,0 @@
-[Download {{sw.os-image.name}}]({{sw.os-image.assets.url}}). The download includes {{sw.os-image.name}} v{{sw.os-image.version}}, as well as configuration that allows your device to securely provision into your application with no additional steps
