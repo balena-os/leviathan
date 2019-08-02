@@ -54,13 +54,13 @@ function cleanObject(object) {
 
 module.exports = class Suite {
   constructor(packdir) {
-    this.frameworkPath = path.join(__dirname, '..');
-
     const config = require(`${packdir}/config.json`);
 
+    this.frameworkPath = path.join(__dirname, '..');
     this.options = assignIn(
       {
-        packdir: path.join(packdir, 'suite'),
+        packdir,
+        suitePath: path.join(packdir, 'suite'),
         tmpdir: config.BALENA_TESTS_TMPDIR || tmpdir(),
         interactiveTests: config.BALENA_TESTS_ENABLE_INTERACTIVE_TESTS,
         replOnFailure: config.BALENA_TESTS_REPL_ON_FAILURE
@@ -82,7 +82,7 @@ module.exports = class Suite {
   async init() {
     await Bluebird.try(async () => {
       await this.installDependencies();
-      this.rootTree = this.resolveTestTree(path.join(this.options.packdir, 'suite'));
+      this.rootTree = this.resolveTestTree(path.join(this.options.suitePath, 'suite'));
     }).catch(async error => {
       await this.removeDependencies();
       throw error;
@@ -190,7 +190,7 @@ module.exports = class Suite {
         tests.forEach((test, i) => {
           if (isString(test)) {
             try {
-              test = tests[i] = require(path.join(this.options.packdir, test));
+              test = tests[i] = require(path.join(this.options.suitePath, test));
             } catch (error) {
               if (error.code === 'MODULE_NOT_FOUND') {
                 console.error('Could not resolve test path. Ignoring...');
@@ -231,14 +231,14 @@ module.exports = class Suite {
     await Bluebird.promisify(npm.load)({
       loglevel: 'silent',
       progress: false,
-      prefix: this.options.packdir,
+      prefix: this.options.suitePath,
       'package-lock': false
     });
-    await Bluebird.promisify(npm.install)(this.options.packdir);
+    await Bluebird.promisify(npm.install)(this.options.suitePath);
   }
 
   async removeDependencies() {
     console.log(`Removing npm dependencies for suite: `);
-    await Bluebird.promisify(fse.remove)(path.join(this.options.packdir, 'node_modules'));
+    await Bluebird.promisify(fse.remove)(path.join(this.options.suitePath, 'node_modules'));
   }
 };
