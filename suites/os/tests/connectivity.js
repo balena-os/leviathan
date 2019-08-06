@@ -14,7 +14,6 @@
 
 'use strict';
 
-const { delay } = require('bluebird');
 const assert = require('assert');
 
 const URL_TEST = 'www.google.com';
@@ -100,31 +99,21 @@ module.exports = {
             );
 
             // Start reboot check
-            const boot0 = new Date(
-              await this.context.worker.executeCommandInHostOS(
-                `date -d "$(</proc/uptime awk '{print $1}') seconds ago" --rfc-3339=seconds`,
-                this.context.link,
-              ),
-            );
             await this.context.worker.executeCommandInHostOS(
-              'shutdown -r now',
+              'touch /tmp/reboot-check',
               this.context.link,
             );
-            await this.context.utils.waitUntil(async () => {
-              return (
-                (await this.context.worker.executeCommandInHostOS(
-                  "timedatectl | grep synchronized | cut -d ':' -f 2",
-                  this.context.link,
-                )) === 'yes'
-              );
-            });
+
+            await this.context.worker.executeCommandInHostOS(
+              'systemd-run --on-active=2 /sbin/reboot',
+              this.context.link,
+            );
             assert(
-              new Date(
-                await this.context.worker.executeCommandInHostOS(
-                  `date -d "$(</proc/uptime awk '{print $1}') seconds ago" --rfc-3339=seconds`,
-                  this.context.link,
-                ),
-              ) > boot0,
+              await this.context.worker.executeCommandInHostOS(
+                '[[ ! -f /tmp/reboot-check ]] && echo "pass"',
+                this.context.link,
+              ),
+              'pass',
               'Device should have rebooted',
             );
 
@@ -140,31 +129,20 @@ module.exports = {
             );
 
             // Start reboot check
-            const boot1 = new Date(
-              await this.context.worker.executeCommandInHostOS(
-                `date -d "$(</proc/uptime awk '{print $1}') seconds ago" --rfc-3339=seconds`,
-                this.context.link,
-              ),
-            );
             await this.context.worker.executeCommandInHostOS(
-              'shutdown -r now',
+              'touch /tmp/reboot-check',
               this.context.link,
             );
-            await this.context.utils.waitUntil(async () => {
-              return (
-                (await this.context.worker.executeCommandInHostOS(
-                  "timedatectl | grep synchronized | cut -d ':' -f 2",
-                  this.context.link,
-                )) === 'yes'
-              );
-            });
+            await this.context.worker.executeCommandInHostOS(
+              'systemd-run --on-active=2 /sbin/reboot',
+              this.context.link,
+            );
             assert(
-              new Date(
-                await this.context.worker.executeCommandInHostOS(
-                  `date -d "$(</proc/uptime awk '{print $1}') seconds ago" --rfc-3339=seconds`,
-                  this.context.link,
-                ),
-              ) > boot1,
+              await this.context.worker.executeCommandInHostOS(
+                '[[ ! -f /tmp/reboot-check ]] && echo "pass"',
+                this.context.link,
+              ),
+              'pass',
               'Device should have rebooted',
             );
           },

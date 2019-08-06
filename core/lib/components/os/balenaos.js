@@ -89,7 +89,7 @@ module.exports = class BalenaOS {
     this.deviceType = options.deviceType;
     this.network = options.network;
     this.image = {};
-    this.configJson = {};
+    this.configJson = options.configJson;
     this.contract = {
       network: mapValues(this.network, value => {
         return typeof value === 'boolean' ? value : true;
@@ -147,12 +147,15 @@ module.exports = class BalenaOS {
     return types[download.type]();
   }
 
-  async fetch(destination, download) {
-    this.image.path = join(destination, 'balena.img');
+  async fetch(packDir, download) {
+    this.image.path = join(packDir, 'balena.img');
     assignIn(
       this.contract,
       await new SpinnerPromise({
-        promise: this.unpack(download),
+        promise: this.unpack({
+          type: download.type,
+          source: join(packDir, 'image')
+        }),
         startMessage: 'Unpacking Operating System',
         stopMessage: 'Operating system sucesfully unpacked'
       })
