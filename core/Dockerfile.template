@@ -1,4 +1,4 @@
-FROM balenalib/%%BALENA_MACHINE_NAME%%-node:10-stretch-build AS npm-install
+FROM balenalib/%%BALENA_MACHINE_NAME%%-node:10-buster-build AS npm-install
 
 RUN install_packages unzip
 
@@ -13,7 +13,7 @@ RUN wget https://github.com/balena-io/balena-cli/releases/download/v11.7.0/balen
 
 RUN npm ci 
 
-FROM balenalib/%%BALENA_MACHINE_NAME%%-node:10-stretch-build
+FROM balenalib/%%BALENA_MACHINE_NAME%%-node:10-buster-build
 
 ENV UDEV=1
 
