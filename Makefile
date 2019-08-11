@@ -5,12 +5,20 @@ Dockerfile:
 
 local: Dockerfile
 	@ln -sf ./compose/generic-x86.yml ./docker-compose.yml
-	@docker-compose build
-	@docker-compose up
+ifndef DRY
+	@docker-compose build $(SERVICES)
+	@docker-compose up $(SERVICES)
+endif
 
 balena:
 	@ln -sf ./compose/balena.yml ./docker-compose.yml
+ifndef DRY
+ifdef PUSH
 	@balena push $(PUSH)
+else
+	$(error To push to balena one needs to set PUSH=applicationName)
+endif
+endif
 
 clean:
 	@docker-compose down
