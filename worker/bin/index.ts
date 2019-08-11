@@ -1,13 +1,11 @@
 import setup from '../lib/index';
 
 (async function(): Promise<void> {
-  let port: number = 2000;
+  let port: number = process.env.PORT != null ? parseInt(process.env.PORT) : 2000;
 
-  if (process.env.PORT != null) {
-    port = parseInt(process.env.PORT);
-  }
-
-  const app = await setup();
+  const app = await setup({
+    workdir: '/data'
+  });
 
   /**
    * Start Express Server

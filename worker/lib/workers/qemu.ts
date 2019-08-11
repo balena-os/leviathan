@@ -6,6 +6,7 @@ import { EventEmitter } from 'events';
 import * as libvirt from 'libvirt';
 import { assignIn } from 'lodash';
 import { manageHandlers } from '../helpers';
+import ScreenCapture from '../helpers/graphics';
 import { fs } from 'mz';
 import { join, dirname } from 'path';
 import * as Stream from 'stream';
@@ -22,15 +23,36 @@ class Qemu extends EventEmitter implements Leviathan.Worker {
   private virtlogdProc?: ChildProcess;
   private activeFlash?: Bluebird<void>;
   private signalHandler: (signal: NodeJS.Signals) => Promise<void>;
-
   private references: { domain?: any; network?: any; pool?: any };
   internalState: Leviathan.WorkerState = { network: {} };
+  private screenCapturer: ScreenCapture;
 
   constructor(options: Leviathan.Options) {
     super();
 
-    if (options != null && options.worker != null && options.worker.disk != null) {
-      this.image = join(options.worker.disk, 'qemu.img');
+    if (options != null) {
+      if (options.worker != null && options.worker.disk != null) {
+        this.image = options.worker.disk;
+      } else {
+        throw new Error('Cannot initialize QEMU worker, bad configuration');
+      }
+
+      if (options.screen != null) {
+        if (options.screen.VNC != null) {
+          this.screenCapturer = new ScreenCapture(
+            {
+              type: 'rfbsrc',
+              options: {
+                host: options.screen.VNC.host || '127.0.0.1',
+                port: options.screen.VNC.port || '5900'
+              }
+            },
+            join(options.worker.workdir, 'capture')
+          );
+        } else {
+          throw new Error('Invalid screen configuration for this worker.');
+        }
+      }
     }
 
     this.references = {};
@@ -209,30 +231,6 @@ class Qemu extends EventEmitter implements Leviathan.Worker {
                       }
                     }
                   ]
-                },
-                {
-                  type: 'element',
-                  name: 'serial',
-                  attributes: { type: 'pty' },
-                  elements: [
-                    {
-                      type: 'element',
-                      name: 'target',
-                      attributes: { port: '0' }
-                    }
-                  ]
-                },
-                {
-                  type: 'element',
-                  name: 'console',
-                  attributes: { type: 'pty' },
-                  elements: [
-                    {
-                      type: 'element',
-                      name: 'target',
-                      attributes: { type: 'serial', port: '0' }
-                    }
-                  ]
                 }
               ]
             }
@@ -240,6 +238,30 @@ class Qemu extends EventEmitter implements Leviathan.Worker {
         }
       ]
     };
+
+    if (this.screenCapturer != null) {
+      // The top level of the xml is one element called domain
+      if (conf.elements != null && conf.elements[0].elements != null) {
+        const devices =
+          conf.elements[0].elements[
+            conf.elements[0].elements.findIndex(element => {
+              return element.name === 'devices';
+            })
+          ];
+
+        if (devices.elements != null) {
+          devices.elements.push({
+            type: 'element',
+            name: 'graphics',
+            attributes: {
+              type: 'vnc',
+              port: this.screenCapturer.source.options.port,
+              listen: this.screenCapturer.source.options.host
+            }
+          });
+        }
+      }
+    }
 
     if (
       this.references.network != null &&
@@ -370,6 +392,10 @@ class Qemu extends EventEmitter implements Leviathan.Worker {
   }
 
   public async teardown(signal?: NodeJS.Signals): Promise<void> {
+    if (this.screenCapturer != null) {
+      this.screenCapturer.teardown();
+    }
+
     if (this.activeFlash != null) {
       this.activeFlash.cancel();
     }
@@ -441,6 +467,7 @@ class Qemu extends EventEmitter implements Leviathan.Worker {
     await this.activeFlash;
     this.activeFlash = undefined;
   }
+
   public async powerOn(): Promise<void> {
     this.references.domain = await this.hypervisor.createDomainAsync(
       await this.getDomainConf({
@@ -448,6 +475,7 @@ class Qemu extends EventEmitter implements Leviathan.Worker {
       })
     );
   }
+
   public async powerOff(): Promise<void> {
     if (this.references.domain != null) {
       await this.references.domain.destroyAsync();
@@ -470,6 +498,19 @@ class Qemu extends EventEmitter implements Leviathan.Worker {
       await this.references.network.destroyAsync();
       this.references.network = undefined;
       this.internalState.network.wired = undefined;
+    }
+  }
+
+  public async captureScreen(action: 'start' | 'stop'): Promise<void | Stream.Readable> {
+    if (this.screenCapturer == null) {
+      throw new Error('Screen capture not configured');
+    }
+
+    switch (action) {
+      case 'start':
+        return this.screenCapturer.startCapture();
+      case 'stop':
+        return this.screenCapturer.stopCapture();
     }
   }
 }

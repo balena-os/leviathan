@@ -5,11 +5,9 @@ import * as express from 'express';
 import * as http from 'http';
 import { merge } from 'lodash';
 
-import { getIpFromIface, getStoragePath, resolveLocalTarget } from './helpers';
+import { getIpFromIface, resolveLocalTarget } from './helpers';
 import TestBot from './workers/testbot';
 import Qemu from './workers/qemu';
-
-const PERSISTANT_STORAGE_LABEL = 'STORAGE';
 
 type workers = { testbot: typeof TestBot; qemu: typeof Qemu };
 const workersDict: { [key in keyof workers]: workers[key] } = {
@@ -17,7 +15,7 @@ const workersDict: { [key in keyof workers]: workers[key] } = {
   qemu: Qemu
 };
 
-async function setup(): Promise<express.Application> {
+async function setup(options: { workdir: string }): Promise<express.Application> {
   /**
    * Server context
    */
@@ -51,7 +49,7 @@ async function setup(): Promise<express.Application> {
             merge(
               {
                 worker: {
-                  disk: await getStoragePath(PERSISTANT_STORAGE_LABEL)
+                  workdir: options.workdir
                 }
               },
               req.body.options
@@ -126,6 +124,38 @@ async function setup(): Promise<express.Application> {
           res.send(await resolveLocalTarget(req.body.target));
         } else {
           throw new Error('Target missing');
+        }
+      } catch (err) {
+        next(err);
+      }
+    }
+  );
+  app.post(
+    '/dut/capture',
+    async (_req: express.Request, res: express.Response, next: express.NextFunction) => {
+      try {
+        if (worker == null) {
+          throw new Error('No worker has been selected, please call /select first');
+        }
+        await worker.captureScreen('start');
+        res.send('OK');
+      } catch (err) {
+        next(err);
+      }
+    }
+  );
+  app.get(
+    '/dut/capture',
+    async (_req: express.Request, res: express.Response, next: express.NextFunction) => {
+      try {
+        if (worker == null) {
+          throw new Error('No worker has been selected, please call /select first');
+        }
+
+        const output = await worker.captureScreen('stop');
+
+        if (output != null) {
+          output.pipe(res);
         }
       } catch (err) {
         next(err);
