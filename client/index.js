@@ -255,7 +255,7 @@ async function getFilesFromDirectory(basePath, ignore = []) {
   ws.socket.on('ping', () => {
     ws.socket.pong('heartbeat');
   });
-  process.on('SIGINT', async () => {
+  process.once('SIGINT', async () => {
     await rp.post(`http://${yargs.url}/stop`);
     process.exit(128 + constants.signals.SIGINT);
   });
