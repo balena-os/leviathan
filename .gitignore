@@ -3,4 +3,3 @@ build
 coverage
 .nyc*
 Dockerfile
-docker-compose.yml
