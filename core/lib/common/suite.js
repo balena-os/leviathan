@@ -192,6 +192,7 @@ module.exports = class Suite {
             try {
               test = tests[i] = require(path.join(this.options.suitePath, test));
             } catch (error) {
+              console.error(error.message);
               if (error.code === 'MODULE_NOT_FOUND') {
                 console.error('Could not resolve test path. Ignoring...');
               } else {
