@@ -14,8 +14,6 @@
 
 'use strict';
 
-const assert = require('assert');
-
 const rebootDevice = async that => {
   await that.context.worker.executeCommandInHostOS(
     'touch /tmp/reboot-check',
@@ -25,14 +23,15 @@ const rebootDevice = async that => {
       'systemd-run --on-active=2 /sbin/reboot',
       that.context.link,
     );
-  assert(
-    await that.context.worker.executeCommandInHostOS(
-      '[[ ! -f /tmp/reboot-check ]] && echo "pass"',
-      that.context.link,
-    ),
-    'pass',
-    'Device should have rebooted',
-  );
+
+  await that.context.utils.waitUntil(async () => {
+    return (
+      (await that.context.worker.executeCommandInHostOS(
+        '[[ ! -f /tmp/reboot-check ]] && echo "pass"',
+        that.context.link,
+      )) === 'pass'
+    );
+  });
 };
 
 module.exports = {
@@ -60,14 +59,14 @@ module.exports = {
           'systemd-run --on-active=2 /sbin/reboot',
           this.context.link,
         );
-        assert(
-          await this.context.worker.executeCommandInHostOS(
-            '[[ ! -f /tmp/reboot-check ]] && echo "pass"',
-            `${hostname}.local`,
-          ),
-          'pass',
-          'Device should have rebooted',
-        );
+        await this.context.utils.waitUntil(async () => {
+          return (
+            (await this.context.worker.executeCommandInHostOS(
+              '[[ ! -f /tmp/reboot-check ]] && echo "pass"',
+              `${hostname}.local`,
+            )) === 'pass'
+          );
+        });
 
         test.equal(
           await this.context.worker.executeCommandInHostOS(
@@ -93,14 +92,14 @@ module.exports = {
             'systemd-run --on-active=2 /sbin/reboot',
             `${hostname}.local`,
           );
-        assert(
-          await this.context.worker.executeCommandInHostOS(
-            '[[ ! -f /tmp/reboot-check ]] && echo "pass"',
-            this.context.link,
-          ),
-          'pass',
-          'Device should have rebooted',
-        );
+        await this.context.utils.waitUntil(async () => {
+          return (
+            (await this.context.worker.executeCommandInHostOS(
+              '[[ ! -f /tmp/reboot-check ]] && echo "pass"',
+              this.context.link,
+            )) === 'pass'
+          );
+        });
       },
     },
     {
