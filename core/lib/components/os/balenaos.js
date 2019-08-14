@@ -148,7 +148,7 @@ module.exports = class BalenaOS {
   }
 
   async fetch(packDir, download) {
-    this.image.path = join(packDir, 'balena.img');
+    this.image.path = join(packDir, 'os.img');
     assignIn(
       this.contract,
       await new SpinnerPromise({
