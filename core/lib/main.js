@@ -21,7 +21,7 @@ const { Mutex } = require('async-mutex');
 const { forkCode, getFilesFromDirectory } = require('./common/utils');
 const express = require('express');
 const expressWebSocket = require('express-ws');
-const { pathExists } = require('fs-extra');
+const { pathExists, remove } = require('fs-extra');
 const md5 = require('md5-file/promise');
 const { fs, crypto } = require('mz');
 const { join } = require('path');
@@ -172,6 +172,8 @@ async function setup() {
         res.write('upload: cache');
       } else {
         res.write('upload: start');
+        // Make sure we start clean
+        await remove(artifact.path);
         const line = pipeline(req, createGunzip(), tar.extract(location));
         req.on('close', () => {
           line.cancel();
