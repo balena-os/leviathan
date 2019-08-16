@@ -154,9 +154,16 @@ async function setup(options: { workdir: string }): Promise<express.Application>
 
         const output = await worker.captureScreen('stop');
 
-        if (output != null) {
-          output.pipe(res);
-        }
+        await new Promise((resolve, reject) => {
+          if (output != null) {
+            output.on('end', () => {
+              res.end();
+              resolve();
+            });
+            output.on('error', reject);
+            output.pipe(res);
+          }
+        });
       } catch (err) {
         next(err);
       }
