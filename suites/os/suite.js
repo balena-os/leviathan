@@ -30,21 +30,6 @@ module.exports = {
       link: `${this.options.balenaOS.config.uuid.slice(0, 7)}.local`,
       worker: new Worker(this.deviceType.slug),
     };
-
-    this.teardown.register(() => {
-      console.log('Worker teardown');
-      return this.context.worker.teardown();
-    });
-    console.log('Setting up worker');
-    await this.context.worker.select({
-      type: this.options.worker.type,
-      options: {
-        network: {
-          wireless: 'wlan0',
-        },
-      },
-    });
-
     // Network definitions
     if (this.options.balenaOS.network.wired === true) {
       this.options.balenaOS.network.wired = {
@@ -62,7 +47,6 @@ module.exports = {
     } else {
       delete this.options.balenaOS.network.wireless;
     }
-    await this.context.worker.network(this.options.balenaOS.network);
 
     this.globalContext = {
       os: new BalenaOS({
@@ -81,6 +65,22 @@ module.exports = {
       }),
     };
 
+    this.teardown.register(() => {
+      console.log('Worker teardown');
+      return this.context.worker.teardown();
+    });
+    console.log('Setting up worker');
+    await this.context.worker.select({
+      type: this.options.worker.type,
+      options: {
+        network: {
+          wireless: 'wlan0',
+        },
+        screen: true,
+      },
+    });
+    await this.context.worker.network(this.options.balenaOS.network);
+
     await this.context.os.fetch(this.options.packdir, {
       type: this.options.balenaOS.download.type,
       version: this.options.balenaOS.download.version,
@@ -98,9 +98,5 @@ module.exports = {
       'Device should be reachable',
     );
   },
-  tests: [
-    './tests/i-boot-splash',
-    './tests/connectivity',
-    './tests/config-json',
-  ],
+  tests: ['./tests/boot-splash', './tests/connectivity', './tests/config-json'],
 };
