@@ -1,10 +1,10 @@
 import { spawn, ChildProcess } from 'child_process';
 import { ensureDir, remove } from 'fs-extra';
-import { fs } from 'mz';
 import { connect } from 'net';
 import { basename } from 'path';
-import * as tar from 'tar';
+import { pack } from 'tar-fs';
 import { Readable } from 'stream';
+import { createGzip } from 'zlib';
 
 // This class is awrapper around a simple gstreamer pipe to capture a source into individual frames
 export default class ScreenCapture {
@@ -36,12 +36,12 @@ export default class ScreenCapture {
       this.proc = spawn(
         'gst-launch-1.0',
         [
-          `${this.parseSource()} ! videoconvert ! pngenc compression-level=9 ! multifilesink location="${
+          `${this.parseSource()} ! jpegenc quality=10 ! multifilesink location="${
             this.destination
-          }/%06d.png"`
+          }/%06d.jpg"`
         ],
         {
-          shell: true
+          shell: '/bin/bash'
         }
       );
       this.proc.stdout.on('data', data => {
@@ -52,14 +52,12 @@ export default class ScreenCapture {
       });
       this.proc.on('exit', code => {
         this.exit.details.code = code;
+        this.proc = undefined;
       });
       this.proc.on('error', error => {
         this.exit.reason = 'Could not start gstreamer pipeline';
         this.exit.details.error = error;
-        if (this.proc != null) {
-          this.proc.kill();
-          this.proc = undefined;
-        }
+        this.proc = undefined;
       });
     };
 
@@ -96,32 +94,44 @@ export default class ScreenCapture {
     }
   }
 
-  public async stopCapture(): Promise<Readable> {
-    if (this.proc != null) {
-      this.proc.kill('SIGINT');
-      this.proc = undefined;
-    } else {
-      throw this.exit;
-    }
+  public stopCapture(): Promise<Readable> {
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject('Could not stop gstreamer pipeline.');
+      }, 3000);
+      if (this.proc != null) {
+        this.proc.on('exit', async () => {
+          clearTimeout(timeout);
+          this.proc = undefined;
 
-    return tar.create(
-      {
-        gzip: true,
-        cwd: this.destination
-      },
-      (await fs.readdir(this.destination)).map(file => {
-        return basename(file);
-      })
-    );
+          const stream = pack(this.destination, {
+            map: function(header) {
+              header.name = basename(header.name);
+              return header;
+            }
+          }).pipe(createGzip());
+
+          resolve(stream);
+        });
+        this.proc.kill('SIGINT');
+      } else {
+        reject(this.exit);
+      }
+    });
   }
 
   private parseSource(): string {
-    if (this.source.type === 'rfbsrc') {
-      return `${this.source.type} host=${this.source.options.host} port=${
-        this.source.options.port
-      } view-only=true`;
+    switch (this.source.type) {
+      case 'rfbsrc':
+        return `${this.source.type} host=${this.source.options.host} port=${
+          this.source.options.port
+        } view-only=true`;
+      case 'v4l2src':
+        // With our catpture HW there is an error when negotiating the resolution, so we crop the extra manually
+        return `${this.source.type} ! decodebin ! videocrop right=90 bottom=60`;
+      default:
+        return this.source.options.type;
     }
-    return this.source.type;
   }
   public async teardown(): Promise<void> {
     if (this.proc != null) {

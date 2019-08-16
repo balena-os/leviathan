@@ -31,27 +31,22 @@ class Qemu extends EventEmitter implements Leviathan.Worker {
     super();
 
     if (options != null) {
-      if (options.worker != null && options.worker.disk != null) {
-        this.image = options.worker.disk;
-      } else {
-        throw new Error('Cannot initialize QEMU worker, bad configuration');
-      }
+      this.image =
+        options.worker != null && options.worker.disk != null
+          ? options.worker.disk
+          : '/data/os.img';
 
       if (options.screen != null) {
-        if (options.screen.VNC != null) {
-          this.screenCapturer = new ScreenCapture(
-            {
-              type: 'rfbsrc',
-              options: {
-                host: options.screen.VNC.host || '127.0.0.1',
-                port: options.screen.VNC.port || '5900'
-              }
-            },
-            join(options.worker.workdir, 'capture')
-          );
-        } else {
-          throw new Error('Invalid screen configuration for this worker.');
-        }
+        this.screenCapturer = new ScreenCapture(
+          {
+            type: 'rfbsrc',
+            options: {
+              host: options.screen.VNC != null ? options.screen.VNC.host : '127.0.0.1',
+              port: options.screen.VNC != null ? options.screen.VNC.port : '5900'
+            }
+          },
+          join(options.worker.workdir, 'capture')
+        );
       }
     }
 
@@ -393,7 +388,7 @@ class Qemu extends EventEmitter implements Leviathan.Worker {
 
   public async teardown(signal?: NodeJS.Signals): Promise<void> {
     if (this.screenCapturer != null) {
-      this.screenCapturer.teardown();
+      await this.screenCapturer.teardown();
     }
 
     if (this.activeFlash != null) {

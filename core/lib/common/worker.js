@@ -22,6 +22,7 @@ const utils = require('../common/utils');
 const isNumber = require('lodash/isNumber');
 const { fs } = require('mz');
 const pipeline = Bluebird.promisify(require('stream').pipeline);
+const request = require('request');
 const rp = require('request-promise');
 const { Spinner, Progress } = require('resin-cli-visuals');
 
@@ -98,16 +99,25 @@ module.exports = class Worker {
     await rp.post({ uri: `http://${this.url}/dut/network`, body: network, json: true });
   }
 
-  async proxy(proxy) {
+  proxy(proxy) {
     return rp.post({ uri: `http://${this.url}/proxy`, body: proxy, json: true });
   }
 
-  async ip(target) {
+  ip(target) {
     return rp.get({ uri: `http://${this.url}/dut/ip`, body: { target }, json: true });
   }
 
   async teardown() {
-    return rp.post({ uri: `http://${this.url}/teardown`, json: true });
+    await rp.post({ uri: `http://${this.url}/teardown`, json: true });
+  }
+
+  capture(action) {
+    switch (action) {
+      case 'start':
+        return rp.post({ uri: `http://${this.url}/dut/capture`, json: true });
+      case 'stop':
+        return request.get({ uri: `http://${this.url}/dut/capture` });
+    }
   }
 
   async executeCommandInHostOS(

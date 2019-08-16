@@ -51,7 +51,8 @@
     "multicast-dns": "git+https://github.com/resin-io-modules/multicast-dns#listen-on-all-interfaces",
     "mz": "^2.7.0",
     "resin-cli-visuals": "^1.4.2",
-    "tar": "^4.4.10",
+    "tar-fs": "^2.0.0",
+    "tar-stream": "^2.1.0",
     "xml-js": "^1.6.11"
   },
   "devDependencies": {
@@ -68,7 +69,8 @@
     "@types/node": "^10.12.18",
     "@types/request-promise": "^4.1.42",
     "@types/sinon": "^7.0.11",
-    "@types/tar": "^4.0.3",
+    "@types/tar-fs": "^1.16.1",
+    "@types/tar-stream": "^1.6.1",
     "@types/uuid": "^3.4.4",
     "@types/ws": "^6.0.1",
     "chai": "^4.2.0",
