@@ -96,26 +96,35 @@ export default class ScreenCapture {
 
   public stopCapture(): Promise<Readable> {
     return new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => {
-        reject('Could not stop gstreamer pipeline.');
-      }, 3000);
-      if (this.proc != null) {
-        this.proc.on('exit', async () => {
+      const exitHandler = async () => {
+        if (timeout != null) {
           clearTimeout(timeout);
           this.proc = undefined;
+        }
 
-          const stream = pack(this.destination, {
+        resolve(
+          pack(this.destination, {
             map: function(header) {
               header.name = basename(header.name);
               return header;
             }
-          }).pipe(createGzip());
+          }).pipe(createGzip())
+        );
+      };
 
-          resolve(stream);
-        });
+      const timeout = setTimeout(() => {
+        if (this.proc != null) {
+          this.proc.removeListener('exit', exitHandler);
+          this.proc = undefined;
+        }
+        reject(new Error('Could not stop gstreamer pipeline.'));
+      }, 30000);
+
+      if (this.proc != null) {
+        this.proc.once('exit', exitHandler);
         this.proc.kill('SIGINT');
       } else {
-        reject(this.exit);
+        reject(new Error(JSON.stringify(this.exit)));
       }
     });
   }

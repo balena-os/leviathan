@@ -21,7 +21,7 @@ const { decode } = require('jpeg-js');
 const { createGunzip } = require('zlib');
 const tar = require('tar-stream');
 
-const BOOT_SPLASH_PNG = `${__dirname}/assets/boot-splash.jpg`;
+const BOOT_SPLASH = `${__dirname}/assets/boot-splash.jpg`;
 
 module.exports = {
   title: 'Balena boot splash tests',
@@ -69,10 +69,9 @@ module.exports = {
           );
         });
 
-        let m = 0;
         //Pull in the reference image
         const referenceHash = await new Promise((resolve, reject) => {
-          const stream = fs.createReadStream(BOOT_SPLASH_PNG);
+          const stream = fs.createReadStream(BOOT_SPLASH);
           const buffer = [];
 
           stream.on('error', reject);
@@ -105,18 +104,25 @@ module.exports = {
             stream.resume();
           });
 
-          const stream = this.context.worker
-            .capture('stop')
-            .on('response', response => {
-              if (response.statusCode == 500) {
-                reject(response.body);
-              }
-            })
-            .pipe(createGunzip())
-            .pipe(extract);
-
-          stream.on('finish', resolve);
-          stream.on('error', reject);
+          const res = this.context.worker.capture('stop');
+          res.on('error', error => {
+            console.log(error);
+            reject(error);
+          });
+          res.on('response', response => {
+            if (response.statusCode == 500) {
+              const buffer = [];
+              res.on('data', data => {
+                buffer.push(data);
+              });
+              res.on('end', () => {
+                reject(new Error(Buffer.concat(buffer).toString()));
+              });
+            } else {
+              res.pipe(createGunzip()).pipe(extract);
+              res.on('end', resolve);
+            }
+          });
         });
 
         const count = imagesHash.filter(hash => {

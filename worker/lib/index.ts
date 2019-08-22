@@ -8,6 +8,7 @@ import { merge } from 'lodash';
 import { getIpFromIface, resolveLocalTarget } from './helpers';
 import TestBot from './workers/testbot';
 import Qemu from './workers/qemu';
+import { Readable } from 'stream';
 
 type workers = { testbot: typeof TestBot; qemu: typeof Qemu };
 const workersDict: { [key in keyof workers]: workers[key] } = {
@@ -152,18 +153,9 @@ async function setup(options: { workdir: string }): Promise<express.Application>
           throw new Error('No worker has been selected, please call /select first');
         }
 
-        const output = await worker.captureScreen('stop');
-
-        await new Promise((resolve, reject) => {
-          if (output != null) {
-            output.on('end', () => {
-              res.end();
-              resolve();
-            });
-            output.on('error', reject);
-            output.pipe(res);
-          }
-        });
+        res.connection.setTimeout(0);
+        // Forcing the type as the return cannot be void
+        ((await worker.captureScreen('stop')) as Readable).pipe(res);
       } catch (err) {
         next(err);
       }
