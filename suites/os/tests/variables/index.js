@@ -16,7 +16,7 @@
 'use strict';
 
 const retry = require('bluebird-retry');
-const rp = require('request-promise');
+const request = require('request-promise');
 
 module.exports = {
   title: 'Container exposed variables test',
@@ -34,17 +34,23 @@ module.exports = {
       },
     );
 
-    await this.context.utils.waitUntil(async () => {
-      const state = await rp({
-        method: 'GET',
-        uri: `http://${ip}:48484/v2/containerId`,
-        json: true,
-      });
+    await retry(
+      await this.context.utils.waitUntil(async () => {
+        const state = await request({
+          method: 'GET',
+          uri: `http://${ip}:48484/v2/containerId`,
+          json: true,
+        });
 
-      return state.services.variables != null;
-    });
+        return state.services.variables != null;
+      }),
+      {
+        max_tries: 60,
+        interval: 5000,
+      },
+    );
 
-    const state = await rp({
+    const state = await request({
       method: 'GET',
       uri: `http://${ip}:48484/v2/containerId`,
       json: true,
