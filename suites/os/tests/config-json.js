@@ -38,6 +38,35 @@ module.exports = {
   title: 'Config.json configuration tests',
   tests: [
     {
+      title: 'persistentLogging configuration test',
+      run: async function(test) {
+        const bootCount = parseInt(
+          await this.context.worker.executeCommandInHostOS(
+            'journalctl --list-boots | wc -l',
+            this.context.link,
+          ),
+        );
+
+        await rebootDevice(this);
+
+        await this.context.worker.executeCommandInHostOS(
+          'journalctl --sync && sync',
+          this.context.link,
+        );
+
+        test.is(
+          parseInt(
+            await this.context.worker.executeCommandInHostOS(
+              'journalctl --list-boots | wc -l',
+              this.context.link,
+            ),
+          ),
+          bootCount + 1,
+          'Device should show previous boot records',
+        );
+      },
+    },
+    {
       title: 'hostname configuration test',
       run: async function(test) {
         const hostname = Math.random()
@@ -102,32 +131,7 @@ module.exports = {
         });
       },
     },
-    {
-      title: 'persistentLogging configuration test',
-      run: async function(test) {
-        //Clean all the previous logs, pretending this was the first boot
-        await this.context.worker.executeCommandInHostOS(
-          'rm -rf /mnt/state/root-overlay/var/log/journal/*',
-          this.context.link,
-        );
-        await this.context.worker.executeCommandInHostOS(
-          'journalctl --flush',
-          this.context.link,
-        );
 
-        await rebootDevice(this);
-        test.is(
-          parseInt(
-            await this.context.worker.executeCommandInHostOS(
-              'journalctl --list-boot | wc -l',
-              this.context.link,
-            ),
-          ),
-          2,
-          'Device should show previous boot records',
-        );
-      },
-    },
     {
       title: 'ntpServer test',
       run: async function(test) {
