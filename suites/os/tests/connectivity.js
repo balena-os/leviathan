@@ -14,8 +14,6 @@
 
 'use strict';
 
-const assert = require('assert');
-
 const URL_TEST = 'www.google.com';
 
 module.exports = {
@@ -108,14 +106,14 @@ module.exports = {
               'systemd-run --on-active=2 /sbin/reboot',
               this.context.link,
             );
-            assert(
-              await this.context.worker.executeCommandInHostOS(
-                '[[ ! -f /tmp/reboot-check ]] && echo "pass"',
-                this.context.link,
-              ),
-              'pass',
-              'Device should have rebooted',
-            );
+            await this.context.utils.waitUntil(async () => {
+              return (
+                (await this.context.worker.executeCommandInHostOS(
+                  '[[ ! -f /tmp/reboot-check ]] && echo "pass"',
+                  this.context.link,
+                )) === 'pass'
+              );
+            });
 
             await this.context.worker.executeCommandInHostOS(
               `ping -c 10 ${URL_TEST}`,
@@ -137,14 +135,14 @@ module.exports = {
               'systemd-run --on-active=2 /sbin/reboot',
               this.context.link,
             );
-            assert(
-              await this.context.worker.executeCommandInHostOS(
-                '[[ ! -f /tmp/reboot-check ]] && echo "pass"',
-                this.context.link,
-              ),
-              'pass',
-              'Device should have rebooted',
-            );
+            await this.context.utils.waitUntil(async () => {
+              return (
+                (await this.context.worker.executeCommandInHostOS(
+                  '[[ ! -f /tmp/reboot-check ]] && echo "pass"',
+                  this.context.link,
+                )) === 'pass'
+              );
+            });
           },
         };
       }),

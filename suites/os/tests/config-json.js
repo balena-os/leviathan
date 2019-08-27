@@ -14,8 +14,6 @@
 
 'use strict';
 
-const assert = require('assert');
-
 const rebootDevice = async that => {
   await that.context.worker.executeCommandInHostOS(
     'touch /tmp/reboot-check',
@@ -25,19 +23,49 @@ const rebootDevice = async that => {
       'systemd-run --on-active=2 /sbin/reboot',
       that.context.link,
     );
-  assert(
-    await that.context.worker.executeCommandInHostOS(
-      '[[ ! -f /tmp/reboot-check ]] && echo "pass"',
-      that.context.link,
-    ),
-    'pass',
-    'Device should have rebooted',
-  );
+
+  await that.context.utils.waitUntil(async () => {
+    return (
+      (await that.context.worker.executeCommandInHostOS(
+        '[[ ! -f /tmp/reboot-check ]] && echo "pass"',
+        that.context.link,
+      )) === 'pass'
+    );
+  });
 };
 
 module.exports = {
   title: 'Config.json configuration tests',
   tests: [
+    {
+      title: 'persistentLogging configuration test',
+      run: async function(test) {
+        const bootCount = parseInt(
+          await this.context.worker.executeCommandInHostOS(
+            'journalctl --list-boots | wc -l',
+            this.context.link,
+          ),
+        );
+
+        await rebootDevice(this);
+
+        await this.context.worker.executeCommandInHostOS(
+          'journalctl --sync && sync',
+          this.context.link,
+        );
+
+        test.is(
+          parseInt(
+            await this.context.worker.executeCommandInHostOS(
+              'journalctl --list-boots | wc -l',
+              this.context.link,
+            ),
+          ),
+          bootCount + 1,
+          'Device should show previous boot records',
+        );
+      },
+    },
     {
       title: 'hostname configuration test',
       run: async function(test) {
@@ -60,14 +88,14 @@ module.exports = {
           'systemd-run --on-active=2 /sbin/reboot',
           this.context.link,
         );
-        assert(
-          await this.context.worker.executeCommandInHostOS(
-            '[[ ! -f /tmp/reboot-check ]] && echo "pass"',
-            `${hostname}.local`,
-          ),
-          'pass',
-          'Device should have rebooted',
-        );
+        await this.context.utils.waitUntil(async () => {
+          return (
+            (await this.context.worker.executeCommandInHostOS(
+              '[[ ! -f /tmp/reboot-check ]] && echo "pass"',
+              `${hostname}.local`,
+            )) === 'pass'
+          );
+        });
 
         test.equal(
           await this.context.worker.executeCommandInHostOS(
@@ -93,42 +121,17 @@ module.exports = {
             'systemd-run --on-active=2 /sbin/reboot',
             `${hostname}.local`,
           );
-        assert(
-          await this.context.worker.executeCommandInHostOS(
-            '[[ ! -f /tmp/reboot-check ]] && echo "pass"',
-            this.context.link,
-          ),
-          'pass',
-          'Device should have rebooted',
-        );
-      },
-    },
-    {
-      title: 'persistentLogging configuration test',
-      run: async function(test) {
-        //Clean all the previous logs, pretending this was the first boot
-        await this.context.worker.executeCommandInHostOS(
-          'rm -rf /mnt/state/root-overlay/var/log/journal/*',
-          this.context.link,
-        );
-        await this.context.worker.executeCommandInHostOS(
-          'journalctl --flush',
-          this.context.link,
-        );
-
-        await rebootDevice(this);
-        test.is(
-          parseInt(
-            await this.context.worker.executeCommandInHostOS(
-              'journalctl --list-boot | wc -l',
+        await this.context.utils.waitUntil(async () => {
+          return (
+            (await this.context.worker.executeCommandInHostOS(
+              '[[ ! -f /tmp/reboot-check ]] && echo "pass"',
               this.context.link,
-            ),
-          ),
-          2,
-          'Device should show previous boot records',
-        );
+            )) === 'pass'
+          );
+        });
       },
     },
+
     {
       title: 'ntpServer test',
       run: async function(test) {

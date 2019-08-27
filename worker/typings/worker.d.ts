@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
 import { StatusCodeError } from 'request-promise/errors';
+import { Readable } from 'stream';
 
 declare global {
   namespace Leviathan {
@@ -17,11 +18,13 @@ declare global {
       setup(): Promise<void>;
       teardown(signal?: NodeJS.Signals): Promise<void>;
       network(configuration): Promise<void>;
+      captureScreen(action: 'start' | 'stop'): Promise<void | Readable>;
     }
 
     interface Options {
       worker: {
         disk?: string;
+        workdir: string;
       };
       network?:
         | {
@@ -32,6 +35,7 @@ declare global {
             wireless?: string;
             wired: string;
           };
+      screen?: { VNC: { host: string; port: string }; HDMI: { dev: number } };
     }
   }
 }

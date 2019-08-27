@@ -1,14 +1,10 @@
 import * as Bluebird from 'bluebird';
 import { spawn } from 'child_process';
 import * as sdk from 'etcher-sdk';
-import * as drivelist from 'drivelist';
-import { flatMap } from 'lodash';
 import * as mdns from 'multicast-dns';
-import { networkInterfaces, tmpdir } from 'os';
+import { networkInterfaces } from 'os';
 
-export async function getDrive(
-  device: string,
-): Promise<sdk.sourceDestination.BlockDevice> {
+export async function getDrive(device: string): Promise<sdk.sourceDestination.BlockDevice> {
   // Do not include system drives in our search
   const adapter = new sdk.scanner.adapters.BlockDeviceAdapter(() => false);
   const scanner = new sdk.scanner.Scanner([adapter]);
@@ -29,43 +25,25 @@ export async function getDrive(
   return drive;
 }
 
-export function exec(
-  command: string,
-  args: Array<string>,
-  cwd: string,
-): Bluebird<void> {
+export function exec(command: string, args: Array<string>, cwd: string): Bluebird<void> {
   return new Bluebird((resolve, reject) => {
     const proc = spawn(command, args, {
       cwd: cwd,
-      stdio: 'inherit',
+      stdio: 'inherit'
     });
 
     proc.on('error', error => {
       reject(
         new Error(
-          command +
-            ' ' +
-            args.join(' ') +
-            ' in ' +
-            cwd +
-            ' encountered error ' +
-            error.message,
-        ),
+          command + ' ' + args.join(' ') + ' in ' + cwd + ' encountered error ' + error.message
+        )
       );
     });
 
     proc.on('exit', function(code) {
       if (code !== 0) {
         reject(
-          new Error(
-            command +
-              ' ' +
-              args.join(' ') +
-              ' in ' +
-              cwd +
-              ' exited with code ' +
-              code,
-          ),
+          new Error(command + ' ' + args.join(' ') + ' in ' + cwd + ' exited with code ' + code)
         );
       } else {
         resolve();
@@ -76,7 +54,7 @@ export function exec(
 
 export async function manageHandlers(
   handler: (signal: NodeJS.Signals) => Promise<void>,
-  options: { register: boolean },
+  options: { register: boolean }
 ): Promise<void> {
   for (const signal of ['SIGINT', 'SIGTERM'] as Array<NodeJS.Signals>) {
     if (options.register) {
@@ -85,24 +63,6 @@ export async function manageHandlers(
       process.removeListener(signal, handler);
     }
   }
-}
-
-export async function getStoragePath(label: string): Promise<string> {
-  const drives = await drivelist.list();
-
-  const result = flatMap(
-    drives.map(drive => {
-      return drive.mountpoints;
-    }),
-  ).find(mountpoint => {
-    return mountpoint.label === label;
-  });
-
-  if (result != null) {
-    return result.path;
-  }
-
-  return tmpdir();
 }
 
 export function getIpFromIface(iface: string): string {
@@ -157,9 +117,7 @@ export function resolveLocalTarget(target: string): PromiseLike<string> {
           reject();
         });
         socket.on('response', function(response: any) {
-          const answer = response.answers.find(
-            (x: any) => x.name === target && x.type === 'A',
-          );
+          const answer = response.answers.find((x: any) => x.name === target && x.type === 'A');
 
           if (answer != null) {
             clearTimeout(timeout);

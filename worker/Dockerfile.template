@@ -1,4 +1,4 @@
-FROM balenalib/%%BALENA_MACHINE_NAME%%-python:3.5.6-stretch-build AS firmware
+FROM balenalib/%%BALENA_MACHINE_NAME%%-python:3.5.6-buster-build AS firmware
 
 RUN install_packages git libusb-dev
 
@@ -19,11 +19,11 @@ RUN cd usbsdmux && \
     deactivate && \
     cd -
 
-FROM balenalib/%%BALENA_MACHINE_NAME%%-golang:1.12.4-stretch-build AS go-build
+FROM balenalib/%%BALENA_MACHINE_NAME%%-golang:1.12.4-buster-build AS go-build
 
 RUN go get -u github.com/nadoo/glider
 
-FROM balenalib/%%BALENA_MACHINE_NAME%%-node:10.14.0-stretch-build AS node-build
+FROM balenalib/%%BALENA_MACHINE_NAME%%-node:10.14.0-buster-build AS node-build
 
 WORKDIR /tmp/node
 
@@ -41,7 +41,7 @@ COPY bin bin
 
 RUN npm run build
 
-FROM balenalib/%%BALENA_MACHINE_NAME%%-node:10.14.0-stretch-run
+FROM balenalib/%%BALENA_MACHINE_NAME%%-node:10.14.0-buster-run
 
 ENV UDEV=1
 
@@ -49,7 +49,8 @@ WORKDIR /usr/app/firmware
 
 RUN install_packages \
     libusb-dev libdbus-1-dev \
-    qemu-system-x86 libvirt-daemon-system bridge-utils iproute dnsmasq iptables ebtables
+    gstreamer1.0-tools gstreamer1.0-plugins-base gstreamer1.0-plugins-bad gstreamer1.0-plugins-good \
+    qemu-system-x86 libvirt-daemon-system bridge-utils iproute2 dnsmasq iptables ebtables
 
 # Disable all cgroup controls as we do not use them
 RUN sed -i 's/^#cgroup_controllers =.*/cgroup_controllers = []/g' /etc/libvirt/qemu.conf

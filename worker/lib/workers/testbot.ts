@@ -3,11 +3,12 @@ import * as retry from 'bluebird-retry';
 import * as sdk from 'etcher-sdk';
 import { EventEmitter } from 'events';
 import * as Board from 'firmata';
-import * as Stream from 'stream';
-import { fs } from 'mz';
-
 import { getDrive, exec, manageHandlers } from '../helpers';
+import ScreenCapture from '../helpers/graphics';
 import NetworkManager, { Supported } from './nm';
+import { fs } from 'mz';
+import { join } from 'path';
+import * as Stream from 'stream';
 
 Bluebird.config({
   cancellation: true
@@ -44,6 +45,7 @@ class TestBot extends EventEmitter implements Leviathan.Worker {
   private activeFlash?: Bluebird<void>;
   private signalHandler: (signal: NodeJS.Signals) => Promise<void>;
   internalState: Leviathan.WorkerState = { network: {} };
+  private screenCapturer: ScreenCapture;
 
   /**
    * Represents a TestBot
@@ -51,18 +53,29 @@ class TestBot extends EventEmitter implements Leviathan.Worker {
   constructor(options: Leviathan.Options) {
     super();
 
-    if (options != null && options.network != null) {
-      this.net = new NetworkManager(options.network);
-    }
+    if (options != null) {
+      if (options.network != null) {
+        this.net = new NetworkManager(options.network);
+      }
 
-    if (options != null && options.worker != null && options.worker.disk != null) {
-      this.disk = options.worker.disk;
-    }
+      if (options.worker != null && options.worker.disk != null) {
+        this.disk = options.worker.disk;
+      }
 
-    if (process.platform != 'linux' && this.disk == null) {
-      throw new Error(
-        'We cannot automatically detect the testbot interface, please provide it manually'
-      );
+      if (options.screen != null) {
+        this.screenCapturer = new ScreenCapture(
+          {
+            type: 'v4l2src'
+          },
+          join(options.worker.workdir, 'capture')
+        );
+      }
+
+      if (process.platform != 'linux' && this.disk == null) {
+        throw new Error(
+          'We cannot automatically detect the testbot interface, please provide it manually'
+        );
+      }
     }
 
     this.signalHandler = this.teardown.bind(this);
@@ -272,6 +285,22 @@ class TestBot extends EventEmitter implements Leviathan.Worker {
   }
 
   /**
+   * Screen capture
+   */
+  public async captureScreen(action: 'start' | 'stop'): Promise<void | Stream.Readable> {
+    if (this.screenCapturer == null) {
+      throw new Error('Screen capture not configured');
+    }
+
+    switch (action) {
+      case 'start':
+        return this.screenCapturer.startCapture();
+      case 'stop':
+        return this.screenCapturer.stopCapture();
+    }
+  }
+
+  /**
    * Setup testbot
    */
   public async setup(): Promise<void> {
@@ -317,6 +346,10 @@ class TestBot extends EventEmitter implements Leviathan.Worker {
    * Teardown testbot
    */
   public async teardown(signal?: NodeJS.Signals): Promise<void> {
+    if (this.screenCapturer != null) {
+      await this.screenCapturer.teardown();
+    }
+
     if (this.activeFlash != null) {
       this.activeFlash.cancel();
     }
