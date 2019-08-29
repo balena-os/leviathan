@@ -98,5 +98,10 @@ module.exports = {
       'Device should be reachable',
     );
   },
-  tests: ['./tests/config-json', './tests/boot-splash', './tests/connectivity'],
+  tests: [
+    './tests/led',
+    './tests/config-json',
+    './tests/boot-splash',
+    './tests/connectivity',
+  ],
 };
