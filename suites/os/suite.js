@@ -14,18 +14,13 @@ const { homedir } = require('os');
 module.exports = {
   title: 'BalenaOS release suite',
   run: async function() {
-    const Worker = require(join(this.frameworkPath, 'common', 'worker'));
-    const BalenaOS = require(join(
-      this.frameworkPath,
-      'components',
-      'os',
-      'balenaos',
-    ));
+    const Worker = this.require('common/worker');
+    const BalenaOS = this.require('components/os/balenaos');
 
     fse.ensureDirSync(this.options.tmpdir);
 
     this.globalContext = {
-      utils: require(join(this.frameworkPath, 'common', 'utils')),
+      utils: this.require('common/utils'),
       sshKeyPath: join(homedir(), 'id'),
       link: `${this.options.balenaOS.config.uuid.slice(0, 7)}.local`,
       worker: new Worker(this.deviceType.slug),

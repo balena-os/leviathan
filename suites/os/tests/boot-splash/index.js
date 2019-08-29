@@ -45,9 +45,7 @@ module.exports = {
     {
       title: 'Reboot test',
       run: async function(test) {
-        const { hammingDistance, blockhash } = require(`${
-          this.frameworkPath
-        }/common/graphics`);
+        const { hammingDistance, blockhash } = this.require('/common/graphics');
 
         await this.context.worker.capture('start');
 

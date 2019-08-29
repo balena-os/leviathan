@@ -22,17 +22,17 @@ module.exports = {
   os: {
     type: 'string',
     required: ['variant'],
-    const: 'development'
+    const: 'development',
   },
   run: async function(test) {
-    const sdk = new (require(join(this.frameworkPath, 'components', 'balena', 'sdk')))(
-      this.options.balenaOS.download.source
+    const sdk = new (this.require('components/balena/sdk'))(
+      this.options.balenaOS.download.source,
     );
 
     const currentVersion = this.context.os.image.version;
     const updateVersion = await sdk.getMaxSatisfyingVersion(
       this.deviceType.slug,
-      `<${this.context.os.image.version}`
+      `<${this.context.os.image.version}`,
     );
 
     this.subtest(test, {
@@ -42,7 +42,9 @@ module.exports = {
         // As the update should be contained by a singular environment.
         if (updateVersion == null) {
           throw new Error(
-            `Could not find any supported version previous to ${this.context.os.image.version}`
+            `Could not find any supported version previous to ${
+              this.context.os.image.version
+            }`,
           );
         }
 
@@ -53,16 +55,19 @@ module.exports = {
         await this.context.os.fetch(this.options.tmpdir, {
           type: this.options.balenaOS.download.type,
           version: updateVersion,
-          source: this.options.balenaOS.download.source
+          source: this.options.balenaOS.download.source,
         });
 
         const uuid = await this.context.balena.sdk.generateUUID();
         this.context.os.addCloudConfig(
           await this.context.balena.sdk.getDeviceOSConfiguration(
             uuid,
-            await this.context.balena.sdk.register(this.context.balena.application.name, uuid),
-            this.context.os.image.version
-          )
+            await this.context.balena.sdk.register(
+              this.context.balena.application.name,
+              uuid,
+            ),
+            this.context.os.image.version,
+          ),
         );
 
         await this.context.worker.ready();
@@ -74,7 +79,7 @@ module.exports = {
         await this.context.utils.waitUntil(() => {
           return this.context.balena.sdk.isDeviceOnline(uuid);
         });
-      }
+      },
     });
-  }
+  },
 };
