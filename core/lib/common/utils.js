@@ -87,14 +87,20 @@ module.exports = {
       });
     });
   },
-  waitUntil: async (promise, _times = 20, _delay = 30000) => {
+  waitUntil: async (promise, rejectionFail = true, _times = 20, _delay = 30000) => {
     const _waitUntil = async timesR => {
       if (timesR === 0) {
         throw new Error(`Condition ${promise} timed out`);
       }
 
-      if (await promise()) {
-        return;
+      try {
+        if (await promise()) {
+          return;
+        }
+      } catch (error) {
+        if (rejectionFail) {
+          throw error;
+        }
       }
 
       await Bluebird.delay(_delay);
