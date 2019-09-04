@@ -33,88 +33,30 @@ const { createGunzip } = require('zlib');
 async function setup() {
   const mutex = new Mutex();
 
+  const location = '/data';
+  let child = null;
+  let release = null;
+
   const app = express();
 
   expressWebSocket(app, null, {
     perMessageDeflate: false
   });
 
-  const location = '/data';
-  let child = null;
-
-  app.ws('/start', async (ws, _req) => {
-    // Keep the socket alive
-    const interval = setInterval(function timeout() {
-      if (ws.readyState === 1) {
-        ws.ping('heartbeat');
-      }
-    }, 1000);
-    const wsStream = webSocketStream(ws);
-
-    try {
-      const release = await mutex.acquire();
-
-      await new Promise((resolve, reject) => {
-        wsStream.on('error', console.error);
-        wsStream.on('close', () => {
-          clearInterval(interval);
-          if (child != null) {
-            child.kill('SIGINT');
-          }
-          release();
-        });
-
-        child = forkCode(
-          `const Suite = require('${require.resolve('./common/suite')}');
-
-          (async () => { 
-            const suite = new Suite('${location}');
-            await suite.init();
-            suite.printRunQueueSummary();
-            await suite.run();
-          })()`,
-          {
-            stdio: 'pipe'
-          }
-        );
-
-        wsStream.pipe(child.stdin);
-        child.stdout.pipe(wsStream);
-        child.stderr.pipe(wsStream);
-
-        child.on('exit', (code, signal) => {
-          child = null;
-          if (code === 0) {
-            resolve();
-          } else {
-            reject(new Error(`CODE: ${code} SIGNAL: ${signal}`));
-          }
-        });
-      });
-    } catch (e) {
-      console.error(e);
-    } finally {
-      ws.close();
-    }
-  });
-
-  app.post('/stop', async (_req, res) => {
-    try {
-      if (child != null) {
-        child.on('exit', () => {
-          child = null;
-          res.send('OK');
-        });
-        child.kill('SIGINT');
-      }
-    } catch (e) {
-      res.status(500);
-      res.send(e.stack);
-    }
+  // Entry point for our process, aquire lock execution that syncronizes upload and start
+  app.get('/aquire', async (_req, res) => {
+    res.writeHead(202, {
+      Connection: 'keep-alive'
+    });
+    res.connection.setTimeout(0);
+    release = await mutex.acquire();
+    res.end();
   });
 
   app.post('/upload', async (req, res) => {
-    const release = await mutex.acquire();
+    if (!mutex.isLocked) {
+      throw new Error('Please call /upload to aquire lock execution');
+    }
 
     res.writeHead(202, {
       'Content-Type': 'text/event-stream',
@@ -182,10 +124,100 @@ async function setup() {
         res.write('upload: done');
       }
     } catch (e) {
+      if (release != null) {
+        release();
+        release = null;
+      }
       res.write(`error: ${e.message}`);
     } finally {
       res.end();
-      release();
+    }
+  });
+
+  app.ws('/start', async (ws, _req) => {
+    // Keep the socket alive
+    const interval = setInterval(function timeout() {
+      if (ws.readyState === 1) {
+        ws.ping('heartbeat');
+      }
+    }, 1000);
+    const wsStream = webSocketStream(ws);
+
+    try {
+      if (!mutex.isLocked) {
+        throw new Error('Please call /aquire to aquire lock execution');
+      }
+
+      await new Promise((resolve, reject) => {
+        wsStream.on('error', console.error);
+        wsStream.on('close', () => {
+          clearInterval(interval);
+          if (child != null) {
+            child.kill('SIGINT');
+          }
+        });
+
+        child = forkCode(
+          `const Suite = require('${require.resolve('./common/suite')}');
+
+          (async () => { 
+            const suite = new Suite('${location}');
+            await suite.init();
+            suite.printRunQueueSummary();
+            await suite.run();
+          })()`,
+          {
+            stdio: 'pipe'
+          }
+        );
+
+        wsStream.pipe(child.stdin);
+        child.stdout.pipe(wsStream);
+        child.stderr.pipe(wsStream);
+
+        child.on('exit', (code, signal) => {
+          child = null;
+          if (code === 0) {
+            resolve();
+          } else {
+            reject(new Error(`CODE: ${code} SIGNAL: ${signal}`));
+          }
+        });
+      });
+    } catch (e) {
+      if (release != null) {
+        release();
+        release = null;
+      }
+      console.error(e);
+    } finally {
+      ws.close();
+    }
+  });
+
+  app.post('/stop', async (_req, res) => {
+    try {
+      if (!mutex.isLocked) {
+        throw new Error('Please call /upload to aquire lock execution');
+      }
+
+      if (child != null) {
+        child.on('exit', () => {
+          if (release != null) {
+            release();
+            release = null;
+          }
+          child = null;
+          res.send('OK');
+        });
+        child.kill('SIGINT');
+      } else if (release != null) {
+        release();
+        release = null;
+      }
+    } catch (e) {
+      res.status(500);
+      res.send(e.stack);
     }
   });
 
