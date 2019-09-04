@@ -83,8 +83,9 @@ module.exports = {
         // Re-wire new device
         this.globalContext = { balena: { uuid } };
 
-        // We look at vpn connect times to determine if a device has rebooted
-        const lastTimeOnline = await this.context.balena.sdk.getLastConnectedTime(
+        // Start reboot check
+        await this.context.balena.sdk.executeCommandInHostOS(
+          'touch /tmp/reboot-check',
           this.context.balena.uuid,
         );
 
@@ -104,15 +105,18 @@ module.exports = {
           'Update should be running',
         );
 
+        // Check device is reachable again and rebooted executed
         await this.context.utils.waitUntil(async () => {
           const online = await this.context.balena.sdk.isDeviceOnline(
             this.context.balena.uuid,
           );
-          const vpnTime = await this.context.balena.sdk.getLastConnectedTime(
-            this.context.balena.uuid,
-          );
 
-          return vpnTime > lastTimeOnline && online;
+          return (
+            (await this.context.balena.sdk.executeCommandInHostOS(
+              '[[ ! -f /tmp/reboot-check ]] && echo "pass"',
+              this.context.balena.uuid,
+            )) === 'pass' && online
+          );
         });
 
         test.has(

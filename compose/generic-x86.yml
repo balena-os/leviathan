@@ -9,6 +9,9 @@ services:
     network_mode: 'host'
     volumes:
       - 'core-storage:/data'
+      - '/var/run/docker.sock:/var/run/docker.sock'
+    labels:
+      share: 'core-storage'
   worker:
     privileged: true
     build: ./worker
@@ -17,4 +20,4 @@ services:
     ipc: 'host'
     volumes:
       - '/var/run/dbus:/host/run/dbus:rw'
-      - 'core-storage:/data'
+      - 'worker-storage:/data'

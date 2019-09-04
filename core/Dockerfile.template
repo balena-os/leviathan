@@ -1,15 +1,11 @@
 FROM balenalib/%%BALENA_MACHINE_NAME%%-node:10-buster-build AS npm-install
 
-RUN install_packages unzip
-
 ENV npm_config_unsafe_perm=true
 
 WORKDIR /tmp/node
 
 COPY package.json .
 COPY package-lock.json .
-
-RUN wget https://github.com/balena-io/balena-cli/releases/download/v11.7.0/balena-cli-v11.7.0-linux-x64-standalone.zip && unzip balena-cli-v11.7.0-linux-x64-standalone.zip
 
 RUN npm ci 
 
@@ -19,15 +15,15 @@ ENV UDEV=1
 
 ENV npm_config_unsafe_perm=true
 
-RUN install_packages jq git vim rsync
+RUN install_packages jq git vim rsync unzip
 
 WORKDIR /usr/app
 
-
 COPY --from=npm-install /tmp/node ./
 
+RUN wget https://github.com/balena-io/balena-cli/releases/download/v11.7.0/balena-cli-v11.7.0-linux-x64-standalone.zip && unzip balena-cli-v11.7.0-linux-x64-standalone.zip
 # Give global access to balena-cli
-RUN ln -sf $(pwd)/balena-cli/balena /usr/local/balena
+RUN ln -sf $(pwd)/balena-cli/balena /usr/local/bin/balena
 
 COPY contracts contracts
 COPY .eslintrc.json ./

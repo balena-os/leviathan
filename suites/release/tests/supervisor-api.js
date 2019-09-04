@@ -29,9 +29,11 @@ module.exports = {
           return request({
             method,
             uri: `${this.context.balena.sdk.getApiUrl()}/supervisor${uri}`,
-            headers: { Authorization: `Bearer ${await this.context.balena.sdk.getToken()}` },
+            headers: {
+              Authorization: `Bearer ${await this.context.balena.sdk.getToken()}`,
+            },
             body,
-            json: true
+            json: true,
           });
         },
         apiUp: async () => {
@@ -39,12 +41,12 @@ module.exports = {
             return (
               (await this.context.local.supervisorRequest('POST', '/ping', {
                 uuid: this.context.balena.uuid,
-                method: 'GET'
+                method: 'GET',
               })) === 'OK'
             );
           });
-        }
-      }
+        },
+      },
     };
 
     await this.context.balena.deviceApplicationChain
@@ -52,7 +54,7 @@ module.exports = {
       .init({
         url: 'https://github.com/balena-io-projects/balena-cpp-hello-world.git',
         sdk: this.context.balena.sdk,
-        path: this.options.tmpdir
+        path: this.options.tmpdir,
       })
       .then(chain => {
         return chain.clone();
@@ -60,23 +62,26 @@ module.exports = {
       .then(async chain => {
         return chain.push(
           {
-            name: 'master'
+            name: 'master',
           },
           {
             name: 'balena',
             url: await this.context.balena.sdk.getApplicationGitRemote(
-              this.context.balena.application.name
-            )
-          }
+              this.context.balena.application.name,
+            ),
+          },
         );
       })
       .then(async chain => {
+        await this.context.balena.sdk.triggerDeviceUpdate(
+          this.context.balena.uuid,
+        );
         return chain.waitServiceProperties(
           {
             commit: chain.getPushedCommit(),
-            status: 'Running'
+            status: 'Running',
           },
-          this.context.balena.uuid
+          this.context.balena.uuid,
         );
       });
 
@@ -86,12 +91,16 @@ module.exports = {
     {
       title: 'GET /ping',
       run: async function(subtest) {
-        const body = await this.context.local.supervisorRequest('POST', '/ping', {
-          uuid: this.context.balena.uuid,
-          method: 'GET'
-        });
+        const body = await this.context.local.supervisorRequest(
+          'POST',
+          '/ping',
+          {
+            uuid: this.context.balena.uuid,
+            method: 'GET',
+          },
+        );
         subtest.is(body, 'OK', 'Response should be expected');
-      }
+      },
     },
     {
       title: 'v1',
@@ -99,29 +108,41 @@ module.exports = {
         {
           title: 'POST /v1/blink',
           run: async function(test) {
-            const body = await this.context.local.supervisorRequest('POST', '/v1/blink', {
-              uuid: this.context.balena.uuid
-            });
+            const body = await this.context.local.supervisorRequest(
+              'POST',
+              '/v1/blink',
+              {
+                uuid: this.context.balena.uuid,
+              },
+            );
             test.is(body, 'OK', 'Response should be expected');
-          }
+          },
         },
         {
           title: 'POST /v1/update',
           run: async function(test) {
-            const body = await this.context.local.supervisorRequest('POST', '/v1/update', {
-              uuid: this.context.balena.uuid
-            });
+            const body = await this.context.local.supervisorRequest(
+              'POST',
+              '/v1/update',
+              {
+                uuid: this.context.balena.uuid,
+              },
+            );
 
             test.is(body, undefined, 'Response should be expected');
-          }
+          },
         },
         {
           title: 'GET /v1/device',
           run: async function(test) {
-            const body = await this.context.local.supervisorRequest('POST', '/v1/device', {
-              uuid: this.context.balena.uuid,
-              method: 'GET'
-            });
+            const body = await this.context.local.supervisorRequest(
+              'POST',
+              '/v1/device',
+              {
+                uuid: this.context.balena.uuid,
+                method: 'GET',
+              },
+            );
 
             test.match(
               body,
@@ -131,22 +152,26 @@ module.exports = {
                 os_version: /.*/,
                 supervisor_version: /.*/,
                 update_pending: /.*/,
-                update_failed: /.*/
+                update_failed: /.*/,
               },
-              'Response should be expected'
+              'Response should be expected',
             );
-          }
+          },
         },
         {
           title: 'GET /v1/healthy',
           run: async function(test) {
-            const body = await this.context.local.supervisorRequest('POST', '/v1/healthy', {
-              uuid: this.context.balena.uuid,
-              method: 'GET'
-            });
+            const body = await this.context.local.supervisorRequest(
+              'POST',
+              '/v1/healthy',
+              {
+                uuid: this.context.balena.uuid,
+                method: 'GET',
+              },
+            );
 
             test.is(body, 'OK', 'Response should be expected');
-          }
+          },
         },
         {
           title: 'POST /v1/regenerate-api-key',
@@ -155,12 +180,12 @@ module.exports = {
               'POST',
               '/v1/regenerate-api-key',
               {
-                uuid: this.context.balena.uuid
-              }
+                uuid: this.context.balena.uuid,
+              },
             );
 
             test.match(body, /[a-z0-9]{62}/, 'Response should be expected');
-          }
+          },
         },
         {
           title: 'Application endpoints',
@@ -168,41 +193,60 @@ module.exports = {
             this.context = {
               local: {
                 appId: await this.context.balena.sdk.getApplicationId(
-                  this.context.balena.application.name
-                )
-              }
+                  this.context.balena.application.name,
+                ),
+              },
             };
           },
           tests: [
             {
               title: 'POST /v1/purge',
               run: async function(test) {
-                const body = await this.context.local.supervisorRequest('POST', '/v1/purge', {
-                  uuid: this.context.balena.uuid,
-                  data: { appId: this.context.local.appId }
-                });
-
-                test.same(body, { Data: 'OK', Error: '' }, 'Response should be expected');
-
-                await this.context.balena.deviceApplicationChain.getChain().waitServiceProperties(
+                const body = await this.context.local.supervisorRequest(
+                  'POST',
+                  '/v1/purge',
                   {
-                    commit: this.context.balena.deviceApplicationChain.getChain().getPushedCommit(),
-                    status: 'Running'
+                    uuid: this.context.balena.uuid,
+                    data: { appId: this.context.local.appId },
                   },
-                  this.context.balena.uuid
                 );
-              }
+
+                test.same(
+                  body,
+                  { Data: 'OK', Error: '' },
+                  'Response should be expected',
+                );
+
+                await this.context.balena.sdk.triggerDeviceUpdate(
+                  this.context.balena.uuid,
+                );
+                await this.context.balena.deviceApplicationChain
+                  .getChain()
+                  .waitServiceProperties(
+                    {
+                      commit: this.context.balena.deviceApplicationChain
+                        .getChain()
+                        .getPushedCommit(),
+                      status: 'Running',
+                    },
+                    this.context.balena.uuid,
+                  );
+              },
             },
             {
               title: 'POST /v1/restart',
               run: async function(test) {
-                const body = await this.context.local.supervisorRequest('POST', '/v1/restart', {
-                  uuid: this.context.balena.uuid,
-                  data: { appId: this.context.local.appId }
-                });
+                const body = await this.context.local.supervisorRequest(
+                  'POST',
+                  '/v1/restart',
+                  {
+                    uuid: this.context.balena.uuid,
+                    data: { appId: this.context.local.appId },
+                  },
+                );
 
                 test.is(body, 'OK', 'Response should be expected');
-              }
+              },
             },
             {
               title: 'POST /v1/apps/:appId/stop',
@@ -211,12 +255,16 @@ module.exports = {
                   'POST',
                   `/v1/apps/${this.context.local.appId}/stop`,
                   {
-                    uuid: this.context.balena.uuid
-                  }
+                    uuid: this.context.balena.uuid,
+                  },
                 );
 
-                test.match(body, { containerId: /.*/ }, 'Response should be expected');
-              }
+                test.match(
+                  body,
+                  { containerId: /.*/ },
+                  'Response should be expected',
+                );
+              },
             },
             {
               title: 'POST /v1/apps/:appId/start',
@@ -225,12 +273,16 @@ module.exports = {
                   'POST',
                   `/v1/apps/${this.context.local.appId}/start`,
                   {
-                    uuid: this.context.balena.uuid
-                  }
+                    uuid: this.context.balena.uuid,
+                  },
                 );
 
-                test.match(body, { containerId: /.*/ }, 'Response should be expected');
-              }
+                test.match(
+                  body,
+                  { containerId: /.*/ },
+                  'Response should be expected',
+                );
+              },
             },
             {
               title: 'GET /v1/apps/:appId',
@@ -240,18 +292,24 @@ module.exports = {
                   `/v1/apps/${this.context.local.appId}`,
                   {
                     uuid: this.context.balena.uuid,
-                    method: 'GET'
-                  }
+                    method: 'GET',
+                  },
                 );
 
                 test.match(
                   body,
-                  { appId: /.*/, commit: /.*/, releaseId: /.*/, containerId: /.*/, env: /.*/ },
-                  'Response should be expected'
+                  {
+                    appId: /.*/,
+                    commit: /.*/,
+                    releaseId: /.*/,
+                    containerId: /.*/,
+                    env: /.*/,
+                  },
+                  'Response should be expected',
                 );
-              }
-            }
-          ]
+              },
+            },
+          ],
         },
         {
           title: 'Host OS configuration endpoints',
@@ -260,10 +318,10 @@ module.exports = {
               local: {
                 hostConfig: {
                   network: {
-                    hostname: 'newhostname'
-                  }
-                }
-              }
+                    hostname: 'newhostname',
+                  },
+                },
+              },
             };
           },
           tests: [
@@ -276,12 +334,12 @@ module.exports = {
                   {
                     uuid: this.context.balena.uuid,
                     method: 'PATCH',
-                    data: this.context.localhostConfig
-                  }
+                    data: this.context.localhostConfig,
+                  },
                 );
 
                 sssubtest.is(body, 'OK', 'Response should be expected');
-              }
+              },
             },
             {
               title: 'GET /v1/device/host-config',
@@ -291,46 +349,66 @@ module.exports = {
                   '/v1/device/host-config',
                   {
                     uuid: this.context.balena.uuid,
-                    method: 'GET'
-                  }
+                    method: 'GET',
+                  },
                 );
 
-                test.deepEquals(body, this.context.local.hostConfig, 'Response should be expected');
-              }
-            }
-          ]
+                test.deepEquals(
+                  body,
+                  this.context.local.hostConfig,
+                  'Response should be expected',
+                );
+              },
+            },
+          ],
         },
         {
           title: 'POST /v1/reboot',
           run: async function(test) {
-            const body = await this.context.local.supervisorRequest('POST', '/v1/reboot', {
-              uuid: this.context.balena.uuid
-            });
+            const body = await this.context.local.supervisorRequest(
+              'POST',
+              '/v1/reboot',
+              {
+                uuid: this.context.balena.uuid,
+              },
+            );
 
-            test.same(body, { Data: 'OK', Error: undefined }, 'Response should be expected');
+            test.same(
+              body,
+              { Data: 'OK', Error: undefined },
+              'Response should be expected',
+            );
 
             await this.context.local.apiUp();
 
             test.pass('Supervisor API should be available again');
-          }
+          },
         },
         {
           title: 'POST /v1/shutdown',
           run: async function(test) {
-            const body = await this.context.local.supervisorRequest('POST', '/v1/shutdown', {
-              uuid: this.context.balena.uuid
-            });
+            const body = await this.context.local.supervisorRequest(
+              'POST',
+              '/v1/shutdown',
+              {
+                uuid: this.context.balena.uuid,
+              },
+            );
 
-            test.same(body, { Data: 'OK', Error: undefined }, 'Response should be expected');
+            test.same(
+              body,
+              { Data: 'OK', Error: undefined },
+              'Response should be expected',
+            );
 
             await this.context.worker.on();
 
             await this.context.local.apiUp();
 
             test.pass('Supervisor API should be available again');
-          }
-        }
-      ]
+          },
+        },
+      ],
     },
     {
       title: 'v2',
@@ -341,9 +419,9 @@ module.exports = {
             this.context = {
               local: {
                 appId: await this.context.balena.sdk.getApplicationId(
-                  this.context.balena.application.name
-                )
-              }
+                  this.context.balena.application.name,
+                ),
+              },
             };
           },
           tests: [
@@ -354,20 +432,27 @@ module.exports = {
                   'POST',
                   `/v2/applications/${this.context.local.appId}/purge`,
                   {
-                    uuid: this.context.balena.uuid
-                  }
+                    uuid: this.context.balena.uuid,
+                  },
                 );
 
                 test.is(body, 'OK', 'Response should be expected');
 
-                await this.context.balena.deviceApplicationChain.getChain().waitServiceProperties(
-                  {
-                    commit: this.context.balena.deviceApplicationChain.getChain().getPushedCommit(),
-                    status: 'Running'
-                  },
-                  this.context.balena.uuid
+                await this.context.balena.sdk.triggerDeviceUpdate(
+                  this.context.balena.uuid,
                 );
-              }
+                await this.context.balena.deviceApplicationChain
+                  .getChain()
+                  .waitServiceProperties(
+                    {
+                      commit: this.context.balena.deviceApplicationChain
+                        .getChain()
+                        .getPushedCommit(),
+                      status: 'Running',
+                    },
+                    this.context.balena.uuid,
+                  );
+              },
             },
             {
               title: 'GET /v2/applications/state',
@@ -377,8 +462,8 @@ module.exports = {
                   '/v2/applications/state',
                   {
                     uuid: this.context.balena.uuid,
-                    method: 'GET'
-                  }
+                    method: 'GET',
+                  },
                 );
 
                 test.match(
@@ -390,14 +475,14 @@ module.exports = {
                       services: {
                         main: {
                           status: /.*/,
-                          releaseId: /.*/
-                        }
-                      }
-                    }
+                          releaseId: /.*/,
+                        },
+                      },
+                    },
                   },
-                  'Response should be expected'
+                  'Response should be expected',
                 );
-              }
+              },
             },
             {
               title: 'GET /v2/applications/:appId/state',
@@ -407,8 +492,8 @@ module.exports = {
                   '/v2/applications/:appId/state',
                   {
                     uuid: this.context.balena.uuid,
-                    method: 'GET'
-                  }
+                    method: 'GET',
+                  },
                 );
 
                 test.match(
@@ -416,11 +501,11 @@ module.exports = {
                   {
                     local: { [this.context.local.appId]: { services: {} } },
                     dependent: {},
-                    commit: /.*/
+                    commit: /.*/,
                   },
-                  'Response should be expected'
+                  'Response should be expected',
                 );
-              }
+              },
             },
             {
               title: 'POST /v2/applications/:appId/restart-service',
@@ -431,13 +516,13 @@ module.exports = {
                   {
                     uuid: this.context.balena.uuid,
                     data: {
-                      serviceName: 'main'
-                    }
-                  }
+                      serviceName: 'main',
+                    },
+                  },
                 );
 
                 test.is(body, 'OK', 'Response should be expected');
-              }
+              },
             },
             {
               title: 'POST /v2/applications/:appId/stop-service',
@@ -448,13 +533,13 @@ module.exports = {
                   {
                     uuid: this.context.balena.uuid,
                     data: {
-                      serviceName: 'main'
-                    }
-                  }
+                      serviceName: 'main',
+                    },
+                  },
                 );
 
                 test.is(body, 'OK', 'Response should be expected');
-              }
+              },
             },
             {
               title: 'POST /v2/applications/:appId/start-service',
@@ -465,13 +550,13 @@ module.exports = {
                   {
                     uuid: this.context.balena.uuid,
                     data: {
-                      serviceName: 'main'
-                    }
-                  }
+                      serviceName: 'main',
+                    },
+                  },
                 );
 
                 test.is(body, 'OK', 'Response should be expected');
-              }
+              },
             },
             {
               title: 'POST /v2/applications/:appId/restart',
@@ -480,40 +565,48 @@ module.exports = {
                   'POST',
                   `/v2/applications/${this.context.local.appId}/restart`,
                   {
-                    uuid: this.context.balena.uuid
-                  }
+                    uuid: this.context.balena.uuid,
+                  },
                 );
 
                 test.is(body, 'OK', 'Response should be expected');
-              }
-            }
-          ]
+              },
+            },
+          ],
         },
         {
           title: 'GET /v2/containerId',
           run: async function(test) {
-            const body = await this.context.local.supervisorRequest('POST', '/v2/containerId', {
-              uuid: this.context.balena.uuid,
-              method: 'GET',
-              data: {
-                service: 'main'
-              }
-            });
+            const body = await this.context.local.supervisorRequest(
+              'POST',
+              '/v2/containerId',
+              {
+                uuid: this.context.balena.uuid,
+                method: 'GET',
+                data: {
+                  service: 'main',
+                },
+              },
+            );
 
             test.match(
               body,
               { status: /.*/, services: { main: /.*/ } },
-              'Response should be expected'
+              'Response should be expected',
             );
-          }
+          },
         },
         {
           title: 'GET /v2/state/status',
           run: async function(test) {
-            const body = await this.context.local.supervisorRequest('POST', '/v2/state/status', {
-              uuid: this.context.balena.uuid,
-              method: 'GET'
-            });
+            const body = await this.context.local.supervisorRequest(
+              'POST',
+              '/v2/state/status',
+              {
+                uuid: this.context.balena.uuid,
+                method: 'GET',
+              },
+            );
 
             test.match(
               body,
@@ -528,8 +621,8 @@ module.exports = {
                     imageId: /.*/,
                     serviceId: /.*/,
                     containerId: /.*/,
-                    createdAt: /.*/
-                  }
+                    createdAt: /.*/,
+                  },
                 ],
                 images: [
                   {
@@ -538,27 +631,35 @@ module.exports = {
                     serviceName: /.*/,
                     imageId: /.*/,
                     dockerImageId: /.*/,
-                    status: /.*/
-                  }
+                    status: /.*/,
+                  },
                 ],
-                release: /.*/
+                release: /.*/,
               },
-              'Response should be expected'
+              'Response should be expected',
             );
-          }
+          },
         },
         {
           title: 'GET /v2/version',
           run: async function(test) {
-            const body = await this.context.local.supervisorRequest('POST', '/v2/version', {
-              uuid: this.context.balena.uuid,
-              method: 'GET'
-            });
+            const body = await this.context.local.supervisorRequest(
+              'POST',
+              '/v2/version',
+              {
+                uuid: this.context.balena.uuid,
+                method: 'GET',
+              },
+            );
 
-            test.match(body, { status: 'success', version: /.*/ }, 'Response should be expected');
-          }
-        }
-      ]
-    }
-  ]
+            test.match(
+              body,
+              { status: 'success', version: /.*/ },
+              'Response should be expected',
+            );
+          },
+        },
+      ],
+    },
+  ],
 };

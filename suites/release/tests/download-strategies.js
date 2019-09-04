@@ -27,7 +27,9 @@ module.exports = {
       local: {
         getContainerId: async serviceName => {
           await this.context.utils.waitUntil(async () => {
-            await this.context.balena.sdk.pingSupervisor(this.context.balena.uuid);
+            await this.context.balena.sdk.pingSupervisor(
+              this.context.balena.uuid,
+            );
             return true;
           });
 
@@ -37,15 +39,17 @@ module.exports = {
             result = await request({
               method: 'POST',
               uri: `${this.context.balena.sdk.getApiUrl()}/supervisor/v2/containerId`,
-              headers: { Authorization: `Bearer ${await this.context.balena.sdk.getToken()}` },
+              headers: {
+                Authorization: `Bearer ${await this.context.balena.sdk.getToken()}`,
+              },
               body: {
                 method: 'GET',
                 uuid: this.context.balena.uuid,
                 data: {
-                  service: serviceName
-                }
+                  service: serviceName,
+                },
               },
-              json: true
+              json: true,
             });
 
             return !isEmpty(result.services);
@@ -57,25 +61,27 @@ module.exports = {
           await this.context.balena.sdk.setConfigurationVar(
             this.context.balena.uuid,
             'RESIN_SUPERVISOR_UPDATE_STRATEGY',
-            strategy
+            strategy,
           );
           this.teardown.register(async () => {
             await this.context.balena.sdk.removeConfigurationVar(
               this.context.balena.uuid,
-              'RESIN_SUPERVISOR_UPDATE_STRATEGY'
+              'RESIN_SUPERVISOR_UPDATE_STRATEGY',
             );
           }, test.name);
 
-          const services = await this.context.balena.sdk.getServiceNames(this.context.balena.uuid);
+          const services = await this.context.balena.sdk.getServiceNames(
+            this.context.balena.uuid,
+          );
           test.is(services.length, 1, 'Only one service should be running');
-          const iContainer = (await this.context.local.getContainerId(services[0])).services[
-            services[0]
-          ];
+          const iContainer = (await this.context.local.getContainerId(
+            services[0],
+          )).services[services[0]];
           const iImage = JSON.parse(
             await this.context.balena.sdk.executeCommandInHostOS(
               `balena inspect ${iContainer} --format='{{json .Image}}' | sed -e 's/^"//' -e 's/"$//'| xargs balena inspect --format='{{json .Id}}'`,
-              this.context.balena.uuid
-            )
+              this.context.balena.uuid,
+            ),
           );
 
           await this.context.balena.deviceApplicationChain
@@ -84,56 +90,63 @@ module.exports = {
               await this.context.utils.searchAndReplace(
                 join(repoPath, 'hello.cpp'),
                 /printf(.*);/,
-                `printf("${strategy}");`
+                `printf("${strategy}");`,
               );
             })
             .then(async chain => {
               return chain.push(
                 {
-                  name: 'master'
+                  name: 'master',
                 },
                 {
                   name: 'balena',
                   url: await this.context.balena.sdk.getApplicationGitRemote(
-                    this.context.balena.application.name
-                  )
-                }
+                    this.context.balena.application.name,
+                  ),
+                },
               );
             })
             .then(async chain => {
+              await this.context.balena.sdk.triggerDeviceUpdate(
+                this.context.balena.uuid,
+              );
               return chain.waitServiceProperties(
                 {
                   commit: chain.getPushedCommit(),
-                  status: 'Running'
+                  status: 'Running',
                 },
                 this.context.balena.uuid,
                 5,
-                1000
+                1000,
               );
             });
 
           const updateServices = await this.context.balena.sdk.getServiceNames(
-            this.context.balena.uuid
+            this.context.balena.uuid,
           );
-          test.is(updateServices.length, 1, 'Only one service should still be running');
-          const uContainer = (await this.context.local.getContainerId(updateServices[0])).services[
-            updateServices[0]
-          ];
+          test.is(
+            updateServices.length,
+            1,
+            'Only one service should still be running',
+          );
+          const uContainer = (await this.context.local.getContainerId(
+            updateServices[0],
+          )).services[updateServices[0]];
 
           // Map container id to image repository as the pull event refrences only the repository
           const uImage = JSON.parse(
             await this.context.balena.sdk.executeCommandInHostOS(
               `balena inspect ${uContainer} --format='{{json .Image}}' | sed -e 's/^"//' -e 's/"$//'| xargs balena inspect --format='{{json .RepoDigests}}'`,
-              this.context.balena.uuid
-            )
+              this.context.balena.uuid,
+            ),
           )[0];
 
           // Get all the balena-engine events and format them ready for a JSON.parse
           const events = JSON.parse(
             await this.context.balena.sdk.executeCommandInHostOS(
               `printf '["null"'; balena events --since 1 --until "$(date +%Y-%m-%dT%H:%M:%S.%NZ)" --format '{{json .}}' | while read LINE; do printf ",$LINE"; done; printf ']'`,
-              this.context.balena.uuid
-            )
+              this.context.balena.uuid,
+            ),
           );
 
           const iContainerEvents = events.filter(event => {
@@ -156,7 +169,7 @@ module.exports = {
               }).timeNano,
               destroy: iContainerEvents.find(event => {
                 return event.Action === 'destroy';
-              }).timeNano
+              }).timeNano,
             },
             uContainer: {
               create: uContainerEvents.find(event => {
@@ -164,21 +177,29 @@ module.exports = {
               }).timeNano,
               start: uContainerEvents.find(event => {
                 return event.Action === 'start';
-              }).timeNano
+              }).timeNano,
             },
             uImage: {
               pull: events.find(event => {
-                return event.id === uImage && event.Action === 'pull' && event.Type === 'image';
-              }).timeNano
+                return (
+                  event.id === uImage &&
+                  event.Action === 'pull' &&
+                  event.Type === 'image'
+                );
+              }).timeNano,
             },
             iImage: {
               delete: events.find(event => {
-                return event.id === iImage && event.Action === 'delete' && event.Type === 'image';
-              }).timeNano
-            }
+                return (
+                  event.id === iImage &&
+                  event.Action === 'delete' &&
+                  event.Type === 'image'
+                );
+              }).timeNano,
+            },
           };
-        }
-      }
+        },
+      },
     };
 
     await this.context.balena.deviceApplicationChain
@@ -186,7 +207,7 @@ module.exports = {
       .init({
         url: 'https://github.com/balena-io-projects/balena-cpp-hello-world.git',
         sdk: this.context.balena.sdk,
-        path: this.options.tmpdir
+        path: this.options.tmpdir,
       })
       .then(chain => {
         return chain.clone();
@@ -194,23 +215,26 @@ module.exports = {
       .then(async chain => {
         return chain.push(
           {
-            name: 'master'
+            name: 'master',
           },
           {
             name: 'balena',
             url: await this.context.balena.sdk.getApplicationGitRemote(
-              this.context.balena.application.name
-            )
-          }
+              this.context.balena.application.name,
+            ),
+          },
         );
       })
       .then(async chain => {
+        await this.context.balena.sdk.triggerDeviceUpdate(
+          this.context.balena.uuid,
+        );
         return chain.waitServiceProperties(
           {
             commit: chain.getPushedCommit(),
-            status: 'Running'
+            status: 'Running',
           },
-          this.context.balena.uuid
+          this.context.balena.uuid,
         );
       });
   },
@@ -218,7 +242,10 @@ module.exports = {
     {
       title: 'download-then-kill strategy test',
       run: async function(test) {
-        const times = await this.context.local.testTemplate('download-then-kill', test);
+        const times = await this.context.local.testTemplate(
+          'download-then-kill',
+          test,
+        );
 
         const actionOrder = [
           { action: 'pull', time: times.uImage.pull },
@@ -228,7 +255,7 @@ module.exports = {
           { action: 'destroy', time: times.iContainer.destroy },
           { action: 'delete', time: times.iImage.delete },
           { action: 'create', time: times.uContainer.create },
-          { action: 'start', time: times.uContainer.start }
+          { action: 'start', time: times.uContainer.start },
         ];
 
         test.strictDeepEquals(
@@ -237,14 +264,17 @@ module.exports = {
           }),
           sortBy(actionOrder, ['time']).map(x => {
             return x.action;
-          }, 'Action order should be as expected.')
+          }, 'Action order should be as expected.'),
         );
-      }
+      },
     },
     {
       title: 'kill-then-download strategy test',
       run: async function(test) {
-        const times = await this.context.local.testTemplate('kill-then-download', test);
+        const times = await this.context.local.testTemplate(
+          'kill-then-download',
+          test,
+        );
 
         const actionOrder = [
           { action: 'kill', time: times.iContainer.kill },
@@ -254,7 +284,7 @@ module.exports = {
           { action: 'pull', time: times.uImage.pull },
           { action: 'delete', time: times.iImage.delete },
           { action: 'create', time: times.uContainer.create },
-          { action: 'start', time: times.uContainer.start }
+          { action: 'start', time: times.uContainer.start },
         ];
 
         test.strictDeepEquals(
@@ -263,14 +293,17 @@ module.exports = {
           }),
           sortBy(actionOrder, ['time']).map(x => {
             return x.action;
-          }, 'Action order should be as expected.')
+          }, 'Action order should be as expected.'),
         );
-      }
+      },
     },
     {
       title: 'delete-then-download strategy test',
       run: async function(test) {
-        const times = await this.context.local.testTemplate('delete-then-download', test);
+        const times = await this.context.local.testTemplate(
+          'delete-then-download',
+          test,
+        );
 
         const actionOrder = [
           { action: 'kill', time: times.iContainer.kill },
@@ -280,7 +313,7 @@ module.exports = {
           { action: 'pull', time: times.uImage.pull },
           { action: 'delete', time: times.iImage.delete },
           { action: 'create', time: times.uContainer.create },
-          { action: 'start', time: times.uContainer.start }
+          { action: 'start', time: times.uContainer.start },
         ];
 
         test.strictDeepEquals(
@@ -289,9 +322,9 @@ module.exports = {
           }),
           sortBy(actionOrder, ['time']).map(x => {
             return x.action;
-          }, 'Action order should be as expected.')
+          }, 'Action order should be as expected.'),
         );
-      }
+      },
     },
     {
       title: 'hand-over strategy test',
@@ -299,12 +332,12 @@ module.exports = {
         await this.context.balena.sdk.setConfigurationVar(
           this.context.balena.uuid,
           'RESIN_SUPERVISOR_HANDOVER_TIMEOUT',
-          '1000'
+          '1000',
         );
         this.teardown.register(async () => {
           await this.context.balena.sdk.removeConfigurationVar(
             this.context.balena.uuid,
-            'RESIN_SUPERVISOR_HANDOVER_TIMEOUT'
+            'RESIN_SUPERVISOR_HANDOVER_TIMEOUT',
           );
         });
 
@@ -318,7 +351,7 @@ module.exports = {
           { action: 'die', time: times.iContainer.die },
           { action: 'stop', time: times.iContainer.stop },
           { action: 'destroy', time: times.iContainer.destroy },
-          { action: 'delete', time: times.iImage.delete }
+          { action: 'delete', time: times.iImage.delete },
         ];
 
         test.strictDeepEquals(
@@ -327,9 +360,9 @@ module.exports = {
           }),
           sortBy(actionOrder, ['time']).map(x => {
             return x.action;
-          }, 'Action order should be as expected.')
+          }, 'Action order should be as expected.'),
         );
-      }
-    }
-  ]
+      },
+    },
+  ],
 };

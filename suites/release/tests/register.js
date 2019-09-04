@@ -23,70 +23,92 @@ module.exports = {
       title: 'Pre-register test',
       run: async function(assert) {
         const devices = await this.context.balena.sdk.getDevices(
-          this.context.balena.application.name
+          this.context.balena.application.name,
         );
 
         // Sanity check
-        assert.equals(devices.length, 1, 'Only one device should be registered');
+        assert.equals(
+          devices.length,
+          1,
+          'Only one device should be registered',
+        );
         assert.equals(
           devices[0].uuid,
           this.context.balena.uuid,
-          'Registered device should have the UUID we assigned'
+          'Registered device should have the UUID we assigned',
         );
         assert.true(
-          await this.context.balena.sdk.isDeviceOnline(this.context.balena.uuid),
-          'Device should be marked as online'
+          await this.context.balena.sdk.isDeviceOnline(
+            this.context.balena.uuid,
+          ),
+          'Device should be marked as online',
         );
-      }
+      },
     },
     {
       title: 'Normal register test',
       run: async function(assert) {
         const configuration = await this.context.balena.sdk.getApplicationOSConfiguration(
           this.context.balena.application.name,
-          { version: this.context.os.image.version }
+          { version: this.context.os.contract.version },
         );
 
         await this.context.balena.sdk.executeCommandInHostOS(
-          `echo '${JSON.stringify(configuration)}' > /mnt/boot/config.json && reboot`,
-          this.context.balena.uuid
+          `echo '${JSON.stringify(
+            configuration,
+          )}' > /mnt/boot/config.json && touch /tmp/reboot-check && systemd-run --on-active=2 /sbin/reboot`,
+          this.context.balena.uuid,
         );
 
         await this.context.utils.waitUntil(async () => {
           return (
-            (await this.context.balena.sdk.getDevices(this.context.balena.application.name))
-              .length > 1
+            (await this.context.balena.sdk.getDevices(
+              this.context.balena.application.name,
+            )).length > 1
           );
         });
 
-        let devices = await this.context.balena.sdk.getDevices(
-          this.context.balena.application.name
+        const devices = await this.context.balena.sdk.getDevices(
+          this.context.balena.application.name,
         );
-
         // Sanity check
-        assert.equals(devices.length, 2, 'We should have two devices registered');
-        devices = devices.filter(device => {
+        assert.equals(
+          devices.length,
+          2,
+          'We should have two devices registered',
+        );
+        let device = devices.filter(device => {
           return device.uuid !== this.context.balena.uuid;
         });
         // Sanity check
-        assert.equals(devices.length, 1, 'We should only have one other device registered');
+        assert.equals(
+          device.length,
+          1,
+          'We should only have one other device registered',
+        );
 
-        await this.context.utils.waitUntil(() => {
-          return this.context.balena.sdk.isDeviceOnline(devices[0].uuid);
-        });
+        await this.context.utils.waitUntil(async () => {
+          return (
+            (await this.context.balena.sdk.executeCommandInHostOS(
+              '[[ ! -f /tmp/reboot-check ]] && echo "pass"',
+              device[0].uuid,
+            )) === 'pass'
+          );
+        }, false);
 
         // Sanity check
         assert.false(
-          await this.context.balena.sdk.isDeviceOnline(this.context.balena.uuid),
-          'Old device should be offline'
+          await this.context.balena.sdk.isDeviceOnline(
+            this.context.balena.uuid,
+          ),
+          'Old device should be offline',
         );
-
         // Wire new registration in our context
         await this.context.balena.sdk.removeDevice(this.context.balena.uuid);
         this.globalContext = {
-          balena: { uuid: devices[0].uuid }
+          balena: { uuid: device[0].uuid },
         };
-      }
-    }
-  ]
+      },
+    },
+  ],
 };
