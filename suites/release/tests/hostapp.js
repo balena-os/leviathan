@@ -20,8 +20,8 @@ const { join } = require('path');
 module.exports = {
   title: 'Hostapp update tests',
   run: async function() {
-    const sdk = new (require(join(this.frameworkPath, 'components', 'balena', 'sdk')))(
-      this.options.balenaOS.download.source
+    const sdk = new (this.require('components/balena/sdk'))(
+      this.options.balenaOS.download.source,
     );
 
     this.context = {
@@ -29,9 +29,9 @@ module.exports = {
         currentVersion: this.context.os.image.version,
         updateVersion: await sdk.getMaxSatisfyingVersion(
           this.deviceType.slug,
-          `<${this.context.os.image.version}`
-        )
-      }
+          `<${this.context.os.image.version}`,
+        ),
+      },
     };
   },
   tests: [
@@ -42,7 +42,9 @@ module.exports = {
         // As the update should be contained by a singular environment.
         if (this.context.local.updateVersion == null) {
           throw new Error(
-            `Could not find any supported version previous to ${this.context.os.image.version}`
+            `Could not find any supported version previous to ${
+              this.context.os.image.version
+            }`,
           );
         }
 
@@ -53,16 +55,19 @@ module.exports = {
         await this.context.os.fetch(this.options.tmpdir, {
           type: this.options.balenaOS.download.type,
           version: this.context.local.updateVersion,
-          source: this.options.balenaOS.download.source
+          source: this.options.balenaOS.download.source,
         });
 
         const uuid = await this.context.balena.sdk.generateUUID();
         this.context.os.addCloudConfig(
           await this.context.balena.sdk.getDeviceOSConfiguration(
             uuid,
-            await this.context.balena.sdk.register(this.context.balena.application.name, uuid),
-            this.context.os.image.version
-          )
+            await this.context.balena.sdk.register(
+              this.context.balena.application.name,
+              uuid,
+            ),
+            this.context.os.image.version,
+          ),
         );
 
         await this.context.worker.ready();
@@ -78,40 +83,50 @@ module.exports = {
         // Re-wire new device
         this.globalContext = { balena: { uuid } };
 
-        // We look at vpn connect times to determine if a device has rebooted
-        const lastTimeOnline = await this.context.balena.sdk.getLastConnectedTime(
-          this.context.balena.uuid
+        // Start reboot check
+        await this.context.balena.sdk.executeCommandInHostOS(
+          'touch /tmp/reboot-check',
+          this.context.balena.uuid,
         );
 
         // Run update
         await this.context.balena.sdk.startOsUpdate(
           this.context.balena.uuid,
-          this.context.local.currentVersion
+          this.context.local.currentVersion,
         );
 
         test.has(
-          await this.context.balena.sdk.getOsUpdateStatus(this.context.balena.uuid),
+          await this.context.balena.sdk.getOsUpdateStatus(
+            this.context.balena.uuid,
+          ),
           {
-            status: 'in_progress'
+            status: 'in_progress',
           },
-          'Update should be running'
+          'Update should be running',
         );
 
+        // Check device is reachable again and rebooted executed
         await this.context.utils.waitUntil(async () => {
-          const online = await this.context.balena.sdk.isDeviceOnline(this.context.balena.uuid);
-          const vpnTime = await this.context.balena.sdk.getLastConnectedTime(
-            this.context.balena.uuid
+          const online = await this.context.balena.sdk.isDeviceOnline(
+            this.context.balena.uuid,
           );
 
-          return vpnTime > lastTimeOnline && online;
+          return (
+            (await this.context.balena.sdk.executeCommandInHostOS(
+              '[[ ! -f /tmp/reboot-check ]] && echo "pass"',
+              this.context.balena.uuid,
+            )) === 'pass' && online
+          );
         });
 
         test.has(
-          await this.context.balena.sdk.getOsUpdateStatus(this.context.balena.uuid),
+          await this.context.balena.sdk.getOsUpdateStatus(
+            this.context.balena.uuid,
+          ),
           { status: 'done' },
-          'Update finished succesfully'
+          'Update finished succesfully',
         );
-      }
-    }
-  ]
+      },
+    },
+  ],
 };

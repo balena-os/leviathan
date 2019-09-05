@@ -130,7 +130,7 @@ class Qemu extends EventEmitter implements Leviathan.Worker {
         {
           type: 'element',
           name: 'domain',
-          attributes: { type: 'qemu', id: '1' },
+          attributes: { type: 'kvm', id: '1' },
           elements: [
             {
               type: 'element',

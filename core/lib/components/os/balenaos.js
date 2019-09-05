@@ -89,7 +89,7 @@ module.exports = class BalenaOS {
     this.deviceType = options.deviceType;
     this.network = options.network;
     this.image = {};
-    this.configJson = options.configJson;
+    this.configJson = options.configJson || {};
     this.contract = {
       network: mapValues(this.network, value => {
         return typeof value === 'boolean' ? value : true;

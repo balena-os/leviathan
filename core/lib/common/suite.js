@@ -56,7 +56,7 @@ module.exports = class Suite {
   constructor(packdir) {
     const config = require(`${packdir}/config.json`);
 
-    this.frameworkPath = path.join(__dirname, '..');
+    this.rootPath = path.join(__dirname, '..');
     this.options = assignIn(
       {
         packdir,
@@ -211,7 +211,6 @@ module.exports = class Suite {
   // DFS with depth tracking
   printRunQueueSummary() {
     console.log('Run queue summary:');
-
     const treeExpander = ({ title, tests }, depth) => {
       console.log(`${'\t'.repeat(depth)} ${title}`);
 
@@ -241,5 +240,10 @@ module.exports = class Suite {
   async removeDependencies() {
     console.log(`Removing npm dependencies for suite: `);
     await Bluebird.promisify(fse.remove)(path.join(this.options.suitePath, 'node_modules'));
+  }
+
+  // This method allows tests to incldue any module from the core framework
+  require(module) {
+    return require(path.join(this.rootPath, module));
   }
 };

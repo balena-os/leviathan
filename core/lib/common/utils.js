@@ -55,7 +55,7 @@ const getSSHClientDisposer = config => {
         assignIn(
           {
             agent: process.env.SSH_AUTH_SOCK,
-            keepaliveInterval: 2000
+            keepaliveInterval: 20000
           },
           conf
         )
@@ -76,13 +76,9 @@ module.exports = {
           reject(err);
         });
         resolve(
-          await client
-            .exec(command, [], {
-              stream: 'both'
-            })
-            .catch(x => {
-              reject(x);
-            })
+          await client.exec(command, [], {
+            stream: 'both'
+          })
         );
       });
     });

@@ -16,47 +16,36 @@
 
 'use strict';
 
-const randomstring = require('randomstring');
-const path = require('path');
-
-const id = `${path.basename(__dirname)}_${randomstring.generate({
-  length: 5,
-  charset: 'alphabetic'
-})}`;
+// Test identification
+const id = `${Math.random()
+  .toString(36)
+  .substring(2, 10)}`;
 
 module.exports = options => {
   return {
+    id,
     balenaOS: {
-      config: {
-        hostname: id
-      },
       download: {
         type: options.BALENA_TESTS_DOWNLOAD_TYPE,
         version: options.BALENA_TESTS_DOWNLOAD_VERSION,
-        source: options.BALENA_TESTS_DOWNLOAD_SOURCE
+        source: options.BALENA_TESTS_DOWNLOAD_SOURCE,
       },
       network: {
-        ethernet: options.BALENA_TESTS_ETHERNET,
-        wifi: {
-          ssid: options.BALENA_TESTS_WIFI_SSID,
-          key: options.BALENA_TESTS_WIFI_KEY
-        }
-      }
+        wired: options.BALENA_TESTS_NETWORK_WIRED,
+        wireless: options.BALENA_TESTS_NETWORK_WIRELESS,
+      },
     },
     balena: {
       application: {
-        name: id,
         env: {
-          delta: options.BALENA_TESTS_SUPERVISOR_DELTA || false
-        }
+          delta: options.BALENA_TESTS_SUPERVISOR_DELTA || false,
+        },
       },
-      sshKeyLabel: id,
       apiKey: options.BALENA_TESTS_API_KEY,
-      apiUrl: options.BALENA_TESTS_API_URL
+      apiUrl: options.BALENA_TESTS_API_URL,
     },
     worker: {
-      url: options.BALENA_TESTS_WORKER_URL,
-      type: options.BALENA_TESTS_WORKER_TYPE
-    }
+      type: options.BALENA_TESTS_WORKER_TYPE,
+    },
   };
 };

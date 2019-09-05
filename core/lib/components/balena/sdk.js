@@ -49,6 +49,7 @@ module.exports = class BalenaSDK {
 
     return retry(
       async () => {
+        console.log('here');
         if (!(await this.isDeviceConnectedToVpn(device))) {
           throw new Error(`${device}: is not marked as connected to our VPN.`);
         }
@@ -61,6 +62,7 @@ module.exports = class BalenaSDK {
             port: sshPort
           }
         );
+        console.log(result);
 
         if (result.code !== 0) {
           throw new Error(
@@ -160,7 +162,7 @@ module.exports = class BalenaSDK {
   }
 
   addSSHKey(label, key) {
-    console.log(`Add new SSH key: ${key} with label: ${label}`);
+    console.log(`Add new SSH key with label: ${label}`);
     return this.balena.models.key.create(label, key);
   }
 
@@ -336,8 +338,18 @@ module.exports = class BalenaSDK {
     return this.balena.models.device.getOsUpdateStatus(device);
   }
 
-  trackApplicationRelease(device) {
-    return this.balena.models.device.trackApplicationRelease(device);
+  async disableAutomaticUpdates(application) {
+    return this.pine.patch({
+      resource: 'application',
+      id: await this.getApplicationId(application),
+      body: {
+        should_track_latest_release: false
+      }
+    });
+  }
+
+  enableAutomaticUpdate(application) {
+    return this.balena.models.application.trackLatestRelease(application);
   }
 
   getLatestRelease(application) {

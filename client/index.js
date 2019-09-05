@@ -7,7 +7,7 @@ const { basename, dirname, join } = require('path');
 const progStream = require('progress-stream');
 const tar = require('tar-fs');
 const rp = require('request-promise');
-const { Spinner, Progress } = require('resin-cli-visuals');
+const { SpinnerPromise, Spinner, Progress } = require('resin-cli-visuals');
 const pipeline = Bluebird.promisify(require('stream').pipeline);
 const websocket = require('websocket-stream');
 const zlib = require('zlib');
@@ -84,6 +84,14 @@ async function getFilesFromDirectory(basePath, ignore = []) {
 
 (async () => {
   await emptyDir(yargs.workdir);
+
+  await new SpinnerPromise({
+    promise: rp.get({
+      uri: `http://${yargs.url}/aquire`,
+    }),
+    startMessage: 'Waiting in queue',
+    stopMessage: 'Ready to go!',
+  });
 
   const ignore = ['node_modules', 'package-lock.json'];
   const artifacts = [
