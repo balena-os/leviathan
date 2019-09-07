@@ -8,7 +8,7 @@ const progStream = require('progress-stream');
 const tar = require('tar-fs');
 const rp = require('request-promise');
 const { SpinnerPromise, Spinner, Progress } = require('resin-cli-visuals');
-const pipeline = Bluebird.promisify(require('stream').pipeline);
+const pipeline = Bluebird.promisify(require('readable-stream').pipeline);
 const websocket = require('websocket-stream');
 const zlib = require('zlib');
 
