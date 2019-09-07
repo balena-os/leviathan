@@ -27,7 +27,6 @@ const { fs, crypto } = require('mz');
 const { join } = require('path');
 const tar = require('tar-fs');
 const pipeline = Bluebird.promisify(require('stream').pipeline);
-const webSocketStream = require('websocket-stream/stream');
 const { createGunzip } = require('zlib');
 
 async function setup() {
@@ -141,7 +140,6 @@ async function setup() {
         ws.ping('heartbeat');
       }
     }, 1000);
-    const wsStream = webSocketStream(ws);
 
     try {
       if (!mutex.isLocked) {
@@ -149,8 +147,8 @@ async function setup() {
       }
 
       await new Promise((resolve, reject) => {
-        wsStream.on('error', console.error);
-        wsStream.on('close', () => {
+        ws.on('error', console.error);
+        ws.on('close', () => {
           clearInterval(interval);
           if (child != null) {
             child.kill('SIGINT');
@@ -171,17 +169,40 @@ async function setup() {
           }
         );
 
-        wsStream.pipe(child.stdin);
-        child.stdout.pipe(wsStream);
-        child.stderr.pipe(wsStream);
-
+        ws.on('message', data => {
+          child.stdin.write(data);
+        });
+        child.stdout.on('data', data => {
+          ws.send(
+            JSON.stringify({
+              status: 'running',
+              data: {
+                stdout: data
+              }
+            })
+          );
+        });
+        child.stderr.on('data', data => {
+          ws.send(
+            JSON.stringify({
+              status: 'running',
+              data: {
+                stdout: data
+              }
+            })
+          );
+        });
         child.on('exit', (code, signal) => {
           child = null;
-          if (code === 0) {
-            resolve();
-          } else {
-            reject(new Error(`CODE: ${code} SIGNAL: ${signal}`));
-          }
+          ws.send(
+            JSON.stringify({
+              status: 'exit',
+              data: {
+                code
+              }
+            })
+          );
+          resolve();
         });
       });
     } catch (e) {

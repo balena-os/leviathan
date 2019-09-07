@@ -82,7 +82,7 @@ async function getFilesFromDirectory(basePath, ignore = []) {
   return files;
 }
 
-(async () => {
+async function main() {
   await emptyDir(yargs.workdir);
 
   await new SpinnerPromise({
@@ -268,5 +268,28 @@ async function getFilesFromDirectory(basePath, ignore = []) {
     process.exit(128 + constants.signals.SIGINT);
   });
   process.stdin.pipe(ws);
-  ws.pipe(process.stdout);
-})();
+  ws.socket.on('message', pkg => {
+    try {
+      const message = JSON.parse(pkg);
+
+      switch (message.status) {
+        case 'running':
+          process.stdout.write(Buffer.from(message.data.stdout));
+          break;
+        case 'exit':
+          process.exitCode = message.data.code;
+          break;
+        default:
+          break;
+      }
+    } catch (e) {
+      console.error(`Parsing error: ${e}`);
+      process.exitCode(1);
+    }
+  });
+}
+
+main().catch(error => {
+  console.error(error);
+  process.exit(1);
+});
