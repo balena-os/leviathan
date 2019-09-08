@@ -24,8 +24,11 @@ module.exports = class Teardown {
   constructor() {
     this.store = new Map();
 
-    process.on('SIGINT', noop);
     process.once('SIGINT', async () => {
+      await this.runAll(process.nextTick);
+      process.exit();
+    });
+    process.once('SIGTERM', async () => {
       await this.runAll(process.nextTick);
       process.exit();
     });

@@ -64,12 +64,15 @@ module.exports = class CLI {
       }
 
       process.on('SIGINT', handleSignal);
+      process.on('SIGTERM', handleSignal);
       child.on('exit', () => {
         process.off('SIGINT', handleSignal);
+        process.off('SIGTERM', handleSignal);
         resolve();
       });
       child.on('error', err => {
         process.off('SIGINT', handleSignal);
+        process.off('SIGTERM', handleSignal);
         reject(err);
       });
     });

@@ -267,6 +267,10 @@ async function main() {
     await rp.post(`http://${yargs.url}/stop`);
     process.exit(128 + constants.signals.SIGINT);
   });
+  process.once('SIGTERM', async () => {
+    await rp.post(`http://${yargs.url}/stop`);
+    process.exit(128 + constants.signals.SIGTERM);
+  });
   process.stdin.pipe(ws);
   ws.socket.on('message', pkg => {
     try {
@@ -289,7 +293,8 @@ async function main() {
   });
 }
 
-main().catch(error => {
+main().catch(async error => {
+  await rp.post(`http://${yargs.url}/stop`).catch(console.error);
   console.error(error);
   process.exit(1);
 });
