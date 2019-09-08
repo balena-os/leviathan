@@ -25,7 +25,7 @@ const path = require('path');
 const fs = Bluebird.promisifyAll(require('fs'));
 const { join } = require('path');
 const pipeline = Bluebird.promisify(require('stream').pipeline);
-const { SpinnerPromise } = require('resin-cli-visuals');
+const { SpinnerPromise } = require('../../common/visuals');
 const unzip = require('unzip');
 const zlib = require('zlib');
 

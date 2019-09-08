@@ -22,7 +22,7 @@ const find = require('lodash/find');
 const flatMapDeep = require('lodash/flatMapDeep');
 
 const Bluebird = require('bluebird');
-const visuals = require('resin-cli-visuals');
+const visuals = require('../../common/visuals');
 const retry = require('bluebird-retry');
 
 const utils = require('../../common/utils');

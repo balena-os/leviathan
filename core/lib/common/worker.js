@@ -24,7 +24,7 @@ const { fs } = require('mz');
 const pipeline = Bluebird.promisify(require('stream').pipeline);
 const request = require('request');
 const rp = require('request-promise');
-const { Spinner, Progress } = require('resin-cli-visuals');
+const { Spinner, Progress } = require('./visuals');
 
 module.exports = class Worker {
   constructor(deviceType) {

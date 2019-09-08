@@ -17,7 +17,6 @@
 'use strict';
 
 const isFunction = require('lodash/isFunction');
-const noop = require('lodash/noop');
 const Bluebird = require('bluebird');
 
 module.exports = class Teardown {
