@@ -133,7 +133,9 @@ async function setup() {
     }
   });
 
-  app.ws('/start', async (ws, _req) => {
+  app.ws('/start', async (ws, req) => {
+    process.env.CI = req.headers['sec-websocket-protocol'] === 'CI';
+
     // Keep the socket alive
     const interval = setInterval(function timeout() {
       if (ws.readyState === 1) {
@@ -192,8 +194,12 @@ async function setup() {
             })
           );
         });
-        child.on('exit', (code, signal) => {
+        child.on('exit', code => {
           child = null;
+          if (release != null) {
+            release();
+            release = null;
+          }
           ws.send(
             JSON.stringify({
               status: 'exit',
@@ -221,22 +227,18 @@ async function setup() {
       if (!mutex.isLocked) {
         throw new Error('Please call /upload to aquire lock execution');
       }
-
       if (child != null) {
         child.on('exit', () => {
-          if (release != null) {
-            release();
-            release = null;
-          }
-          child = null;
           res.send('OK');
         });
         child.kill('SIGINT');
       } else if (release != null) {
         release();
         release = null;
+        res.send('OK');
       }
     } catch (e) {
+      console.log(e);
       res.status(500);
       res.send(e.stack);
     }

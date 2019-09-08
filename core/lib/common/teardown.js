@@ -17,12 +17,15 @@
 'use strict';
 
 const isFunction = require('lodash/isFunction');
+const noop = require('lodash/noop');
 const Bluebird = require('bluebird');
 
 module.exports = class Teardown {
   constructor() {
     this.store = new Map();
 
+    process.on('SIGINT', noop);
+    process.on('SIGTERM', noop);
     process.once('SIGINT', async () => {
       await this.runAll(process.nextTick);
       process.exit();

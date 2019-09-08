@@ -26,7 +26,7 @@
     "request-promise": "^4.2.4",
     "resin-cli-visuals": "^1.4.3",
     "tar-fs": "^2.0.0",
-    "websocket-stream": "^5.5.0",
+    "ws": "^7.1.2",
     "yargs": "^13.2.4"
   }
 }

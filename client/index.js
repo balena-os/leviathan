@@ -9,7 +9,7 @@ const tar = require('tar-fs');
 const rp = require('request-promise');
 const { SpinnerPromise, Spinner, Progress } = require('./lib/visuals');
 const pipeline = Bluebird.promisify(require('readable-stream').pipeline);
-const websocket = require('websocket-stream');
+const WebSocket = require('ws');
 const zlib = require('zlib');
 
 const yargs = require('yargs')
@@ -258,10 +258,12 @@ async function main() {
     });
   }
 
-  const ws = websocket(`ws://${yargs.url}/start`);
+  const ws = new WebSocket(`ws://${yargs.url}/start`, [
+    process.env.CI != null ? 'CI' : '',
+  ]);
   // Keep the websocket alive
-  ws.socket.on('ping', () => {
-    ws.socket.pong('heartbeat');
+  ws.on('ping', () => {
+    ws.pong('heartbeat');
   });
   process.once('SIGINT', async () => {
     await rp.post(`http://${yargs.url}/stop`);
@@ -271,8 +273,10 @@ async function main() {
     await rp.post(`http://${yargs.url}/stop`);
     process.exit(128 + constants.signals.SIGTERM);
   });
-  process.stdin.pipe(ws);
-  ws.socket.on('message', pkg => {
+  process.stdin.on('data', data => {
+    ws.send(data);
+  });
+  ws.on('message', pkg => {
     try {
       const message = JSON.parse(pkg);
 
