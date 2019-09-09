@@ -258,6 +258,7 @@ async function main() {
     });
   }
 
+  process.exitCode = 1;
   const ws = new WebSocket(`ws://${yargs.url}/start`, [
     process.env.CI != null ? 'CI' : '',
   ]);
@@ -301,5 +302,5 @@ async function main() {
 main().catch(async error => {
   await rp.post(`http://${yargs.url}/stop`).catch(console.error);
   console.error(error);
-  process.exit(1);
+  process.exitCode = 1;
 });
