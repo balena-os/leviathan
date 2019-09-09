@@ -276,6 +276,7 @@ async function main() {
   process.stdin.on('data', data => {
     ws.send(data);
   });
+  ws.on('error', console.error);
   ws.on('message', pkg => {
     try {
       const message = JSON.parse(pkg);

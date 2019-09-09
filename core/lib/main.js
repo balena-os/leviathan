@@ -28,6 +28,7 @@ const { join } = require('path');
 const tar = require('tar-fs');
 const pipeline = Bluebird.promisify(require('stream').pipeline);
 const { createGunzip } = require('zlib');
+const WebSocket = require('ws');
 
 async function setup() {
   const mutex = new Mutex();
@@ -138,7 +139,7 @@ async function setup() {
 
     // Keep the socket alive
     const interval = setInterval(function timeout() {
-      if (ws.readyState === 1) {
+      if (ws.readyState === WebSocket.OPEN) {
         ws.ping('heartbeat');
       }
     }, 1000);
@@ -148,7 +149,7 @@ async function setup() {
         throw new Error('Please call /aquire to aquire lock execution');
       }
 
-      await new Promise((resolve, reject) => {
+      await new Promise(resolve => {
         ws.on('error', console.error);
         ws.on('close', () => {
           clearInterval(interval);
@@ -175,24 +176,28 @@ async function setup() {
           child.stdin.write(data);
         });
         child.stdout.on('data', data => {
-          ws.send(
-            JSON.stringify({
-              status: 'running',
-              data: {
-                stdout: data
-              }
-            })
-          );
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(
+              JSON.stringify({
+                status: 'running',
+                data: {
+                  stdout: data
+                }
+              })
+            );
+          }
         });
         child.stderr.on('data', data => {
-          ws.send(
-            JSON.stringify({
-              status: 'running',
-              data: {
-                stdout: data
-              }
-            })
-          );
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(
+              JSON.stringify({
+                status: 'running',
+                data: {
+                  stdout: data
+                }
+              })
+            );
+          }
         });
         child.on('exit', code => {
           child = null;
@@ -200,14 +205,16 @@ async function setup() {
             release();
             release = null;
           }
-          ws.send(
-            JSON.stringify({
-              status: 'exit',
-              data: {
-                code
-              }
-            })
-          );
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(
+              JSON.stringify({
+                status: 'exit',
+                data: {
+                  code
+                }
+              })
+            );
+          }
           resolve();
         });
       });
