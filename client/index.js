@@ -104,7 +104,7 @@ async function main() {
     const stat = await fs.stat(artifact.path);
 
     if (!stat[artifact.type]()) {
-      throw new Error(`${artifact.path} does not satisfy ${artifcat.type}`);
+      throw new Error(`${artifact.path} does not satisfy ${artifact.type}`);
     }
 
     if (artifact.name === 'image') {
