@@ -85,6 +85,15 @@ async function getFilesFromDirectory(basePath, ignore = []) {
 async function main() {
   await emptyDir(yargs.workdir);
 
+  process.once('SIGINT', async () => {
+    await rp.post(`http://${yargs.url}/stop`);
+    process.exit(128 + constants.signals.SIGINT);
+  });
+  process.once('SIGTERM', async () => {
+    await rp.post(`http://${yargs.url}/stop`);
+    process.exit(128 + constants.signals.SIGTERM);
+  });
+
   await new SpinnerPromise({
     promise: rp.get({
       uri: `http://${yargs.url}/aquire`,
@@ -266,14 +275,7 @@ async function main() {
   ws.on('ping', () => {
     ws.pong('heartbeat');
   });
-  process.once('SIGINT', async () => {
-    await rp.post(`http://${yargs.url}/stop`);
-    process.exit(128 + constants.signals.SIGINT);
-  });
-  process.once('SIGTERM', async () => {
-    await rp.post(`http://${yargs.url}/stop`);
-    process.exit(128 + constants.signals.SIGTERM);
-  });
+
   process.stdin.on('data', data => {
     ws.send(data);
   });

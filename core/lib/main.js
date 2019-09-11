@@ -48,14 +48,18 @@ async function setup() {
     res.writeHead(202, {
       Connection: 'keep-alive'
     });
+    const interval = setInterval(() => {
+      res.write('Still waiting');
+    }, 20000);
     res.connection.setTimeout(0);
     release = await mutex.acquire();
+    clearInterval(interval);
     res.end();
   });
 
   app.post('/upload', async (req, res) => {
     if (!mutex.isLocked) {
-      throw new Error('Please call /upload to aquire lock execution');
+      throw new Error('Please call /aquire to aquire lock execution');
     }
 
     res.writeHead(202, {
@@ -125,8 +129,7 @@ async function setup() {
       }
     } catch (e) {
       if (release != null) {
-        release();
-        release = null;
+        release = release();
       }
       res.write(`error: ${e.message}`);
     } finally {
@@ -200,11 +203,6 @@ async function setup() {
           }
         });
         child.on('exit', code => {
-          child = null;
-          if (release != null) {
-            release();
-            release = null;
-          }
           if (ws.readyState === WebSocket.OPEN) {
             ws.send(
               JSON.stringify({
@@ -215,13 +213,16 @@ async function setup() {
               })
             );
           }
+          child = null;
+          if (release != null) {
+            release = release();
+          }
           resolve();
         });
       });
     } catch (e) {
       if (release != null) {
-        release();
-        release = null;
+        release = release();
       }
       console.error(e);
     } finally {
@@ -232,16 +233,15 @@ async function setup() {
   app.post('/stop', async (_req, res) => {
     try {
       if (!mutex.isLocked) {
-        throw new Error('Please call /upload to aquire lock execution');
+        throw new Error('Please call /aquire to aquire lock execution');
       }
       if (child != null) {
-        child.on('exit', () => {
+        child.once('exit', () => {
           res.send('OK');
         });
         child.kill('SIGINT');
       } else if (release != null) {
-        release();
-        release = null;
+        release = release();
         res.send('OK');
       }
     } catch (e) {
