@@ -74,9 +74,17 @@ module.exports = class Suite {
     this.ctx = {};
     this.ctxGlobal = {};
     this.ctxStack = [];
-    this.deviceType = require(`../../contracts/contracts/hw.device-type/${
-      config.BALENA_TESTS_DEVICE_TYPE
-    }/contract.json`);
+    try {
+      this.deviceType = require(`../../contracts/contracts/hw.device-type/${
+        config.BALENA_TESTS_DEVICE_TYPE
+      }/contract.json`);
+    } catch (e) {
+      if (e.code === 'MODULE_NOT_FOUND') {
+        throw new Error(`Invalid/Unsupported device type: ${config.BALENA_TESTS_DEVICE_TYPE}`);
+      } else {
+        throw e;
+      }
+    }
   }
 
   async init() {

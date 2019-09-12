@@ -16,9 +16,10 @@
 
 'use strict';
 
-const Bluebird = require('bluebird');
 const { Mutex } = require('async-mutex');
+const Bluebird = require('bluebird');
 const { forkCode, getFilesFromDirectory } = require('./common/utils');
+const config = require('config');
 const express = require('express');
 const expressWebSocket = require('express-ws');
 const { pathExists, remove } = require('fs-extra');
@@ -255,11 +256,11 @@ async function setup() {
 }
 
 (async function main() {
-  const PORT = 80;
+  const port = config.get('express.port');
 
   const server = await setup();
 
-  server.listen(PORT, () => {
-    console.log(`Listening on port ${PORT}`);
+  server.listen(port, () => {
+    console.log(`Listening on port ${port}`);
   });
 })();

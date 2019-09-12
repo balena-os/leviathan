@@ -64,6 +64,7 @@ COPY firmware/SDcardSwitch.ino.hex .
 
 WORKDIR /usr/app
 
+COPY config config
 COPY entry.sh .
 
 COPY --from=node-build /tmp/node/package.json .
