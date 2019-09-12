@@ -61,9 +61,9 @@ module.exports = class Suite {
       {
         packdir,
         suitePath: path.join(packdir, 'suite'),
-        tmpdir: config.BALENA_TESTS_TMPDIR || tmpdir(),
-        interactiveTests: config.BALENA_TESTS_ENABLE_INTERACTIVE_TESTS,
-        replOnFailure: config.BALENA_TESTS_REPL_ON_FAILURE
+        tmpdir: config.tmpdir || tmpdir(),
+        interactiveTests: config.interactive,
+        replOnFailure: config.repl
       },
       require(path.join(packdir, 'suite', 'conf'))(config)
     );
@@ -76,11 +76,11 @@ module.exports = class Suite {
     this.ctxStack = [];
     try {
       this.deviceType = require(`../../contracts/contracts/hw.device-type/${
-        config.BALENA_TESTS_DEVICE_TYPE
+        config.deviceType
       }/contract.json`);
     } catch (e) {
       if (e.code === 'MODULE_NOT_FOUND') {
-        throw new Error(`Invalid/Unsupported device type: ${config.BALENA_TESTS_DEVICE_TYPE}`);
+        throw new Error(`Invalid/Unsupported device type: ${config.deviceType}`);
       } else {
         throw e;
       }
