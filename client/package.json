@@ -3,9 +3,14 @@
   "version": "0.0.1",
   "description": "Simple client to connect to Leviathan core",
   "main": "index.js",
-  "devDependencies": {},
+  "devDependencies": {
+    "@babel/core": "^7.6.0",
+    "@babel/node": "^7.6.1",
+    "@babel/preset-env": "^7.6.0"
+  },
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "start-es5": "babel-node --presets @babel/env index.js"
   },
   "author": "Theodor Gherzan",
   "license": "ISC",
@@ -16,11 +21,12 @@
     "md5-file": "^4.0.0",
     "mz": "^2.7.0",
     "progress-stream": "^2.0.0",
+    "readable-stream": "^3.4.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
     "resin-cli-visuals": "^1.4.3",
     "tar-fs": "^2.0.0",
-    "websocket-stream": "^5.5.0",
+    "ws": "^7.1.2",
     "yargs": "^13.2.4"
   }
 }

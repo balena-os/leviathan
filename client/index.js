@@ -7,9 +7,9 @@ const { basename, dirname, join } = require('path');
 const progStream = require('progress-stream');
 const tar = require('tar-fs');
 const rp = require('request-promise');
-const { SpinnerPromise, Spinner, Progress } = require('resin-cli-visuals');
-const pipeline = Bluebird.promisify(require('stream').pipeline);
-const websocket = require('websocket-stream');
+const { SpinnerPromise, Spinner, Progress } = require('./lib/visuals');
+const pipeline = Bluebird.promisify(require('readable-stream').pipeline);
+const WebSocket = require('ws');
 const zlib = require('zlib');
 
 const yargs = require('yargs')
@@ -82,8 +82,17 @@ async function getFilesFromDirectory(basePath, ignore = []) {
   return files;
 }
 
-(async () => {
+async function main() {
   await emptyDir(yargs.workdir);
+
+  process.once('SIGINT', async () => {
+    await rp.post(`http://${yargs.url}/stop`);
+    process.exit(128 + constants.signals.SIGINT);
+  });
+  process.once('SIGTERM', async () => {
+    await rp.post(`http://${yargs.url}/stop`);
+    process.exit(128 + constants.signals.SIGTERM);
+  });
 
   await new SpinnerPromise({
     promise: rp.get({
@@ -104,7 +113,7 @@ async function getFilesFromDirectory(basePath, ignore = []) {
     const stat = await fs.stat(artifact.path);
 
     if (!stat[artifact.type]()) {
-      throw new Error(`${artifact.path} does not satisfy ${artifcat.type}`);
+      throw new Error(`${artifact.path} does not satisfy ${artifact.type}`);
     }
 
     if (artifact.name === 'image') {
@@ -258,15 +267,42 @@ async function getFilesFromDirectory(basePath, ignore = []) {
     });
   }
 
-  const ws = websocket(`ws://${yargs.url}/start`);
+  process.exitCode = 1;
+  const ws = new WebSocket(`ws://${yargs.url}/start`, [
+    process.env.CI != null ? 'CI' : '',
+  ]);
   // Keep the websocket alive
-  ws.socket.on('ping', () => {
-    ws.socket.pong('heartbeat');
+  ws.on('ping', () => {
+    ws.pong('heartbeat');
   });
-  process.once('SIGINT', async () => {
-    await rp.post(`http://${yargs.url}/stop`);
-    process.exit(128 + constants.signals.SIGINT);
+
+  process.stdin.on('data', data => {
+    ws.send(data);
   });
-  process.stdin.pipe(ws);
-  ws.pipe(process.stdout);
-})();
+  ws.on('error', console.error);
+  ws.on('message', pkg => {
+    try {
+      const message = JSON.parse(pkg);
+
+      switch (message.status) {
+        case 'running':
+          process.stdout.write(Buffer.from(message.data.stdout));
+          break;
+        case 'exit':
+          process.exitCode = message.data.code;
+          break;
+        default:
+          break;
+      }
+    } catch (e) {
+      console.error(`Parsing error: ${e}`);
+      process.exitCode(1);
+    }
+  });
+}
+
+main().catch(async error => {
+  await rp.post(`http://${yargs.url}/stop`).catch(console.error);
+  console.error(error);
+  process.exitCode = 1;
+});

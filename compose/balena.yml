@@ -9,7 +9,7 @@ services:
     network_mode: 'host'
     volumes:
       - 'core-storage:/data'
-   labels:
+    labels:
       share: 'core-storage'
   worker:
     privileged: true

@@ -26,6 +26,7 @@ class NetworkManager {
   constructor(private options: Leviathan.Options['network'], private bus = dbus.systemBus()) {
     // Cleanup code
     process.on('SIGINT', this.teardown);
+    process.on('SIGTERM', this.teardown);
   }
 
   private static stringToArrayOfBytes(str: string): Array<number> {
@@ -205,9 +206,13 @@ class NetworkManager {
     await this.removeWirelessConnection();
     this.bus.disconnect();
     process.removeListener('SIGINT', this.teardown);
+    process.removeListener('SIGTERM', this.teardown);
 
     if (signal === 'SIGINT') {
       process.exit(128 + os.constants.signals.SIGINT);
+    }
+    if (signal === 'SIGTERM') {
+      process.exit(128 + os.constants.signals.SIGTERM);
     }
   }
 }

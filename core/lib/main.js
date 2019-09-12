@@ -27,8 +27,8 @@ const { fs, crypto } = require('mz');
 const { join } = require('path');
 const tar = require('tar-fs');
 const pipeline = Bluebird.promisify(require('stream').pipeline);
-const webSocketStream = require('websocket-stream/stream');
 const { createGunzip } = require('zlib');
+const WebSocket = require('ws');
 
 async function setup() {
   const mutex = new Mutex();
@@ -48,14 +48,18 @@ async function setup() {
     res.writeHead(202, {
       Connection: 'keep-alive'
     });
+    const interval = setInterval(() => {
+      res.write('Still waiting');
+    }, 20000);
     res.connection.setTimeout(0);
     release = await mutex.acquire();
+    clearInterval(interval);
     res.end();
   });
 
   app.post('/upload', async (req, res) => {
     if (!mutex.isLocked) {
-      throw new Error('Please call /upload to aquire lock execution');
+      throw new Error('Please call /aquire to aquire lock execution');
     }
 
     res.writeHead(202, {
@@ -125,8 +129,7 @@ async function setup() {
       }
     } catch (e) {
       if (release != null) {
-        release();
-        release = null;
+        release = release();
       }
       res.write(`error: ${e.message}`);
     } finally {
@@ -134,23 +137,24 @@ async function setup() {
     }
   });
 
-  app.ws('/start', async (ws, _req) => {
+  app.ws('/start', async (ws, req) => {
+    process.env.CI = req.headers['sec-websocket-protocol'] === 'CI';
+
     // Keep the socket alive
     const interval = setInterval(function timeout() {
-      if (ws.readyState === 1) {
+      if (ws.readyState === WebSocket.OPEN) {
         ws.ping('heartbeat');
       }
     }, 1000);
-    const wsStream = webSocketStream(ws);
 
     try {
       if (!mutex.isLocked) {
         throw new Error('Please call /aquire to aquire lock execution');
       }
 
-      await new Promise((resolve, reject) => {
-        wsStream.on('error', console.error);
-        wsStream.on('close', () => {
+      await new Promise(resolve => {
+        ws.on('error', console.error);
+        ws.on('close', () => {
           clearInterval(interval);
           if (child != null) {
             child.kill('SIGINT');
@@ -171,23 +175,54 @@ async function setup() {
           }
         );
 
-        wsStream.pipe(child.stdin);
-        child.stdout.pipe(wsStream);
-        child.stderr.pipe(wsStream);
-
-        child.on('exit', (code, signal) => {
-          child = null;
-          if (code === 0) {
-            resolve();
-          } else {
-            reject(new Error(`CODE: ${code} SIGNAL: ${signal}`));
+        ws.on('message', data => {
+          child.stdin.write(data);
+        });
+        child.stdout.on('data', data => {
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(
+              JSON.stringify({
+                status: 'running',
+                data: {
+                  stdout: data
+                }
+              })
+            );
           }
+        });
+        child.stderr.on('data', data => {
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(
+              JSON.stringify({
+                status: 'running',
+                data: {
+                  stdout: data
+                }
+              })
+            );
+          }
+        });
+        child.on('exit', code => {
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(
+              JSON.stringify({
+                status: 'exit',
+                data: {
+                  code
+                }
+              })
+            );
+          }
+          child = null;
+          if (release != null) {
+            release = release();
+          }
+          resolve();
         });
       });
     } catch (e) {
       if (release != null) {
-        release();
-        release = null;
+        release = release();
       }
       console.error(e);
     } finally {
@@ -198,24 +233,19 @@ async function setup() {
   app.post('/stop', async (_req, res) => {
     try {
       if (!mutex.isLocked) {
-        throw new Error('Please call /upload to aquire lock execution');
+        throw new Error('Please call /aquire to aquire lock execution');
       }
-
       if (child != null) {
-        child.on('exit', () => {
-          if (release != null) {
-            release();
-            release = null;
-          }
-          child = null;
+        child.once('exit', () => {
           res.send('OK');
         });
         child.kill('SIGINT');
       } else if (release != null) {
-        release();
-        release = null;
+        release = release();
+        res.send('OK');
       }
     } catch (e) {
+      console.log(e);
       res.status(500);
       res.send(e.stack);
     }

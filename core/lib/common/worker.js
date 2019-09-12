@@ -24,7 +24,7 @@ const { fs } = require('mz');
 const pipeline = Bluebird.promisify(require('stream').pipeline);
 const request = require('request');
 const rp = require('request-promise');
-const { Spinner, Progress } = require('resin-cli-visuals');
+const { Spinner, Progress } = require('./visuals');
 
 module.exports = class Worker {
   constructor(deviceType) {
@@ -37,6 +37,7 @@ module.exports = class Worker {
       await os.configure();
 
       const spinner = new Spinner('Preparing flash');
+      let singleton = false;
       spinner.start();
 
       const progress = new Progress('Flashing image');
@@ -68,7 +69,10 @@ module.exports = class Worker {
             // Hide any errors as the lines we get can be half written
             const state = JSON.parse(computedLine[2]);
             if (state != null && isNumber(state.percentage)) {
-              spinner.stop();
+              if (!singleton) {
+                spinner.stop();
+                singleton ^= true;
+              }
               progress.update(state);
             }
           }
