@@ -59,7 +59,7 @@ async function setup() {
   });
 
   app.post('/upload', async (req, res) => {
-    if (!mutex.isLocked) {
+    if (!mutex.isLocked()) {
       throw new Error('Please call /aquire to aquire lock execution');
     }
 
@@ -149,7 +149,7 @@ async function setup() {
     }, 1000);
 
     try {
-      if (!mutex.isLocked) {
+      if (!mutex.isLocked()) {
         throw new Error('Please call /aquire to aquire lock execution');
       }
 
@@ -233,7 +233,7 @@ async function setup() {
 
   app.post('/stop', async (_req, res) => {
     try {
-      if (!mutex.isLocked) {
+      if (!mutex.isLocked()) {
         throw new Error('Please call /aquire to aquire lock execution');
       }
       if (child != null) {
@@ -246,9 +246,7 @@ async function setup() {
         res.send('OK');
       }
     } catch (e) {
-      console.log(e);
-      res.status(500);
-      res.send(e.stack);
+      res.status(500).send(e.stack);
     }
   });
 
