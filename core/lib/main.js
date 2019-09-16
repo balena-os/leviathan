@@ -59,10 +59,6 @@ async function setup() {
   });
 
   app.post('/upload', async (req, res) => {
-    if (!mutex.isLocked()) {
-      throw new Error('Please call /aquire to aquire lock execution');
-    }
-
     res.writeHead(202, {
       'Content-Type': 'text/event-stream',
       Connection: 'keep-alive'
@@ -149,10 +145,6 @@ async function setup() {
     }, 1000);
 
     try {
-      if (!mutex.isLocked()) {
-        throw new Error('Please call /aquire to aquire lock execution');
-      }
-
       await new Promise(resolve => {
         ws.on('error', console.error);
         ws.on('close', () => {
@@ -233,16 +225,22 @@ async function setup() {
 
   app.post('/stop', async (_req, res) => {
     try {
-      if (!mutex.isLocked()) {
-        throw new Error('Please call /aquire to aquire lock execution');
-      }
       if (child != null) {
-        child.once('exit', () => {
+        child.on('close', () => {
           res.send('OK');
         });
         child.kill('SIGINT');
       } else if (release != null) {
-        release = release();
+        const interval = setInterval(() => {
+          release = release();
+          // the release of the lock may be slow, so to avoid a deadlock, let's wait on it
+          // before terminating
+          if (!mutex.isLocked()) {
+            clearInterval(interval);
+            res.send('OK');
+          }
+        }, 100);
+      } else {
         res.send('OK');
       }
     } catch (e) {
