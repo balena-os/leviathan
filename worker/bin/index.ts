@@ -1,10 +1,11 @@
 import setup from '../lib/index';
+import * as config from 'config';
 
 (async function(): Promise<void> {
-  let port: number = process.env.PORT != null ? parseInt(process.env.PORT) : 2000;
+  let port: number = config.get('worker.port');
 
   const app = await setup({
-    workdir: '/data'
+    workdir: config.get('worker.workdir')
   });
 
   /**

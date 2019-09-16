@@ -26,26 +26,26 @@ module.exports = options => {
     id,
     balenaOS: {
       download: {
-        type: options.BALENA_TESTS_DOWNLOAD_TYPE,
-        version: options.BALENA_TESTS_DOWNLOAD_VERSION,
-        source: options.BALENA_TESTS_DOWNLOAD_SOURCE,
+        type: options.downloadType,
+        version: options.downloadVersion,
+        source: options.downloadSource,
       },
       network: {
-        wired: options.BALENA_TESTS_NETWORK_WIRED,
-        wireless: options.BALENA_TESTS_NETWORK_WIRELESS,
+        wired: options.networkWired,
+        wireless: options.networkWireless,
       },
     },
     balena: {
       application: {
         env: {
-          delta: options.BALENA_TESTS_SUPERVISOR_DELTA || false,
+          delta: options.supervisorDelta || false,
         },
       },
-      apiKey: options.BALENA_TESTS_API_KEY,
-      apiUrl: options.BALENA_TESTS_API_URL,
+      apiKey: options.balenaApiKey,
+      apiUrl: options.balenaApiUrl,
     },
     worker: {
-      type: options.BALENA_TESTS_WORKER_TYPE,
+      type: options.workerType,
     },
   };
 };

@@ -19,6 +19,7 @@
 const Bluebird = require('bluebird');
 const retry = require('bluebird-retry');
 const utils = require('../common/utils');
+const config = require('config');
 const isNumber = require('lodash/isNumber');
 const { fs } = require('mz');
 const pipeline = Bluebird.promisify(require('stream').pipeline);
@@ -29,7 +30,7 @@ const { Spinner, Progress } = require('./visuals');
 module.exports = class Worker {
   constructor(deviceType) {
     this.deviceType = deviceType;
-    this.url = 'localhost:2000';
+    this.url = `${config.get('worker.url')}:${config.get('worker.port')}`;
   }
 
   flash(os) {
@@ -42,7 +43,7 @@ module.exports = class Worker {
 
       const progress = new Progress('Flashing image');
 
-      const req = rp.post({ uri: `http://${this.url}/dut/flash` });
+      const req = rp.post({ uri: `${this.url}/dut/flash` });
 
       req.catch(error => {
         reject(error);
@@ -88,39 +89,39 @@ module.exports = class Worker {
   }
 
   async select(worker) {
-    await rp.post({ uri: `http://${this.url}/select`, body: worker, json: true });
+    await rp.post({ uri: `${this.url}/select`, body: worker, json: true });
   }
 
   async on() {
-    await rp.post(`http://${this.url}/dut/on`);
+    await rp.post(`${this.url}/dut/on`);
   }
 
   async off() {
-    await rp.post(`http://${this.url}/dut/off`);
+    await rp.post(`${this.url}/dut/off`);
   }
 
   async network(network) {
-    await rp.post({ uri: `http://${this.url}/dut/network`, body: network, json: true });
+    await rp.post({ uri: `${this.url}/dut/network`, body: network, json: true });
   }
 
   proxy(proxy) {
-    return rp.post({ uri: `http://${this.url}/proxy`, body: proxy, json: true });
+    return rp.post({ uri: `${this.url}/proxy`, body: proxy, json: true });
   }
 
   ip(target) {
-    return rp.get({ uri: `http://${this.url}/dut/ip`, body: { target }, json: true });
+    return rp.get({ uri: `${this.url}/dut/ip`, body: { target }, json: true });
   }
 
   async teardown() {
-    await rp.post({ uri: `http://${this.url}/teardown`, json: true });
+    await rp.post({ uri: `${this.url}/teardown`, json: true });
   }
 
   capture(action) {
     switch (action) {
       case 'start':
-        return rp.post({ uri: `http://${this.url}/dut/capture`, json: true });
+        return rp.post({ uri: `${this.url}/dut/capture`, json: true });
       case 'stop':
-        return request.get({ uri: `http://${this.url}/dut/capture` });
+        return request.get({ uri: `${this.url}/dut/capture` });
     }
   }
 

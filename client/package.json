@@ -1,31 +1,43 @@
 {
   "name": "client",
   "version": "0.0.1",
-  "description": "Simple client to connect to Leviathan core",
-  "main": "index.js",
+  "description": "Simple client to schedule a single Leviathan run",
+  "main": "lib/index.js",
+  "directories": {
+    "bin": "bin"
+  },
+  "bin": {
+    "single-client": "bin/single-client.js",
+    "multi-client": "bin/multi-client.js"
+  },
   "devDependencies": {
     "@babel/core": "^7.6.0",
     "@babel/node": "^7.6.1",
     "@babel/preset-env": "^7.6.0"
   },
   "scripts": {
-    "start": "node index.js",
-    "start-es5": "babel-node --presets @babel/env index.js"
+    "single-start": "node bin/single-client.js",
+    "single-start-es5": "babel-node --presets @babel/env bin/single-client.js",
+    "multi-start": "node bin/multi-client.js",
+    "multi-start-es5": "babel-node --presets @babel/env bin/multi-client.js"
   },
   "author": "Theodor Gherzan",
   "license": "ISC",
   "dependencies": {
+    "ajv": "^6.10.2",
+    "balena-sdk": "^12.10.0",
     "bluebird": "^3.5.3",
+    "config": "^3.2.2",
     "fs-extra": "^8.1.0",
     "lodash": "^4.17.11",
     "md5-file": "^4.0.0",
-    "mz": "^2.7.0",
     "progress-stream": "^2.0.0",
     "readable-stream": "^3.4.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
     "resin-cli-visuals": "^1.4.3",
     "tar-fs": "^2.0.0",
+    "tar-stream": "^2.1.0",
     "ws": "^7.1.2",
     "yargs": "^13.2.4"
   }

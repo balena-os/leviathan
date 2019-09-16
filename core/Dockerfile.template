@@ -30,6 +30,7 @@ COPY .eslintrc.json ./
 COPY .prettierrc ./
 
 COPY lib lib
+COPY config config
 COPY entry.sh ./
 
 EXPOSE 80
