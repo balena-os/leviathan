@@ -232,7 +232,9 @@ async function setup() {
         child.kill('SIGINT');
       } else if (release != null) {
         const interval = setInterval(() => {
-          release = release();
+          if (release != null) {
+            release = release();
+          }
           // the release of the lock may be slow, so to avoid a deadlock, let's wait on it
           // before terminating
           if (!mutex.isLocked()) {
