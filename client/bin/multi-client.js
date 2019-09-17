@@ -164,8 +164,6 @@ const yargs = require('yargs')
     });
     child.on('exit', code => {
       --i;
-
-      console.log(i);
       children[child.pid].code = code;
     });
   }

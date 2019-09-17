@@ -89,16 +89,14 @@ module.exports = class BalenaSDK {
   async getDownloadStream(deviceType, version) {
     const stream = await this.balena.models.os.download(deviceType, version);
 
-    if (!process.env.CI) {
-      const bar = new visuals.Progress('Download');
+    const bar = new visuals.Progress('Download');
 
-      stream.on('progress', data => {
-        bar.update({
-          percentage: data.percentage,
-          eta: data.eta
-        });
+    stream.on('progress', data => {
+      bar.update({
+        percentage: data.percentage,
+        eta: data.eta
       });
-    }
+    });
 
     return stream;
   }
