@@ -157,7 +157,7 @@ async function setup() {
         child = forkCode(
           `const Suite = require('${require.resolve('./common/suite')}');
 
-          (async () => { 
+          (async () => {
             const suite = new Suite('${location}');
             await suite.init();
             suite.printRunQueueSummary();

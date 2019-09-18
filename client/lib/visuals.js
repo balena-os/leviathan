@@ -64,8 +64,9 @@ class CiSpinnerPromise extends SpinnerPromise {
       return super(options, stream);
     } else {
       stream.write(`${options.startMessage}...[This will take a while]\n`);
-      return options.promise.then(() => {
+      return options.promise.then(result => {
         stream.write(options.stopMessage);
+        return result;
       });
     }
   }

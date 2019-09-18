@@ -39,13 +39,6 @@ const yargs = require('yargs')
   .help('help')
   .showHelpOnFail(false, 'Something went wrong! run with --help').argv;
 
-function stripAnsi(str) {
-  return str.replace(
-    /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
-    '',
-  );
-}
-
 (async () => {
   await ensureDir(yargs.workdir);
 
@@ -99,10 +92,12 @@ function stripAnsi(str) {
       },
     });
 
+    screen.key(['C-c'], function() {
+      process.kill(process.pid, 'SIGINT');
+    });
+
     mainStream.on('data', data => {
-      mainContainer.deleteBottom();
-      mainContainer.pushLine(stripAnsi(data.toString()));
-      mainContainer.scroll(Number.MAX_VALUE);
+      mainContainer.setContent(data.toString());
       screen.render();
     });
     screen.render();
@@ -175,7 +170,6 @@ function stripAnsi(str) {
                 resolve();
               }
             } catch (e) {
-              console.error(e);
               resolve();
             }
           }),
@@ -205,6 +199,13 @@ function stripAnsi(str) {
           height: '93%',
           border: 'line',
           scrollOnInput: true,
+          mouse: true,
+          scrollbar: true,
+          style: {
+            scrollbar: {
+              bg: 'white',
+            },
+          },
         }),
       );
     }
@@ -222,8 +223,6 @@ function stripAnsi(str) {
   while (runQueue.length > 0) {
     const run = runQueue.pop();
     const stream = new PassThrough();
-    // We start the child in CI mode so we do not polute our output as we do not run
-    // in a active tty, we should rename CI to something more appropriate for this use case
     const child = fork(
       './single-client',
       [
@@ -256,10 +255,9 @@ function stripAnsi(str) {
     child.stderr.pipe(stream);
 
     if (process.stdout.isTTY === true) {
-      stream.isTTY = true;
       children[child.pid].container = containers[runQueue.length];
       stream.on('data', data => {
-        children[child.pid].container.add(stripAnsi(data.toString()));
+        children[child.pid].container.pushLine(data.toString());
         screen.render();
       });
     }

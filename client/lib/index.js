@@ -268,7 +268,7 @@ async function main(suite, config, image, uri, workdir) {
   await new Promise((resolve, reject) => {
     process.exitCode = 1;
     const ws = new WebSocket(`ws://${parsedUri.hostname}/start`, [
-      process.env.CI != null ? 'CI' : '',
+      process.env.CI === 'true' ? 'CI' : '',
     ]);
     // Keep the websocket alive
     ws.on('ping', () => {
