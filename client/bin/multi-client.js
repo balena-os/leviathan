@@ -7,11 +7,15 @@ const ajv = new (require('ajv'))({ allErrors: true });
 const balena = require('balena-sdk')({
   apiUrl: config.get('balena.apiUrl'),
 });
+const blessed = require('blessed');
 const { fork } = require('child_process');
+const { ensureDir } = require('fs-extra');
+const { fs } = require('mz');
 const schema = require('../lib/schemas/multi-client-config.json');
 const { Spinner } = require('../lib/visuals');
 const { every, forEach } = require('lodash');
 const { tmpdir } = require('os');
+const { PassThrough } = require('stream');
 const yargs = require('yargs')
   .usage('Usage: $0 [options]')
   .option('h', {
@@ -35,11 +39,21 @@ const yargs = require('yargs')
   .help('help')
   .showHelpOnFail(false, 'Something went wrong! run with --help').argv;
 
-(async () => {
-  const runQueue = [];
+function stripAnsi(str) {
+  return str.replace(
+    /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
+    '',
+  );
+}
 
+(async () => {
+  await ensureDir(yargs.workdir);
+
+  const runQueue = [];
   const runConfigs = require(yargs.config);
   const validate = ajv.compile(schema);
+
+  const mainStream = new PassThrough();
 
   if (!validate(runConfigs)) {
     throw new Error(
@@ -47,7 +61,56 @@ const yargs = require('yargs')
     );
   }
 
-  const queueSpinner = new Spinner('Computing Run Queue');
+  //Blessed setup for pretty terminal output
+  if (process.stdout.isTTY === true) {
+    // Hack our passtrhough stream in thinking it is tty
+    mainStream.isTTY = true;
+    var screen = blessed.screen({
+      log: 'client.log',
+      dump: true,
+      smartCSR: true,
+    });
+
+    var layout = blessed.layout({
+      parent: screen,
+      top: 'center',
+      left: 'center',
+      width: '100%',
+      height: '100%',
+      border: 'none',
+    });
+
+    var mainContainer = blessed.text({
+      label: 'main',
+      align: 'left',
+      parent: layout,
+      width: '99%',
+      height: '99%',
+      border: 'line',
+      scrollable: true,
+      alwaysScroll: true,
+      style: {
+        border: {
+          fg: '#009933',
+        },
+        label: {
+          fg: '#009933',
+        },
+      },
+    });
+
+    mainStream.on('data', data => {
+      mainContainer.deleteBottom();
+      mainContainer.pushLine(stripAnsi(data.toString()));
+      mainContainer.scroll(Number.MAX_VALUE);
+      screen.render();
+    });
+    screen.render();
+  } else {
+    mainStream.pipe(process.stdout);
+  }
+
+  const queueSpinner = new Spinner('Computing Run Queue', mainStream);
   queueSpinner.start();
   for (const runConfig of runConfigs) {
     if (runConfig.workers instanceof Array) {
@@ -78,7 +141,7 @@ const yargs = require('yargs')
   }
   queueSpinner.stop();
 
-  const runSpinner = new Spinner('Running Queue');
+  const runSpinner = new Spinner('Running Queue', mainStream);
   // Concurrent Run
   const children = {};
   runSpinner.start();
@@ -89,34 +152,66 @@ const yargs = require('yargs')
     })
       ? 0
       : 1;
-    console.log();
-    forEach(children, (child, pid) => {
-      console.log('================================================');
-      console.log(`${pid} finished: ${child.code}`);
-      console.log('================================================');
-      console.log(child.output);
-      console.log('================================================');
-    });
   });
   // Make sure we pass down our signal
   ['SIGINT', 'SIGTERM'].forEach(signal => {
     process.on(signal, async sig => {
+      const cleanSpinner = new Spinner('Cleaning up', mainStream);
+      cleanSpinner.start();
       const promises = [];
       forEach(children, child => {
         promises.push(
-          new Promise((resolve, reject) => {
-            child._child.on('close', resolve);
-            child._child.on('error', reject);
+          new Promise(async (resolve, reject) => {
+            try {
+              const procInfo = (await fs.readFile(
+                '/proc/' + child._child.pid + '/status',
+              )).toString();
+
+              if (procInfo.match(/State:\s+[RSDT]/)) {
+                child._child.on('close', resolve);
+                child._child.on('error', reject);
+                child._child.kill(sig);
+              } else {
+                resolve();
+              }
+            } catch (e) {
+              console.error(e);
+              resolve();
+            }
           }),
         );
-        child._child.kill(sig);
       });
       await Promise.all(promises);
+
+      cleanSpinner.stop();
+      if (screen != null) {
+        screen.destroy();
+      }
+
       process.exit(1);
     });
   });
 
-  // Keep track of our running children
+  if (process.stdout.isTTY === true) {
+    mainContainer.height = '7%';
+    var containers = [];
+    for (let i = 0; i < runQueue.length; ++i) {
+      containers.push(
+        blessed.log({
+          label: `${i + 1}`,
+          align: 'left',
+          parent: layout,
+          width: `${99 / runQueue.length}%`,
+          height: '93%',
+          border: 'line',
+          scrollOnInput: true,
+        }),
+      );
+    }
+    screen.render();
+  }
+
+  // Keep track of our running children, essentially a watch dog
   let i = 0;
   const interval = setInterval(() => {
     if (!(i > 0)) {
@@ -126,6 +221,7 @@ const yargs = require('yargs')
   }, 1000);
   while (runQueue.length > 0) {
     const run = runQueue.pop();
+    const stream = new PassThrough();
     // We start the child in CI mode so we do not polute our output as we do not run
     // in a active tty, we should rename CI to something more appropriate for this use case
     const child = fork(
@@ -147,21 +243,30 @@ const yargs = require('yargs')
         },
       },
     );
+    ++i;
     // child state
     children[child.pid] = {
       _child: child,
       output: '',
       exitCode: 1,
     };
-    ++i;
 
     child.on('error', console.error);
-    child.stdout.on('data', data => {
-      children[child.pid].output += data.toString('utf-8');
-    });
-    child.stderr.on('data', data => {
-      children[child.pid].output += data.toString('utf-8');
-    });
+    child.stdout.pipe(stream);
+    child.stderr.pipe(stream);
+
+    if (process.stdout.isTTY === true) {
+      stream.isTTY = true;
+      children[child.pid].container = containers[runQueue.length];
+      stream.on('data', data => {
+        children[child.pid].container.add(stripAnsi(data.toString()));
+        screen.render();
+      });
+    }
+
+    // Also stream our tests to their indiviual files
+    stream.pipe(fs.createWriteStream(`${yargs.workdir}/${child.pid}.out`));
+
     child.on('exit', code => {
       --i;
       children[child.pid].code = code;

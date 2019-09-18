@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
 const { tmpdir } = require('os');
+const { ensureDir } = require('fs-extra');
+const main = require('../lib');
 const yargs = require('yargs')
   .usage('Usage: $0 [options]')
   .option('h', {
@@ -41,10 +43,7 @@ const yargs = require('yargs')
   .help('help')
   .showHelpOnFail(false, 'Something went wrong! run with --help').argv;
 
-require('../lib')(
-  yargs.suite,
-  yargs.config,
-  yargs.image,
-  yargs.uri,
-  yargs.workdir,
-);
+(async () => {
+  await ensureDir(yargs.workdir);
+  await main(yargs.suite, yargs.config, yargs.image, yargs.uri, yargs.workdir);
+})();

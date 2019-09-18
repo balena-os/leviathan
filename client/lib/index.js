@@ -1,5 +1,5 @@
 const Bluebird = require('bluebird');
-const { exists, emptyDir } = require('fs-extra');
+const { exists } = require('fs-extra');
 const md5 = require('md5-file/promise');
 const { fs, crypto } = require('mz');
 const { constants } = require('os');
@@ -50,8 +50,6 @@ async function getFilesFromDirectory(basePath, ignore = []) {
 let parsedUri;
 
 async function main(suite, config, image, uri, workdir) {
-  await emptyDir(workdir);
-
   parsedUri = parse(uri);
 
   if (parsedUri.protocol == null) {
