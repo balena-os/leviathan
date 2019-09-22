@@ -5,7 +5,7 @@ const config = require('config');
 
 const ajv = new (require('ajv'))({ allErrors: true });
 const balena = require('balena-sdk')({
-  apiUrl: config.get('balena.apiUrl'),
+  apiurl: config.get('balena.apiUrl'),
 });
 const blessed = require('blessed');
 const { fork } = require('child_process');
@@ -16,6 +16,7 @@ const { Spinner } = require('../lib/visuals');
 const { every, forEach } = require('lodash');
 const { tmpdir } = require('os');
 const { PassThrough } = require('stream');
+const url = require('url');
 const yargs = require('yargs')
   .usage('Usage: $0 [options]')
   .option('h', {
@@ -152,6 +153,7 @@ const yargs = require('yargs')
   ['SIGINT', 'SIGTERM'].forEach(signal => {
     process.on(signal, async sig => {
       const cleanSpinner = new Spinner('Cleaning up', mainStream);
+      runSpinner.stop();
       cleanSpinner.start();
       const promises = [];
       forEach(children, child => {
@@ -192,7 +194,6 @@ const yargs = require('yargs')
     for (let i = 0; i < runQueue.length; ++i) {
       containers.push(
         blessed.log({
-          label: `${i + 1}`,
           align: 'left',
           parent: layout,
           width: `${99 / runQueue.length}%`,
@@ -256,6 +257,7 @@ const yargs = require('yargs')
 
     if (process.stdout.isTTY === true) {
       children[child.pid].container = containers[runQueue.length];
+      children[child.pid].container.pushLine(`WORKER URL: ${run.workers}`);
       stream.on('data', data => {
         children[child.pid].container.pushLine(data.toString());
         screen.render();
@@ -263,7 +265,11 @@ const yargs = require('yargs')
     }
 
     // Also stream our tests to their indiviual files
-    stream.pipe(fs.createWriteStream(`${yargs.workdir}/${child.pid}.out`));
+    stream.pipe(
+      fs.createWriteStream(
+        `${yargs.workdir}/${url.parse(run.workers).hostname || child.pid}.out`,
+      ),
+    );
 
     child.on('exit', code => {
       --i;
