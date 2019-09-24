@@ -49,7 +49,7 @@ async function getFilesFromDirectory(basePath, ignore = []) {
 
 let parsedUri;
 
-async function main(suite, config, image, uri, workdir) {
+async function main(deviceType, suite, config, image, uri, workdir) {
   parsedUri = parse(uri);
 
   if (parsedUri.protocol == null) {
@@ -79,11 +79,18 @@ async function main(suite, config, image, uri, workdir) {
     { path: image, type: 'isFile', name: 'image' },
   ];
 
+  let data = null;
   if (await exists(config)) {
-    artifacts.push({ path: config, type: 'isFile', name: 'config.json' });
+    data = require(config);
   } else {
-    artifacts.push({ data: config, type: 'isJSON', name: 'config.json' });
+    data = JSON.parse(config);
   }
+  data.deviceType = deviceType;
+  artifacts.push({
+    data,
+    type: 'isJSON',
+    name: 'config.json',
+  });
 
   // Sanity checks + sanity checks
   for (let artifact of artifacts) {
@@ -119,15 +126,6 @@ async function main(suite, config, image, uri, workdir) {
           artifact.path = gzippedPath;
         }
       }
-    } else if (artifact.data != null && artifact.type === 'isJSON') {
-      try {
-        JSON.parse(artifact.data);
-      } catch (e) {
-        throw new Error('JSON parsing failed.');
-      }
-    } else {
-      // SANITYT CHECK
-      throw new Error('Incorrect artifact structure.');
     }
   }
 
@@ -200,7 +198,10 @@ async function main(suite, config, image, uri, workdir) {
         .digest('hex');
       metadata.size = artifact.data.length;
       metadata.stream = tarStream.pack();
-      metadata.stream.entry({ name: artifact.name }, artifact.data);
+      metadata.stream.entry(
+        { name: artifact.name },
+        JSON.stringify(artifact.data),
+      );
       metadata.stream.finalize();
     }
     spinner.stop();

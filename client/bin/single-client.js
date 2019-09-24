@@ -9,6 +9,12 @@ const yargs = require('yargs')
     alias: 'help',
     description: 'display help message',
   })
+  .option('d', {
+    alias: 'deviceType',
+    description: 'name of the device type we are testing',
+    required: true,
+    type: 'string',
+  })
   .option('s', {
     alias: 'suite',
     description: 'path to test suite',
@@ -45,5 +51,12 @@ const yargs = require('yargs')
 
 (async () => {
   await ensureDir(yargs.workdir);
-  await main(yargs.suite, yargs.config, yargs.image, yargs.uri, yargs.workdir);
+  await main(
+    yargs.deviceType,
+    yargs.suite,
+    yargs.config,
+    yargs.image,
+    yargs.uri,
+    yargs.workdir,
+  );
 })();

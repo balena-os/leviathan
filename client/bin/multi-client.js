@@ -11,7 +11,7 @@ const blessed = require('blessed');
 const { fork } = require('child_process');
 const { ensureDir } = require('fs-extra');
 const { fs } = require('mz');
-const schema = require('../lib/schemas/multi-client-config.json');
+const schema = require('../lib/schemas/multi-client-config.js');
 const { Spinner } = require('../lib/visuals');
 const { every, forEach } = require('lodash');
 const { tmpdir } = require('os');
@@ -35,7 +35,12 @@ const yargs = require('yargs')
     type: 'string',
     default: `${tmpdir()}/run`,
   })
-
+  .option('p', {
+    alias: 'print',
+    description: 'print all output to stdout',
+    type: 'boolean',
+    default: false,
+  })
   .version()
   .help('help')
   .showHelpOnFail(false, 'Something went wrong! run with --help').argv;
@@ -44,9 +49,9 @@ const yargs = require('yargs')
   await ensureDir(yargs.workdir);
 
   const runQueue = [];
-  const runConfigs = require(yargs.config);
-  const validate = ajv.compile(schema);
+  let runConfigs = require(yargs.config);
 
+  const validate = ajv.compile(schema);
   const mainStream = new PassThrough();
 
   if (!validate(runConfigs)) {
@@ -54,6 +59,8 @@ const yargs = require('yargs')
       `Invalid configuration -> ${ajv.errorsText(validate.errors)}`,
     );
   }
+
+  runConfigs = runConfigs instanceof Object ? [runConfigs] : runConfigs;
 
   //Blessed setup for pretty terminal output
   if (process.stdout.isTTY === true) {
@@ -97,11 +104,12 @@ const yargs = require('yargs')
       process.kill(process.pid, 'SIGINT');
     });
 
+    screen.render();
+
     mainStream.on('data', data => {
       mainContainer.setContent(data.toString());
       screen.render();
     });
-    screen.render();
   } else {
     mainStream.pipe(process.stdout);
   }
@@ -120,14 +128,11 @@ const yargs = require('yargs')
       );
 
       for (const tag of tags.filter(tag => {
-        return (
-          tag.tag_key === 'DUT' && tag.value === runConfig.workers.deviceType
-        );
+        return tag.tag_key === 'DUT' && tag.value === runConfig.deviceType;
       })) {
         if (!(await balena.models.device.hasDeviceUrl(tag.device.__id))) {
           throw new Error('Worker not publicly available. Panicking...');
         }
-
         runQueue.push({
           ...runConfig,
           workers: await balena.models.device.getDeviceUrl(tag.device.__id),
@@ -142,12 +147,28 @@ const yargs = require('yargs')
   const children = {};
   runSpinner.start();
 
-  process.on('exit', () => {
-    process.exitCode = every(children, child => {
-      return child.code === 0;
-    })
-      ? 0
-      : 1;
+  process.on('exit', code => {
+    process.exitCode = code || 1;
+
+    if (Object.keys(children).length === 0) {
+      console.log('No workers found...NO TESTS RAN');
+    } else {
+      process.exitCode =
+        code ||
+        every(children, child => {
+          return child.code === 0;
+        })
+          ? 0
+          : 1;
+
+      if (yargs.print) {
+        children.forEach(child => {
+          console.log(`=====| ${child.outputPath}`);
+          console.log(fs.readFileSync(child.outputPath));
+          console.log(`=====`);
+        });
+      }
+    }
   });
   // Make sure we pass down our signal
   ['SIGINT', 'SIGTERM'].forEach(signal => {
@@ -227,6 +248,8 @@ const yargs = require('yargs')
     const child = fork(
       './single-client',
       [
+        '-d',
+        run.deviceType,
         '-i',
         run.image,
         '-c',
@@ -247,7 +270,8 @@ const yargs = require('yargs')
     // child state
     children[child.pid] = {
       _child: child,
-      output: '',
+      outputPath: `${yargs.workdir}/${url.parse(run.workers).hostname ||
+        child.pid}.out`,
       exitCode: 1,
     };
 
@@ -265,11 +289,7 @@ const yargs = require('yargs')
     }
 
     // Also stream our tests to their indiviual files
-    stream.pipe(
-      fs.createWriteStream(
-        `${yargs.workdir}/${url.parse(run.workers).hostname || child.pid}.out`,
-      ),
-    );
+    stream.pipe(fs.createWriteStream(children[child.pid].outputPath));
 
     child.on('exit', code => {
       --i;
