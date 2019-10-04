@@ -220,14 +220,15 @@ async function main(deviceType, suite, config, image, uri, workdir) {
         },
       });
 
+      req.then(resolve).catch(reject);
+
       // We need to record the end of our pipe, so we can unpipe in case cache will be used
       const pipeEnd = zlib.createGzip({ level: 6 });
-      const line = pipeline(metadata.stream, str, pipeEnd).delay(1000);
+      const line = pipeline(metadata.stream, str, pipeEnd)
+        .delay(1000)
+        .catch(reject);
       pipeEnd.pipe(req);
 
-      req.finally(() => {
-        resolve();
-      });
       req.on('error', reject);
       req.on('data', async data => {
         const computedLine = RegExp('^([a-z]*): (.*)').exec(data.toString());
