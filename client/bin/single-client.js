@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 
 const { tmpdir } = require('os');
+const { join } = require('path');
+const { createWriteStream } = require('fs');
 const { ensureDir } = require('fs-extra');
-const main = require('../lib');
+const Client = require('../lib');
 const yargs = require('yargs')
   .usage('Usage: $0 [options]')
   .option('h', {
@@ -50,13 +52,20 @@ const yargs = require('yargs')
   .showHelpOnFail(false, 'Something went wrong! run with --help').argv;
 
 (async () => {
-  await ensureDir(yargs.workdir);
-  await main(
+  const client = new Client(yargs.uri);
+
+  const workdir = join(yargs.workdir, client.uri.hostname);
+
+  await ensureDir(workdir);
+
+  client.pipe(process.stdout);
+  client.pipe(createWriteStream(join(workdir, 'log')));
+
+  await client.run(
     yargs.deviceType,
     yargs.suite,
     yargs.config,
     yargs.image,
-    yargs.uri,
-    yargs.workdir,
+    workdir,
   );
 })();
