@@ -94,9 +94,9 @@ module.exports = {
     );
   },
   tests: [
-    './tests/led',
-    './tests/config-json',
+    //  './tests/led',
+    //  './tests/config-json',
     './tests/boot-splash',
-    './tests/connectivity',
+    //  './tests/connectivity',
   ],
 };

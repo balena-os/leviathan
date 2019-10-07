@@ -24,9 +24,15 @@ const BLINK_DURATION = 20000;
 
 module.exports = {
   title: 'Identification test',
+  os: {
+    type: 'string',
+    required: ['variant'],
+    const: 'development',
+  },
   run: async function(test) {
-    const serviceName = 'collecter';
+    const serviceName = 'collector';
     const ip = await this.context.worker.ip(this.context.link);
+    console.log(ip);
 
     // Wait for the supervisor API to be up
     await this.context.utils.waitUntil(async () => {
@@ -37,11 +43,13 @@ module.exports = {
         })) === 'OK'
       );
     }, false);
+    console.log('done');
 
     await this.context.worker.executeCommandInHostOS(
       `source /etc/resin-supervisor/supervisor.conf ; systemd-run --unit=${serviceName} bash -c "while true ; do cat $LED_FILE ; done"`,
       this.context.link,
     );
+    console.log('here');
 
     const body = await request({
       method: 'POST',

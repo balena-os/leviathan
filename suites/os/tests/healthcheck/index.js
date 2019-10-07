@@ -21,6 +21,11 @@ const rp = require('request-promise');
 
 module.exports = {
   title: 'Container healthcheck test',
+  os: {
+    type: 'string',
+    required: ['variant'],
+    const: 'development',
+  },
   run: async function(test) {
     const ip = await this.context.worker.ip(this.context.link);
     await retry(
@@ -59,9 +64,7 @@ module.exports = {
 
     const events = JSON.parse(
       await this.context.worker.executeCommandInHostOS(
-        `printf '["null"'; balena events --filter container=${
-          state.services.healthcheck
-        } --filter event=health_status --since 1 --until "$(date +%Y-%m-%dT%H:%M:%S.%NZ)" --format '{{json .}}' | while read LINE; do printf ",$LINE"; done; printf ']'`,
+        `printf '["null"'; balena events --filter container=${state.services.healthcheck} --filter event=health_status --since 1 --until "$(date +%Y-%m-%dT%H:%M:%S.%NZ)" --format '{{json .}}' | while read LINE; do printf ",$LINE"; done; printf ']'`,
         ip,
       ),
     );

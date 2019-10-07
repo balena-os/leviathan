@@ -20,6 +20,11 @@ const request = require('request-promise');
 
 module.exports = {
   title: 'Container exposed variables test',
+  os: {
+    type: 'string',
+    required: ['variant'],
+    const: 'development',
+  },
   run: async function(test) {
     const ip = await this.context.worker.ip(this.context.link);
     await retry(
