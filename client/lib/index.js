@@ -3,7 +3,7 @@ const { exists } = require('fs-extra');
 const md5 = require('md5-file/promise');
 const { fs, crypto } = require('mz');
 const { constants } = require('os');
-const { basename, dirname, join } = require('path');
+const { basename, dirname, isAbsolute, join } = require('path');
 const progStream = require('progress-stream');
 const rp = require('request-promise');
 const pipeline = Bluebird.promisify(require('readable-stream').pipeline);
@@ -48,6 +48,10 @@ async function getFilesFromDirectory(basePath, ignore = []) {
   return files;
 }
 
+function makePath(p) {
+  return isAbsolute(p) ? p : join(process.cwd(), p);
+}
+
 module.exports = class Client extends PassThrough {
   constructor(uri) {
     super();
@@ -82,13 +86,21 @@ module.exports = class Client extends PassThrough {
 
       const ignore = ['node_modules', 'package-lock.json'];
       const artifacts = [
-        { path: suite, type: 'isDirectory', name: 'suite' },
-        { path: image, type: 'isFile', name: 'image' },
+        {
+          path: makePath(suite),
+          type: 'isDirectory',
+          name: 'suite',
+        },
+        {
+          path: makePath(image),
+          type: 'isFile',
+          name: 'image',
+        },
       ];
 
       let data = null;
-      if (await exists(config)) {
-        data = require(config);
+      if (await exists(makePath(conf))) {
+        data = require(makePath(conf));
       } else {
         data = JSON.parse(config);
       }

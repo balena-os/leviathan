@@ -47,6 +47,8 @@ module.exports = {
       run: async function(test) {
         const { hammingDistance, blockhash } = this.require('/common/graphics');
 
+        await this.archiver.add('/proc/stat');
+
         await this.context.worker.capture('start');
 
         // Start reboot check
