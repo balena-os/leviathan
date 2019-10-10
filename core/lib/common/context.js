@@ -1,4 +1,5 @@
-/* Copyright 2019 balena
+/*
+ * Copyright 2018 balena
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +16,23 @@
 
 'use strict';
 
-module.exports = {
-  title: 'VPN control tests',
-  run: async function(test) {}
+const merge = require('lodash/merge');
+
+module.exports = class Context {
+  constructor(context) {
+    this.global = context;
+    this.ctx = {};
+  }
+
+  set(obj) {
+    merge(this.ctx, obj);
+  }
+
+  get() {
+    if (this.global != null) {
+      return { ...this.global.get(), ...this.ctx };
+    }
+
+    return this.ctx;
+  }
 };

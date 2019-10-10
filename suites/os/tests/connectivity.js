@@ -41,19 +41,23 @@ module.exports = {
             },
           },
           run: async function(test) {
-            const iface = await this.context.worker.executeCommandInHostOS(
-              `nmcli d  | grep ' ${adaptor} ' | awk '{print $1}'`,
-              this.context.link,
-            );
+            const iface = await this.context
+              .get()
+              .worker.executeCommandInHostOS(
+                `nmcli d  | grep ' ${adaptor} ' | awk '{print $1}'`,
+                this.context.get().link,
+              );
 
             if (iface === '') {
               throw new Error(`No ${adaptor} interface found.`);
             }
 
-            await this.context.worker.executeCommandInHostOS(
-              `ping -c 10 -I ${iface} ${URL_TEST}`,
-              this.context.link,
-            );
+            await this.context
+              .get()
+              .worker.executeCommandInHostOS(
+                `ping -c 10 -I ${iface} ${URL_TEST}`,
+                this.context.get().link,
+              );
 
             test.true(`${URL_TEST} responded over ${adaptor}`);
           },
@@ -68,79 +72,99 @@ module.exports = {
           run: async function(test) {
             const PROXY_PORT = 8123;
 
-            await this.context.worker.executeCommandInHostOS(
-              'mkdir -p /mnt/boot/system-proxy',
-              this.context.link,
-            );
+            await this.context
+              .get()
+              .worker.executeCommandInHostOS(
+                'mkdir -p /mnt/boot/system-proxy',
+                this.context.get().link,
+              );
 
-            const proxyState = await this.context.worker.proxy({
+            const proxyState = await this.context.get().worker.proxy({
               port: PROXY_PORT,
             });
 
-            await this.context.worker.executeCommandInHostOS(
-              'printf "' +
-                'base { \n' +
-                'log_debug = off; \n' +
-                'log_info = on; \n' +
-                'log = stderr; \n' +
-                'daemon = off; \n' +
-                'redirector = iptables; \n' +
-                '} \n' +
-                'redsocks { \n' +
-                `type = ${proxy}; \n` +
-                `ip = ${proxyState.ip}; \n` +
-                `port = ${PROXY_PORT}; \n` +
-                'local_ip = 127.0.0.1; \n' +
-                'local_port = 12345; \n' +
-                '} \n" > /mnt/boot/system-proxy/redsocks.conf',
-              this.context.link,
-            );
+            await this.context
+              .get()
+              .worker.executeCommandInHostOS(
+                'printf "' +
+                  'base { \n' +
+                  'log_debug = off; \n' +
+                  'log_info = on; \n' +
+                  'log = stderr; \n' +
+                  'daemon = off; \n' +
+                  'redirector = iptables; \n' +
+                  '} \n' +
+                  'redsocks { \n' +
+                  `type = ${proxy}; \n` +
+                  `ip = ${proxyState.ip}; \n` +
+                  `port = ${PROXY_PORT}; \n` +
+                  'local_ip = 127.0.0.1; \n' +
+                  'local_port = 12345; \n' +
+                  '} \n" > /mnt/boot/system-proxy/redsocks.conf',
+                this.context.get().link,
+              );
 
             // Start reboot check
-            await this.context.worker.executeCommandInHostOS(
-              'touch /tmp/reboot-check',
-              this.context.link,
-            );
+            await this.context
+              .get()
+              .worker.executeCommandInHostOS(
+                'touch /tmp/reboot-check',
+                this.context.get().link,
+              );
 
-            await this.context.worker.executeCommandInHostOS(
-              'systemd-run --on-active=2 /sbin/reboot',
-              this.context.link,
-            );
-            await this.context.utils.waitUntil(async () => {
+            await this.context
+              .get()
+              .worker.executeCommandInHostOS(
+                'systemd-run --on-active=2 /sbin/reboot',
+                this.context.get().link,
+              );
+            await this.context.get().utils.waitUntil(async () => {
               return (
-                (await this.context.worker.executeCommandInHostOS(
-                  '[[ ! -f /tmp/reboot-check ]] && echo "pass"',
-                  this.context.link,
-                )) === 'pass'
+                (await this.context
+                  .get()
+                  .worker.executeCommandInHostOS(
+                    '[[ ! -f /tmp/reboot-check ]] && echo "pass"',
+                    this.context.get().link,
+                  )) === 'pass'
               );
             });
 
-            await this.context.worker.executeCommandInHostOS(
-              `ping -c 10 ${URL_TEST}`,
-              this.context.link,
-            );
+            await this.context
+              .get()
+              .worker.executeCommandInHostOS(
+                `ping -c 10 ${URL_TEST}`,
+                this.context.get().link,
+              );
             test.true(`${URL_TEST} responded over ${proxy} proxy`);
 
-            await this.context.worker.executeCommandInHostOS(
-              'rm -rf /mnt/boot/system-proxy',
-              this.context.link,
-            );
+            await this.context
+              .get()
+              .worker.executeCommandInHostOS(
+                'rm -rf /mnt/boot/system-proxy',
+                this.context.get().link,
+              );
 
             // Start reboot check
-            await this.context.worker.executeCommandInHostOS(
-              'touch /tmp/reboot-check',
-              this.context.link,
-            );
-            await this.context.worker.executeCommandInHostOS(
-              'systemd-run --on-active=2 /sbin/reboot',
-              this.context.link,
-            );
-            await this.context.utils.waitUntil(async () => {
+            await this.context
+              .get()
+              .worker.executeCommandInHostOS(
+                'touch /tmp/reboot-check',
+                this.context.get().link,
+              );
+            await this.context
+              .get()
+              .worker.executeCommandInHostOS(
+                'systemd-run --on-active=2 /sbin/reboot',
+                this.context.get().link,
+              );
+            await this.context.get().utils.waitUntil(async () => {
               return (
-                (await this.context.worker.executeCommandInHostOS(
-                  '[[ ! -f /tmp/reboot-check ]] && echo "pass"',
-                  this.context.link,
-                )) === 'pass'
+                (await this.context
+                  .get()
+                  .worker.executeCommandInHostOS(
+                    '[[ ! -f /tmp/reboot-check ]] && echo "pass"',
+                    this.context.get().link,
+                  )) === 'pass'
               );
             });
           },

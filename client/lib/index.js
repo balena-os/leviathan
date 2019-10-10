@@ -1,3 +1,8 @@
+`use strict`;
+
+process.env['NODE_CONFIG_DIR'] = `${__dirname}/../config`;
+const config = require('config');
+
 const Bluebird = require('bluebird');
 const { exists } = require('fs-extra');
 const md5 = require('md5-file/promise');
@@ -5,6 +10,7 @@ const { fs, crypto } = require('mz');
 const { constants } = require('os');
 const { basename, dirname, isAbsolute, join } = require('path');
 const progStream = require('progress-stream');
+const request = require('request');
 const rp = require('request-promise');
 const pipeline = Bluebird.promisify(require('readable-stream').pipeline);
 const tar = require('tar-fs');
@@ -53,17 +59,18 @@ function makePath(p) {
 }
 
 module.exports = class Client extends PassThrough {
-  constructor(uri) {
+  constructor(uri, workdir) {
     super();
 
     this.uri = parse(uri);
     if (this.uri.protocol == null) {
       this.uri = parse(`http://${uri}`);
     }
+    this.workdir = join(workdir, this.uri.hostname);
   }
 
   run() {
-    const main = async (deviceType, suite, config, image, workdir) => {
+    const main = async (deviceType, suite, conf, image) => {
       process.on('SIGINT', async () => {
         await rp.post(`${this.uri.href}stop`).catch(this.write);
         process.exit(128 + constants.signals.SIGINT);
@@ -102,8 +109,9 @@ module.exports = class Client extends PassThrough {
       if (await exists(makePath(conf))) {
         data = require(makePath(conf));
       } else {
-        data = JSON.parse(config);
+        data = JSON.parse(conf);
       }
+
       data.deviceType = deviceType;
       artifacts.push({
         data,
@@ -233,15 +241,16 @@ module.exports = class Client extends PassThrough {
             length: metadata.size,
             time: 100,
           });
-          const req = rp.post({
-            uri: `${this.uri.href}upload`,
-            headers: {
-              'x-artifact': artifact.name,
-              'x-artifact-hash': metadata.hash,
-            },
-          });
-
-          req.then(resolve).catch(reject);
+          const req = request
+            .post({
+              uri: `${this.uri.href}upload`,
+              headers: {
+                'x-artifact': artifact.name,
+                'x-artifact-hash': metadata.hash,
+              },
+            })
+            .on('end', resolve)
+            .on('error', reject);
 
           // We need to record the end of our pipe, so we can unpipe in case cache will be used
           const pipeEnd = zlib.createGzip({ level: 6 });
@@ -250,7 +259,6 @@ module.exports = class Client extends PassThrough {
             .catch(reject);
           pipeEnd.pipe(req);
 
-          req.on('error', reject);
           req.on('data', async data => {
             const computedLine = RegExp('^([a-z]*): (.*)').exec(
               data.toString(),
@@ -333,9 +341,21 @@ module.exports = class Client extends PassThrough {
     return main(...arguments)
       .catch(async error => {
         process.exitCode = 1;
-        this.write(error);
+        this.write(error.stack);
       })
       .finally(async () => {
+        await new Promise((resolve, reject) => {
+          request
+            .get(`${this.uri.href}artifacts`)
+            .pipe(zlib.createGunzip())
+            .pipe(
+              fs.createWriteStream(
+                join(this.workdir, `${config.get('leviathan.artifacts')}.tar`),
+              ),
+            )
+            .on('end', resolve)
+            .on('error', reject);
+        });
         await rp.post(`${this.uri.href}stop`).catch(this.write);
       });
   }

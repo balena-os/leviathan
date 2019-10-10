@@ -31,11 +31,11 @@ module.exports = {
   },
   run: async function(test) {
     const serviceName = 'collector';
-    const ip = await this.context.worker.ip(this.context.link);
+    const ip = await this.context.get().worker.ip(this.context.get().link);
     console.log(ip);
 
     // Wait for the supervisor API to be up
-    await this.context.utils.waitUntil(async () => {
+    await this.context.get().utils.waitUntil(async () => {
       return (
         (await request({
           method: 'GET',
@@ -45,10 +45,12 @@ module.exports = {
     }, false);
     console.log('done');
 
-    await this.context.worker.executeCommandInHostOS(
-      `source /etc/resin-supervisor/supervisor.conf ; systemd-run --unit=${serviceName} bash -c "while true ; do cat $LED_FILE ; done"`,
-      this.context.link,
-    );
+    await this.context
+      .get()
+      .worker.executeCommandInHostOS(
+        `source /etc/resin-supervisor/supervisor.conf ; systemd-run --unit=${serviceName} bash -c "while true ; do cat $LED_FILE ; done"`,
+        this.context.get().link,
+      );
     console.log('here');
 
     const body = await request({
@@ -61,15 +63,19 @@ module.exports = {
     // Wait for the blink action to complete
     await delay(BLINK_DURATION);
 
-    await this.context.worker.executeCommandInHostOS(
-      `systemctl stop ${serviceName}`,
-      this.context.link,
-    );
+    await this.context
+      .get()
+      .worker.executeCommandInHostOS(
+        `systemctl stop ${serviceName}`,
+        this.context.get().link,
+      );
 
-    const lines = (await this.context.worker.executeCommandInHostOS(
-      `journalctl -o cat --unit=${serviceName}`,
-      this.context.link,
-    )).split('\n');
+    const lines = (await this.context
+      .get()
+      .worker.executeCommandInHostOS(
+        `journalctl -o cat --unit=${serviceName}`,
+        this.context.get().link,
+      )).split('\n');
 
     const extractedLines = lines.slice(
       lines.findIndex(line => {

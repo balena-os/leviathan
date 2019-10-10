@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+`use strict`;
+
 const { tmpdir } = require('os');
 const { join } = require('path');
 const { createWriteStream } = require('fs');
@@ -52,20 +54,10 @@ const yargs = require('yargs')
   .showHelpOnFail(false, 'Something went wrong! run with --help').argv;
 
 (async () => {
-  const client = new Client(yargs.uri);
+  const client = new Client(yargs.uri, yargs.workdir);
 
-  const workdir = join(yargs.workdir, client.uri.hostname);
-
-  await ensureDir(workdir);
-
+  await ensureDir(client.workdir);
   client.pipe(process.stdout);
-  client.pipe(createWriteStream(join(workdir, 'log')));
-
-  await client.run(
-    yargs.deviceType,
-    yargs.suite,
-    yargs.config,
-    yargs.image,
-    workdir,
-  );
+  client.pipe(createWriteStream(join(client.workdir, 'log')));
+  await client.run(yargs.deviceType, yargs.suite, yargs.config, yargs.image);
 })();

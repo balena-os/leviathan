@@ -49,23 +49,29 @@ module.exports = {
 
         await this.archiver.add('/proc/stat');
 
-        await this.context.worker.capture('start');
+        await this.context.get().worker.capture('start');
 
         // Start reboot check
-        await this.context.worker.executeCommandInHostOS(
-          'touch /tmp/reboot-check',
-          this.context.link,
-        );
-        await this.context.worker.executeCommandInHostOS(
-          'systemd-run --on-active=2 /sbin/reboot',
-          this.context.link,
-        );
-        await this.context.utils.waitUntil(async () => {
+        await this.context
+          .get()
+          .worker.executeCommandInHostOS(
+            'touch /tmp/reboot-check',
+            this.context.get().link,
+          );
+        await this.context
+          .get()
+          .worker.executeCommandInHostOS(
+            'systemd-run --on-active=2 /sbin/reboot',
+            this.context.get().link,
+          );
+        await this.context.get().utils.waitUntil(async () => {
           return (
-            (await this.context.worker.executeCommandInHostOS(
-              '[[ ! -f /tmp/reboot-check ]] && echo "pass"',
-              this.context.link,
-            )) === 'pass'
+            (await this.context
+              .get()
+              .worker.executeCommandInHostOS(
+                '[[ ! -f /tmp/reboot-check ]] && echo "pass"',
+                this.context.get().link,
+              )) === 'pass'
           );
         });
 
@@ -104,7 +110,7 @@ module.exports = {
             stream.resume();
           });
 
-          const res = this.context.worker.capture('stop');
+          const res = this.context.get().worker.capture('stop');
           res.on('error', error => {
             console.log(error);
             reject(error);

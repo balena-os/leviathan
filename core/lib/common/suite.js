@@ -20,8 +20,6 @@ const assignIn = require('lodash/assignIn');
 const isEmpty = require('lodash/isEmpty');
 const isObject = require('lodash/isObject');
 const isString = require('lodash/isString');
-const merge = require('lodash/merge');
-const reduce = require('lodash/reduce');
 const template = require('lodash/template');
 
 const AJV = require('ajv');
@@ -35,8 +33,10 @@ const npm = require('npm');
 const { tmpdir } = require('os');
 const path = require('path');
 
-const utils = require('./utils');
+const Context = require('./context');
 const Teardown = require('./teardown');
+const Test = require('./test');
+const utils = require('./utils');
 
 function cleanObject(object) {
   if (!isObject(object)) {
@@ -70,14 +70,11 @@ module.exports = class Suite {
     cleanObject(this.options);
 
     // State
+    this.context = new Context();
     this.teardown = new Teardown();
-    this.ctx = {};
-    this.ctxGlobal = {};
-    this.ctxStack = [];
+
     try {
-      this.deviceType = require(`../../contracts/contracts/hw.device-type/${
-        config.deviceType
-      }/contract.json`);
+      this.deviceType = require(`../../contracts/contracts/hw.device-type/${config.deviceType}/contract.json`);
     } catch (e) {
       if (e.code === 'MODULE_NOT_FOUND') {
         throw new Error(`Invalid/Unsupported device type: ${config.deviceType}`);
@@ -97,22 +94,6 @@ module.exports = class Suite {
     });
   }
 
-  set globalContext(object) {
-    merge(this.ctxGlobal, object);
-  }
-
-  get globalContext() {
-    return this.ctxGlobal;
-  }
-
-  set context(object) {
-    merge(this.ctx, object);
-  }
-
-  get context() {
-    return reduce(this.ctxStack.concat(this.ctx, this.globalContext), merge);
-  }
-
   async run() {
     delete require.cache[require.resolve('tap')];
     const tap = require('tap');
@@ -127,38 +108,39 @@ module.exports = class Suite {
         skip ||
         (interactive && !this.options.interactiveTests) ||
         (deviceType != null && !ajv.compile(deviceType)(this.deviceType)) ||
-        (os != null && this.context.os != null && !ajv.compile(os)(this.context.os.contract))
+        (os != null &&
+          this.context.get().os != null &&
+          !ajv.compile(os)(this.context.get().os.contract))
       ) {
         return;
       }
 
+      const test = new Test(title, this);
+
       await testNode.test(
         template(title)({
-          options: this.context
+          options: this.context.get()
         }),
         { buffered: false },
-        async test => {
-          this.ctxStack.push(this.ctx);
-          this.ctx = {};
-
+        async t => {
           if (run != null) {
-            await Reflect.apply(Bluebird.method(run), this, [test])
+            await Reflect.apply(Bluebird.method(run), test, [t])
               .catch(async error => {
-                test.threw(error);
+                t.threw(error);
 
                 if (this.options.replOnFailure) {
                   await utils.repl(
                     {
-                      context: this.context
+                      context: this.context.get()
                     },
                     {
-                      name: test.name
+                      name: t.name
                     }
                   );
                 }
               })
               .finally(async () => {
-                await this.teardown.run(test.name);
+                await test.finish();
               });
           }
 
@@ -167,10 +149,8 @@ module.exports = class Suite {
           }
 
           for (const node of tests) {
-            treeExpander([node, test]);
+            treeExpander([node, t]);
           }
-
-          this.ctxStack.pop();
         }
       );
     };
@@ -248,10 +228,5 @@ module.exports = class Suite {
   async removeDependencies() {
     console.log(`Removing npm dependencies for suite: `);
     await Bluebird.promisify(fse.remove)(path.join(this.options.suitePath, 'node_modules'));
-  }
-
-  // This method allows tests to incldue any module from the core framework
-  require(module) {
-    return require(path.join(this.rootPath, module));
   }
 };

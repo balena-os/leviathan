@@ -27,10 +27,10 @@ module.exports = {
     const: 'development',
   },
   run: async function(test) {
-    const ip = await this.context.worker.ip(this.context.link);
+    const ip = await this.context.get().worker.ip(this.context.get().link);
     await retry(
       async () => {
-        await this.context.balena.cli.push(ip, {
+        await this.context.get().balena.cli.push(ip, {
           source: __dirname,
         });
       },
@@ -39,7 +39,7 @@ module.exports = {
         interval: 5000,
       },
     );
-    await this.context.utils.waitUntil(async () => {
+    await this.context.get().utils.waitUntil(async () => {
       const state = await rp({
         method: 'GET',
         uri: `http://${ip}:48484/v2/containerId`,
@@ -55,18 +55,22 @@ module.exports = {
     });
 
     //Change health
-    await this.context.worker.executeCommandInHostOS(
-      `balena exec ${state.services.healthcheck} rm /tmp/health`,
-      ip,
-    );
+    await this.context
+      .get()
+      .worker.executeCommandInHostOS(
+        `balena exec ${state.services.healthcheck} rm /tmp/health`,
+        ip,
+      );
 
     await delay(2000);
 
     const events = JSON.parse(
-      await this.context.worker.executeCommandInHostOS(
-        `printf '["null"'; balena events --filter container=${state.services.healthcheck} --filter event=health_status --since 1 --until "$(date +%Y-%m-%dT%H:%M:%S.%NZ)" --format '{{json .}}' | while read LINE; do printf ",$LINE"; done; printf ']'`,
-        ip,
-      ),
+      await this.context
+        .get()
+        .worker.executeCommandInHostOS(
+          `printf '["null"'; balena events --filter container=${state.services.healthcheck} --filter event=health_status --since 1 --until "$(date +%Y-%m-%dT%H:%M:%S.%NZ)" --format '{{json .}}' | while read LINE; do printf ",$LINE"; done; printf ']'`,
+          ip,
+        ),
     );
 
     test.same(
