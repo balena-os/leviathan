@@ -24,6 +24,7 @@ class NetworkManager {
   };
 
   constructor(private options: Leviathan.Options['network'], private bus = dbus.systemBus()) {
+    this.bus.on('error', console.error);
     // Cleanup code
     process.on('SIGINT', this.teardown);
     process.on('SIGTERM', this.teardown);
