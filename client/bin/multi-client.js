@@ -3,7 +3,6 @@
 `use strict`;
 
 process.env['NODE_CONFIG_DIR'] = `${__dirname}/../config`;
-
 const config = require('config');
 
 const ajv = new (require('ajv'))({ allErrors: true });
@@ -55,18 +54,6 @@ const yargs = require('yargs')
     await ensureDir(yargs.workdir);
 
     const runQueue = [];
-    let runConfigs = require(yargs.config);
-
-    const validate = ajv.compile(schema);
-
-    if (!validate(runConfigs)) {
-      throw new Error(
-        `Invalid configuration -> ${ajv.errorsText(validate.errors)}`,
-      );
-    }
-
-    runConfigs = runConfigs instanceof Object ? [runConfigs] : runConfigs;
-
     //Blessed setup for pretty terminal output
     if (process.stdout.isTTY === true) {
       // Hack our passtrhough stream in thinking it is tty
@@ -118,6 +105,18 @@ const yargs = require('yargs')
     } else {
       mainStream.pipe(process.stdout);
     }
+
+    let runConfigs = require(yargs.config);
+
+    const validate = ajv.compile(schema);
+
+    if (!validate(runConfigs)) {
+      throw new Error(
+        `Invalid configuration -> ${ajv.errorsText(validate.errors)}`,
+      );
+    }
+
+    runConfigs = runConfigs instanceof Object ? [runConfigs] : runConfigs;
 
     const queueSpinner = new Spinner('Computing Run Queue', mainStream);
     try {
