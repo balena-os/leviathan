@@ -1,5 +1,6 @@
 import { spawn, ChildProcess } from 'child_process';
 import { ensureDir, remove } from 'fs-extra';
+import { fs } from 'mz';
 import { connect } from 'net';
 import { basename } from 'path';
 import { pack } from 'tar-fs';
@@ -95,34 +96,51 @@ export default class ScreenCapture {
   }
 
   public stopCapture(): Promise<Readable> {
-    return new Promise((resolve, reject) => {
-      const exitHandler = async () => {
-        if (timeout != null) {
-          clearTimeout(timeout);
-          this.proc = undefined;
-        }
-
-        resolve(
-          pack(this.destination, {
-            map: function(header) {
-              header.name = basename(header.name);
-              return header;
-            }
-          }).pipe(createGzip())
-        );
-      };
-
-      const timeout = setTimeout(() => {
-        if (this.proc != null) {
-          this.proc.removeListener('exit', exitHandler);
-          this.proc = undefined;
-        }
-        reject(new Error('Could not stop gstreamer pipeline.'));
-      }, 30000);
-
+    return new Promise(async (resolve, reject) => {
       if (this.proc != null) {
-        this.proc.once('exit', exitHandler);
-        this.proc.kill('SIGINT');
+        const clean = () => {
+          if (timeout != null) {
+            clearTimeout(timeout);
+          }
+          if (interval != null) {
+            clearInterval(interval);
+          }
+          this.proc = undefined;
+        };
+        const exitHandler = () => {
+          clean();
+
+          resolve(
+            pack(this.destination, {
+              map: function(header) {
+                header.name = basename(header.name);
+                return header;
+              }
+            }).pipe(createGzip())
+          );
+        };
+
+        // For an unknown reason the gst process sometimes refuses to die, so let's check
+        // if it has not periodaclly and retry
+        const interval = setInterval(async () => {
+          if (this.proc != null) {
+            const procInfo = (await fs.readFile('/proc/' + this.proc.pid + '/status')).toString();
+
+            if (procInfo.match(/State:\s+[RSDT]/)) {
+              this.proc.kill('SIGINT');
+            } else {
+              this.proc.removeListener('exit', exitHandler);
+              exitHandler();
+            }
+          }
+        }, 2000);
+        const timeout = setTimeout(() => {
+          if (this.proc != null) {
+            this.proc.removeListener('exit', exitHandler);
+          }
+          reject(new Error('Could not stop gstreamer pipeline.'));
+        }, 30000);
+        this.proc.on('close', exitHandler);
       } else {
         reject(new Error(JSON.stringify(this.exit)));
       }
