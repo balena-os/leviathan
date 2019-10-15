@@ -8,8 +8,6 @@ declare global {
       network: { wired?: string; wireless?: string };
     }
     interface Worker extends EventEmitter {
-      private internalState: WorkerState;
-
       readonly state: WorkerState;
 
       flash(stream: Stream.Readable): Promise<void>;

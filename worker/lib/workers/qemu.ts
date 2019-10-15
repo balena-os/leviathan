@@ -24,7 +24,7 @@ class Qemu extends EventEmitter implements Leviathan.Worker {
   private activeFlash?: Bluebird<void>;
   private signalHandler: (signal: NodeJS.Signals) => Promise<void>;
   private references: { domain?: any; network?: any; pool?: any };
-  internalState: Leviathan.WorkerState = { network: {} };
+  private internalState: Leviathan.WorkerState = { network: {} };
   private screenCapturer: ScreenCapture;
 
   constructor(options: Leviathan.Options) {
