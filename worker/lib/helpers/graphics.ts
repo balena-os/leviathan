@@ -140,7 +140,7 @@ export default class ScreenCapture {
           }
           reject(new Error('Could not stop gstreamer pipeline.'));
         }, 30000);
-        this.proc.on('close', exitHandler);
+        this.proc.on('exit', exitHandler);
       } else {
         reject(new Error(JSON.stringify(this.exit)));
       }
@@ -155,7 +155,7 @@ export default class ScreenCapture {
         } view-only=true`;
       case 'v4l2src':
         // With our catpture HW there is an error when negotiating the resolution, so we crop the extra manually
-        return `${this.source.type} ! decodebin ! videocrop right=90 bottom=60`;
+        return `${this.source.type} ! decodebin ! videocrop left=90 right=90 bottom=70 top=70`;
       default:
         return this.source.options.type;
     }
