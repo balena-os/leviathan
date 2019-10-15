@@ -47,8 +47,6 @@ module.exports = {
       run: async function(test) {
         const { hammingDistance, blockhash } = this.require('/common/graphics');
 
-        await this.archiver.add('/proc/stat');
-
         await this.context.get().worker.capture('start');
 
         // Start reboot check
@@ -96,23 +94,30 @@ module.exports = {
           extract.on('entry', async (_header, stream, next) => {
             const buffer = [];
 
-            stream.on('error', reject);
+            let archiveStream;
+
+            if (_header.type !== 'directory') {
+              archiveStream = await this.archiver.getStream(_header.name);
+            }
+
             stream.on('data', data => {
               buffer.push(data);
+
+              if (archiveStream != null) {
+                archiveStream.write(data);
+              }
             });
             stream.on('end', () => {
               if (buffer.length > 0) {
                 imagesHash.push(blockhash(decode(Buffer.concat(buffer))));
               }
+
               next();
             });
-
-            stream.resume();
           });
 
           const res = this.context.get().worker.capture('stop');
           res.on('error', error => {
-            console.log(error);
             reject(error);
           });
           res.on('response', response => {
@@ -125,8 +130,11 @@ module.exports = {
                 reject(new Error(Buffer.concat(buffer).toString()));
               });
             } else {
-              res.pipe(createGunzip()).pipe(extract);
-              res.on('end', resolve);
+              res
+                .pipe(createGunzip())
+                .pipe(extract)
+                .on('error', reject)
+                .on('finish', resolve);
             }
           });
         });

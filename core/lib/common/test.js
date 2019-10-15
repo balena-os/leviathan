@@ -56,7 +56,6 @@ module.exports = class Test {
   }
 
   async finish() {
-    await this.archiver.commit();
     await this.teardown.run();
   }
 };

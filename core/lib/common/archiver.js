@@ -17,28 +17,26 @@
 'use strict';
 
 const config = require('config');
+const { createWriteStream } = require('fs');
 const { copy, ensureDir } = require('fs-extra');
 const { basename, join } = require('path');
 
 module.exports = class Archiver {
   constructor(id) {
     this.location = join(config.get('leviathan.artifacts'), id);
-    this.entries = [];
   }
 
   async add(artifactPath) {
-    this.entries.push(artifactPath);
+    const archivePath = join(this.location, basename(artifactPath));
+
+    await ensureDir(this.location);
+    await copy(artifactPath, archivePath);
   }
 
-  async commit() {
-    if (this.entries.length > 0) {
-      await ensureDir(this.location);
+  async getStream(artifactPath) {
+    const archivePath = join(this.location, basename(artifactPath));
 
-      while (this.entries.length > 0) {
-        const entry = this.entries.pop();
-
-        await copy(entry, join(this.location, basename(entry)));
-      }
-    }
+    await ensureDir(this.location);
+    return createWriteStream(archivePath);
   }
 };
