@@ -150,10 +150,10 @@ module.exports = class Worker {
       tries: 60
     }
   ) {
+    let ip = /.*\.local/.test(target) ? await this.ip(target) : target;
+
     return retry(
       async () => {
-        let ip = /.*\.local/.test(target) ? await this.ip(target) : target;
-
         const result = await utils.executeCommandOverSSH(`source /etc/profile ; ${command}`, {
           host: ip,
           port: '22222',
