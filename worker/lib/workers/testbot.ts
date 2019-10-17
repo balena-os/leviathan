@@ -201,7 +201,7 @@ class TestBot extends EventEmitter implements Leviathan.Worker {
 
   private async powerOnDUT(): Promise<void> {
     console.log('Switching testbot on...');
-    await this.sendCommand(GPIO.ENABLE_VOUT_SW, 500);
+    await this.sendCommand(GPIO.ENABLE_VOUT_SW, 1000);
   }
 
   /**
@@ -209,7 +209,7 @@ class TestBot extends EventEmitter implements Leviathan.Worker {
    */
   private async powerOffDUT(): Promise<void> {
     console.log('Switching testbot off...');
-    await this.sendCommand(GPIO.DISABLE_VOUT_SW, 500);
+    await this.sendCommand(GPIO.DISABLE_VOUT_SW, 1000);
   }
 
   /**
@@ -309,9 +309,7 @@ class TestBot extends EventEmitter implements Leviathan.Worker {
       register: true
     });
 
-    if (process.env.CI == null) {
-      await TestBot.flashFirmware();
-    }
+    await TestBot.flashFirmware();
 
     await new Promise((resolve, reject) => {
       this.board = new Board(DEV_TESTBOT);
