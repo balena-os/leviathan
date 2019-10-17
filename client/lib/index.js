@@ -161,7 +161,7 @@ module.exports = class Client extends PassThrough {
       // Upload with cache check in place
       for (const artifact of artifacts) {
         this.write(`Handling artifcat: ${artifact.name}`);
-        const spinner = new Spinner('Calculating hash', process.stdout);
+        const spinner = new Spinner('Calculating hash', this);
 
         const metadata = { size: null, hash: null, stream: null };
         spinner.start();
