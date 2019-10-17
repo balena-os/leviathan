@@ -1,11 +1,23 @@
 #!/usr/bin/env node
 
+`use strict`;
+
 const { tmpdir } = require('os');
+const { join } = require('path');
+const { createWriteStream } = require('fs');
+const { ensureDir } = require('fs-extra');
+const Client = require('../lib');
 const yargs = require('yargs')
   .usage('Usage: $0 [options]')
   .option('h', {
     alias: 'help',
     description: 'display help message',
+  })
+  .option('d', {
+    alias: 'deviceType',
+    description: 'name of the device type we are testing',
+    required: true,
+    type: 'string',
   })
   .option('s', {
     alias: 'suite',
@@ -41,10 +53,11 @@ const yargs = require('yargs')
   .help('help')
   .showHelpOnFail(false, 'Something went wrong! run with --help').argv;
 
-require('../lib')(
-  yargs.suite,
-  yargs.config,
-  yargs.image,
-  yargs.uri,
-  yargs.workdir,
-);
+(async () => {
+  const client = new Client(yargs.uri, yargs.workdir);
+
+  await ensureDir(client.workdir);
+  client.pipe(process.stdout);
+  client.pipe(createWriteStream(join(client.workdir, 'log')));
+  await client.run(yargs.deviceType, yargs.suite, yargs.config, yargs.image);
+})();

@@ -17,56 +17,58 @@ module.exports = {
     const Worker = this.require('common/worker');
     const BalenaOS = this.require('components/os/balenaos');
 
-    fse.ensureDirSync(this.options.tmpdir);
+    await fse.ensureDir(this.suite.options.tmpdir);
 
-    this.globalContext = {
+    this.suite.context.set({
       utils: this.require('common/utils'),
       sshKeyPath: join(homedir(), 'id'),
-      link: `${this.options.balenaOS.config.uuid.slice(0, 7)}.local`,
-      worker: new Worker(this.deviceType.slug),
-    };
+      link: `${this.suite.options.balenaOS.config.uuid.slice(0, 7)}.local`,
+      worker: new Worker(this.suite.deviceType.slug),
+    });
     // Network definitions
-    if (this.options.balenaOS.network.wired === true) {
-      this.options.balenaOS.network.wired = {
+    if (this.suite.options.balenaOS.network.wired === true) {
+      this.suite.options.balenaOS.network.wired = {
         nat: true,
       };
     } else {
-      delete this.options.balenaOS.network.wired;
+      delete this.suite.options.balenaOS.network.wired;
     }
-    if (this.options.balenaOS.network.wireless === true) {
-      this.options.balenaOS.network.wireless = {
-        ssid: this.options.id,
-        psk: `${this.options.id}_psk`,
+    if (this.suite.options.balenaOS.network.wireless === true) {
+      this.suite.options.balenaOS.network.wireless = {
+        ssid: this.suite.options.id,
+        psk: `${this.suite.options.id}_psk`,
         nat: true,
       };
     } else {
-      delete this.options.balenaOS.network.wireless;
+      delete this.suite.options.balenaOS.network.wireless;
     }
 
-    this.globalContext = {
+    this.suite.context.set({
       os: new BalenaOS({
-        deviceType: this.deviceType.slug,
-        network: this.options.balenaOS.network,
+        deviceType: this.suite.deviceType.slug,
+        network: this.suite.options.balenaOS.network,
         configJson: {
-          uuid: this.options.balenaOS.config.uuid,
+          uuid: this.suite.options.balenaOS.config.uuid,
           os: {
             sshKeys: [
-              await this.context.utils.createSSHKey(this.context.sshKeyPath),
+              await this.context
+                .get()
+                .utils.createSSHKey(this.context.get().sshKeyPath),
             ],
           },
           // persistentLogging is managed by the supervisor and only read at first boot
           persistentLogging: true,
         },
       }),
-    };
+    });
 
-    this.teardown.register(() => {
+    this.suite.teardown.register(() => {
       console.log('Worker teardown');
-      return this.context.worker.teardown();
+      return this.context.get().worker.teardown();
     });
     console.log('Setting up worker');
-    await this.context.worker.select({
-      type: this.options.worker.type,
+    await this.context.get().worker.select({
+      type: this.suite.options.worker.type,
       options: {
         network: {
           wireless: 'wlan0',
@@ -74,22 +76,26 @@ module.exports = {
         screen: true,
       },
     });
-    await this.context.worker.network(this.options.balenaOS.network);
+    await this.context
+      .get()
+      .worker.network(this.suite.options.balenaOS.network);
 
-    await this.context.os.fetch(this.options.packdir, {
-      type: this.options.balenaOS.download.type,
-      version: this.options.balenaOS.download.version,
+    await this.context.get().os.fetch(this.suite.options.packdir, {
+      type: this.suite.options.balenaOS.download.type,
+      version: this.suite.options.balenaOS.download.version,
     });
-    await this.context.worker.flash(this.context.os);
-    await this.context.worker.on();
+    await this.context.get().worker.flash(this.context.get().os);
+    await this.context.get().worker.on();
 
     console.log('Waiting for device to be reachable');
     assert.equal(
-      await this.context.worker.executeCommandInHostOS(
-        'cat /etc/hostname',
-        this.context.link,
-      ),
-      this.context.link.split('.')[0],
+      await this.context
+        .get()
+        .worker.executeCommandInHostOS(
+          'cat /etc/hostname',
+          this.context.get().link,
+        ),
+      this.context.get().link.split('.')[0],
       'Device should be reachable',
     );
   },

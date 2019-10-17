@@ -13,17 +13,29 @@ interface Options {
   wired?: { nat: boolean };
 }
 
-class NetworkManager {
-  private wiredReference?: {
-    activeConn: ActiveConnection;
-    conn: Connection;
-  };
-  private wirelessReference?: {
-    activeConn: ActiveConnection;
-    conn: Connection;
-  };
+class Teardown {
+  constructor(private fn: Function = () => {}) {}
 
-  constructor(private options: Leviathan.Options['network'], private bus = dbus.systemBus()) {
+  register(fn: Function) {
+    this.fn = fn;
+  }
+
+  async run() {
+    await this.fn();
+    this.fn = () => {};
+  }
+}
+
+class NetworkManager {
+  constructor(
+    private options: Leviathan.Options['network'],
+    private bus = dbus.systemBus(),
+    public teardowns: { wired: Teardown; wireless: Teardown } = {
+      wired: new Teardown(),
+      wireless: new Teardown()
+    }
+  ) {
+    this.bus.on('error', console.error);
     // Cleanup code
     process.on('SIGINT', this.teardown);
     process.on('SIGTERM', this.teardown);
@@ -85,12 +97,19 @@ class NetworkManager {
   }
 
   private async removeConnection(reference: Connection): Promise<void> {
-    const con = (await this.bus.getProxyObject(
+    const nodes = (await this.bus.getProxyObject(
       'org.freedesktop.NetworkManager',
-      reference
-    )).getInterface('org.freedesktop.NetworkManager.Settings.Connection');
+      '/org/freedesktop/NetworkManager/Settings'
+    )).nodes;
 
-    await con.Delete();
+    if (nodes.includes(reference)) {
+      const con = (await this.bus.getProxyObject(
+        'org.freedesktop.NetworkManager',
+        reference
+      )).getInterface('org.freedesktop.NetworkManager.Settings.Connection');
+
+      await con.Delete();
+    }
   }
 
   private async getDevice(iface: string): Promise<string> {
@@ -112,12 +131,19 @@ class NetworkManager {
   }
 
   private async deactivateConnection(reference: ActiveConnection): Promise<void> {
-    const con = (await this.bus.getProxyObject(
+    const nodes = (await this.bus.getProxyObject(
       'org.freedesktop.NetworkManager',
-      '/org/freedesktop/NetworkManager'
-    )).getInterface('org.freedesktop.NetworkManager');
+      '/org/freedesktop/NetworkManager/ActiveConnection'
+    )).nodes;
 
-    await con.DeactivateConnection(reference);
+    if (nodes.includes(reference)) {
+      const con = (await this.bus.getProxyObject(
+        'org.freedesktop.NetworkManager',
+        '/org/freedesktop/NetworkManager'
+      )).getInterface('org.freedesktop.NetworkManager');
+
+      await con.DeactivateConnection(reference);
+    }
   }
 
   public async addWiredConnection(options: { nat?: boolean }): Promise<string> {
@@ -129,9 +155,7 @@ class NetworkManager {
       throw new Error('Wired configuration incomplete');
     }
 
-    if (this.wiredReference) {
-      await this.removeWiredConnection();
-    }
+    await this.teardowns.wired.run();
 
     const conn = await this.addConnection(
       NetworkManager.wiredTemplate(options.nat ? 'shared' : 'link-local')
@@ -143,7 +167,10 @@ class NetworkManager {
 
     console.log(`Wired AP; IFACE: ${this.options.wired}`);
 
-    this.wiredReference = { conn, activeConn };
+    this.teardowns.wired.register(async () => {
+      await this.deactivateConnection(activeConn);
+      await this.removeConnection(conn);
+    });
 
     return this.options.wired;
   }
@@ -161,9 +188,7 @@ class NetworkManager {
       throw new Error('Wireless configuration incomplete');
     }
 
-    if (this.wirelessReference) {
-      await this.removeWirelessConnection();
-    }
+    await this.teardowns.wireless.run();
 
     const conn = await this.addConnection(
       NetworkManager.wirelessTemplate(
@@ -180,33 +205,20 @@ class NetworkManager {
 
     console.log(`Wireless AP; SSID: ${options.ssid} IFACE: ${this.options.wireless}`);
 
-    this.wirelessReference = { conn, activeConn };
+    this.teardowns.wireless.register(async () => {
+      await this.deactivateConnection(activeConn);
+      await this.removeConnection(conn);
+    });
 
     return this.options.wireless;
   }
 
-  public async removeWiredConnection(): Promise<void> {
-    if (this.wiredReference) {
-      await this.deactivateConnection(this.wiredReference.activeConn);
-      await this.removeConnection(this.wiredReference.conn);
-      this.wiredReference = undefined;
-    }
-  }
-
-  public async removeWirelessConnection(): Promise<void> {
-    if (this.wirelessReference) {
-      await this.deactivateConnection(this.wirelessReference.activeConn);
-      await this.removeConnection(this.wirelessReference.conn);
-      this.wirelessReference = undefined;
-    }
-  }
-
-  public async teardown(signal?: NodeJS.Signals) {
-    await this.removeWiredConnection();
-    await this.removeWirelessConnection();
-    this.bus.disconnect();
+  public async teardown(signal?: NodeJS.Signals): Promise<void> {
     process.removeListener('SIGINT', this.teardown);
     process.removeListener('SIGTERM', this.teardown);
+    await this.teardowns.wired.run();
+    await this.teardowns.wireless.run();
+    this.bus.disconnect();
 
     if (signal === 'SIGINT') {
       process.exit(128 + os.constants.signals.SIGINT);

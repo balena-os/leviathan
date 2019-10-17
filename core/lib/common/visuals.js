@@ -19,18 +19,18 @@
 const { Progress, Spinner, SpinnerPromise } = require('resin-cli-visuals');
 
 class CiProgress extends Progress {
-  constructor(message) {
-    super(message);
+  constructor(message, stream = process.stdout) {
+    super(message, stream);
 
     this.singelton = false;
   }
 
   update(state) {
-    if (!process.env.CI) {
+    if (process.env.CI !== 'true') {
       super.update(state);
     } else {
       if (!this.singelton) {
-        console.log(`${this._message}...[This will take a while]`);
+        this._stream.write(`${this._message}...[This will take a while]\n`);
         this.singelton ^= true;
       }
     }
@@ -38,36 +38,33 @@ class CiProgress extends Progress {
 }
 
 class CiSpinner extends Spinner {
-  constructor(message) {
-    super(message);
-    this.message = message;
-  }
   start() {
-    if (!process.env.CI) {
+    if (process.env.CI !== 'true') {
       super.start();
     } else {
-      console.log(`${this.message}...[This will take a while]`);
+      this.spinner.stream.write(`${this.spinner.text}...[This will take a while]\n`);
     }
   }
 
   stop() {
-    if (!process.env.CI) {
+    if (process.env.CI !== 'true') {
       super.stop();
     } else {
-      console.log('Done');
+      this.spinner.stream.write('Done\n');
     }
   }
 }
 
 class CiSpinnerPromise extends SpinnerPromise {
-  constructor(options = {}) {
-    if (!process.env.CI) {
+  constructor(options = {}, stream = process.stdout) {
+    if (process.env.CI !== 'true') {
       // eslint-disable-next-line constructor-super
-      return super(options);
+      return super(options, stream);
     } else {
-      console.log(`${options.startMessage}...[This will take a while]`);
-      return options.promise.then(() => {
-        console.log(options.stopMessage);
+      stream.write(`${options.startMessage}...[This will take a while]\n`);
+      return options.promise.then(result => {
+        stream.write(options.stopMessage);
+        return result;
       });
     }
   }

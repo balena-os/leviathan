@@ -21,7 +21,7 @@ module.exports = {
   title: 'Hostapp update tests',
   run: async function() {
     const sdk = new (this.require('components/balena/sdk'))(
-      this.options.balenaOS.download.source,
+      this.suite.options.balenaOS.download.source,
     );
 
     this.context = {
@@ -42,9 +42,7 @@ module.exports = {
         // As the update should be contained by a singular environment.
         if (this.context.local.updateVersion == null) {
           throw new Error(
-            `Could not find any supported version previous to ${
-              this.context.os.image.version
-            }`,
+            `Could not find any supported version previous to ${this.context.os.image.version}`,
           );
         }
 
@@ -52,10 +50,10 @@ module.exports = {
         await this.context.balena.sdk.removeDevice(this.context.balena.uuid);
 
         // Re-provision device
-        await this.context.os.fetch(this.options.tmpdir, {
-          type: this.options.balenaOS.download.type,
+        await this.context.os.fetch(this.suite.options.tmpdir, {
+          type: this.suite.options.balenaOS.download.type,
           version: this.context.local.updateVersion,
-          source: this.options.balenaOS.download.source,
+          source: this.suite.options.balenaOS.download.source,
         });
 
         const uuid = await this.context.balena.sdk.generateUUID();

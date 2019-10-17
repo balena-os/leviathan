@@ -40,12 +40,13 @@ enum PINS {
 
 class TestBot extends EventEmitter implements Leviathan.Worker {
   private board: Board;
-  private net?: NetworkManager;
-  private disk?: string;
   private activeFlash?: Bluebird<void>;
   private signalHandler: (signal: NodeJS.Signals) => Promise<void>;
-  internalState: Leviathan.WorkerState = { network: {} };
+  private internalState: Leviathan.WorkerState = { network: {} };
   private screenCapturer: ScreenCapture;
+
+  private networkCtl?: NetworkManager;
+  private disk?: string;
 
   /**
    * Represents a TestBot
@@ -55,7 +56,7 @@ class TestBot extends EventEmitter implements Leviathan.Worker {
 
     if (options != null) {
       if (options.network != null) {
-        this.net = new NetworkManager(options.network);
+        this.networkCtl = new NetworkManager(options.network);
       }
 
       if (options.worker != null && options.worker.disk != null) {
@@ -200,7 +201,7 @@ class TestBot extends EventEmitter implements Leviathan.Worker {
 
   private async powerOnDUT(): Promise<void> {
     console.log('Switching testbot on...');
-    await this.sendCommand(GPIO.ENABLE_VOUT_SW, 500);
+    await this.sendCommand(GPIO.ENABLE_VOUT_SW, 1000);
   }
 
   /**
@@ -208,7 +209,7 @@ class TestBot extends EventEmitter implements Leviathan.Worker {
    */
   private async powerOffDUT(): Promise<void> {
     console.log('Switching testbot off...');
-    await this.sendCommand(GPIO.DISABLE_VOUT_SW, 500);
+    await this.sendCommand(GPIO.DISABLE_VOUT_SW, 1000);
   }
 
   /**
@@ -261,25 +262,25 @@ class TestBot extends EventEmitter implements Leviathan.Worker {
    * Network Control
    */
   public async network(configuration: Supported['configuration']): Promise<void> {
-    if (this.net == null) {
+    if (this.networkCtl == null) {
       throw new Error('Network not configured on this worker. Ignoring...');
     }
 
     if (configuration.wireless != null) {
       this.internalState.network = {
-        wireless: await this.net.addWirelessConnection(configuration.wireless)
+        wireless: await this.networkCtl.addWirelessConnection(configuration.wireless)
       };
     } else {
-      await this.net.removeWirelessConnection();
+      await this.networkCtl.teardowns.wireless.run();
       this.internalState.network.wireless = undefined;
     }
 
     if (configuration.wired != null) {
       this.internalState.network = {
-        wired: await this.net.addWiredConnection(configuration.wired)
+        wired: await this.networkCtl.addWiredConnection(configuration.wired)
       };
     } else {
-      await this.net.removeWiredConnection();
+      await this.networkCtl.teardowns.wired.run();
       this.internalState.network.wired = undefined;
     }
   }
@@ -308,9 +309,7 @@ class TestBot extends EventEmitter implements Leviathan.Worker {
       register: true
     });
 
-    if (process.env.CI == null) {
-      await TestBot.flashFirmware();
-    }
+    await TestBot.flashFirmware();
 
     await new Promise((resolve, reject) => {
       this.board = new Board(DEV_TESTBOT);
@@ -354,8 +353,8 @@ class TestBot extends EventEmitter implements Leviathan.Worker {
       this.activeFlash.cancel();
     }
 
-    if (this.net != null) {
-      await this.net.teardown();
+    if (this.networkCtl != null) {
+      await this.networkCtl.teardown();
     }
 
     if (this.board != null) {

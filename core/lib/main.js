@@ -22,13 +22,13 @@ const { forkCode, getFilesFromDirectory } = require('./common/utils');
 const config = require('config');
 const express = require('express');
 const expressWebSocket = require('express-ws');
-const { pathExists, remove } = require('fs-extra');
+const { ensureDir, pathExists, remove } = require('fs-extra');
 const md5 = require('md5-file/promise');
 const { fs, crypto } = require('mz');
 const { join } = require('path');
 const tar = require('tar-fs');
 const pipeline = Bluebird.promisify(require('stream').pipeline);
-const { createGunzip } = require('zlib');
+const { createGzip, createGunzip } = require('zlib');
 const WebSocket = require('ws');
 
 async function setup() {
@@ -157,7 +157,7 @@ async function setup() {
         child = forkCode(
           `const Suite = require('${require.resolve('./common/suite')}');
 
-          (async () => { 
+          (async () => {
             const suite = new Suite('${location}');
             await suite.init();
             suite.printRunQueueSummary();
@@ -223,6 +223,18 @@ async function setup() {
     }
   });
 
+  app.get('/artifacts', async (_req, res) => {
+    try {
+      await ensureDir(config.get('leviathan.artifacts'));
+      tar
+        .pack(config.get('leviathan.artifacts'), { readable: true, writable: true })
+        .pipe(createGzip())
+        .pipe(res);
+    } catch (e) {
+      res.status(500).send(e.stack);
+    }
+  });
+
   app.post('/stop', async (_req, res) => {
     try {
       if (child != null) {
@@ -232,7 +244,9 @@ async function setup() {
         child.kill('SIGINT');
       } else if (release != null) {
         const interval = setInterval(() => {
-          release = release();
+          if (release != null) {
+            release = release();
+          }
           // the release of the lock may be slow, so to avoid a deadlock, let's wait on it
           // before terminating
           if (!mutex.isLocked()) {

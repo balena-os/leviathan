@@ -20,11 +20,16 @@ const request = require('request-promise');
 
 module.exports = {
   title: 'Container exposed variables test',
+  os: {
+    type: 'string',
+    required: ['variant'],
+    const: 'development',
+  },
   run: async function(test) {
-    const ip = await this.context.worker.ip(this.context.link);
+    const ip = await this.context.get().worker.ip(this.context.get().link);
     await retry(
       async () => {
-        await this.context.balena.cli.push(ip, {
+        await this.context.get().balena.cli.push(ip, {
           source: __dirname,
         });
       },
@@ -35,7 +40,7 @@ module.exports = {
     );
 
     await retry(
-      await this.context.utils.waitUntil(async () => {
+      await this.context.get().utils.waitUntil(async () => {
         const state = await request({
           method: 'GET',
           uri: `http://${ip}:48484/v2/containerId`,
@@ -56,10 +61,12 @@ module.exports = {
       json: true,
     });
 
-    const env = await this.context.worker.executeCommandInHostOS(
-      `balena exec ${state.services.variables} env`,
-      ip,
-    );
+    const env = await this.context
+      .get()
+      .worker.executeCommandInHostOS(
+        `balena exec ${state.services.variables} env`,
+        ip,
+      );
 
     const result = {};
     env.split('\n').forEach(element => {

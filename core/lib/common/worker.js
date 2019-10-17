@@ -108,8 +108,25 @@ module.exports = class Worker {
     return rp.post({ uri: `${this.url}/proxy`, body: proxy, json: true });
   }
 
-  ip(target) {
-    return rp.get({ uri: `${this.url}/dut/ip`, body: { target }, json: true });
+  ip(
+    target,
+    timeout = {
+      interval: 10000,
+      tries: 60
+    }
+  ) {
+    return /.*\.local/.test(target)
+      ? retry(
+          () => {
+            return rp.get({ uri: `${this.url}/dut/ip`, body: { target }, json: true });
+          },
+          {
+            max_tries: timeout.tries,
+            interval: timeout.interval,
+            throw_original: true
+          }
+        )
+      : target;
   }
 
   async teardown() {
@@ -133,10 +150,10 @@ module.exports = class Worker {
       tries: 60
     }
   ) {
+    let ip = /.*\.local/.test(target) ? await this.ip(target) : target;
+
     return retry(
       async () => {
-        let ip = /.*\.local/.test(target) ? await this.ip(target) : target;
-
         const result = await utils.executeCommandOverSSH(`source /etc/profile ; ${command}`, {
           host: ip,
           port: '22222',
@@ -145,9 +162,7 @@ module.exports = class Worker {
 
         if (typeof result.code === 'number' && result.code !== 0) {
           throw new Error(
-            `"${command}" failed. stderr: ${result.stderr}, stdout: ${result.stdout}, code: ${
-              result.code
-            }`
+            `"${command}" failed. stderr: ${result.stderr}, stdout: ${result.stdout}, code: ${result.code}`
           );
         }
 

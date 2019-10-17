@@ -54,7 +54,7 @@ module.exports = {
       .init({
         url: 'https://github.com/balena-io-projects/balena-cpp-hello-world.git',
         sdk: this.context.balena.sdk,
-        path: this.options.tmpdir,
+        path: this.suite.options.tmpdir,
       })
       .then(chain => {
         return chain.clone();

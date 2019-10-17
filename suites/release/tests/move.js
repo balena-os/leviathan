@@ -28,7 +28,7 @@ module.exports = {
           url:
             'https://github.com/balena-io-projects/balena-cpp-hello-world.git',
           sdk: this.context.balena.sdk,
-          path: this.options.tmpdir,
+          path: this.suite.options.tmpdir,
         })
         .then(chain => {
           return chain.clone();
@@ -74,7 +74,7 @@ module.exports = {
       moveApplicationName,
       this.deviceType.slug,
       {
-        delta: this.options.balena.application.env.delta,
+        delta: this.suite.options.balena.application.env.delta,
       },
     );
     this.teardown.register(() => {
@@ -86,7 +86,7 @@ module.exports = {
       .init({
         url: 'https://github.com/balena-io-projects/simple-server-node',
         sdk: this.context.balena.sdk,
-        path: this.options.tmpdir,
+        path: this.suite.options.tmpdir,
       })
       .then(chain => {
         return chain.clone();

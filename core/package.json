@@ -46,7 +46,7 @@
     "pensieve-sdk": "^1.0.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
-    "resin-cli-visuals": "^1.4.0",
+    "resin-cli-visuals": "git+https://github.com/balena-io-modules/resin-cli-visuals#stream",
     "resin-image-fs": "^5.0.8",
     "simple-git": "^1.85.0",
     "ssh-keygen": "^0.4.1",
