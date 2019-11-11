@@ -32,7 +32,8 @@ module.exports = class Test {
         }
       },
       deviceType: suite.deviceType,
-      options: suite.options
+      options: suite.options,
+      state: suite.state
     };
 
     this.id = id;
@@ -48,6 +49,18 @@ module.exports = class Test {
 
     this.archiver = new Archiver(id);
     this.context = new Context(this.suite.context);
+  }
+
+  log(message) {
+    this.suite.state.log(message);
+  }
+
+  status(message, { progress }) {
+    this.suite.state.status({ message, options: { progress } });
+  }
+
+  info(message) {
+    this.suite.state.info(message);
   }
 
   // This method allows tests to incldue any module from the core framework

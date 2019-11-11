@@ -20,6 +20,7 @@ const assignIn = require('lodash/assignIn');
 const mapValues = require('lodash/mapValues');
 
 const Bluebird = require('bluebird');
+const config = require('config');
 const imagefs = require('resin-image-fs');
 const path = require('path');
 const fs = Bluebird.promisifyAll(require('fs'));
@@ -88,7 +89,7 @@ module.exports = class BalenaOS {
   constructor(options = {}) {
     this.deviceType = options.deviceType;
     this.network = options.network;
-    this.image = {};
+    this.image = { path: config.get('leviathan.uploads.image') };
     this.configJson = options.configJson || {};
     this.contract = {
       network: mapValues(this.network, value => {
@@ -147,14 +148,13 @@ module.exports = class BalenaOS {
     return types[download.type]();
   }
 
-  async fetch(packDir, download) {
-    this.image.path = join(packDir, 'os.img');
+  async fetch(download) {
     assignIn(
       this.contract,
       await new SpinnerPromise({
         promise: this.unpack({
           type: download.type,
-          source: join(packDir, 'image')
+          source: join(config.get('leviathan.workdir'), 'image')
         }),
         startMessage: 'Unpacking Operating System',
         stopMessage: 'Operating system sucesfully unpacked'

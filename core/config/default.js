@@ -1,3 +1,7 @@
+const defer = require('config/defer').deferConfig;
+const mapValues = require('lodash/mapValues');
+const { join } = require('path');
+
 module.exports = {
   express: {
     port: 80
@@ -7,6 +11,12 @@ module.exports = {
     port: 2000
   },
   leviathan: {
-    artifacts: '/tmp/artifacts'
+    artifacts: '/tmp/artifacts',
+    workdir: '/data',
+    uploads: defer(function() {
+      return mapValues({ image: 'os.img', config: 'config.json', suite: 'suite' }, value => {
+        return join(this.leviathan.workdir, value);
+      });
+    })
   }
 };

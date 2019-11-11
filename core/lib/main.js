@@ -16,9 +16,9 @@
 
 'use strict';
 
-const { Mutex } = require('async-mutex');
 const Bluebird = require('bluebird');
-const { forkCode, getFilesFromDirectory } = require('./common/utils');
+const { fork } = require('child_process');
+const { getFilesFromDirectory } = require('./common/utils');
 const config = require('config');
 const express = require('express');
 const expressWebSocket = require('express-ws');
@@ -28,34 +28,17 @@ const { fs, crypto } = require('mz');
 const { join } = require('path');
 const tar = require('tar-fs');
 const pipeline = Bluebird.promisify(require('stream').pipeline);
-const { createGzip, createGunzip } = require('zlib');
 const WebSocket = require('ws');
+const { parse } = require('url');
+const { createGzip, createGunzip } = require('zlib');
 
 async function setup() {
-  const mutex = new Mutex();
-
-  const location = '/data';
-  let child = null;
-  let release = null;
-
+  let suite = null;
+  const upload = {};
   const app = express();
 
   expressWebSocket(app, null, {
     perMessageDeflate: false
-  });
-
-  // Entry point for our process, aquire lock execution that syncronizes upload and start
-  app.get('/aquire', async (_req, res) => {
-    res.writeHead(202, {
-      Connection: 'keep-alive'
-    });
-    const interval = setInterval(() => {
-      res.write('Still waiting');
-    }, 20000);
-    res.connection.setTimeout(0);
-    release = await mutex.acquire();
-    clearInterval(interval);
-    res.end();
   });
 
   app.post('/upload', async (req, res) => {
@@ -65,9 +48,13 @@ async function setup() {
     });
 
     try {
+      if (parseFloat(req.headers['x-token']) !== upload.token) {
+        throw new Error('Unauthorized upload');
+      }
+
       const artifact = {
         name: req.headers['x-artifact'],
-        path: join(location, req.headers['x-artifact']),
+        path: join(config.get('leviathan.workdir'), req.headers['x-artifact']),
         hash: req.headers['x-artifact-hash']
       };
       const ignore = ['node_modules', 'package-lock.json'];
@@ -117,7 +104,7 @@ async function setup() {
         res.write('upload: start');
         // Make sure we start clean
         await remove(artifact.path);
-        const line = pipeline(req, createGunzip(), tar.extract(location));
+        const line = pipeline(req, createGunzip(), tar.extract(config.get('leviathan.workdir')));
         req.on('close', () => {
           line.cancel();
         });
@@ -125,17 +112,16 @@ async function setup() {
         res.write('upload: done');
       }
     } catch (e) {
-      if (release != null) {
-        release = release();
-      }
       res.write(`error: ${e.message}`);
     } finally {
+      delete upload.token;
       res.end();
     }
   });
 
   app.ws('/start', async (ws, req) => {
-    process.env.CI = req.headers['sec-websocket-protocol'] === 'CI';
+    const reconnect = parse(req.originalUrl).query === 'reconnect';
+    const running = suite != null;
 
     // Keep the socket alive
     const interval = setInterval(function timeout() {
@@ -144,80 +130,104 @@ async function setup() {
       }
     }, 1000);
 
+    // Handler definitions
+    const stdHandler = data => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: 'log', data: data.toString('utf-8').trimEnd() }));
+      }
+    };
+    const msgHandler = message => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify(message));
+      }
+    };
+
     try {
-      await new Promise(resolve => {
-        ws.on('error', console.error);
+      ws.on('error', console.error);
+      ws.on('close', () => {
+        clearInterval(interval);
+      });
+
+      if (running && !reconnect) {
+        throw new Error('Already runing a suite. Please stop it or try again later.');
+      }
+
+      if (!running || !reconnect) {
+        for (const uploadName in config.get('leviathan.uploads')) {
+          upload.token = Math.random();
+          ws.send(
+            JSON.stringify({
+              type: 'upload',
+              data: {
+                name: uploadName,
+                token: upload.token
+              }
+            })
+          );
+
+          // Wait for the upload to be received and finished
+          await new Promise((resolve, reject) => {
+            const timeout = setTimeout(() => {
+              clearInterval(interval);
+              clearTimeout(timeout);
+              reject(new Error('Upload timed out'));
+            }, 30000);
+            const interval = setInterval(() => {
+              if (upload.token == null) {
+                clearInterval(interval);
+                clearTimeout(timeout);
+                resolve();
+              }
+            }, 2000);
+            ws.once('close', () => {
+              clearInterval(interval);
+              clearTimeout(timeout);
+            });
+          });
+        }
+
+        // The reason we need to fork is because many 3rd party libariers output to stdout
+        // so we need to capture that
+        suite = fork('./lib/common/suite', { stdio: ['pipe', 'pipe', 'pipe', 'ipc'] });
+      }
+
+      ws.on('message', message => {
+        try {
+          const { type, data } = JSON.parse(message);
+
+          if (type === 'input') {
+            suite.stdin.write(Buffer.from(data));
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      });
+
+      suite.stdout.on('data', stdHandler);
+      suite.stderr.on('data', stdHandler);
+      suite.on('message', msgHandler);
+
+      if (reconnect) {
+        suite.send({ action: 'reconnect' });
+      }
+
+      // Make sure we get the handlers off to prevent a memory leak from happening
+      await new Promise((resolve, reject) => {
         ws.on('close', () => {
-          clearInterval(interval);
-          if (child != null) {
-            child.kill('SIGINT');
-          }
-        });
-
-        child = forkCode(
-          `const Suite = require('${require.resolve('./common/suite')}');
-
-          (async () => {
-            const suite = new Suite('${location}');
-            await suite.init();
-            suite.printRunQueueSummary();
-            await suite.run();
-          })()`,
-          {
-            stdio: 'pipe'
-          }
-        );
-
-        ws.on('message', data => {
-          child.stdin.write(data);
-        });
-        child.stdout.on('data', data => {
-          if (ws.readyState === WebSocket.OPEN) {
-            ws.send(
-              JSON.stringify({
-                status: 'running',
-                data: {
-                  stdout: data
-                }
-              })
-            );
-          }
-        });
-        child.stderr.on('data', data => {
-          if (ws.readyState === WebSocket.OPEN) {
-            ws.send(
-              JSON.stringify({
-                status: 'running',
-                data: {
-                  stdout: data
-                }
-              })
-            );
-          }
-        });
-        child.on('exit', code => {
-          if (ws.readyState === WebSocket.OPEN) {
-            ws.send(
-              JSON.stringify({
-                status: 'exit',
-                data: {
-                  code
-                }
-              })
-            );
-          }
-          child = null;
-          if (release != null) {
-            release = release();
+          if (suite != null) {
+            suite.stdout.off('data', stdHandler);
+            suite.stderr.off('data', stdHandler);
+            suite.off('message', msgHandler);
           }
           resolve();
         });
+        suite.on('error', reject);
+        suite.on('exit', resolve);
       });
     } catch (e) {
-      if (release != null) {
-        release = release();
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: 'error', data: { message: e.stack } }));
       }
-      console.error(e);
     } finally {
       ws.close();
     }
@@ -237,26 +247,11 @@ async function setup() {
 
   app.post('/stop', async (_req, res) => {
     try {
-      if (child != null) {
-        child.on('close', () => {
-          res.send('OK');
-        });
-        child.kill('SIGINT');
-      } else if (release != null) {
-        const interval = setInterval(() => {
-          if (release != null) {
-            release = release();
-          }
-          // the release of the lock may be slow, so to avoid a deadlock, let's wait on it
-          // before terminating
-          if (!mutex.isLocked()) {
-            clearInterval(interval);
-            res.send('OK');
-          }
-        }, 100);
-      } else {
+      suite.on('close', () => {
         res.send('OK');
-      }
+      });
+      suite.kill('SIGINT');
+      suite = null;
     } catch (e) {
       res.status(500).send(e.stack);
     }

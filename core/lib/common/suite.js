@@ -17,6 +17,7 @@
 'use strict';
 
 const assignIn = require('lodash/assignIn');
+const config = require('config');
 const isEmpty = require('lodash/isEmpty');
 const isObject = require('lodash/isObject');
 const isString = require('lodash/isString');
@@ -28,12 +29,14 @@ const ajv = new AJV();
 require('ajv-semver')(ajv);
 
 const Bluebird = require('bluebird');
+
 const fse = require('fs-extra');
 const npm = require('npm');
 const { tmpdir } = require('os');
 const path = require('path');
 
 const Context = require('./context');
+const State = require('./state');
 const Teardown = require('./teardown');
 const Test = require('./test');
 const utils = require('./utils');
@@ -52,32 +55,32 @@ function cleanObject(object) {
   }
 }
 
-module.exports = class Suite {
-  constructor(packdir) {
-    const config = require(`${packdir}/config.json`);
+class Suite {
+  constructor() {
+    const conf = require(config.get('leviathan.uploads.config'));
 
     this.rootPath = path.join(__dirname, '..');
     this.options = assignIn(
       {
-        packdir,
-        suitePath: path.join(packdir, 'suite'),
-        tmpdir: config.tmpdir || tmpdir(),
-        interactiveTests: config.interactive,
-        replOnFailure: config.repl
+        packdir: config.get('leviathan.workdir'),
+        tmpdir: conf.tmpdir || tmpdir(),
+        interactiveTests: conf.interactive,
+        replOnFailure: conf.repl
       },
-      require(path.join(packdir, 'suite', 'conf'))(config)
+      require(path.join(config.get('leviathan.uploads.suite'), 'conf'))(conf)
     );
     cleanObject(this.options);
 
     // State
     this.context = new Context();
     this.teardown = new Teardown();
+    this.state = new State();
 
     try {
-      this.deviceType = require(`../../contracts/contracts/hw.device-type/${config.deviceType}/contract.json`);
+      this.deviceType = require(`../../contracts/contracts/hw.device-type/${conf.deviceType}/contract.json`);
     } catch (e) {
       if (e.code === 'MODULE_NOT_FOUND') {
-        throw new Error(`Invalid/Unsupported device type: ${config.deviceType}`);
+        throw new Error(`Invalid/Unsupported device type: ${conf.deviceType}`);
       } else {
         throw e;
       }
@@ -87,7 +90,9 @@ module.exports = class Suite {
   async init() {
     await Bluebird.try(async () => {
       await this.installDependencies();
-      this.rootTree = this.resolveTestTree(path.join(this.options.suitePath, 'suite'));
+      this.rootTree = this.resolveTestTree(
+        path.join(config.get('leviathan.uploads.suite'), 'suite')
+      );
     }).catch(async error => {
       await this.removeDependencies();
       throw error;
@@ -95,72 +100,80 @@ module.exports = class Suite {
   }
 
   async run() {
-    delete require.cache[require.resolve('tap')];
-    const tap = require('tap');
+    await new Bluebird(async (resolve, reject) => {
+      delete require.cache[require.resolve('tap')];
+      const tap = require('tap');
 
-    // Recursive DFS
-    const treeExpander = async ([
-      { interactive, os, skip, deviceType, title, run, tests },
-      testNode
-    ]) => {
-      // Check our contracts
-      if (
-        skip ||
-        (interactive && !this.options.interactiveTests) ||
-        (deviceType != null && !ajv.compile(deviceType)(this.deviceType)) ||
-        (os != null &&
-          this.context.get().os != null &&
-          !ajv.compile(os)(this.context.get().os.contract))
-      ) {
-        return;
-      }
-
-      const test = new Test(title, this);
-
-      await testNode.test(
-        template(title)({
-          options: this.context.get()
-        }),
-        { buffered: false },
-        async t => {
-          if (run != null) {
-            await Reflect.apply(Bluebird.method(run), test, [t])
-              .catch(async error => {
-                t.threw(error);
-
-                if (this.options.replOnFailure) {
-                  await utils.repl(
-                    {
-                      context: this.context.get()
-                    },
-                    {
-                      name: t.name
-                    }
-                  );
-                }
-              })
-              .finally(async () => {
-                await test.finish();
-              });
-          }
-
-          if (tests == null) {
-            return;
-          }
-
-          for (const node of tests) {
-            treeExpander([node, t]);
-          }
+      // Recursive DFS
+      const treeExpander = async ([
+        { interactive, os, skip, deviceType, title, run, tests },
+        testNode
+      ]) => {
+        // Check our contracts
+        if (
+          skip ||
+          (interactive && !this.options.interactiveTests) ||
+          (deviceType != null && !ajv.compile(deviceType)(this.deviceType)) ||
+          (os != null &&
+            this.context.get().os != null &&
+            !ajv.compile(os)(this.context.get().os.contract))
+        ) {
+          return;
         }
-      );
-    };
 
-    await Bluebird.try(async () => {
-      await treeExpander([this.rootTree, tap]);
-    }).finally(async () => {
-      await this.removeDependencies();
-      await this.teardown.runAll();
-      tap.end();
+        const test = new Test(title, this);
+
+        await testNode
+          .test(
+            template(title)({
+              options: this.context.get()
+            }),
+            { buffered: false },
+            async t => {
+              if (run != null) {
+                await Reflect.apply(Bluebird.method(run), test, [t])
+                  .catch(async error => {
+                    t.threw(error);
+
+                    if (this.options.replOnFailure) {
+                      await utils.repl(
+                        {
+                          context: this.context.get()
+                        },
+                        {
+                          name: t.name
+                        }
+                      );
+                    }
+                  })
+                  .finally(async () => {
+                    await test.finish();
+                  });
+              }
+
+              if (tests == null) {
+                return;
+              }
+
+              for (const node of tests) {
+                treeExpander([node, t]);
+              }
+            }
+          )
+          .then(resolve)
+          .catch(reject);
+      };
+
+      await Bluebird.try(async () => {
+        await treeExpander([this.rootTree, tap]);
+      })
+        .finally(async () => {
+          await this.removeDependencies();
+          await this.teardown.runAll();
+          tap.end();
+        })
+        .then(resolve)
+        .then(reject);
     });
   }
 
@@ -178,11 +191,11 @@ module.exports = class Suite {
         tests.forEach((test, i) => {
           if (isString(test)) {
             try {
-              test = tests[i] = require(path.join(this.options.suitePath, test));
+              test = tests[i] = require(path.join(config.get('leviathan.uploads.suite'), test));
             } catch (error) {
-              console.error(error.message);
+              this.state.log(error.message);
               if (error.code === 'MODULE_NOT_FOUND') {
-                console.error('Could not resolve test path. Ignoring...');
+                this.state.log('Could not resolve test path. Ignoring...');
               } else {
                 throw error;
               }
@@ -198,9 +211,9 @@ module.exports = class Suite {
 
   // DFS with depth tracking
   printRunQueueSummary() {
-    console.log('Run queue summary:');
+    this.state.log('Run queue summary:');
     const treeExpander = ({ title, tests }, depth) => {
-      console.log(`${'\t'.repeat(depth)} ${title}`);
+      this.state.log(`${'\t'.repeat(depth)} ${title}`);
 
       if (tests == null) {
         return;
@@ -215,18 +228,37 @@ module.exports = class Suite {
   }
 
   async installDependencies() {
-    console.log(`Install npm dependencies for suite: `);
+    this.state.log(`Install npm dependencies for suite: `);
     await Bluebird.promisify(npm.load)({
       loglevel: 'silent',
       progress: false,
-      prefix: this.options.suitePath,
+      prefix: config.get('leviathan.uploads.suite'),
       'package-lock': false
     });
-    await Bluebird.promisify(npm.install)(this.options.suitePath);
+    await Bluebird.promisify(npm.install)(config.get('leviathan.uploads.suite'));
   }
 
   async removeDependencies() {
-    console.log(`Removing npm dependencies for suite: `);
-    await Bluebird.promisify(fse.remove)(path.join(this.options.suitePath, 'node_modules'));
+    this.state.log(`Removing npm dependencies for suite:`);
+    await Bluebird.promisify(fse.remove)(
+      path.join(config.get('leviathan.uploads.suite'), 'node_modules')
+    );
   }
-};
+}
+
+(async () => {
+  const suite = new Suite();
+  process.on('message', message => {
+    const { action } = message;
+
+    if (action === 'reconnect') {
+      for (const action of ['info', 'log', 'status']) {
+        suite.state[action]();
+      }
+    }
+  });
+
+  await suite.init();
+  suite.printRunQueueSummary();
+  await suite.run();
+})();
