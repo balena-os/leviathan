@@ -80,7 +80,7 @@ module.exports = {
       .get()
       .worker.network(this.suite.options.balenaOS.network);
 
-    await this.context.get().os.fetch(this.suite.options.packdir, {
+    await this.context.get().os.fetch({
       type: this.suite.options.balenaOS.download.type,
       version: this.suite.options.balenaOS.download.version,
     });

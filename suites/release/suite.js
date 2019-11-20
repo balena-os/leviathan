@@ -165,7 +165,7 @@ module.exports = {
         return chain.push({ name: 'master' });
       });
 
-    await this.context.get().os.fetch(this.suite.options.packdir, {
+    await this.context.get().os.fetch({
       type: this.suite.options.balenaOS.download.type,
       version: this.suite.options.balenaOS.download.version,
     });
