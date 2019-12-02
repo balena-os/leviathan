@@ -247,11 +247,15 @@ async function setup() {
 
   app.post('/stop', async (_req, res) => {
     try {
-      suite.on('close', () => {
+      if (suite != null) {
+        suite.on('close', () => {
+          res.send('OK');
+        });
+        suite.kill('SIGINT');
+        suite = null;
+      } else {
         res.send('OK');
-      });
-      suite.kill('SIGINT');
-      suite = null;
+      }
     } catch (e) {
       res.status(500).send(e.stack);
     }
