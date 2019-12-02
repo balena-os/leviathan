@@ -1,0 +1,30 @@
+{
+	"name": "leviathan",
+	"version": "1.19.5",
+	"scripts": {
+		"prettify": "for component in 'suites' 'worker' 'core' 'client'; do npm --prefix $component run prettify; done",
+		"lint": "for component in 'suites' 'worker' 'core' 'client'; do npm --prefix $component run lint; done",
+		"preinstall": "for component in 'suites' 'worker' 'core' 'client'; do npm --prefix $component install; done"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/balena-io/leviathan.git"
+	},
+	"author": "Theodor Gherzan <theodor@balena.io>",
+	"license": "Apache-2.0",
+	"bugs": {
+		"url": "https://github.com/balena-io/leviathan/issues"
+	},
+	"homepage": "https://github.com/balena-io/leviathan",
+	"devDependencies": {
+		"husky": "^1.3.1",
+		"lint-staged": "^8.1.0",
+		"prettier": "^1.16.4",
+		"resin-lint": "^3.1.1"
+	},
+	"husky": {
+		"hooks": {
+			"pre-commit": "for component in 'suites' 'worker' 'core' 'client'; do pushd $component && lint-staged && popd ; done"
+		}
+	}
+}

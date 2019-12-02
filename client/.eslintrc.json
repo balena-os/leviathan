@@ -1,0 +1,21 @@
+{
+  "env": {
+    "browser": false,
+    "commonjs": true,
+    "es6": true,
+    "node": true
+  },
+  "plugins": ["lodash", "jsdoc", "prettier"],
+  "extends": ["standard", "plugin:prettier/recommended"],
+  "parserOptions": {
+    "sourceType": "module"
+  },
+  "settings": {
+    "jsdoc": {
+      "additionalTagNames": {
+        "customTags": ["fulfil"]
+      }
+    }
+  },
+  "rules": { "standard/computed-property-even-spacing": "off" }
+}

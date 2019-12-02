@@ -32,145 +32,149 @@ const zlib = require('zlib');
 
 // TODO: This function should be implemented using Reconfix
 const injectBalenaConfiguration = (image, configuration) => {
-  return imagefs.writeFile(
-    {
-      image,
-      partition: 1,
-      path: '/config.json'
-    },
-    JSON.stringify(configuration)
-  );
+	return imagefs.writeFile(
+		{
+			image,
+			partition: 1,
+			path: '/config.json',
+		},
+		JSON.stringify(configuration),
+	);
 };
 
 // TODO: This function should be implemented using Reconfix
 const injectNetworkConfiguration = async (image, configuration) => {
-  if (configuration.wireless == null) {
-    return;
-  }
-  if (configuration.wireless.ssid == null) {
-    throw new Error(`Invalide wireless configuration: ${configuration.wireless}`);
-  }
+	if (configuration.wireless == null) {
+		return;
+	}
+	if (configuration.wireless.ssid == null) {
+		throw new Error(
+			`Invalide wireless configuration: ${configuration.wireless}`,
+		);
+	}
 
-  const wifiConfiguration = [
-    '[connection]',
-    'id=balena-wifi',
-    'type=wifi',
-    '[wifi]',
-    'hidden=true',
-    'mode=infrastructure',
-    `ssid=${configuration.wireless.ssid}`,
-    '[ipv4]',
-    'method=auto',
-    '[ipv6]',
-    'addr-gen-mode=stable-privacy',
-    'method=auto'
-  ];
+	const wifiConfiguration = [
+		'[connection]',
+		'id=balena-wifi',
+		'type=wifi',
+		'[wifi]',
+		'hidden=true',
+		'mode=infrastructure',
+		`ssid=${configuration.wireless.ssid}`,
+		'[ipv4]',
+		'method=auto',
+		'[ipv6]',
+		'addr-gen-mode=stable-privacy',
+		'method=auto',
+	];
 
-  if (configuration.wireless.psk) {
-    Reflect.apply(wifiConfiguration.push, wifiConfiguration, [
-      '[wifi-security]',
-      'auth-alg=open',
-      'key-mgmt=wpa-psk',
-      `psk=${configuration.wireless.psk}`
-    ]);
-  }
+	if (configuration.wireless.psk) {
+		Reflect.apply(wifiConfiguration.push, wifiConfiguration, [
+			'[wifi-security]',
+			'auth-alg=open',
+			'key-mgmt=wpa-psk',
+			`psk=${configuration.wireless.psk}`,
+		]);
+	}
 
-  await imagefs.writeFile(
-    {
-      image,
-      partition: 1,
-      path: '/system-connections/balena-wifi'
-    },
-    wifiConfiguration.join('\n')
-  );
+	await imagefs.writeFile(
+		{
+			image,
+			partition: 1,
+			path: '/system-connections/balena-wifi',
+		},
+		wifiConfiguration.join('\n'),
+	);
 };
 
 module.exports = class BalenaOS {
-  constructor(options = {}) {
-    this.deviceType = options.deviceType;
-    this.network = options.network;
-    this.image = { path: config.get('leviathan.uploads.image') };
-    this.configJson = options.configJson || {};
-    this.contract = {
-      network: mapValues(this.network, value => {
-        return typeof value === 'boolean' ? value : true;
-      })
-    };
-  }
+	constructor(options = {}) {
+		this.deviceType = options.deviceType;
+		this.network = options.network;
+		this.image = { path: config.get('leviathan.uploads.image') };
+		this.configJson = options.configJson || {};
+		this.contract = {
+			network: mapValues(this.network, value => {
+				return typeof value === 'boolean' ? value : true;
+			}),
+		};
+	}
 
-  unpack(download) {
-    const types = {
-      jenkins: async () => {
-        await pipeline(
-          fs.createReadStream(path.join(download.source, 'resin.img.zip')),
-          unzip.Parse()
-        );
+	unpack(download) {
+		const types = {
+			jenkins: async () => {
+				await pipeline(
+					fs.createReadStream(path.join(download.source, 'resin.img.zip')),
+					unzip.Parse(),
+				);
 
-        const version = await fs.readFileAsync(path.join(download.source, 'VERSION_HOSTOS'));
+				const version = await fs.readFileAsync(
+					path.join(download.source, 'VERSION_HOSTOS'),
+				);
 
-        return {
-          version
-        };
-      },
-      local: async () => {
-        await pipeline(
-          fs.createReadStream(download.source),
-          zlib.createGunzip(),
-          fs.createWriteStream(this.image.path)
-        );
+				return {
+					version,
+				};
+			},
+			local: async () => {
+				await pipeline(
+					fs.createReadStream(download.source),
+					zlib.createGunzip(),
+					fs.createWriteStream(this.image.path),
+				);
 
-        const version = /VERSION="(.*)"/g.exec(
-          await imagefs.readFile({
-            image: this.image.path,
-            partition: 1,
-            path: '/os-release'
-          })
-        );
-        const variant = /VARIANT_ID="(.*)"/g.exec(
-          await imagefs.readFile({
-            image: this.image.path,
-            partition: 1,
-            path: '/os-release'
-          })
-        );
+				const version = /VERSION="(.*)"/g.exec(
+					await imagefs.readFile({
+						image: this.image.path,
+						partition: 1,
+						path: '/os-release',
+					}),
+				);
+				const variant = /VARIANT_ID="(.*)"/g.exec(
+					await imagefs.readFile({
+						image: this.image.path,
+						partition: 1,
+						path: '/os-release',
+					}),
+				);
 
-        if (!version) {
-          throw new Error('Could not find OS version on the image.');
-        }
+				if (!version) {
+					throw new Error('Could not find OS version on the image.');
+				}
 
-        return {
-          version: version != null ? version[1] : null,
-          variant: variant != null ? variant[1] : null
-        };
-      }
-    };
+				return {
+					version: version != null ? version[1] : null,
+					variant: variant != null ? variant[1] : null,
+				};
+			},
+		};
 
-    return types[download.type]();
-  }
+		return types[download.type]();
+	}
 
-  async fetch(download) {
-    assignIn(
-      this.contract,
-      await new SpinnerPromise({
-        promise: this.unpack({
-          type: download.type,
-          source: join(config.get('leviathan.workdir'), 'image')
-        }),
-        startMessage: 'Unpacking Operating System',
-        stopMessage: 'Operating system sucesfully unpacked'
-      })
-    );
-  }
+	async fetch(download) {
+		assignIn(
+			this.contract,
+			await new SpinnerPromise({
+				promise: this.unpack({
+					type: download.type,
+					source: join(config.get('leviathan.workdir'), 'image'),
+				}),
+				startMessage: 'Unpacking Operating System',
+				stopMessage: 'Operating system sucesfully unpacked',
+			}),
+		);
+	}
 
-  addCloudConfig(configJson) {
-    assignIn(this.configJson, configJson);
-  }
+	addCloudConfig(configJson) {
+		assignIn(this.configJson, configJson);
+	}
 
-  async configure() {
-    console.log(`Configuring balenaOS image: ${this.image.path}`);
-    if (this.configJson) {
-      await injectBalenaConfiguration(this.image.path, this.configJson);
-    }
-    await injectNetworkConfiguration(this.image.path, this.network);
-  }
+	async configure() {
+		console.log(`Configuring balenaOS image: ${this.image.path}`);
+		if (this.configJson) {
+			await injectBalenaConfiguration(this.image.path, this.configJson);
+		}
+		await injectNetworkConfiguration(this.image.path, this.network);
+	}
 };

@@ -22,53 +22,53 @@ const Archiver = require('./archiver');
 const Context = require('./context');
 
 module.exports = class Test {
-  constructor(id, suite) {
-    this.suite = {
-      rootPath: suite.rootPath,
-      context: suite.context,
-      teardown: {
-        register: (fn, bucket) => {
-          suite.teardown.register(fn, bucket);
-        }
-      },
-      deviceType: suite.deviceType,
-      options: suite.options,
-      state: suite.state
-    };
+	constructor(id, suite) {
+		this.suite = {
+			rootPath: suite.rootPath,
+			context: suite.context,
+			teardown: {
+				register: (fn, bucket) => {
+					suite.teardown.register(fn, bucket);
+				},
+			},
+			deviceType: suite.deviceType,
+			options: suite.options,
+			state: suite.state,
+		};
 
-    this.id = id;
+		this.id = id;
 
-    this.teardown = {
-      run: () => {
-        suite.teardown.run(this.id);
-      },
-      register: fn => {
-        this.suite.teardown.register(fn, id);
-      }
-    };
+		this.teardown = {
+			run: () => {
+				suite.teardown.run(this.id);
+			},
+			register: fn => {
+				this.suite.teardown.register(fn, id);
+			},
+		};
 
-    this.archiver = new Archiver(id);
-    this.context = new Context(this.suite.context);
-  }
+		this.archiver = new Archiver(id);
+		this.context = new Context(this.suite.context);
+	}
 
-  log(message) {
-    this.suite.state.log(message);
-  }
+	log(message) {
+		this.suite.state.log(message);
+	}
 
-  status(message, { progress }) {
-    this.suite.state.status({ message, options: { progress } });
-  }
+	status(message, { progress }) {
+		this.suite.state.status({ message, options: { progress } });
+	}
 
-  info(message) {
-    this.suite.state.info(message);
-  }
+	info(message) {
+		this.suite.state.info(message);
+	}
 
-  // This method allows tests to incldue any module from the core framework
-  require(module) {
-    return require(join(this.suite.rootPath, module));
-  }
+	// This method allows tests to incldue any module from the core framework
+	require(module) {
+		return require(join(this.suite.rootPath, module));
+	}
 
-  async finish() {
-    await this.teardown.run();
-  }
+	async finish() {
+		await this.teardown.run();
+	}
 };

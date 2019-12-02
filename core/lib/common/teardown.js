@@ -21,52 +21,52 @@ const noop = require('lodash/noop');
 const Bluebird = require('bluebird');
 
 module.exports = class Teardown {
-  constructor() {
-    this.store = new Map();
+	constructor() {
+		this.store = new Map();
 
-    process.on('SIGINT', noop);
-    process.on('SIGTERM', noop);
-    process.once('SIGINT', async () => {
-      await this.runAll(process.nextTick);
-      process.exit();
-    });
-    process.once('SIGTERM', async () => {
-      await this.runAll(process.nextTick);
-      process.exit();
-    });
-  }
+		process.on('SIGINT', noop);
+		process.on('SIGTERM', noop);
+		process.once('SIGINT', async () => {
+			await this.runAll(process.nextTick);
+			process.exit();
+		});
+		process.once('SIGTERM', async () => {
+			await this.runAll(process.nextTick);
+			process.exit();
+		});
+	}
 
-  async runAll(scheduler = setImmediate) {
-    await Bluebird.each(Array.from(this.store.keys()).reverse(), bucket => {
-      return this.run(bucket, scheduler);
-    });
-  }
+	async runAll(scheduler = setImmediate) {
+		await Bluebird.each(Array.from(this.store.keys()).reverse(), bucket => {
+			return this.run(bucket, scheduler);
+		});
+	}
 
-  async run(bucket = 'global', scheduler = setImmediate) {
-    const prev = Bluebird.setScheduler(scheduler);
+	async run(bucket = 'global', scheduler = setImmediate) {
+		const prev = Bluebird.setScheduler(scheduler);
 
-    if (this.store.has(bucket)) {
-      await Bluebird.each(this.store.get(bucket).reverse(), teardown => {
-        return teardown().catch(error => {
-          console.error(error);
-        });
-      });
+		if (this.store.has(bucket)) {
+			await Bluebird.each(this.store.get(bucket).reverse(), teardown => {
+				return teardown().catch(error => {
+					console.error(error);
+				});
+			});
 
-      this.store.delete(bucket);
-    }
+			this.store.delete(bucket);
+		}
 
-    Bluebird.setScheduler(prev);
-  }
+		Bluebird.setScheduler(prev);
+	}
 
-  register(fn, bucket = 'global') {
-    if (!isFunction(fn)) {
-      throw new Error(`Can only register functions, got ${typeof fn}`);
-    }
+	register(fn, bucket = 'global') {
+		if (!isFunction(fn)) {
+			throw new Error(`Can only register functions, got ${typeof fn}`);
+		}
 
-    if (!this.store.has(bucket)) {
-      this.store.set(bucket, [fn]);
-    } else {
-      this.store.get(bucket).push(fn);
-    }
-  }
+		if (!this.store.has(bucket)) {
+			this.store.set(bucket, [fn]);
+		} else {
+			this.store.get(bucket).push(fn);
+		}
+	}
 };

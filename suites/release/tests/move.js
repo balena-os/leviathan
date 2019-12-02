@@ -16,147 +16,147 @@
 'use strict';
 
 module.exports = {
-  title: 'Move device between applications',
-  run: async function(test) {
-    let hash = await this.context.balena.sdk.getDeviceCommit(
-      this.context.balena.uuid,
-    );
+	title: 'Move device between applications',
+	run: async function(test) {
+		let hash = await this.context.balena.sdk.getDeviceCommit(
+			this.context.balena.uuid,
+		);
 
-    if (hash == null) {
-      await this.context.balena.deviceApplicationChain
-        .init({
-          url:
-            'https://github.com/balena-io-projects/balena-cpp-hello-world.git',
-          sdk: this.context.balena.sdk,
-          path: this.suite.options.tmpdir,
-        })
-        .then(chain => {
-          return chain.clone();
-        })
-        .then(async chain => {
-          return chain.push(
-            {
-              name: 'master',
-            },
-            {
-              name: 'balena',
-              url: await this.context.balena.sdk.getApplicationGitRemote(
-                this.context.balena.application.name,
-              ),
-            },
-          );
-        })
-        .then(async chain => {
-          hash = chain.getPushedCommit();
+		if (hash == null) {
+			await this.context.balena.deviceApplicationChain
+				.init({
+					url:
+						'https://github.com/balena-io-projects/balena-cpp-hello-world.git',
+					sdk: this.context.balena.sdk,
+					path: this.suite.options.tmpdir,
+				})
+				.then(chain => {
+					return chain.clone();
+				})
+				.then(async chain => {
+					return chain.push(
+						{
+							name: 'master',
+						},
+						{
+							name: 'balena',
+							url: await this.context.balena.sdk.getApplicationGitRemote(
+								this.context.balena.application.name,
+							),
+						},
+					);
+				})
+				.then(async chain => {
+					hash = chain.getPushedCommit();
 
-          await this.context.balena.sdk.triggerDeviceUpdate(
-            this.context.balena.uuid,
-          );
+					await this.context.balena.sdk.triggerDeviceUpdate(
+						this.context.balena.uuid,
+					);
 
-          return chain.waitServiceProperties(
-            {
-              commit: hash,
-              status: 'Running',
-            },
-            this.context.balena.uuid,
-          );
-        });
+					return chain.waitServiceProperties(
+						{
+							commit: hash,
+							status: 'Running',
+						},
+						this.context.balena.uuid,
+					);
+				});
 
-      test.is(
-        await this.context.balena.sdk.getDeviceCommit(this.context.balena.uuid),
-        hash,
-      );
-    }
+			test.is(
+				await this.context.balena.sdk.getDeviceCommit(this.context.balena.uuid),
+				hash,
+			);
+		}
 
-    const moveApplicationName = `${this.context.balena.application.name}_MoveDevice`;
+		const moveApplicationName = `${this.context.balena.application.name}_MoveDevice`;
 
-    await this.context.balena.sdk.createApplication(
-      moveApplicationName,
-      this.deviceType.slug,
-      {
-        delta: this.suite.options.balena.application.env.delta,
-      },
-    );
-    this.teardown.register(() => {
-      return this.context.balena.sdk.removeApplication(moveApplicationName);
-    }, test.name);
+		await this.context.balena.sdk.createApplication(
+			moveApplicationName,
+			this.deviceType.slug,
+			{
+				delta: this.suite.options.balena.application.env.delta,
+			},
+		);
+		this.teardown.register(() => {
+			return this.context.balena.sdk.removeApplication(moveApplicationName);
+		}, test.name);
 
-    let moveHash;
-    await this.context.balena.deviceApplicationChain
-      .init({
-        url: 'https://github.com/balena-io-projects/simple-server-node',
-        sdk: this.context.balena.sdk,
-        path: this.suite.options.tmpdir,
-      })
-      .then(chain => {
-        return chain.clone();
-      })
-      .then(async chain => {
-        return chain.push(
-          {
-            name: 'master',
-          },
-          {
-            name: 'balena',
-            url: await this.context.balena.sdk.getApplicationGitRemote(
-              moveApplicationName,
-            ),
-          },
-        );
-      })
-      .then(chain => {
-        moveHash = chain.getPushedCommit();
-      });
+		let moveHash;
+		await this.context.balena.deviceApplicationChain
+			.init({
+				url: 'https://github.com/balena-io-projects/simple-server-node',
+				sdk: this.context.balena.sdk,
+				path: this.suite.options.tmpdir,
+			})
+			.then(chain => {
+				return chain.clone();
+			})
+			.then(async chain => {
+				return chain.push(
+					{
+						name: 'master',
+					},
+					{
+						name: 'balena',
+						url: await this.context.balena.sdk.getApplicationGitRemote(
+							moveApplicationName,
+						),
+					},
+				);
+			})
+			.then(chain => {
+				moveHash = chain.getPushedCommit();
+			});
 
-    // Sanity check
-    test.is(
-      await this.context.balena.sdk.getApplicationCommit(moveApplicationName),
-      moveHash,
-      'Pushed commit should match API records',
-    );
+		// Sanity check
+		test.is(
+			await this.context.balena.sdk.getApplicationCommit(moveApplicationName),
+			moveHash,
+			'Pushed commit should match API records',
+		);
 
-    await this.context.balena.sdk.moveDeviceToApplication(
-      this.context.balena.uuid,
-      moveApplicationName,
-    );
+		await this.context.balena.sdk.moveDeviceToApplication(
+			this.context.balena.uuid,
+			moveApplicationName,
+		);
 
-    await this.context.balena.sdk.triggerDeviceUpdate(this.context.balena.uuid);
-    await this.context.balena.deviceApplicationChain
-      .getChain()
-      .waitServiceProperties(
-        {
-          commit: moveHash,
-          status: 'Running',
-        },
-        this.context.balena.uuid,
-      );
+		await this.context.balena.sdk.triggerDeviceUpdate(this.context.balena.uuid);
+		await this.context.balena.deviceApplicationChain
+			.getChain()
+			.waitServiceProperties(
+				{
+					commit: moveHash,
+					status: 'Running',
+				},
+				this.context.balena.uuid,
+			);
 
-    test.is(
-      await this.context.balena.sdk.getDeviceCommit(this.context.balena.uuid),
-      moveHash,
-      `Device moved to: ${moveApplicationName}`,
-    );
+		test.is(
+			await this.context.balena.sdk.getDeviceCommit(this.context.balena.uuid),
+			moveHash,
+			`Device moved to: ${moveApplicationName}`,
+		);
 
-    await this.context.balena.sdk.moveDeviceToApplication(
-      this.context.balena.uuid,
-      this.context.balena.application.name,
-    );
+		await this.context.balena.sdk.moveDeviceToApplication(
+			this.context.balena.uuid,
+			this.context.balena.application.name,
+		);
 
-    await this.context.balena.sdk.triggerDeviceUpdate(this.context.balena.uuid);
-    await this.context.balena.deviceApplicationChain
-      .getChain()
-      .waitServiceProperties(
-        {
-          commit: hash,
-          status: 'Running',
-        },
-        this.context.balena.uuid,
-      );
+		await this.context.balena.sdk.triggerDeviceUpdate(this.context.balena.uuid);
+		await this.context.balena.deviceApplicationChain
+			.getChain()
+			.waitServiceProperties(
+				{
+					commit: hash,
+					status: 'Running',
+				},
+				this.context.balena.uuid,
+			);
 
-    test.is(
-      await this.context.balena.sdk.getDeviceCommit(this.context.balena.uuid),
-      hash,
-      `Device moved back to: ${this.context.balena.application.name}`,
-    );
-  },
+		test.is(
+			await this.context.balena.sdk.getDeviceCommit(this.context.balena.uuid),
+			hash,
+			`Device moved back to: ${this.context.balena.application.name}`,
+		);
+	},
 };

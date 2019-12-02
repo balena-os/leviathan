@@ -33,243 +33,262 @@ const { parse } = require('url');
 const { createGzip, createGunzip } = require('zlib');
 
 async function setup() {
-  let suite = null;
-  const upload = {};
-  const app = express();
+	let suite = null;
+	const upload = {};
+	const app = express();
 
-  expressWebSocket(app, null, {
-    perMessageDeflate: false
-  });
+	expressWebSocket(app, null, {
+		perMessageDeflate: false,
+	});
 
-  app.post('/upload', async (req, res) => {
-    res.writeHead(202, {
-      'Content-Type': 'text/event-stream',
-      Connection: 'keep-alive'
-    });
+	app.post('/upload', async (req, res) => {
+		res.writeHead(202, {
+			'Content-Type': 'text/event-stream',
+			Connection: 'keep-alive',
+		});
 
-    try {
-      if (parseFloat(req.headers['x-token']) !== upload.token) {
-        throw new Error('Unauthorized upload');
-      }
+		try {
+			if (parseFloat(req.headers['x-token']) !== upload.token) {
+				throw new Error('Unauthorized upload');
+			}
 
-      const artifact = {
-        name: req.headers['x-artifact'],
-        path: join(config.get('leviathan.workdir'), req.headers['x-artifact']),
-        hash: req.headers['x-artifact-hash']
-      };
-      const ignore = ['node_modules', 'package-lock.json'];
+			const artifact = {
+				name: req.headers['x-artifact'],
+				path: join(config.get('leviathan.workdir'), req.headers['x-artifact']),
+				hash: req.headers['x-artifact-hash'],
+			};
+			const ignore = ['node_modules', 'package-lock.json'];
 
-      let hash = null;
-      if (await pathExists(artifact.path)) {
-        const stat = await fs.stat(artifact.path);
+			let hash = null;
+			if (await pathExists(artifact.path)) {
+				const stat = await fs.stat(artifact.path);
 
-        if (stat.isFile()) {
-          hash = await md5(artifact.path);
-        }
-        if (stat.isDirectory()) {
-          const struct = await getFilesFromDirectory(artifact.path, ignore);
+				if (stat.isFile()) {
+					hash = await md5(artifact.path);
+				}
+				if (stat.isDirectory()) {
+					const struct = await getFilesFromDirectory(artifact.path, ignore);
 
-          const expand = await Promise.all(
-            struct.map(async entry => {
-              return {
-                path: entry.replace(join(artifact.path, '/'), join(artifact.name, '/')),
-                md5: await md5(entry)
-              };
-            })
-          );
+					const expand = await Promise.all(
+						struct.map(async entry => {
+							return {
+								path: entry.replace(
+									join(artifact.path, '/'),
+									join(artifact.name, '/'),
+								),
+								md5: await md5(entry),
+							};
+						}),
+					);
 
-          expand.sort((a, b) => {
-            const splitA = a.path.split('/');
-            const splitB = b.path.split('/');
-            return splitA.every((sub, i) => {
-              return sub <= splitB[i];
-            })
-              ? -1
-              : 1;
-          });
-          hash = crypto
-            .Hash('md5')
-            .update(
-              expand.reduce((acc, value) => {
-                return acc + value.md5;
-              }, '')
-            )
-            .digest('hex');
-        }
-      }
+					expand.sort((a, b) => {
+						const splitA = a.path.split('/');
+						const splitB = b.path.split('/');
+						return splitA.every((sub, i) => {
+							return sub <= splitB[i];
+						})
+							? -1
+							: 1;
+					});
+					hash = crypto
+						.Hash('md5')
+						.update(
+							expand.reduce((acc, value) => {
+								return acc + value.md5;
+							}, ''),
+						)
+						.digest('hex');
+				}
+			}
 
-      if (hash === artifact.hash) {
-        res.write('upload: cache');
-      } else {
-        res.write('upload: start');
-        // Make sure we start clean
-        await remove(artifact.path);
-        const line = pipeline(req, createGunzip(), tar.extract(config.get('leviathan.workdir')));
-        req.on('close', () => {
-          line.cancel();
-        });
-        await line;
-        res.write('upload: done');
-      }
-    } catch (e) {
-      res.write(`error: ${e.message}`);
-    } finally {
-      delete upload.token;
-      res.end();
-    }
-  });
+			if (hash === artifact.hash) {
+				res.write('upload: cache');
+			} else {
+				res.write('upload: start');
+				// Make sure we start clean
+				await remove(artifact.path);
+				const line = pipeline(
+					req,
+					createGunzip(),
+					tar.extract(config.get('leviathan.workdir')),
+				);
+				req.on('close', () => {
+					line.cancel();
+				});
+				await line;
+				res.write('upload: done');
+			}
+		} catch (e) {
+			res.write(`error: ${e.message}`);
+		} finally {
+			delete upload.token;
+			res.end();
+		}
+	});
 
-  app.ws('/start', async (ws, req) => {
-    const reconnect = parse(req.originalUrl).query === 'reconnect';
-    const running = suite != null;
+	app.ws('/start', async (ws, req) => {
+		const reconnect = parse(req.originalUrl).query === 'reconnect';
+		const running = suite != null;
 
-    // Keep the socket alive
-    const interval = setInterval(function timeout() {
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.ping('heartbeat');
-      }
-    }, 1000);
+		// Keep the socket alive
+		const interval = setInterval(function timeout() {
+			if (ws.readyState === WebSocket.OPEN) {
+				ws.ping('heartbeat');
+			}
+		}, 1000);
 
-    // Handler definitions
-    const stdHandler = data => {
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ type: 'log', data: data.toString('utf-8').trimEnd() }));
-      }
-    };
-    const msgHandler = message => {
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify(message));
-      }
-    };
+		// Handler definitions
+		const stdHandler = data => {
+			if (ws.readyState === WebSocket.OPEN) {
+				ws.send(
+					JSON.stringify({
+						type: 'log',
+						data: data.toString('utf-8').trimEnd(),
+					}),
+				);
+			}
+		};
+		const msgHandler = message => {
+			if (ws.readyState === WebSocket.OPEN) {
+				ws.send(JSON.stringify(message));
+			}
+		};
 
-    try {
-      ws.on('error', console.error);
-      ws.on('close', () => {
-        clearInterval(interval);
-      });
+		try {
+			ws.on('error', console.error);
+			ws.on('close', () => {
+				clearInterval(interval);
+			});
 
-      if (running && !reconnect) {
-        throw new Error('Already runing a suite. Please stop it or try again later.');
-      }
+			if (running && !reconnect) {
+				throw new Error(
+					'Already runing a suite. Please stop it or try again later.',
+				);
+			}
 
-      if (!running || !reconnect) {
-        for (const uploadName in config.get('leviathan.uploads')) {
-          upload.token = Math.random();
-          ws.send(
-            JSON.stringify({
-              type: 'upload',
-              data: {
-                name: uploadName,
-                token: upload.token
-              }
-            })
-          );
+			if (!running || !reconnect) {
+				for (const uploadName in config.get('leviathan.uploads')) {
+					upload.token = Math.random();
+					ws.send(
+						JSON.stringify({
+							type: 'upload',
+							data: {
+								name: uploadName,
+								token: upload.token,
+							},
+						}),
+					);
 
-          // Wait for the upload to be received and finished
-          await new Promise((resolve, reject) => {
-            const timeout = setTimeout(() => {
-              clearInterval(interval);
-              clearTimeout(timeout);
-              reject(new Error('Upload timed out'));
-            }, 30000);
-            const interval = setInterval(() => {
-              if (upload.token == null) {
-                clearInterval(interval);
-                clearTimeout(timeout);
-                resolve();
-              }
-            }, 2000);
-            ws.once('close', () => {
-              clearInterval(interval);
-              clearTimeout(timeout);
-            });
-          });
-        }
+					// Wait for the upload to be received and finished
+					await new Promise((resolve, reject) => {
+						const timeout = setTimeout(() => {
+							clearInterval(interval);
+							clearTimeout(timeout);
+							reject(new Error('Upload timed out'));
+						}, 30000);
+						const interval = setInterval(() => {
+							if (upload.token == null) {
+								clearInterval(interval);
+								clearTimeout(timeout);
+								resolve();
+							}
+						}, 2000);
+						ws.once('close', () => {
+							clearInterval(interval);
+							clearTimeout(timeout);
+						});
+					});
+				}
 
-        // The reason we need to fork is because many 3rd party libariers output to stdout
-        // so we need to capture that
-        suite = fork('./lib/common/suite', { stdio: ['pipe', 'pipe', 'pipe', 'ipc'] });
-      }
+				// The reason we need to fork is because many 3rd party libariers output to stdout
+				// so we need to capture that
+				suite = fork('./lib/common/suite', {
+					stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
+				});
+			}
 
-      ws.on('message', message => {
-        try {
-          const { type, data } = JSON.parse(message);
+			ws.on('message', message => {
+				try {
+					const { type, data } = JSON.parse(message);
 
-          if (type === 'input') {
-            suite.stdin.write(Buffer.from(data));
-          }
-        } catch (e) {
-          console.error(e);
-        }
-      });
+					if (type === 'input') {
+						suite.stdin.write(Buffer.from(data));
+					}
+				} catch (e) {
+					console.error(e);
+				}
+			});
 
-      suite.stdout.on('data', stdHandler);
-      suite.stderr.on('data', stdHandler);
-      suite.on('message', msgHandler);
+			suite.stdout.on('data', stdHandler);
+			suite.stderr.on('data', stdHandler);
+			suite.on('message', msgHandler);
 
-      if (reconnect) {
-        suite.send({ action: 'reconnect' });
-      }
+			if (reconnect) {
+				suite.send({ action: 'reconnect' });
+			}
 
-      // Make sure we get the handlers off to prevent a memory leak from happening
-      await new Promise((resolve, reject) => {
-        ws.on('close', () => {
-          if (suite != null) {
-            suite.stdout.off('data', stdHandler);
-            suite.stderr.off('data', stdHandler);
-            suite.off('message', msgHandler);
-          }
-          resolve();
-        });
-        suite.on('error', reject);
-        suite.on('exit', resolve);
-      });
-    } catch (e) {
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ type: 'error', data: { message: e.stack } }));
-      }
-    } finally {
-      ws.close();
-    }
-  });
+			// Make sure we get the handlers off to prevent a memory leak from happening
+			await new Promise((resolve, reject) => {
+				ws.on('close', () => {
+					if (suite != null) {
+						suite.stdout.off('data', stdHandler);
+						suite.stderr.off('data', stdHandler);
+						suite.off('message', msgHandler);
+					}
+					resolve();
+				});
+				suite.on('error', reject);
+				suite.on('exit', resolve);
+			});
+		} catch (e) {
+			if (ws.readyState === WebSocket.OPEN) {
+				ws.send(JSON.stringify({ type: 'error', data: { message: e.stack } }));
+			}
+		} finally {
+			ws.close();
+		}
+	});
 
-  app.get('/artifacts', async (_req, res) => {
-    try {
-      await ensureDir(config.get('leviathan.artifacts'));
-      tar
-        .pack(config.get('leviathan.artifacts'), { readable: true, writable: true })
-        .pipe(createGzip())
-        .pipe(res);
-    } catch (e) {
-      res.status(500).send(e.stack);
-    }
-  });
+	app.get('/artifacts', async (_req, res) => {
+		try {
+			await ensureDir(config.get('leviathan.artifacts'));
+			tar
+				.pack(config.get('leviathan.artifacts'), {
+					readable: true,
+					writable: true,
+				})
+				.pipe(createGzip())
+				.pipe(res);
+		} catch (e) {
+			res.status(500).send(e.stack);
+		}
+	});
 
-  app.post('/stop', async (_req, res) => {
-    try {
-      if (suite != null) {
-        suite.on('close', () => {
-          res.send('OK');
-        });
-        suite.kill('SIGINT');
-        suite = null;
-      } else {
-        res.send('OK');
-      }
-    } catch (e) {
-      res.status(500).send(e.stack);
-    }
-  });
+	app.post('/stop', async (_req, res) => {
+		try {
+			if (suite != null) {
+				suite.on('close', () => {
+					res.send('OK');
+				});
+				suite.kill('SIGINT');
+				suite = null;
+			} else {
+				res.send('OK');
+			}
+		} catch (e) {
+			res.status(500).send(e.stack);
+		}
+	});
 
-  return app;
+	return app;
 }
 
 (async function main() {
-  const port = config.get('express.port');
+	const port = config.get('express.port');
 
-  const server = await setup();
+	const server = await setup();
 
-  server.listen(port, () => {
-    console.log(`Listening on port ${port}`);
-  });
+	server.listen(port, () => {
+		console.log(`Listening on port ${port}`);
+	});
 })();

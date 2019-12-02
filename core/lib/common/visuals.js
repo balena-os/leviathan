@@ -19,59 +19,61 @@
 const { Progress, Spinner, SpinnerPromise } = require('resin-cli-visuals');
 
 class CiProgress extends Progress {
-  constructor(message, stream = process.stdout) {
-    super(message, stream);
+	constructor(message, stream = process.stdout) {
+		super(message, stream);
 
-    this.singelton = false;
-  }
+		this.singelton = false;
+	}
 
-  update(state) {
-    if (process.env.CI !== 'true') {
-      super.update(state);
-    } else {
-      if (!this.singelton) {
-        this._stream.write(`${this._message}...[This will take a while]\n`);
-        this.singelton ^= true;
-      }
-    }
-  }
+	update(state) {
+		if (process.env.CI !== 'true') {
+			super.update(state);
+		} else {
+			if (!this.singelton) {
+				this._stream.write(`${this._message}...[This will take a while]\n`);
+				this.singelton ^= true;
+			}
+		}
+	}
 }
 
 class CiSpinner extends Spinner {
-  start() {
-    if (process.env.CI !== 'true') {
-      super.start();
-    } else {
-      this.spinner.stream.write(`${this.spinner.text}...[This will take a while]\n`);
-    }
-  }
+	start() {
+		if (process.env.CI !== 'true') {
+			super.start();
+		} else {
+			this.spinner.stream.write(
+				`${this.spinner.text}...[This will take a while]\n`,
+			);
+		}
+	}
 
-  stop() {
-    if (process.env.CI !== 'true') {
-      super.stop();
-    } else {
-      this.spinner.stream.write('Done\n');
-    }
-  }
+	stop() {
+		if (process.env.CI !== 'true') {
+			super.stop();
+		} else {
+			this.spinner.stream.write('Done\n');
+		}
+	}
 }
 
 class CiSpinnerPromise extends SpinnerPromise {
-  constructor(options = {}, stream = process.stdout) {
-    if (process.env.CI !== 'true') {
-      // eslint-disable-next-line constructor-super
-      return super(options, stream);
-    } else {
-      stream.write(`${options.startMessage}...[This will take a while]\n`);
-      return options.promise.then(result => {
-        stream.write(options.stopMessage);
-        return result;
-      });
-    }
-  }
+	constructor(options = {}, stream = process.stdout) {
+		if (process.env.CI !== 'true') {
+			// eslint-disable-next-line constructor-super
+			return super(options, stream);
+		} else {
+			stream.write(`${options.startMessage}...[This will take a while]\n`);
+			return options.promise.then(result => {
+				stream.write(options.stopMessage);
+				return result;
+			});
+		}
+	}
 }
 
 module.exports = {
-  Progress: CiProgress,
-  Spinner: CiSpinner,
-  SpinnerPromise: CiSpinnerPromise
+	Progress: CiProgress,
+	Spinner: CiSpinner,
+	SpinnerPromise: CiSpinnerPromise,
 };

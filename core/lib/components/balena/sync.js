@@ -19,17 +19,17 @@
 const { sync } = require('balena-sync');
 
 exports.remote = (uuid, baseDir, destination) => {
-  return sync('remote-balena-io-device').sync({
-    uuid,
-    baseDir,
-    destination
-  });
+	return sync('remote-balena-io-device').sync({
+		uuid,
+		baseDir,
+		destination,
+	});
 };
 
 exports.local = (deviceIp, baseDir, destination) => {
-  return sync('local-balena-os-device').sync({
-    deviceIp,
-    baseDir,
-    destination
-  });
+	return sync('local-balena-os-device').sync({
+		deviceIp,
+		baseDir,
+		destination,
+	});
 };
