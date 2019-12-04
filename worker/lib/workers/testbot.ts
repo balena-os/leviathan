@@ -319,26 +319,27 @@ class TestBot extends EventEmitter implements Leviathan.Worker {
 		await TestBot.flashFirmware();
 
 		await new Promise((resolve, reject) => {
-			this.board = new Board(DEV_TESTBOT);
-			this.board.once('error', reject);
-			this.board.serialConfig({
+			const board = new Board(DEV_TESTBOT);
+			board.once('error', reject);
+			board.serialConfig({
 				portId: HW_SERIAL5,
 				baud: BAUD_RATE,
 			});
-			this.board.once('ready', async () => {
+			board.once('ready', async () => {
+				this.board = board;
 				// Power managment configuration
 				// We set the regulator (DAC_REG) to 5V and start the managment unit (VREG)
 				await this.sendCommand(GPIO.ENABLE_FAULTRST, 1000);
-				this.board.pinMode(PINS.LED_PIN, this.board.MODES.OUTPUT);
+				board.pinMode(PINS.LED_PIN, this.board.MODES.OUTPUT);
 				await this.sendCommand(GPIO.WRITE_DAC_REG, 1000, 5);
 				await this.sendCommand(GPIO.ENABLE_VREG, 1000);
 
 				// SD card managment configuration
 				// We enable the SD/USB multiplexers and leave them disconnected
-				this.board.pinMode(PINS.SD_MUX_SEL_PIN, this.board.MODES.OUTPUT);
-				this.board.digitalWrite(PINS.SD_MUX_SEL_PIN, this.board.LOW);
-				this.board.pinMode(PINS.USB_MUX_SEL_PIN, this.board.MODES.OUTPUT);
-				this.board.digitalWrite(PINS.USB_MUX_SEL_PIN, this.board.LOW);
+				board.pinMode(PINS.SD_MUX_SEL_PIN, this.board.MODES.OUTPUT);
+				board.digitalWrite(PINS.SD_MUX_SEL_PIN, this.board.LOW);
+				board.pinMode(PINS.USB_MUX_SEL_PIN, this.board.MODES.OUTPUT);
+				board.digitalWrite(PINS.USB_MUX_SEL_PIN, this.board.LOW);
 
 				await Bluebird.delay(1000);
 				console.log('Worker ready');
