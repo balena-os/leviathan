@@ -9,7 +9,7 @@
 	},
 	"scripts": {
 		"prettify": "prettier --config ../.prettierrc --write \"{bin,lib,tests}/**/*.js\"",
-		"lint": "eslint bin lib tests",
+		"lint": "eslint -c ../.eslintrc.* bin lib tests",
 		"single-start": "node bin/single-client.js",
 		"single-start-es5": "babel-node --presets @babel/env bin/single-client.js",
 		"multi-start": "node bin/multi-client.js",

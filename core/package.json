@@ -1,7 +1,7 @@
 {
 	"scripts": {
 		"prettify": "prettier --config ../.prettierrc --write \"{lib,tests}/**/*.js\"",
-		"lint": "eslint lib tests",
+		"lint": "eslint -c ../.eslintrc.* lib tests",
 		"start": "node lib/main.js"
 	},
 	"dependencies": {
