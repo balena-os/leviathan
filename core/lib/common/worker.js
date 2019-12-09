@@ -22,10 +22,10 @@ const utils = require('../common/utils');
 const config = require('config');
 const isNumber = require('lodash/isNumber');
 const { fs } = require('mz');
+const once = require('lodash/once');
 const pipeline = Bluebird.promisify(require('stream').pipeline);
 const request = require('request');
 const rp = require('request-promise');
-const { Spinner, Progress } = require('./visuals');
 
 module.exports = class Worker {
 	constructor(deviceType) {
@@ -33,15 +33,12 @@ module.exports = class Worker {
 		this.url = `${config.get('worker.url')}:${config.get('worker.port')}`;
 	}
 
-	flash(os) {
+	flash(
+		imagePath,
+		logger = { log: console.log, status: console.log, info: console.log },
+	) {
 		return new Promise(async (resolve, reject) => {
-			await os.configure();
-
-			const spinner = new Spinner('Preparing flash');
-			let singleton = false;
-			spinner.start();
-
-			const progress = new Progress('Flashing image');
+			logger.log('Preparing to flash');
 
 			const req = rp.post({ uri: `${this.url}/dut/flash` });
 
@@ -67,14 +64,16 @@ module.exports = class Worker {
 					}
 
 					if (computedLine[1] === 'progress') {
+						once(() => {
+							logger.log('Flashing');
+						});
 						// Hide any errors as the lines we get can be half written
 						const state = JSON.parse(computedLine[2]);
 						if (state != null && isNumber(state.percentage)) {
-							if (!singleton) {
-								spinner.stop();
-								singleton ^= true;
-							}
-							progress.update(state);
+							logger.status({
+								message: 'Flashing',
+								percentage: state.percentage,
+							});
 						}
 					}
 
@@ -84,7 +83,7 @@ module.exports = class Worker {
 				}
 			});
 
-			await pipeline(fs.createReadStream(os.image.path), req);
+			await pipeline(fs.createReadStream(imagePath), req);
 		});
 	}
 

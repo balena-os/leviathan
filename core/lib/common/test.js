@@ -55,8 +55,8 @@ module.exports = class Test {
 		this.suite.state.log(message);
 	}
 
-	status(message, { progress }) {
-		this.suite.state.status({ message, options: { progress } });
+	status(message) {
+		this.suite.state.status(message);
 	}
 
 	info(message) {
@@ -66,6 +66,14 @@ module.exports = class Test {
 	// This method allows tests to incldue any module from the core framework
 	require(module) {
 		return require(join(this.suite.rootPath, module));
+	}
+
+	getLogger() {
+		return {
+			log: this.log.bind(this),
+			status: this.status.bind(this),
+			info: this.info.bind(this),
+		};
 	}
 
 	async finish() {

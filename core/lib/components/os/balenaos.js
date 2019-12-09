@@ -26,7 +26,6 @@ const path = require('path');
 const fs = Bluebird.promisifyAll(require('fs'));
 const { join } = require('path');
 const pipeline = Bluebird.promisify(require('stream').pipeline);
-const { SpinnerPromise } = require('../../common/visuals');
 const unzip = require('unzip');
 const zlib = require('zlib');
 
@@ -152,16 +151,16 @@ module.exports = class BalenaOS {
 		return types[download.type]();
 	}
 
-	async fetch(download) {
+	async fetch(
+		download,
+		logger = { log: console.log, status: console.log, info: console.log },
+	) {
+		logger.log('Unpacking the operating system');
 		assignIn(
 			this.contract,
-			await new SpinnerPromise({
-				promise: this.unpack({
-					type: download.type,
-					source: join(config.get('leviathan.workdir'), 'image'),
-				}),
-				startMessage: 'Unpacking Operating System',
-				stopMessage: 'Operating system sucesfully unpacked',
+			await this.unpack({
+				type: download.type,
+				source: join(config.get('leviathan.workdir'), 'image'),
 			}),
 		);
 	}
@@ -170,8 +169,10 @@ module.exports = class BalenaOS {
 		assignIn(this.configJson, configJson);
 	}
 
-	async configure() {
-		console.log(`Configuring balenaOS image: ${this.image.path}`);
+	async configure(
+		logger = { log: console.log, status: console.log, info: console.log },
+	) {
+		logger.log(`Configuring balenaOS image: ${this.image.path}`);
 		if (this.configJson) {
 			await injectBalenaConfiguration(this.image.path, this.configJson);
 		}

@@ -22,7 +22,6 @@ const find = require('lodash/find');
 const flatMapDeep = require('lodash/flatMapDeep');
 
 const Bluebird = require('bluebird');
-const visuals = require('../../common/visuals');
 const retry = require('bluebird-retry');
 
 const utils = require('../../common/utils');
@@ -84,13 +83,16 @@ module.exports = class BalenaSDK {
 		return this.balena.models.os.getSupportedVersions(deviceType);
 	}
 
-	async getDownloadStream(deviceType, version) {
+	async getDownloadStream(
+		deviceType,
+		version,
+		reporter = { status: console.log },
+	) {
 		const stream = await this.balena.models.os.download(deviceType, version);
 
-		const bar = new visuals.Progress('Download');
-
 		stream.on('progress', data => {
-			bar.update({
+			reporter.status({
+				message: 'Download',
 				percentage: data.percentage,
 				eta: data.eta,
 			});
