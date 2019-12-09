@@ -11,11 +11,10 @@ const progStream = require('progress-stream');
 const request = require('request');
 const rp = require('request-promise');
 const pipeline = Bluebird.promisify(require('readable-stream').pipeline);
+const { PassThrough } = require('stream');
 const tar = require('tar-fs');
 const tarStream = require('tar-stream');
-const { PassThrough } = require('stream');
 const { parse } = require('url');
-const { Spinner, Progress } = require('./visuals');
 const WebSocket = require('ws');
 const zlib = require('zlib');
 
@@ -59,7 +58,6 @@ function makePath(p) {
 module.exports = class Client extends PassThrough {
 	constructor(uri, workdir) {
 		super();
-
 		this.uri = parse(uri);
 		if (this.uri.protocol == null) {
 			this.uri = parse(`http://${uri}`);
@@ -67,8 +65,16 @@ module.exports = class Client extends PassThrough {
 		this.workdir = join(workdir, this.uri.hostname);
 	}
 
+	status(data) {
+		process.send({ type: 'status', data });
+	}
+
+	info(data) {
+		process.send({ type: 'info', data });
+	}
+
 	log(data) {
-		this.write(`${data}\n`);
+		process.send({ type: 'log', data });
 	}
 
 	async handleArtifact(artifact, token) {
@@ -83,13 +89,13 @@ module.exports = class Client extends PassThrough {
 			}
 
 			if (artifact.name === 'image') {
-				const bar = new Progress('Gzipping Image', this);
 				const str = progStream({
 					length: stat.size,
 					time: 100,
 				});
 				str.on('progress', progress => {
-					bar.update({
+					this.status({
+						message: 'Gzipping Image',
 						percentage: progress.percentage,
 						eta: progress.eta,
 					});
@@ -110,11 +116,10 @@ module.exports = class Client extends PassThrough {
 		}
 
 		// Upload with cache check in place
-		this.log(`Handling artifcat: ${artifact.name}`);
-		const spinner = new Spinner('Calculating hash', this);
+		this.log(`Handling artifact: ${artifact.name}`);
+		this.log('Calculating hash');
 
 		const metadata = { size: null, hash: null, stream: null };
-		spinner.start();
 		if (artifact.type === 'isDirectory') {
 			const struct = await getFilesFromDirectory(artifact.path, ignore);
 
@@ -183,10 +188,8 @@ module.exports = class Client extends PassThrough {
 			);
 			metadata.stream.finalize();
 		}
-		spinner.stop();
 
 		await new Promise(async (resolve, reject) => {
-			const bar = new Progress('Uploading', this);
 			const str = progStream({
 				length: metadata.size,
 				time: 100,
@@ -219,8 +222,14 @@ module.exports = class Client extends PassThrough {
 				if (computedLine != null && computedLine[1] === 'upload') {
 					switch (computedLine[2]) {
 						case 'start':
+							this.status({
+								message: 'Uploading',
+								percentage: 0,
+							});
+
 							str.on('progress', progress => {
-								bar.update({
+								this.status({
+									message: 'Uploading',
 									percentage: progress.percentage,
 									eta: progress.eta,
 								});
@@ -234,7 +243,8 @@ module.exports = class Client extends PassThrough {
 							break;
 						case 'done':
 							// For uploads that are too fast we will not even catch the end, so let's display it now
-							bar.update({
+							this.status({
+								message: 'Uploaded',
 								percentage: 100,
 							});
 							pipeEnd.unpipe(req);
@@ -313,11 +323,12 @@ module.exports = class Client extends PassThrough {
 
 								await this.handleArtifact(artifact, token);
 								break;
-							case 'error':
-								throw new Error(data.message);
-							default:
-								this.log(`${Buffer.from(data)}`);
+							case 'log':
+								this.write(data);
+								process.send({ type, data });
 								break;
+							default:
+								process.send({ type, data });
 						}
 					} catch (e) {
 						process.exitCode = 1;

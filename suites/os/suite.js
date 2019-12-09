@@ -63,10 +63,10 @@ module.exports = {
 		});
 
 		this.suite.teardown.register(() => {
-			console.log('Worker teardown');
+			this.log('Worker teardown');
 			return this.context.get().worker.teardown();
 		});
-		console.log('Setting up worker');
+		this.log('Setting up worker');
 		await this.context.get().worker.select({
 			type: this.suite.options.worker.type,
 			options: {
@@ -80,14 +80,20 @@ module.exports = {
 			.get()
 			.worker.network(this.suite.options.balenaOS.network);
 
-		await this.context.get().os.fetch({
-			type: this.suite.options.balenaOS.download.type,
-			version: this.suite.options.balenaOS.download.version,
-		});
-		await this.context.get().worker.flash(this.context.get().os);
+		await this.context.get().os.fetch(
+			{
+				type: this.suite.options.balenaOS.download.type,
+				version: this.suite.options.balenaOS.download.version,
+			},
+			this.getLogger(),
+		);
+		await this.context.get().os.configure(this.getLogger());
+		await this.context
+			.get()
+			.worker.flash(this.context.get().os.image.path, this.getLogger());
 		await this.context.get().worker.on();
 
-		console.log('Waiting for device to be reachable');
+		this.log('Waiting for device to be reachable');
 		assert.equal(
 			await this.context
 				.get()

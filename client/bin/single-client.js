@@ -55,7 +55,6 @@ const yargs = require('yargs')
 	const client = new Client(yargs.uri, yargs.workdir);
 
 	await ensureDir(client.workdir);
-	client.pipe(process.stdout);
 	client.pipe(createWriteStream(join(client.workdir, 'log')));
 	await client.run(yargs.deviceType, yargs.suite, yargs.config, yargs.image);
 })();

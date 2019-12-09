@@ -29,7 +29,6 @@
 		"readable-stream": "^3.4.0",
 		"request": "^2.88.0",
 		"request-promise": "^4.2.4",
-		"resin-cli-visuals": "balena-io-modules/resin-cli-visuals#stream",
 		"tar-fs": "^2.0.0",
 		"tar-stream": "^2.1.0",
 		"ws": "^7.1.2",
