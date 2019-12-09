@@ -18,34 +18,34 @@
 
 // Test identification
 const id = `${Math.random()
-  .toString(36)
-  .substring(2, 10)}`;
+	.toString(36)
+	.substring(2, 10)}`;
 
 module.exports = options => {
-  return {
-    id,
-    balenaOS: {
-      download: {
-        type: options.downloadType,
-        version: options.downloadVersion,
-        source: options.downloadSource,
-      },
-      network: {
-        wired: options.networkWired,
-        wireless: options.networkWireless,
-      },
-    },
-    balena: {
-      application: {
-        env: {
-          delta: options.supervisorDelta || false,
-        },
-      },
-      apiKey: options.balenaApiKey,
-      apiUrl: options.balenaApiUrl,
-    },
-    worker: {
-      type: options.workerType,
-    },
-  };
+	return {
+		id,
+		balenaOS: {
+			download: {
+				type: options.downloadType,
+				version: options.downloadVersion,
+				source: options.downloadSource,
+			},
+			network: {
+				wired: options.networkWired,
+				wireless: options.networkWireless,
+			},
+		},
+		balena: {
+			application: {
+				env: {
+					delta: options.supervisorDelta || false,
+				},
+			},
+			apiKey: options.balenaApiKey,
+			apiUrl: options.balenaApiUrl,
+		},
+		worker: {
+			type: options.workerType,
+		},
+	};
 };

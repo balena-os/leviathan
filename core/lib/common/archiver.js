@@ -22,21 +22,21 @@ const { copy, ensureDir } = require('fs-extra');
 const { basename, join } = require('path');
 
 module.exports = class Archiver {
-  constructor(id) {
-    this.location = join(config.get('leviathan.artifacts'), id);
-  }
+	constructor(id) {
+		this.location = join(config.get('leviathan.artifacts'), id);
+	}
 
-  async add(artifactPath) {
-    const archivePath = join(this.location, basename(artifactPath));
+	async add(artifactPath) {
+		const archivePath = join(this.location, basename(artifactPath));
 
-    await ensureDir(this.location);
-    await copy(artifactPath, archivePath);
-  }
+		await ensureDir(this.location);
+		await copy(artifactPath, archivePath);
+	}
 
-  async getStream(artifactPath) {
-    const archivePath = join(this.location, basename(artifactPath));
+	async getStream(artifactPath) {
+		const archivePath = join(this.location, basename(artifactPath));
 
-    await ensureDir(this.location);
-    return createWriteStream(archivePath);
-  }
+		await ensureDir(this.location);
+		return createWriteStream(archivePath);
+	}
 };

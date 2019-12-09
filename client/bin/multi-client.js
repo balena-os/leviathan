@@ -1,316 +1,374 @@
 #!/usr/bin/env node
 
-`use strict`;
-
 process.env['NODE_CONFIG_DIR'] = `${__dirname}/../config`;
 const config = require('config');
 
 const ajv = new (require('ajv'))({ allErrors: true });
 const balena = require('balena-sdk')({
-  apiurl: config.get('balena.apiUrl'),
+	apiurl: config.get('balena.apiUrl'),
 });
 const blessed = require('blessed');
 const { fork } = require('child_process');
 const { ensureDir } = require('fs-extra');
 const { fs } = require('mz');
 const schema = require('../lib/schemas/multi-client-config.js');
-const { Spinner } = require('../lib/visuals');
 const { every, forEach } = require('lodash');
 const { tmpdir } = require('os');
-const { PassThrough } = require('stream');
 const url = require('url');
 const yargs = require('yargs')
-  .usage('Usage: $0 [options]')
-  .option('h', {
-    alias: 'help',
-    description: 'display help message',
-  })
-  .option('c', {
-    alias: 'config',
-    description: 'configuration file for the multi run client',
-    required: true,
-    type: 'string',
-  })
-  .option('w', {
-    alias: 'workdir',
-    description: 'working directory',
-    type: 'string',
-    default: `${tmpdir()}/run`,
-  })
-  .option('p', {
-    alias: 'print',
-    description: 'print all output to stdout',
-    type: 'boolean',
-    default: false,
-  })
-  .version()
-  .help('help')
-  .showHelpOnFail(false, 'Something went wrong! run with --help').argv;
+	.usage('Usage: $0 [options]')
+	.option('h', {
+		alias: 'help',
+		description: 'display help message',
+	})
+	.option('c', {
+		alias: 'config',
+		description: 'configuration file for the multi run client',
+		required: true,
+		type: 'string',
+	})
+	.option('w', {
+		alias: 'workdir',
+		description: 'working directory',
+		type: 'string',
+		default: `${tmpdir()}/run`,
+	})
+	.option('p', {
+		alias: 'print',
+		description: 'print all output to stdout',
+		type: 'boolean',
+		default: false,
+	})
+	.version()
+	.help('help')
+	.showHelpOnFail(false, 'Something went wrong! run with --help').argv;
+
+class State {
+	constructor() {
+		if (process.stdout.isTTY !== true) {
+			throw new Error('The multi client requires a tty environmet to run in');
+		}
+
+		this.blessed = {
+			screen: blessed.screen({
+				log: 'client.log',
+				dump: true,
+				smartCSR: true,
+			}),
+		};
+
+		this.blessed.main = {
+			layout: blessed.layout({
+				parent: this.blessed.screen,
+				top: 'center',
+				left: 'center',
+				width: '100%',
+				height: '100%',
+				border: 'none',
+			}),
+		};
+
+		this.blessed.main.info = blessed.text({
+			label: 'main',
+			align: 'left',
+			parent: this.blessed.main.layout,
+			width: '99%',
+			height: '99%',
+			border: 'line',
+			scrollable: true,
+			alwaysScroll: true,
+			style: {
+				border: {
+					fg: '#009933',
+				},
+				label: {
+					fg: '#009933',
+				},
+			},
+		});
+
+		this.blessed.screen.key(['C-c'], function() {
+			process.kill(process.pid, 'SIGINT');
+		});
+
+		this.blessed.screen.render();
+	}
+
+	info(data) {
+		this.blessed.main.info.setContent(` ${data.toString()}`);
+		this.blessed.screen.render();
+	}
+
+	attachPanel(list) {
+		this.blessed.main.info.height = '7%';
+
+		list.forEach(elem => {
+			const layout = blessed.layout({
+				parent: this.blessed.main.layout,
+				width: `${99 / list.length}%`,
+				height: '93%',
+			});
+
+			const info = blessed.log({
+				parent: layout,
+				width: '99%',
+				height: '20%',
+				border: 'line',
+				alwaysScroll: true,
+				mouse: true,
+				scrollable: true,
+				style: {
+					border: {
+						fg: '#006600',
+					},
+				},
+			});
+
+			const status = blessed.progressbar({
+				parent: layout,
+				width: '99%',
+				height: '6%',
+				border: 'line',
+				style: {
+					bar: {
+						bg: '#b35900',
+					},
+					border: {
+						fg: '#ff9933',
+					},
+				},
+			});
+
+			const log = blessed.log({
+				align: 'left',
+				parent: layout,
+				width: '99%',
+				height: 'shrink',
+				shrink: 'grow',
+				border: 'line',
+				scrollOnInput: true,
+				mouse: true,
+				scrollbar: true,
+				style: {
+					scrollbar: {
+						bg: 'white',
+					},
+				},
+			});
+
+			status.hide();
+
+			elem.status = ({ message, percentage }) => {
+				percentage = Math.round(percentage);
+
+				if (percentage !== 100) {
+					if (status.hidden) {
+						status.show();
+					}
+					status.setLabel(`${message} - ${percentage} %`);
+					status.setProgress(percentage);
+				} else {
+					if (!status.hidden) {
+						status.hide();
+					}
+				}
+				this.blessed.screen.render();
+			};
+			elem.info = data => {
+				info.setContent(` ${data.toString()}`);
+				this.blessed.screen.render();
+			};
+			elem.log = data => {
+				log.add(` ${data.toString().trimEnd()}`);
+				this.blessed.screen.render();
+			};
+		});
+
+		this.blessed.screen.render();
+	}
+
+	teardown() {
+		this.blessed.screen.destroy();
+	}
+}
 
 (async () => {
-  const mainStream = new PassThrough();
+	const state = new State();
 
-  try {
-    await ensureDir(yargs.workdir);
+	try {
+		await ensureDir(yargs.workdir);
 
-    const runQueue = [];
-    //Blessed setup for pretty terminal output
-    if (process.stdout.isTTY === true) {
-      // Hack our passtrhough stream in thinking it is tty
-      mainStream.isTTY = true;
-      var screen = blessed.screen({
-        log: 'client.log',
-        dump: true,
-        smartCSR: true,
-      });
+		const runQueue = [];
+		// Blessed setup for pretty terminal output
 
-      var layout = blessed.layout({
-        parent: screen,
-        top: 'center',
-        left: 'center',
-        width: '100%',
-        height: '100%',
-        border: 'none',
-      });
+		let runConfigs = require(yargs.config);
 
-      var mainContainer = blessed.text({
-        label: 'main',
-        align: 'left',
-        parent: layout,
-        width: '99%',
-        height: '99%',
-        border: 'line',
-        scrollable: true,
-        alwaysScroll: true,
-        style: {
-          border: {
-            fg: '#009933',
-          },
-          label: {
-            fg: '#009933',
-          },
-        },
-      });
+		const validate = ajv.compile(schema);
 
-      screen.key(['C-c'], function() {
-        process.kill(process.pid, 'SIGINT');
-      });
+		if (!validate(runConfigs)) {
+			throw new Error(
+				`Invalid configuration -> ${ajv.errorsText(validate.errors)}`,
+			);
+		}
 
-      screen.render();
+		runConfigs = runConfigs instanceof Object ? [runConfigs] : runConfigs;
 
-      mainStream.on('data', data => {
-        mainContainer.setContent(data.toString());
-        screen.render();
-      });
-    } else {
-      mainStream.pipe(process.stdout);
-    }
+		state.info('Computing Run Queue');
 
-    let runConfigs = require(yargs.config);
+		for (const runConfig of runConfigs) {
+			if (runConfig.workers instanceof Array) {
+				runConfig.workers.forEach(workers => {
+					runQueue.push({ ...runConfig, workers });
+				});
+			} else if (runConfig.workers instanceof Object) {
+				await balena.auth.loginWithToken(runConfig.workers.apiKey);
+				const tags = await balena.models.device.tags.getAllByApplication(
+					runConfig.workers.balenaApplication,
+				);
 
-    const validate = ajv.compile(schema);
+				for (const tag of tags.filter(tag => {
+					return tag.tag_key === 'DUT' && tag.value === runConfig.deviceType;
+				})) {
+					if (!(await balena.models.device.hasDeviceUrl(tag.device.__id))) {
+						throw new Error('Worker not publicly available. Panicking...');
+					}
+					runQueue.push({
+						...runConfig,
+						workers: await balena.models.device.getDeviceUrl(tag.device.__id),
+					});
+				}
+			}
+		}
 
-    if (!validate(runConfigs)) {
-      throw new Error(
-        `Invalid configuration -> ${ajv.errorsText(validate.errors)}`,
-      );
-    }
+		state.info('Running Queue');
 
-    runConfigs = runConfigs instanceof Object ? [runConfigs] : runConfigs;
+		const children = {};
 
-    const queueSpinner = new Spinner('Computing Run Queue', mainStream);
-    try {
-      queueSpinner.start();
+		process.on('exit', code => {
+			process.exitCode = code || 1;
 
-      for (const runConfig of runConfigs) {
-        if (runConfig.workers instanceof Array) {
-          runConfig.workers.forEach(workers => {
-            runQueue.push({ ...runConfig, workers });
-          });
-        } else if (runConfig.workers instanceof Object) {
-          await balena.auth.loginWithToken(runConfig.workers.apiKey);
-          const tags = await balena.models.device.tags.getAllByApplication(
-            runConfig.workers.balenaApplication,
-          );
+			if (Object.keys(children).length === 0) {
+				console.log('No workers found...NO TESTS RAN');
+			} else {
+				process.exitCode =
+					code ||
+					every(children, child => {
+						return child.code === 0;
+					})
+						? 0
+						: 1;
 
-          for (const tag of tags.filter(tag => {
-            return tag.tag_key === 'DUT' && tag.value === runConfig.deviceType;
-          })) {
-            if (!(await balena.models.device.hasDeviceUrl(tag.device.__id))) {
-              throw new Error('Worker not publicly available. Panicking...');
-            }
-            runQueue.push({
-              ...runConfig,
-              workers: await balena.models.device.getDeviceUrl(tag.device.__id),
-            });
-          }
-        }
-      }
-    } finally {
-      queueSpinner.stop();
-    }
+				if (yargs.print) {
+					children.forEach(child => {
+						console.log(`=====| ${child.outputPath}`);
+						console.log(fs.readFileSync(child.outputPath));
+						console.log(`=====`);
+					});
+				}
+			}
+		});
+		// Make sure we pass down our signal
+		['SIGINT', 'SIGTERM'].forEach(signal => {
+			process.on(signal, async sig => {
+				state.info('Cleaning up');
+				const promises = [];
+				forEach(children, child => {
+					promises.push(
+						new Promise(async (resolve, reject) => {
+							try {
+								const procInfo = (
+									await fs.readFile('/proc/' + child._child.pid + '/status')
+								).toString();
 
-    const runSpinner = new Spinner('Running Queue', mainStream);
-    // Concurrent Run
-    const children = {};
-    runSpinner.start();
+								if (procInfo.match(/State:\s+[RSDT]/)) {
+									child._child.on('close', resolve);
+									child._child.on('error', reject);
+									child._child.kill(sig);
+								} else {
+									resolve();
+								}
+							} catch (e) {
+								resolve();
+							}
+						}),
+					);
+				});
+				await Promise.all(promises);
 
-    process.on('exit', code => {
-      process.exitCode = code || 1;
+				state.teardown();
 
-      if (Object.keys(children).length === 0) {
-        console.log('No workers found...NO TESTS RAN');
-      } else {
-        process.exitCode =
-          code ||
-          every(children, child => {
-            return child.code === 0;
-          })
-            ? 0
-            : 1;
+				process.exit(1);
+			});
+		});
 
-        if (yargs.print) {
-          children.forEach(child => {
-            console.log(`=====| ${child.outputPath}`);
-            console.log(fs.readFileSync(child.outputPath));
-            console.log(`=====`);
-          });
-        }
-      }
-    });
-    // Make sure we pass down our signal
-    ['SIGINT', 'SIGTERM'].forEach(signal => {
-      process.on(signal, async sig => {
-        const cleanSpinner = new Spinner('Cleaning up', mainStream);
-        runSpinner.stop();
-        cleanSpinner.start();
-        const promises = [];
-        forEach(children, child => {
-          promises.push(
-            new Promise(async (resolve, reject) => {
-              try {
-                const procInfo = (await fs.readFile(
-                  '/proc/' + child._child.pid + '/status',
-                )).toString();
+		state.attachPanel(runQueue);
 
-                if (procInfo.match(/State:\s+[RSDT]/)) {
-                  child._child.on('close', resolve);
-                  child._child.on('error', reject);
-                  child._child.kill(sig);
-                } else {
-                  resolve();
-                }
-              } catch (e) {
-                resolve();
-              }
-            }),
-          );
-        });
-        await Promise.all(promises);
+		while (runQueue.length > 0) {
+			const run = runQueue.pop();
+			const child = fork(
+				'./single-client',
+				[
+					'-d',
+					run.deviceType,
+					'-i',
+					run.image,
+					'-c',
+					run.config instanceof Object
+						? JSON.stringify(run.config)
+						: run.config,
+					'-s',
+					run.suite,
+					'-u',
+					run.workers,
+				],
+				{
+					stdio: 'pipe',
+					env: {
+						CI: true,
+					},
+				},
+			);
 
-        cleanSpinner.stop();
-        if (screen != null) {
-          screen.destroy();
-        }
+			child.on('message', ({ type, data }) => {
+				switch (type) {
+					case 'log':
+						run.log(data);
+						break;
+					case 'status':
+						run.status(data);
+						break;
+					case 'info':
+						run.info(data);
+						break;
+					case 'error':
+						run.log(data.message);
+						break;
+				}
+			});
 
-        process.exit(1);
-      });
-    });
+			// child state
+			children[child.pid] = {
+				_child: child,
+				outputPath: `${yargs.workdir}/${url.parse(run.workers).hostname ||
+					child.pid}.out`,
+				exitCode: 1,
+			};
 
-    if (process.stdout.isTTY === true) {
-      mainContainer.height = '7%';
-      var containers = [];
-      for (let i = 0; i < runQueue.length; ++i) {
-        containers.push(
-          blessed.log({
-            align: 'left',
-            parent: layout,
-            width: `${99 / runQueue.length}%`,
-            height: '93%',
-            border: 'line',
-            scrollOnInput: true,
-            mouse: true,
-            scrollbar: true,
-            style: {
-              scrollbar: {
-                bg: 'white',
-              },
-            },
-          }),
-        );
-      }
-      screen.render();
-    }
+			child.on('error', console.error);
+			child.stdout.on('data', run.log);
+			child.stderr.on('data', run.log);
 
-    // Keep track of our running children, essentially a watch dog
-    let i = 0;
-    const interval = setInterval(() => {
-      if (!(i > 0)) {
-        runSpinner.stop();
-        clearInterval(interval);
-      }
-    }, 1000);
-    while (runQueue.length > 0) {
-      const run = runQueue.pop();
-      const stream = new PassThrough();
-      const child = fork(
-        './single-client',
-        [
-          '-d',
-          run.deviceType,
-          '-i',
-          run.image,
-          '-c',
-          run.config instanceof Object
-            ? JSON.stringify(run.config)
-            : run.config,
-          '-s',
-          run.suite,
-          '-u',
-          run.workers,
-        ],
-        {
-          stdio: 'pipe',
-          env: {
-            CI: true,
-          },
-        },
-      );
-      ++i;
-      // child state
-      children[child.pid] = {
-        _child: child,
-        outputPath: `${yargs.workdir}/${url.parse(run.workers).hostname ||
-          child.pid}.out`,
-        exitCode: 1,
-      };
+			run.info(`WORKER URL: ${run.workers}`);
 
-      child.on('error', console.error);
-      child.stdout.pipe(stream);
-      child.stderr.pipe(stream);
-
-      if (process.stdout.isTTY === true) {
-        children[child.pid].container = containers[runQueue.length];
-        children[child.pid].container.pushLine(`WORKER URL: ${run.workers}`);
-        stream.on('data', data => {
-          children[child.pid].container.pushLine(data.toString());
-          screen.render();
-        });
-      }
-
-      // Also stream our tests to their indiviual files
-      stream.pipe(fs.createWriteStream(children[child.pid].outputPath));
-
-      child.on('exit', code => {
-        --i;
-        children[child.pid].code = code;
-      });
-    }
-  } catch (e) {
-    mainStream.write(
-      `ERROR ENCOUNTERED: ${e.message}. \n Killing process in 10 seconds...`,
-    );
-    await require('bluebird').delay(10000);
-    process.kill(process.pid, 'SIGINT');
-  }
+			child.on('exit', code => {
+				children[child.pid].code = code;
+			});
+		}
+	} catch (e) {
+		state.info(
+			`ERROR ENCOUNTERED: ${e.message}. \n Killing process in 10 seconds...`,
+		);
+		await require('bluebird').delay(10000);
+		process.kill(process.pid, 'SIGINT');
+	}
 })();

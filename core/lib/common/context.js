@@ -19,20 +19,20 @@
 const merge = require('lodash/merge');
 
 module.exports = class Context {
-  constructor(context) {
-    this.global = context;
-    this.ctx = {};
-  }
+	constructor(context) {
+		this.global = context;
+		this.ctx = {};
+	}
 
-  set(obj) {
-    merge(this.ctx, obj);
-  }
+	set(obj) {
+		merge(this.ctx, obj);
+	}
 
-  get() {
-    if (this.global != null) {
-      return { ...this.global.get(), ...this.ctx };
-    }
+	get() {
+		if (this.global != null) {
+			return { ...this.global.get(), ...this.ctx };
+		}
 
-    return this.ctx;
-  }
+		return this.ctx;
+	}
 };

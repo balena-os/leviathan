@@ -1,0 +1,8 @@
+{
+    "networkWired": false,
+    "networkWireless": true,
+    "workerType": "testbot",
+    "downloadType": "local",
+    "interactiveTests": false,
+    "apiUrl": "balena-cloud.com"
+}

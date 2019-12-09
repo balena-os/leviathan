@@ -22,40 +22,61 @@ const Archiver = require('./archiver');
 const Context = require('./context');
 
 module.exports = class Test {
-  constructor(id, suite) {
-    this.suite = {
-      rootPath: suite.rootPath,
-      context: suite.context,
-      teardown: {
-        register: (fn, bucket) => {
-          suite.teardown.register(fn, bucket);
-        }
-      },
-      deviceType: suite.deviceType,
-      options: suite.options
-    };
+	constructor(id, suite) {
+		this.suite = {
+			rootPath: suite.rootPath,
+			context: suite.context,
+			teardown: {
+				register: (fn, bucket) => {
+					suite.teardown.register(fn, bucket);
+				},
+			},
+			deviceType: suite.deviceType,
+			options: suite.options,
+			state: suite.state,
+		};
 
-    this.id = id;
+		this.id = id;
 
-    this.teardown = {
-      run: () => {
-        suite.teardown.run(this.id);
-      },
-      register: fn => {
-        this.suite.teardown.register(fn, id);
-      }
-    };
+		this.teardown = {
+			run: () => {
+				suite.teardown.run(this.id);
+			},
+			register: fn => {
+				this.suite.teardown.register(fn, id);
+			},
+		};
 
-    this.archiver = new Archiver(id);
-    this.context = new Context(this.suite.context);
-  }
+		this.archiver = new Archiver(id);
+		this.context = new Context(this.suite.context);
+	}
 
-  // This method allows tests to incldue any module from the core framework
-  require(module) {
-    return require(join(this.suite.rootPath, module));
-  }
+	log(message) {
+		this.suite.state.log(message);
+	}
 
-  async finish() {
-    await this.teardown.run();
-  }
+	status(message) {
+		this.suite.state.status(message);
+	}
+
+	info(message) {
+		this.suite.state.info(message);
+	}
+
+	// This method allows tests to incldue any module from the core framework
+	require(module) {
+		return require(join(this.suite.rootPath, module));
+	}
+
+	getLogger() {
+		return {
+			log: this.log.bind(this),
+			status: this.status.bind(this),
+			info: this.info.bind(this),
+		};
+	}
+
+	async finish() {
+		await this.teardown.run();
+	}
 };

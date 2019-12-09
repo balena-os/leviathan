@@ -16,59 +16,61 @@
 'use strict';
 
 module.exports = {
-  title: 'Preload feature tests',
-  tests: [
-    {
-      title: 'Pinning test',
-      run: async function(test) {
-        this.teardown.register(async () => {
-          const commit = await this.context.balena.sdk.getLatestRelease(
-            this.context.balena.application.name,
-          );
+	title: 'Preload feature tests',
+	tests: [
+		{
+			title: 'Pinning test',
+			run: async function(test) {
+				this.teardown.register(async () => {
+					const commit = await this.context.balena.sdk.getLatestRelease(
+						this.context.balena.application.name,
+					);
 
-          await this.context.balena.sdk.enableAutomaticUpdate(
-            this.context.balena.application.name,
-          );
-          await this.context.balena.sdk.triggerDeviceUpdate(
-            this.context.balena.uuid,
-          );
+					await this.context.balena.sdk.enableAutomaticUpdate(
+						this.context.balena.application.name,
+					);
+					await this.context.balena.sdk.triggerDeviceUpdate(
+						this.context.balena.uuid,
+					);
 
-          await this.context.balena.deviceApplicationChain
-            .getChain()
-            .waitServiceProperties(
-              {
-                commit,
-                status: 'Running',
-              },
-              this.context.balena.uuid,
-            );
-        }, test.name);
+					await this.context.balena.deviceApplicationChain
+						.getChain()
+						.waitServiceProperties(
+							{
+								commit,
+								status: 'Running',
+							},
+							this.context.balena.uuid,
+						);
+				}, test.name);
 
-        test.is(
-          await this.context.balena.sdk.getDeviceCommit(
-            this.context.balena.uuid,
-          ),
-          this.context.preload.hash,
-          'The API should report the preloaded commit hash',
-        );
+				test.is(
+					await this.context.balena.sdk.getDeviceCommit(
+						this.context.balena.uuid,
+					),
+					this.context.preload.hash,
+					'The API should report the preloaded commit hash',
+				);
 
-        const deviceLogs = (await this.context.balena.sdk.getDeviceLogsHistory(
-          this.context.balena.uuid,
-        )).map(log => {
-          return log.message;
-        });
+				const deviceLogs = (
+					await this.context.balena.sdk.getDeviceLogsHistory(
+						this.context.balena.uuid,
+					)
+				).map(log => {
+					return log.message;
+				});
 
-        test.notMatch(
-          [deviceLogs],
-          [/Downloading/],
-          'Device logs shouldn\'t output "Downloading"',
-        );
-        test.match(
-          [deviceLogs],
-          [/Hello, world!/],
-          'Application log outputs "Hello, world!"',
-        );
-      },
-    },
-  ],
+				test.notMatch(
+					[deviceLogs],
+					[/Downloading/],
+					'Device logs shouldn\'t output "Downloading"',
+				);
+				test.match(
+					[deviceLogs],
+					[/Hello, world!/],
+					'Application log outputs "Hello, world!"',
+				);
+			},
+		},
+	],
 };
