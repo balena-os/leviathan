@@ -73,7 +73,7 @@ module.exports = {
 					);
 				});
 
-				//Pull in the reference image
+				// Pull in the reference image
 				const referenceHash = await new Promise((resolve, reject) => {
 					const stream = fs.createReadStream(BOOT_SPLASH);
 					const buffer = [];
@@ -121,7 +121,7 @@ module.exports = {
 						reject(error);
 					});
 					res.on('response', response => {
-						if (response.statusCode == 500) {
+						if (response.statusCode === 500) {
 							const buffer = [];
 							res.on('data', data => {
 								buffer.push(data);

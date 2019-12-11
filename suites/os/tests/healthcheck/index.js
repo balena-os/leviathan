@@ -54,7 +54,7 @@ module.exports = {
 			json: true,
 		});
 
-		//Change health
+		// Change health
 		await this.context
 			.get()
 			.worker.executeCommandInHostOS(

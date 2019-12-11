@@ -33,7 +33,10 @@ module.exports = {
 			},
 			sshKeyPath: join(homedir(), 'id'),
 			utils: this.require('common/utils'),
-			worker: new Worker(this.deviceType.slug, this.suite.options.worker.url),
+			worker: new Worker(
+				this.suite.deviceType.slug,
+				this.suite.options.worker.url,
+			),
 		});
 
 		// Network definitions
@@ -56,7 +59,7 @@ module.exports = {
 
 		this.suite.context.set({
 			os: new BalenaOS({
-				deviceType: this.deviceType.slug,
+				deviceType: this.suite.deviceType.slug,
 				network: this.suite.options.balenaOS.network,
 			}),
 		});
@@ -80,12 +83,12 @@ module.exports = {
 			.get()
 			.balena.sdk.createApplication(
 				this.context.get().balena.application.name,
-				this.deviceType.slug,
+				this.suite.deviceType.slug,
 				{
 					delta: this.suite.options.balena.application.env.delta,
 				},
 			);
-		this.teardown.register(() => {
+		this.suite.teardown.register(() => {
 			return this.context
 				.get()
 				.balena.sdk.removeApplication(
@@ -113,7 +116,7 @@ module.exports = {
 					.get()
 					.utils.createSSHKey(this.context.get().sshKeyPath),
 			);
-		this.teardown.register(() => {
+		this.suite.teardown.register(() => {
 			return Bluebird.resolve(
 				this.context
 					.get()
@@ -158,7 +161,7 @@ module.exports = {
 				);
 			})
 			.then(chain => {
-				this.context.set({ preload: { hash: chain.getPushedCommit() } });
+				this.suite.context.set({ preload: { hash: chain.getPushedCommit() } });
 				return chain.emptyCommit();
 			})
 			.then(chain => {
@@ -177,7 +180,9 @@ module.exports = {
 		});
 
 		this.suite.context.set({
-			balena: { uuid: await this.context.get().balena.sdk.generateUUID() },
+			balena: {
+				uuid: await this.context.get().balena.sdk.generateUUID(),
+			},
 		});
 		this.context
 			.get()
@@ -197,10 +202,10 @@ module.exports = {
 			);
 
 		this.teardown.register(() => {
-			console.log('Worker teardown');
+			this.log('Worker teardown');
 			return this.context.get().worker.teardown();
 		});
-		console.log('Setting up worker');
+		this.log('Setting up worker');
 		await this.context.get().worker.select({
 			type: this.suite.options.worker.type,
 		});
@@ -211,7 +216,7 @@ module.exports = {
 		await this.context.get().worker.on();
 
 		// Checking if device is reachable
-		console.log('Waiting for device to be reachable');
+		this.log('Waiting for device to be reachable');
 		await this.context.get().utils.waitUntil(() => {
 			return this.context
 				.get()

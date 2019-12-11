@@ -25,7 +25,7 @@ const expressWebSocket = require('express-ws');
 const { ensureDir, pathExists, remove } = require('fs-extra');
 const md5 = require('md5-file/promise');
 const { fs, crypto } = require('mz');
-const { join } = require('path');
+const { basename, join } = require('path');
 const tar = require('tar-fs');
 const pipeline = Bluebird.promisify(require('stream').pipeline);
 const WebSocket = require('ws');
@@ -54,7 +54,7 @@ async function setup() {
 
 			const artifact = {
 				name: req.headers['x-artifact'],
-				path: join(config.get('leviathan.workdir'), req.headers['x-artifact']),
+				path: config.get('leviathan.uploads')[req.headers['x-artifact-id']],
 				hash: req.headers['x-artifact-hash'],
 			};
 			const ignore = ['node_modules', 'package-lock.json'];
@@ -173,7 +173,8 @@ async function setup() {
 						JSON.stringify({
 							type: 'upload',
 							data: {
-								name: uploadName,
+								id: uploadName,
+								name: basename(config.get('leviathan.uploads')[uploadName]),
 								token: upload.token,
 							},
 						}),

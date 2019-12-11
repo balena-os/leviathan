@@ -20,13 +20,14 @@ const rebootDevice = async that => {
 		.worker.executeCommandInHostOS(
 			'touch /tmp/reboot-check',
 			that.context.get().link,
-		),
-		await that.context
-			.get()
-			.worker.executeCommandInHostOS(
-				'systemd-run --on-active=2 /sbin/reboot',
-				that.context.get().link,
-			);
+		);
+
+	await that.context
+		.get()
+		.worker.executeCommandInHostOS(
+			'systemd-run --on-active=2 /sbin/reboot',
+			that.context.get().link,
+		);
 
 	await that.context.get().utils.waitUntil(async () => {
 		return (
@@ -142,13 +143,14 @@ module.exports = {
 					.worker.executeCommandInHostOS(
 						'touch /tmp/reboot-check',
 						`${hostname}.local`,
-					),
-					await this.context
-						.get()
-						.worker.executeCommandInHostOS(
-							'systemd-run --on-active=2 /sbin/reboot',
-							`${hostname}.local`,
-						);
+					);
+
+				await this.context
+					.get()
+					.worker.executeCommandInHostOS(
+						'systemd-run --on-active=2 /sbin/reboot',
+						`${hostname}.local`,
+					);
 				await this.context.get().utils.waitUntil(async () => {
 					return (
 						(await this.context
