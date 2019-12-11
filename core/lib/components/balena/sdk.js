@@ -48,7 +48,6 @@ module.exports = class BalenaSDK {
 
 		return retry(
 			async () => {
-				console.log('here');
 				if (!(await this.isDeviceConnectedToVpn(device))) {
 					throw new Error(`${device}: is not marked as connected to our VPN.`);
 				}
@@ -61,7 +60,6 @@ module.exports = class BalenaSDK {
 						port: sshPort,
 					},
 				);
-				console.log(result);
 
 				if (result.code !== 0) {
 					throw new Error(

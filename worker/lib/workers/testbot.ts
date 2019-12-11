@@ -7,7 +7,7 @@ import { getDrive, exec, manageHandlers } from '../helpers';
 import ScreenCapture from '../helpers/graphics';
 import NetworkManager, { Supported } from './nm';
 import { fs } from 'mz';
-import { join } from 'path';
+import { dirname, join } from 'path';
 import * as Stream from 'stream';
 
 Bluebird.config({
@@ -110,11 +110,14 @@ class TestBot extends EventEmitter implements Leviathan.Worker {
 			await exec(
 				'usbsdmux-configure',
 				[
-					await retry(() => fs.readlink(UNCONFIGURED_USB), {
-						interval: 1000,
-						max_tries: 10,
-						throw_original: true,
-					}),
+					join(
+						dirname(UNCONFIGURED_USB),
+						await retry(() => fs.readlink(UNCONFIGURED_USB), {
+							interval: 1000,
+							max_tries: 10,
+							throw_original: true,
+						}),
+					),
 					'1234',
 				],
 				'.',

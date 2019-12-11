@@ -151,11 +151,11 @@ module.exports = class Client extends PassThrough {
 					}, ''),
 				)
 				.digest('hex');
-			metadata.size = await fs.stat(artifact.path);
+			metadata.size = (await fs.stat(artifact.path)).size;
 		}
 		if (artifact.type === 'isFile') {
 			metadata.hash = await md5(artifact.path);
-			metadata.size = await fs.stat(artifact.path);
+			metadata.size = (await fs.stat(artifact.path)).size;
 		}
 		if (artifact.type === 'isDirectory' || artifact.type === 'isFile') {
 			metadata.stream = tar.pack(dirname(artifact.path), {
@@ -180,7 +180,7 @@ module.exports = class Client extends PassThrough {
 				.Hash('md5')
 				.update(`${artifact.data}\n`)
 				.digest('hex');
-			metadata.size = artifact.data.length;
+			metadata.size = JSON.stringify(artifact.data).length;
 			metadata.stream = tarStream.pack();
 			metadata.stream.entry(
 				{ name: artifact.name },
@@ -199,6 +199,7 @@ module.exports = class Client extends PassThrough {
 				headers: {
 					'x-token': token,
 					'x-artifact': artifact.name,
+					'x-artifact-id': artifact.id,
 					'x-artifact-hash': metadata.hash,
 				},
 			});
@@ -292,13 +293,14 @@ module.exports = class Client extends PassThrough {
 
 						switch (type) {
 							case 'upload':
-								const { name, token } = data;
+								const { name, id, token } = data;
 
 								const artifact = {
 									name,
+									id,
 								};
 
-								switch (name) {
+								switch (id) {
 									case 'suite':
 										artifact.path = makePath(suite);
 										artifact.type = 'isDirectory';

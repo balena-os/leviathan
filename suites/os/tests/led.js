@@ -90,21 +90,21 @@ module.exports = {
 
 		// we want to collapse only duplciated values from our read
 		const result = extractedLines.reduce((acc, line) => {
-			return acc.slice(-1)[0] != parseInt(line)
+			return acc.slice(-1)[0] !== parseInt(line)
 				? acc.concat([parseInt(line)])
 				: acc;
 		}, []);
 
 		test.true(
-			result.length > 0 && result.length % 2 == 0,
+			result.length > 0 && result.length % 2 === 0,
 			'Blink pattern should have been detected',
 		);
 
 		let count = 0;
 		for (let i = 0; i < result.length; i += 2) {
 			if (
-				result[i] == BRIGTHNESS_STEP[0] &&
-				result[i + 1] == BRIGTHNESS_STEP[1]
+				result[i] === BRIGTHNESS_STEP[0] &&
+				result[i + 1] === BRIGTHNESS_STEP[1]
 			) {
 				++count;
 			}

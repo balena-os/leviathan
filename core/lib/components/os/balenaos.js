@@ -90,7 +90,7 @@ module.exports = class BalenaOS {
 	constructor(options = {}) {
 		this.deviceType = options.deviceType;
 		this.network = options.network;
-		this.image = { path: config.get('leviathan.uploads.image') };
+		this.image = { path: join(config.get('leviathan.workdir'), 'image') };
 		this.configJson = options.configJson || {};
 		this.contract = {
 			network: mapValues(this.network, value => {
@@ -160,7 +160,7 @@ module.exports = class BalenaOS {
 			this.contract,
 			await this.unpack({
 				type: download.type,
-				source: join(config.get('leviathan.workdir'), 'image'),
+				source: config.get('leviathan.uploads').image,
 			}),
 		);
 	}
