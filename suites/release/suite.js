@@ -28,15 +28,12 @@ module.exports = {
 			balena: {
 				application: { name: this.suite.options.id },
 				deviceApplicationChain: new DeviceApplication().getChain(),
-				sdk: new Balena(this.suite.options.balena.apiUrl),
+				sdk: new Balena(this.suite.options.balena.apiUrl, this.getLogger()),
 				sshKey: { label: this.suite.options.id },
 			},
 			sshKeyPath: join(homedir(), 'id'),
 			utils: this.require('common/utils'),
-			worker: new Worker(
-				this.suite.deviceType.slug,
-				this.suite.options.worker.url,
-			),
+			worker: new Worker(this.suite.deviceType.slug, this.getLogger()),
 		});
 
 		// Network definitions
@@ -58,10 +55,13 @@ module.exports = {
 		}
 
 		this.suite.context.set({
-			os: new BalenaOS({
-				deviceType: this.suite.deviceType.slug,
-				network: this.suite.options.balenaOS.network,
-			}),
+			os: new BalenaOS(
+				{
+					deviceType: this.suite.deviceType.slug,
+					network: this.suite.options.balenaOS.network,
+				},
+				this.getLogger(),
+			),
 		});
 
 		await this.context
@@ -173,7 +173,7 @@ module.exports = {
 			version: this.suite.options.balenaOS.download.version,
 		});
 		await promiseDownload;
-		await new CLI().preload(this.context.get().os.image.path, {
+		await new CLI(this.getLogger()).preload(this.context.get().os.image.path, {
 			app: this.context.get().balena.application.name,
 			commit: this.context.get().preload.hash,
 			pin: true,
@@ -217,7 +217,8 @@ module.exports = {
 		await this.context
 			.get()
 			.worker.network(this.suite.options.balenaOS.network);
-		await this.context.get().worker.flash(this.context.get().os);
+		await this.context.get().os.configure();
+		await this.context.get().worker.flash(this.context.get().os.image.path);
 		await this.context.get().worker.on();
 
 		// Checking if device is reachable

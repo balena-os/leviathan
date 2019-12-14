@@ -28,18 +28,19 @@ const request = require('request');
 const rp = require('request-promise');
 
 module.exports = class Worker {
-	constructor(deviceType) {
-		this.deviceType = deviceType;
-		this.url = `${config.get('worker.url')}:${config.get('worker.port')}`;
-	}
-
-	flash(
-		imagePath,
+	constructor(
+		deviceType,
 		logger = { log: console.log, status: console.log, info: console.log },
 	) {
-		return new Promise(async (resolve, reject) => {
-			logger.log('Preparing to flash');
+		this.deviceType = deviceType;
+		this.url = `${config.get('worker.url')}:${config.get('worker.port')}`;
+		this.logger = logger;
+	}
 
+	async flash(imagePath) {
+		this.logger.log('Preparing to flash');
+
+		await new Promise(async (resolve, reject) => {
 			const req = rp.post({ uri: `${this.url}/dut/flash` });
 
 			req.catch(error => {
@@ -65,12 +66,12 @@ module.exports = class Worker {
 
 					if (computedLine[1] === 'progress') {
 						once(() => {
-							logger.log('Flashing');
+							this.logger.log('Flashing');
 						});
 						// Hide any errors as the lines we get can be half written
 						const state = JSON.parse(computedLine[2]);
 						if (state != null && isNumber(state.percentage)) {
-							logger.status({
+							this.logger.status({
 								message: 'Flashing',
 								percentage: state.percentage,
 							});
@@ -83,7 +84,7 @@ module.exports = class Worker {
 				}
 			});
 
-			await pipeline(fs.createReadStream(imagePath), req);
+			pipeline(fs.createReadStream(imagePath), req);
 		});
 	}
 

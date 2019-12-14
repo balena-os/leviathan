@@ -21,6 +21,12 @@ const { exec, spawn } = require('mz/child_process');
 const { basename, dirname, join } = require('path');
 
 module.exports = class CLI {
+	constructor(
+		logger = { log: console.log, status: console.log, info: console.log },
+	) {
+		this.logger = logger;
+	}
+
 	async preload(image, options) {
 		const socketPath = (await pathExists('/var/run/balena.sock'))
 			? '/var/run/balena.sock'
@@ -54,6 +60,7 @@ module.exports = class CLI {
 		// path than where our docker daemon runs. Until we fix the issue on the preloader
 		await ensureFile(join(Mount.Source, basename(image)));
 
+		this.logger.log('Preloading image');
 		await new Promise(async (resolve, reject) => {
 			const output = [];
 			const child = spawn(
@@ -102,12 +109,14 @@ module.exports = class CLI {
 	}
 
 	push(target, options) {
+		this.logger.log('Performing local push');
 		return exec(
 			`balena push ${target} --source ${options.source} --nolive --detached`,
 		);
 	}
 
 	loginWithToken(token) {
+		this.logger.log('Login CLI');
 		return exec(`balena login --token ${token}`);
 	}
 

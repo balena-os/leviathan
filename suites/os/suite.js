@@ -23,7 +23,7 @@ module.exports = {
 			utils: this.require('common/utils'),
 			sshKeyPath: join(homedir(), 'id'),
 			link: `${this.suite.options.balenaOS.config.uuid.slice(0, 7)}.local`,
-			worker: new Worker(this.suite.deviceType.slug),
+			worker: new Worker(this.suite.deviceType.slug, this.getLogger()),
 		});
 		// Network definitions
 		if (this.suite.options.balenaOS.network.wired === true) {
@@ -44,22 +44,25 @@ module.exports = {
 		}
 
 		this.suite.context.set({
-			os: new BalenaOS({
-				deviceType: this.suite.deviceType.slug,
-				network: this.suite.options.balenaOS.network,
-				configJson: {
-					uuid: this.suite.options.balenaOS.config.uuid,
-					os: {
-						sshKeys: [
-							await this.context
-								.get()
-								.utils.createSSHKey(this.context.get().sshKeyPath),
-						],
+			os: new BalenaOS(
+				{
+					deviceType: this.suite.deviceType.slug,
+					network: this.suite.options.balenaOS.network,
+					configJson: {
+						uuid: this.suite.options.balenaOS.config.uuid,
+						os: {
+							sshKeys: [
+								await this.context
+									.get()
+									.utils.createSSHKey(this.context.get().sshKeyPath),
+							],
+						},
+						// persistentLogging is managed by the supervisor and only read at first boot
+						persistentLogging: true,
 					},
-					// persistentLogging is managed by the supervisor and only read at first boot
-					persistentLogging: true,
 				},
-			}),
+				this.getLogger(),
+			),
 		});
 
 		this.suite.teardown.register(() => {
@@ -80,17 +83,12 @@ module.exports = {
 			.get()
 			.worker.network(this.suite.options.balenaOS.network);
 
-		await this.context.get().os.fetch(
-			{
-				type: this.suite.options.balenaOS.download.type,
-				version: this.suite.options.balenaOS.download.version,
-			},
-			this.getLogger(),
-		);
-		await this.context.get().os.configure(this.getLogger());
-		await this.context
-			.get()
-			.worker.flash(this.context.get().os.image.path, this.getLogger());
+		await this.context.get().os.fetch({
+			type: this.suite.options.balenaOS.download.type,
+			version: this.suite.options.balenaOS.download.version,
+		});
+		await this.context.get().os.configure();
+		await this.context.get().worker.flash(this.context.get().os.image.path);
 		await this.context.get().worker.on();
 
 		this.log('Waiting for device to be reachable');

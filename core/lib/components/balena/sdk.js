@@ -27,13 +27,17 @@ const retry = require('bluebird-retry');
 const utils = require('../../common/utils');
 
 module.exports = class BalenaSDK {
-	constructor(apiUrl) {
+	constructor(
+		apiUrl,
+		logger = { log: console.log, status: console.log, info: console.log },
+	) {
 		this.balena = require('balena-sdk')({
 			apiUrl: `https://api.${apiUrl}`,
 			imageMakerUrl: `https://img.${apiUrl}`,
 		});
 
 		this.pine = this.balena.pine;
+		this.logger = logger;
 	}
 
 	async executeCommandInHostOS(
@@ -81,15 +85,11 @@ module.exports = class BalenaSDK {
 		return this.balena.models.os.getSupportedVersions(deviceType);
 	}
 
-	async getDownloadStream(
-		deviceType,
-		version,
-		reporter = { status: console.log },
-	) {
+	async getDownloadStream(deviceType, version) {
 		const stream = await this.balena.models.os.download(deviceType, version);
 
 		stream.on('progress', data => {
-			reporter.status({
+			this.logger.status({
 				message: 'Download',
 				percentage: data.percentage,
 				eta: data.eta,
@@ -132,22 +132,24 @@ module.exports = class BalenaSDK {
 	}
 
 	loginWithToken(apiKey) {
-		console.log('Balena login!');
+		this.logger.log('Balena login!');
 		return this.balena.auth.loginWithToken(apiKey);
 	}
 
 	logout() {
-		console.log('Log out of balena');
+		this.logger.log('Log out of balena');
 		return this.balena.auth.logout();
 	}
 
 	removeApplication(application) {
-		console.log(`Removing balena application: ${application}`);
+		this.logger.log(`Removing balena application: ${application}`);
 		return this.balena.models.application.remove(application);
 	}
 
 	async createApplication(name, deviceType, config) {
-		console.log(`Creating application: ${name} with device type ${deviceType}`);
+		this.logger.log(
+			`Creating application: ${name} with device type ${deviceType}`,
+		);
 
 		await this.balena.models.application.create({
 			name,
@@ -155,7 +157,9 @@ module.exports = class BalenaSDK {
 		});
 
 		if (config.delta) {
-			console.log(config.delta === '1' ? 'Enabling delta' : 'Disabling delta');
+			this.logger.log(
+				config.delta === '1' ? 'Enabling delta' : 'Disabling delta',
+			);
 			await this.balena.setAppConfigVariable(
 				name,
 				'RESIN_SUPERVISOR_DELTA',
@@ -172,12 +176,12 @@ module.exports = class BalenaSDK {
 	}
 
 	addSSHKey(label, key) {
-		console.log(`Add new SSH key with label: ${label}`);
+		this.logger.log(`Add new SSH key with label: ${label}`);
 		return this.balena.models.key.create(label, key);
 	}
 
 	async removeSSHKey(label) {
-		console.log(`Delete SSH key with label: ${label}`);
+		this.logger.log(`Delete SSH key with label: ${label}`);
 
 		const keys = await this.balena.models.key.getAll();
 		const key = find(keys, {
@@ -355,7 +359,7 @@ module.exports = class BalenaSDK {
 	}
 
 	startOsUpdate(device, targetVersion) {
-		console.log(`Updating OS of ${device} to ${targetVersion}`);
+		this.logger.log(`Updating OS of ${device} to ${targetVersion}`);
 		return this.balena.models.device.startOsUpdate(device, targetVersion);
 	}
 
