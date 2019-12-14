@@ -110,7 +110,7 @@ class State {
 
 			const info = blessed.log({
 				parent: layout,
-				width: '99%',
+				width: '100%',
 				height: '20%',
 				border: 'line',
 				alwaysScroll: true,
@@ -125,7 +125,7 @@ class State {
 
 			const status = blessed.progressbar({
 				parent: layout,
-				width: '99%',
+				width: '100%',
 				height: '6%',
 				border: 'line',
 				style: {
@@ -141,7 +141,7 @@ class State {
 			const log = blessed.log({
 				align: 'left',
 				parent: layout,
-				width: '99%',
+				width: '100%',
 				height: 'shrink',
 				shrink: 'grow',
 				border: 'line',
