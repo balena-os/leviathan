@@ -67,7 +67,7 @@ module.exports = {
 		await this.context
 			.get()
 			.balena.sdk.loginWithToken(this.suite.options.balena.apiKey);
-		this.teardown.register(() => {
+		this.suite.teardown.register(() => {
 			return this.context
 				.get()
 				.balena.sdk.logout()
@@ -201,7 +201,7 @@ module.exports = {
 					),
 			);
 
-		this.teardown.register(() => {
+		this.suite.teardown.register(() => {
 			this.log('Worker teardown');
 			return this.context.get().worker.teardown();
 		});

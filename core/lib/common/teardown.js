@@ -37,20 +37,20 @@ module.exports = class Teardown {
 	}
 
 	async runAll(scheduler = setImmediate) {
-		await Bluebird.each(Array.from(this.store.keys()).reverse(), bucket => {
-			return this.run(bucket, scheduler);
-		});
+		for (const bucket of Array.from(this.store.keys()).reverse()) {
+			await this.run(bucket, scheduler);
+		}
 	}
 
 	async run(bucket = 'global', scheduler = setImmediate) {
 		const prev = Bluebird.setScheduler(scheduler);
 
 		if (this.store.has(bucket)) {
-			await Bluebird.each(this.store.get(bucket).reverse(), teardown => {
-				return teardown().catch(error => {
-					console.error(error);
+			for (const teardown of this.store.get(bucket).reverse()) {
+				await teardown().catch(error => {
+					console.log(error);
 				});
-			});
+			}
 
 			this.store.delete(bucket);
 		}

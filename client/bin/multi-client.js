@@ -280,7 +280,7 @@ class State {
 								).toString();
 
 								if (procInfo.match(/State:\s+[RSDT]/)) {
-									child._child.on('close', resolve);
+									child._child.on('exit', resolve);
 									child._child.on('error', reject);
 									child._child.kill(sig);
 								} else {
