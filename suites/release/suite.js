@@ -208,6 +208,11 @@ module.exports = {
 		this.log('Setting up worker');
 		await this.context.get().worker.select({
 			type: this.suite.options.worker.type,
+			options: {
+				network: {
+					wireless: 'wlan0',
+				},
+			},
 		});
 		await this.context
 			.get()

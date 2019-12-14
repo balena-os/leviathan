@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-
 process.env['NODE_CONFIG_DIR'] = `${__dirname}/../config`;
 const config = require('config');
 

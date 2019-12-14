@@ -11,6 +11,7 @@ services:
       - 'core-storage:/data'
     labels:
       share: 'core-storage'
+      io.balena.features.balena-socket: '1'
   worker:
     privileged: true
     build: ./worker
