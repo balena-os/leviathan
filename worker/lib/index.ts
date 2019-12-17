@@ -6,13 +6,18 @@ import * as http from 'http';
 import { merge } from 'lodash';
 
 import { getIpFromIface, resolveLocalTarget } from './helpers';
-import TestBot from './workers/testbot';
+import { TestBotStandAlone, TestBotHat } from './workers/testbot';
 import Qemu from './workers/qemu';
 import { Readable } from 'stream';
 
-type workers = { testbot: typeof TestBot; qemu: typeof Qemu };
+type workers = {
+	testbot_hat: typeof TestBotHat;
+	testbot_standalone: typeof TestBotStandAlone;
+	qemu: typeof Qemu;
+};
 const workersDict: { [key in keyof workers]: workers[key] } = {
-	testbot: TestBot,
+	testbot_hat: TestBotHat,
+	testbot_standalone: TestBotStandAlone,
 	qemu: Qemu,
 };
 

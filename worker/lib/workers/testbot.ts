@@ -1,7 +1,6 @@
 import * as Bluebird from 'bluebird';
 import * as retry from 'bluebird-retry';
 import * as sdk from 'etcher-sdk';
-import { EventEmitter } from 'events';
 import * as Board from 'firmata';
 import { getDrive, exec, manageHandlers } from '../helpers';
 import ScreenCapture from '../helpers/graphics';
@@ -9,6 +8,7 @@ import NetworkManager, { Supported } from './nm';
 import { fs } from 'mz';
 import { dirname, join } from 'path';
 import * as Stream from 'stream';
+import { merge } from 'lodash';
 
 Bluebird.config({
 	cancellation: true,
@@ -17,50 +17,22 @@ Bluebird.config({
 /**
  * TestBot Hardware config
  */
-const HW_SERIAL5: Board.SERIAL_PORT_ID = 5;
-const BAUD_RATE = 9600;
-const DEV_SD = '/dev/disk/by-id/usb-PTX_sdmux_HS-SD_MMC_1234-0:0';
-const DEV_TESTBOT = '/dev/ttyACM0';
 
-enum GPIO {
-	WRITE_DAC_REG = 0x00,
-	ENABLE_VOUT_SW = 0x03,
-	DISABLE_VOUT_SW = 0x04,
-	ENABLE_VREG = 0x07,
-	ENABLE_FAULTRST = 0x10,
-	SD_RESET_ENABLE = 0x12,
-	SD_RESET_DISABLE = 0x13,
-}
+abstract class TestBot extends Board implements Leviathan.Worker {
+	protected activeFlash?: Bluebird<void>;
 
-enum PINS {
-	LED_PIN = 13,
-	SD_MUX_SEL_PIN = 28,
-	USB_MUX_SEL_PIN = 29,
-}
+	protected internalState: Leviathan.WorkerState = { network: {} };
+	protected networkCtl?: NetworkManager;
+	protected screenCapturer: ScreenCapture;
 
-class TestBot extends EventEmitter implements Leviathan.Worker {
-	private board: Board;
-	private activeFlash?: Bluebird<void>;
-	private signalHandler: (signal: NodeJS.Signals) => Promise<void>;
-	private internalState: Leviathan.WorkerState = { network: {} };
-	private screenCapturer: ScreenCapture;
+	protected abstract DEV_SD: string;
 
-	private networkCtl?: NetworkManager;
-	private disk?: string;
-
-	/**
-	 * Represents a TestBot
-	 */
 	constructor(options: Leviathan.Options) {
-		super();
+		super(options.worker.serialPort, { skipCapabilities: true });
 
 		if (options != null) {
 			if (options.network != null) {
 				this.networkCtl = new NetworkManager(options.network);
-			}
-
-			if (options.worker != null && options.worker.disk != null) {
-				this.disk = options.worker.disk;
 			}
 
 			if (options.screen != null) {
@@ -71,72 +43,11 @@ class TestBot extends EventEmitter implements Leviathan.Worker {
 					join(options.worker.workdir, 'capture'),
 				);
 			}
-
-			if (process.platform != 'linux' && this.disk == null) {
-				throw new Error(
-					'We cannot automatically detect the testbot interface, please provide it manually',
-				);
-			}
 		}
-
-		this.signalHandler = this.teardown.bind(this);
 	}
 
 	get state() {
 		return this.internalState;
-	}
-
-	static async flashFirmware() {
-		const UNCONFIGURED_USB =
-			'/dev/disk/by-id/usb-Generic_Ultra_HS-SD_MMC_000008264001-0:0';
-
-		try {
-			await fs.readlink(DEV_SD);
-		} catch (_err) {
-			// Flash sketch to expose the SD interface
-			await retry(
-				() => {
-					return exec(
-						'teensy_loader_cli',
-						['-v', '-s', '-mmcu=mk66fx1m0', 'SDcardSwitch.ino.hex'],
-						'./firmware',
-					);
-				},
-				{ interval: 1000, max_tries: 10, throw_original: true },
-			);
-			// Allow for the sketch to run
-			await Bluebird.delay(15000);
-			await exec('udevadm', ['settle'], '.');
-			await exec(
-				'usbsdmux-configure',
-				[
-					join(
-						dirname(UNCONFIGURED_USB),
-						await retry(() => fs.readlink(UNCONFIGURED_USB), {
-							interval: 1000,
-							max_tries: 10,
-							throw_original: true,
-						}),
-					),
-					'1234',
-				],
-				'.',
-			);
-		} finally {
-			// Flash firmata
-			await retry(
-				() => {
-					return exec(
-						'teensy_loader_cli',
-						['-v', '-s', '-mmcu=mk66fx1m0', 'StandardFirmataPlus.ino.hex'],
-						'./firmware',
-					);
-				},
-				{ interval: 1000, max_tries: 10, throw_original: true },
-			);
-
-			await Bluebird.delay(1000);
-		}
 	}
 
 	/**
@@ -147,73 +58,10 @@ class TestBot extends EventEmitter implements Leviathan.Worker {
 	): Bluebird<string> {
 		return retry(
 			() => {
-				return fs.realpath(DEV_SD);
+				return fs.realpath(this.DEV_SD);
 			},
 			{ ...timeout, throw_original: true },
 		);
-	}
-
-	/**
-	 * Send an array of bytes over the selected serial port
-	 */
-	private async sendCommand(
-		command: number,
-		settle: number = 0,
-		a: number = 0,
-		b: number = 0,
-	): Promise<void> {
-		this.board.serialWrite(HW_SERIAL5, [command, a, b]);
-		await Bluebird.delay(settle);
-	}
-
-	/**
-	 * Reset SD card controller
-	 */
-	private async resetSdCard(): Promise<void> {
-		await this.sendCommand(GPIO.SD_RESET_ENABLE, 10);
-		await this.sendCommand(GPIO.SD_RESET_DISABLE);
-	}
-
-	/**
-	 * Connected the SD card interface to DUT
-	 */
-	private async switchSdToDUT(settle: number = 0): Promise<void> {
-		console.log('Switching SD card to device...');
-		await this.resetSdCard();
-		this.board.digitalWrite(PINS.LED_PIN, this.board.LOW);
-		this.board.digitalWrite(PINS.SD_MUX_SEL_PIN, this.board.LOW);
-
-		await Bluebird.delay(settle);
-	}
-
-	/**
-	 * Connected the SD card interface to the host
-	 *
-	 */
-	private async switchSdToHost(settle: number = 0): Promise<void> {
-		console.log('Switching SD card to host...');
-		await this.resetSdCard();
-		this.board.digitalWrite(PINS.LED_PIN, this.board.HIGH);
-		this.board.digitalWrite(PINS.SD_MUX_SEL_PIN, this.board.HIGH);
-
-		await Bluebird.delay(settle);
-	}
-
-	/**
-	 * Power on DUT
-	 */
-
-	private async powerOnDUT(): Promise<void> {
-		console.log('Switching testbot on...');
-		await this.sendCommand(GPIO.ENABLE_VOUT_SW, 1000);
-	}
-
-	/**
-	 * Power off DUT
-	 */
-	private async powerOffDUT(): Promise<void> {
-		console.log('Switching testbot off...');
-		await this.sendCommand(GPIO.DISABLE_VOUT_SW, 1000);
 	}
 
 	/**
@@ -221,9 +69,10 @@ class TestBot extends EventEmitter implements Leviathan.Worker {
 	 */
 	public async flash(stream: Stream.Readable): Promise<void> {
 		this.activeFlash = Bluebird.try(async () => {
-			await this.powerOff();
+			await this.switchSdToHost(5000);
 
 			const source = new sdk.sourceDestination.SingleUseStreamSource(stream);
+
 			// For linux, udev will provide us with a nice id for the testbot
 			const drive = await getDrive(await this.getDevInterface());
 
@@ -259,7 +108,6 @@ class TestBot extends EventEmitter implements Leviathan.Worker {
 		await this.powerOffDUT();
 		await this.switchSdToHost(5000);
 	}
-
 	/**
 	 * Network Control
 	 */
@@ -309,76 +157,368 @@ class TestBot extends EventEmitter implements Leviathan.Worker {
 		}
 	}
 
+	public async teardown(signal?: NodeJS.Signals): Promise<void> {
+		try {
+			manageHandlers(this.teardown, {
+				register: false,
+			});
+
+			if (this.screenCapturer != null) {
+				await this.screenCapturer.teardown();
+			}
+
+			if (this.activeFlash != null) {
+				this.activeFlash.cancel();
+			}
+
+			if (this.networkCtl != null) {
+				await this.networkCtl.teardown();
+			}
+
+			await this.powerOff();
+		} finally {
+			this.teardownBoard();
+
+			if (signal != null) {
+				process.kill(process.pid, signal);
+			}
+		}
+	}
+
+	abstract async setup(): Promise<void>;
+	protected abstract async powerOffDUT(): Promise<void>;
+	protected abstract async powerOnDUT(): Promise<void>;
+	protected abstract async switchSdToDUT(delay: number): Promise<void>;
+	protected abstract async switchSdToHost(delay: number): Promise<void>;
+	protected abstract teardownBoard(): void;
+}
+
+class TestBotStandAlone extends TestBot implements Leviathan.Worker {
+	private disk?: string;
+
+	private static HW_SERIAL: Board.SERIAL_PORT_ID = 5;
+	private static DEV_TESTBOT = '/dev/ttyACM0';
+	private static BAUD_RATE = 9600;
+
+	private static GPIOS = {
+		WRITE_DAC_REG: 0x00,
+		ENABLE_VOUT_SW: 0x03,
+		DISABLE_VOUT_SW: 0x04,
+		ENABLE_VREG: 0x07,
+		ENABLE_FAULTRST: 0x10,
+		SD_RESET_ENABLE: 0x12,
+		SD_RESET_DISABLE: 0x13,
+	};
+
+	private static PINS = {
+		LED_PIN: 13,
+		SD_MUX_SEL_PIN: 28,
+		USB_MUX_SEL_PIN: 29,
+	};
+
+	protected DEV_SD = '/dev/disk/by-id/usb-PTX_sdmux_HS-SD_MMC_1234-0:0';
+
+	/**
+	 * Represents a TestBot
+	 */
+	constructor(options: Leviathan.Options) {
+		super(
+			merge(options, { worker: { serialPort: TestBotStandAlone.DEV_TESTBOT } }),
+		);
+
+		if (options.worker != null && options.worker.disk != null) {
+			this.disk = options.worker.disk;
+		}
+
+		if (process.platform != 'linux' && this.disk == null) {
+			throw new Error(
+				'We cannot automatically detect the testbot interface, please provide it manually',
+			);
+		}
+	}
+
 	/**
 	 * Setup testbot
 	 */
 	public async setup(): Promise<void> {
-		manageHandlers(this.teardown, {
-			register: true,
-		});
-
-		await TestBot.flashFirmware();
+		await this.flashFirmware();
 
 		await new Promise((resolve, reject) => {
-			const board = new Board(DEV_TESTBOT);
-			board.once('error', reject);
-			board.serialConfig({
-				portId: HW_SERIAL5,
-				baud: BAUD_RATE,
+			const timeout = setTimeout(() => {
+				reject('Firmata connection timed out');
+			}, 60000);
+
+			this.serialConfig({
+				portId: TestBotStandAlone.HW_SERIAL,
+				baud: TestBotStandAlone.BAUD_RATE,
 			});
-			board.once('ready', async () => {
-				this.board = board;
+
+			this.once('error', error => {
+				clearTimeout(timeout);
+				reject(error);
+			});
+
+			const resolver = async () => {
 				// Power managment configuration
 				// We set the regulator (DAC_REG) to 5V and start the managment unit (VREG)
-				await this.sendCommand(GPIO.ENABLE_FAULTRST, 1000);
-				board.pinMode(PINS.LED_PIN, this.board.MODES.OUTPUT);
-				await this.sendCommand(GPIO.WRITE_DAC_REG, 1000, 5);
-				await this.sendCommand(GPIO.ENABLE_VREG, 1000);
+				await this.sendCommand(TestBotStandAlone.GPIOS.ENABLE_FAULTRST, 1000);
+				this.pinMode(TestBotStandAlone.PINS.LED_PIN, this.MODES.OUTPUT);
+				await this.sendCommand(TestBotStandAlone.GPIOS.WRITE_DAC_REG, 1000, 5);
+				await this.sendCommand(TestBotStandAlone.GPIOS.ENABLE_VREG, 1000);
 
 				// SD card managment configuration
 				// We enable the SD/USB multiplexers and leave them disconnected
-				board.pinMode(PINS.SD_MUX_SEL_PIN, this.board.MODES.OUTPUT);
-				board.digitalWrite(PINS.SD_MUX_SEL_PIN, this.board.LOW);
-				board.pinMode(PINS.USB_MUX_SEL_PIN, this.board.MODES.OUTPUT);
-				board.digitalWrite(PINS.USB_MUX_SEL_PIN, this.board.LOW);
+				this.pinMode(TestBotStandAlone.PINS.SD_MUX_SEL_PIN, this.MODES.OUTPUT);
+				this.digitalWrite(TestBotStandAlone.PINS.SD_MUX_SEL_PIN, this.LOW);
+				this.pinMode(TestBotStandAlone.PINS.USB_MUX_SEL_PIN, this.MODES.OUTPUT);
+				this.digitalWrite(TestBotStandAlone.PINS.USB_MUX_SEL_PIN, this.LOW);
 
 				await Bluebird.delay(1000);
 				console.log('Worker ready');
+				clearTimeout(timeout);
 
 				resolve();
-			});
+			};
+
+			if (Object.keys(this.version).length === 0) {
+				this.once('ready', resolver);
+			} else {
+				resolver();
+			}
 		});
+
+		manageHandlers(this.teardown, {
+			register: true,
+		});
+	}
+
+	private async flashFirmware() {
+		const UNCONFIGURED_USB =
+			'/dev/disk/by-id/usb-Generic_Ultra_HS-SD_MMC_000008264001-0:0';
+
+		try {
+			await fs.readlink(this.DEV_SD);
+		} catch (_err) {
+			// Flash sketch to expose the SD interface
+			await retry(
+				() => {
+					return exec(
+						'teensy_loader_cli',
+						['-v', '-s', '-mmcu=mk66fx1m0', 'SDcardSwitch.ino.hex'],
+						'./firmware',
+					);
+				},
+				{ interval: 1000, max_tries: 10, throw_original: true },
+			);
+			// Allow for the sketch to run
+			await Bluebird.delay(15000);
+			await exec('udevadm', ['settle'], '.');
+			await exec(
+				'usbsdmux-configure',
+				[
+					join(
+						dirname(UNCONFIGURED_USB),
+						await retry(() => fs.readlink(UNCONFIGURED_USB), {
+							interval: 1000,
+							max_tries: 10,
+							throw_original: true,
+						}),
+					),
+					'1234',
+				],
+				'.',
+			);
+		} finally {
+			// Flash firmata
+			await retry(
+				() => {
+					return exec(
+						'teensy_loader_cli',
+						['-v', '-s', '-mmcu=mk66fx1m0', 'StandardFirmataPlus.ino.hex'],
+						'./firmware',
+					);
+				},
+				{ interval: 1000, max_tries: 10, throw_original: true },
+			);
+
+			await Bluebird.delay(1000);
+		}
+	}
+
+	/**
+	 * Send an array of bytes over the selected serial port
+	 */
+	private async sendCommand(
+		command: number,
+		settle: number = 0,
+		a: number = 0,
+		b: number = 0,
+	): Promise<void> {
+		this.serialWrite(TestBotStandAlone.HW_SERIAL, [command, a, b]);
+		await Bluebird.delay(settle);
+	}
+
+	/**
+	 * Reset SD card controller
+	 */
+	private async resetHub(): Promise<void> {
+		await this.sendCommand(TestBotStandAlone.GPIOS.SD_RESET_ENABLE, 10);
+		await this.sendCommand(TestBotStandAlone.GPIOS.SD_RESET_DISABLE);
+	}
+
+	/**
+	 * Connected the SD card interface to DUT
+	 */
+	protected async switchSdToDUT(settle: number = 0): Promise<void> {
+		console.log('Switching SD card to device...');
+		await this.resetHub();
+		this.digitalWrite(TestBotStandAlone.PINS.LED_PIN, this.LOW);
+		this.digitalWrite(TestBotStandAlone.PINS.SD_MUX_SEL_PIN, this.LOW);
+
+		await Bluebird.delay(settle);
+	}
+
+	/**
+	 * Connected the SD card interface to the host
+	 *
+	 */
+	protected async switchSdToHost(settle: number = 0): Promise<void> {
+		console.log('Switching SD card to host...');
+		await this.resetHub();
+		this.digitalWrite(TestBotStandAlone.PINS.LED_PIN, this.HIGH);
+		this.digitalWrite(TestBotStandAlone.PINS.SD_MUX_SEL_PIN, this.HIGH);
+
+		await Bluebird.delay(settle);
+	}
+
+	/**
+	 * Power on DUT
+	 */
+
+	protected async powerOnDUT(): Promise<void> {
+		console.log('Switching testbot on...');
+		await this.sendCommand(TestBotStandAlone.GPIOS.ENABLE_VOUT_SW, 1000);
+	}
+
+	/**
+	 * Power off DUT
+	 */
+	protected async powerOffDUT(): Promise<void> {
+		console.log('Switching testbot off...');
+		await this.sendCommand(TestBotStandAlone.GPIOS.DISABLE_VOUT_SW, 1000);
 	}
 
 	/**
 	 * Teardown testbot
 	 */
-	public async teardown(signal?: NodeJS.Signals): Promise<void> {
-		if (this.screenCapturer != null) {
-			await this.screenCapturer.teardown();
-		}
-
-		if (this.activeFlash != null) {
-			this.activeFlash.cancel();
-		}
-
-		if (this.networkCtl != null) {
-			await this.networkCtl.teardown();
-		}
-
-		if (this.board != null) {
-			await this.powerOff();
-			this.board.serialClose(HW_SERIAL5);
-		}
-
-		if (signal != null) {
-			process.kill(process.pid, signal);
-		}
-
-		manageHandlers(this.teardown, {
-			register: false,
-		});
+	protected teardownBoard() {
+		this.serialClose(TestBotStandAlone.HW_SERIAL);
 	}
 }
 
-export default TestBot;
+class TestBotHat extends TestBot {
+	private static DEV_TESTBOT = '/dev/ttyS0';
+
+	private static PINS = {
+		SD_RESET_N: 0,
+		SD_MUX_SEL_PIN: 2,
+		DUT_PW_EN: 14,
+	};
+
+	protected DEV_SD =
+		'/dev/disk/by-id/usb-Generic_Ultra_HS-SD_MMC_000008264001-0:0';
+
+	/**
+	 * Represents a TestBot
+	 */
+	constructor(options: Leviathan.Options) {
+		super(merge(options, { worker: { serialPort: TestBotHat.DEV_TESTBOT } }));
+	}
+
+	/**
+	 * Setup testbot
+	 */
+	public async setup(): Promise<void> {
+		await new Promise((resolve, reject) => {
+			const timeout = setTimeout(() => {
+				reject('Firmata connection timed out');
+			}, 10000);
+
+			const resolver = () => {
+				console.log('Worker ready!');
+				clearTimeout(timeout);
+				resolve();
+			};
+
+			this.once('error', error => {
+				clearTimeout(timeout);
+				reject(error);
+			});
+
+			if (Object.keys(this.version).length === 0) {
+				this.once('ready', resolver);
+			} else {
+				resolver();
+			}
+		});
+
+		manageHandlers(this.teardown, {
+			register: true,
+		});
+	}
+
+	/**
+	 * Reset SD card controller
+	 */
+	private resetHub() {
+		this.digitalWrite(TestBotHat.PINS.SD_RESET_N, 0);
+		this.digitalWrite(TestBotHat.PINS.SD_RESET_N, 1);
+	}
+
+	/**
+	 * Connected the SD card interface to DUT
+	 */
+	protected async switchSdToDUT(settle: number = 0): Promise<void> {
+		console.log('Switching SD card to device...');
+		this.digitalWrite(TestBotHat.PINS.SD_MUX_SEL_PIN, this.LOW);
+		this.resetHub();
+		await Bluebird.delay(settle);
+	}
+
+	/**
+	 * Connected the SD card interface to the host
+	 *
+	 */
+	protected async switchSdToHost(settle: number = 0): Promise<void> {
+		console.log('Switching SD card to host...');
+		this.digitalWrite(TestBotHat.PINS.SD_MUX_SEL_PIN, this.HIGH);
+		this.resetHub();
+		await Bluebird.delay(settle);
+	}
+
+	/**
+	 * Power on DUT
+	 */
+
+	protected async powerOnDUT(): Promise<void> {
+		console.log('Switching testbot on...');
+		this.digitalWrite(TestBotHat.PINS.DUT_PW_EN, this.HIGH);
+	}
+
+	/**
+	 * Power off DUT
+	 */
+	protected async powerOffDUT(): Promise<void> {
+		console.log('Switching testbot off...');
+		this.digitalWrite(TestBotHat.PINS.DUT_PW_EN, this.LOW);
+	}
+
+	/**
+	 * Teardown testbot
+	 */
+	protected teardownBoard() {
+		this.transport.close();
+	}
+}
+
+export { TestBotStandAlone, TestBotHat };
