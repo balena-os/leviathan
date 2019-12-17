@@ -247,6 +247,7 @@ async function setup() {
 			}
 		} finally {
 			ws.close();
+			suite = null;
 		}
 	});
 
