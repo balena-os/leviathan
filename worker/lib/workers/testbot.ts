@@ -220,7 +220,7 @@ class TestBot extends EventEmitter implements Leviathan.Worker {
 	 * Flash SD card with operating system
 	 */
 	public async flash(stream: Stream.Readable): Promise<void> {
-		this.activeFlash = new Bluebird(async (resolve, reject) => {
+		this.activeFlash = Bluebird.try(async () => {
 			await this.powerOff();
 
 			const source = new sdk.sourceDestination.SingleUseStreamSource(stream);
@@ -231,15 +231,13 @@ class TestBot extends EventEmitter implements Leviathan.Worker {
 				source,
 				[drive],
 				(_destination, error) => {
-					reject(error);
+					throw error;
 				},
 				(progress: sdk.multiWrite.MultiDestinationProgress) => {
 					this.emit('progress', progress);
 				},
 				true,
 			);
-
-			resolve();
 		});
 
 		await this.activeFlash;
