@@ -14,6 +14,7 @@ const schema = require('../lib/schemas/multi-client-config.js');
 const { every, forEach } = require('lodash');
 const { tmpdir } = require('os');
 const url = require('url');
+
 const yargs = require('yargs')
 	.usage('Usage: $0 [options]')
 	.option('h', {
@@ -38,9 +39,50 @@ const yargs = require('yargs')
 		type: 'boolean',
 		default: false,
 	})
+	.option('n', {
+		alias: 'non-interactive',
+		description: 'use when calling from CI integrations',
+		type: 'boolean',
+		default: false,
+	})
 	.version()
 	.help('help')
 	.showHelpOnFail(false, 'Something went wrong! run with --help').argv;
+
+class NonInteractiveState {
+	info(data) {
+		console.log(`INFO: ${data.toString()}`);
+	}
+
+	attachPanel(list) {
+		list.forEach(elem => {
+			let workerId;
+			try {
+				workerId = url
+					.parse(elem.workers)
+					.hostname.split(/\./, 2)[0]
+					.substring(0, 7);
+			} catch (e) {
+				console.error(e);
+				workerId = elem.workers.toString();
+			}
+
+			elem.status = () => {
+				// Skip progress updates in non-interactive mode.
+			};
+			elem.info = data => {
+				this.info(`[${workerId}] ${data.toString()}`);
+			};
+			elem.log = data => {
+				console.log(`[${workerId}] ${data.toString().trimEnd()}`);
+			};
+		});
+	}
+
+	teardown() {
+		console.log('Finished.');
+	}
+}
 
 class State {
 	constructor() {
@@ -192,7 +234,9 @@ class State {
 }
 
 (async () => {
-	const state = new State();
+	const state = yargs['non-interactive']
+		? new NonInteractiveState()
+		: new State();
 
 	try {
 		await ensureDir(yargs.workdir);
@@ -216,8 +260,8 @@ class State {
 
 		for (const runConfig of runConfigs) {
 			if (runConfig.workers instanceof Array) {
-				runConfig.workers.forEach(workers => {
-					runQueue.push({ ...runConfig, workers });
+				runConfig.workers.forEach(worker => {
+					runQueue.push({ ...runConfig, workers: worker });
 				});
 			} else if (runConfig.workers instanceof Object) {
 				await balena.auth.loginWithToken(runConfig.workers.apiKey);
