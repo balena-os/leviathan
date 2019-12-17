@@ -103,81 +103,72 @@ class Suite {
 	}
 
 	async run() {
-		await new Bluebird(async (resolve, reject) => {
-			delete require.cache[require.resolve('tap')];
-			const tap = require('tap');
+		delete require.cache[require.resolve('tap')];
+		const tap = require('tap');
 
-			// Recursive DFS
-			const treeExpander = async ([
-				{ interactive, os, skip, deviceType, title, run, tests },
-				testNode,
-			]) => {
-				// Check our contracts
-				if (
-					skip ||
-					(interactive && !this.options.interactiveTests) ||
-					(deviceType != null && !ajv.compile(deviceType)(this.deviceType)) ||
-					(os != null &&
-						this.context.get().os != null &&
-						!ajv.compile(os)(this.context.get().os.contract))
-				) {
-					return;
-				}
+		// Recursive DFS
+		const treeExpander = async ([
+			{ interactive, os, skip, deviceType, title, run, tests },
+			testNode,
+		]) => {
+			// Check our contracts
+			if (
+				skip ||
+				(interactive && !this.options.interactiveTests) ||
+				(deviceType != null && !ajv.compile(deviceType)(this.deviceType)) ||
+				(os != null &&
+					this.context.get().os != null &&
+					!ajv.compile(os)(this.context.get().os.contract))
+			) {
+				return;
+			}
 
-				const test = new Test(title, this);
+			const test = new Test(title, this);
 
-				await testNode
-					.test(
-						template(title)({
-							options: this.context.get(),
-						}),
-						{ buffered: false },
-						async t => {
-							if (run != null) {
-								await Reflect.apply(Bluebird.method(run), test, [t])
-									.catch(async error => {
-										t.threw(error);
+			await testNode.test(
+				template(title)({
+					options: this.context.get(),
+				}),
+				{ buffered: false },
+				async t => {
+					if (run != null) {
+						try {
+							await Reflect.apply(Bluebird.method(run), test, [t]);
+						} catch (error) {
+							t.threw(error);
 
-										if (this.options.replOnFailure) {
-											await utils.repl(
-												{
-													context: this.context.get(),
-												},
-												{
-													name: t.name,
-												},
-											);
-										}
-									})
-									.finally(async () => {
-										await test.finish();
-									});
+							if (this.options.replOnFailure) {
+								await utils.repl(
+									{
+										context: this.context.get(),
+									},
+									{
+										name: t.name,
+									},
+								);
 							}
+						} finally {
+							await test.finish();
+						}
+					}
 
-							if (tests == null) {
-								return;
-							}
+					if (tests == null) {
+						return;
+					}
+					for (const node of tests) {
+						await treeExpander([node, t]);
+					}
+				},
+			);
+		};
 
-							for (const node of tests) {
-								treeExpander([node, t]);
-							}
-						},
-					)
-					.then(resolve)
-					.catch(reject);
-			};
-
-			await Bluebird.try(async () => {
-				await treeExpander([this.rootTree, tap]);
-			})
-				.finally(async () => {
-					await this.removeDependencies();
-					await this.teardown.runAll();
-					tap.end();
-				})
-				.then(resolve)
-				.then(reject);
-		});
+		try {
+			await treeExpander([this.rootTree, tap]);
+		} finally {
+			await this.removeDependencies();
+			await this.teardown.runAll();
+			tap.end();
+		}
 	}
 
 	// DFS
@@ -256,7 +247,8 @@ class Suite {
 
 (async () => {
 	const suite = new Suite();
-	process.on('message', message => {
+
+	const messageHandler = message => {
 		const { action } = message;
 
 		if (action === 'reconnect') {
@@ -264,9 +256,12 @@ class Suite {
 				suite.state[action]();
 			}
 		}
-	});
+	};
+	process.on('message', messageHandler);
 
 	await suite.init();
 	suite.printRunQueueSummary();
 	await suite.run();
+
+	process.off('message', messageHandler);
 })();
