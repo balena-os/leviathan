@@ -87,7 +87,10 @@ const injectNetworkConfiguration = async (image, configuration) => {
 };
 
 module.exports = class BalenaOS {
-	constructor(options = {}) {
+	constructor(
+		options = {},
+		logger = { log: console.log, status: console.log, info: console.log },
+	) {
 		this.deviceType = options.deviceType;
 		this.network = options.network;
 		this.image = { path: join(config.get('leviathan.workdir'), 'image') };
@@ -97,6 +100,7 @@ module.exports = class BalenaOS {
 				return typeof value === 'boolean' ? value : true;
 			}),
 		};
+		this.logger = logger;
 	}
 
 	unpack(download) {
@@ -151,11 +155,8 @@ module.exports = class BalenaOS {
 		return types[download.type]();
 	}
 
-	async fetch(
-		download,
-		logger = { log: console.log, status: console.log, info: console.log },
-	) {
-		logger.log('Unpacking the operating system');
+	async fetch(download) {
+		this.logger.log('Unpacking the operating system');
 		assignIn(
 			this.contract,
 			await this.unpack({
@@ -169,10 +170,8 @@ module.exports = class BalenaOS {
 		assignIn(this.configJson, configJson);
 	}
 
-	async configure(
-		logger = { log: console.log, status: console.log, info: console.log },
-	) {
-		logger.log(`Configuring balenaOS image: ${this.image.path}`);
+	async configure() {
+		this.logger.log(`Configuring balenaOS image: ${this.image.path}`);
 		if (this.configJson) {
 			await injectBalenaConfiguration(this.image.path, this.configJson);
 		}

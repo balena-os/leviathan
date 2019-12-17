@@ -268,7 +268,7 @@ async function setup() {
 	app.post('/stop', async (_req, res) => {
 		try {
 			if (suite != null) {
-				suite.on('close', () => {
+				suite.on('exit', () => {
 					res.send('OK');
 				});
 				suite.kill('SIGINT');

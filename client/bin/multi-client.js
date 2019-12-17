@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-
 process.env['NODE_CONFIG_DIR'] = `${__dirname}/../config`;
 const config = require('config');
 
@@ -111,7 +110,7 @@ class State {
 
 			const info = blessed.log({
 				parent: layout,
-				width: '99%',
+				width: '100%',
 				height: '20%',
 				border: 'line',
 				alwaysScroll: true,
@@ -126,7 +125,7 @@ class State {
 
 			const status = blessed.progressbar({
 				parent: layout,
-				width: '99%',
+				width: '100%',
 				height: '6%',
 				border: 'line',
 				style: {
@@ -142,7 +141,7 @@ class State {
 			const log = blessed.log({
 				align: 'left',
 				parent: layout,
-				width: '99%',
+				width: '100%',
 				height: 'shrink',
 				shrink: 'grow',
 				border: 'line',
@@ -281,7 +280,7 @@ class State {
 								).toString();
 
 								if (procInfo.match(/State:\s+[RSDT]/)) {
-									child._child.on('close', resolve);
+									child._child.on('exit', resolve);
 									child._child.on('error', reject);
 									child._child.kill(sig);
 								} else {
