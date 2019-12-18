@@ -14,6 +14,7 @@ const schema = require('../lib/schemas/multi-client-config.js');
 const { every, forEach } = require('lodash');
 const { tmpdir } = require('os');
 const url = require('url');
+const path = require('path');
 
 const yargs = require('yargs')
 	.usage('Usage: $0 [options]')
@@ -349,7 +350,7 @@ class State {
 		while (runQueue.length > 0) {
 			const run = runQueue.pop();
 			const child = fork(
-				'./single-client',
+				path.join(__dirname, 'single-client'),
 				[
 					'-d',
 					run.deviceType,
