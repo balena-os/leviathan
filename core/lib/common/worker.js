@@ -56,7 +56,7 @@ module.exports = class Worker {
 
 			let lastStatus;
 			req.on('data', data => {
-				const computedLine = RegExp('(.*): (.*)').exec(data.toString());
+				const computedLine = RegExp('(.+?): (.*)').exec(data.toString());
 
 				if (computedLine) {
 					if (computedLine[1] === 'error') {
