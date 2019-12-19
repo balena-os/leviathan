@@ -104,6 +104,7 @@ module.exports = {
 		);
 	},
 	tests: [
+		'./tests/fingerprint',
 		'./tests/led',
 		'./tests/config-json',
 		'./tests/boot-splash',
