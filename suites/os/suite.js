@@ -12,7 +12,7 @@ const { join } = require('path');
 const { homedir } = require('os');
 
 module.exports = {
-	title: 'BalenaOS release suite',
+	title: 'Unmanaged BalenaOS release suite',
 	run: async function() {
 		const Worker = this.require('common/worker');
 		const BalenaOS = this.require('components/os/balenaos');
