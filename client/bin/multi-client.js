@@ -234,6 +234,8 @@ class State {
 	}
 }
 
+let signalHandlersSet = false;
+
 (async () => {
 	const state = yargs['non-interactive']
 		? new NonInteractiveState()
@@ -318,7 +320,7 @@ class State {
 				const promises = [];
 				forEach(children, child => {
 					promises.push(
-						new Promise(async (resolve, reject) => {
+						new Promise(async resolve => {
 							try {
 								const procInfo = (
 									await fs.readFile('/proc/' + child._child.pid + '/status')
@@ -326,7 +328,7 @@ class State {
 
 								if (procInfo.match(/State:\s+[RSDT]/)) {
 									child._child.on('exit', resolve);
-									child._child.on('error', reject);
+									child._child.on('error', resolve);
 									child._child.kill(sig);
 								} else {
 									resolve();
@@ -344,6 +346,7 @@ class State {
 				process.exit(1);
 			});
 		});
+		signalHandlersSet = true;
 
 		state.attachPanel(runQueue);
 
@@ -409,10 +412,13 @@ class State {
 			});
 		}
 	} catch (e) {
-		state.info(
-			`ERROR ENCOUNTERED: ${e.message}. \n Killing process in 10 seconds...`,
-		);
-		await require('bluebird').delay(10000);
-		process.kill(process.pid, 'SIGINT');
+		state.info(`ERROR ENCOUNTERED: ${e.message}.`);
+		if (signalHandlersSet) {
+			console.error('Killing process in 10 seconds...');
+			await require('bluebird').delay(10000);
+			process.kill(process.pid, 'SIGINT');
+		} else {
+			process.exit(1);
+		}
 	}
 })();
