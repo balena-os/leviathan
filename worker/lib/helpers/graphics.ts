@@ -75,9 +75,7 @@ export default class ScreenCapture {
 			// A little retry mechanism
 			const waitForSocket = (tries = 0) => {
 				if (tries > 20) {
-					this.exit.reason = `Timeout: Could not connect to VNC server ${
-						this.source.options.host
-					}:${this.source.options.port}`;
+					this.exit.reason = `Timeout: Could not connect to VNC server ${this.source.options.host}:${this.source.options.port}`;
 					return;
 				}
 
@@ -116,23 +114,29 @@ export default class ScreenCapture {
 				const exitHandler = () => {
 					clean();
 
-					resolve(
-						pack(this.destination, {
-							map: function(header) {
-								header.name = basename(header.name);
-								return header;
-							},
-						}).pipe(createGzip()),
-					);
+					fs.readdir(this.destination)
+						.then(files => files.sort().slice(files.length - 3, files.length))
+						.then(files => {
+							resolve(
+								pack(this.destination, {
+									entries: files,
+									map: function(header) {
+										header.name = basename(header.name);
+										return header;
+									},
+								}).pipe(createGzip()),
+							);
+						})
+						.catch(reject);
 				};
 
 				// For an unknown reason the gst process sometimes refuses to die, so let's check
 				// if it has not periodaclly and retry
 				const interval = setInterval(async () => {
 					if (this.proc != null) {
-						const procInfo = (await fs.readFile(
-							'/proc/' + this.proc.pid + '/status',
-						)).toString();
+						const procInfo = (
+							await fs.readFile('/proc/' + this.proc.pid + '/status')
+						).toString();
 
 						if (procInfo.match(/State:\s+[RSDT]/)) {
 							this.proc.kill('SIGINT');
@@ -158,14 +162,10 @@ export default class ScreenCapture {
 	private parseSource(): string {
 		switch (this.source.type) {
 			case 'rfbsrc':
-				return `${this.source.type} host=${this.source.options.host} port=${
-					this.source.options.port
-				} view-only=true`;
+				return `${this.source.type} host=${this.source.options.host} port=${this.source.options.port} view-only=true`;
 			case 'v4l2src':
 				// With our catpture HW there is an error when negotiating the resolution, so we crop the extra manually
-				return `${
-					this.source.type
-				} ! decodebin ! videocrop left=90 right=90 bottom=70 top=70`;
+				return `${this.source.type} ! decodebin ! videocrop left=90 right=90 bottom=70 top=70`;
 			default:
 				return this.source.options.type;
 		}
