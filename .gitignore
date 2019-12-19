@@ -3,3 +3,7 @@ build
 coverage
 .nyc*
 Dockerfile
+
+// Leviathan specific ignores
+client/bin/*.log
+client/bin/*.conf
