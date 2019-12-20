@@ -11,7 +11,7 @@ const { fork } = require('child_process');
 const { ensureDir } = require('fs-extra');
 const { fs } = require('mz');
 const schema = require('../lib/schemas/multi-client-config.js');
-const { every, forEach } = require('lodash');
+const { once, every, forEach } = require('lodash');
 const { tmpdir } = require('os');
 const url = require('url');
 const path = require('path');
@@ -238,7 +238,7 @@ class State {
 	const state = yargs['non-interactive']
 		? new NonInteractiveState()
 		: new State();
-	const runQueue = [];
+	let runQueue = [];
 
 	const children = {};
 
@@ -267,6 +267,36 @@ class State {
 		}
 	});
 
+	const signalHandler = once(async sig => {
+		state.info('Cleaning up');
+		// Prevent any New runs from happening
+		runQueue = [];
+		const promises = [];
+		forEach(children, child => {
+			promises.push(
+				new Promise(async (resolve, reject) => {
+					// Ignore errors coming from this file read
+					const procInfo = await fs
+						.readFile('/proc/' + child._child.pid + '/status')
+						.catch(() => {});
+
+					if (
+						procInfo != null &&
+						procInfo.toString().match(/State:\s+[RSDT]/)
+					) {
+						child._child.on('exit', resolve);
+						child._child.on('error', reject);
+						child._child.kill(sig);
+					} else {
+						resolve();
+					}
+				}),
+			);
+		});
+		await Promise.all(promises);
+
+		state.teardown();
+	});
 	// Signal Handling
 	[
 		// Make sure we pass down our signal
@@ -274,32 +304,7 @@ class State {
 		'SIGTERM',
 	].forEach(signal => {
 		process.on(signal, async sig => {
-			state.info('Cleaning up');
-			const promises = [];
-			forEach(children, child => {
-				promises.push(
-					new Promise(async (resolve, reject) => {
-						// Ignore errors coming from this file read
-						const procInfo = await fs
-							.readFile('/proc/' + child._child.pid + '/status')
-							.catch(() => {});
-
-						if (
-							procInfo != null &&
-							procInfo.toString().match(/State:\s+[RSDT]/)
-						) {
-							child._child.on('exit', resolve);
-							child._child.on('error', reject);
-							child._child.kill(sig);
-						} else {
-							resolve();
-						}
-					}),
-				);
-			});
-			await Promise.all(promises);
-
-			state.teardown();
+			await signalHandler(sig);
 		});
 	});
 
