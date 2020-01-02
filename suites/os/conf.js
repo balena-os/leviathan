@@ -45,8 +45,5 @@ module.exports = options => {
 				wireless: options.networkWireless,
 			},
 		},
-		worker: {
-			type: options.workerType,
-		},
 	};
 };

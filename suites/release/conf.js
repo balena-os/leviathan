@@ -44,8 +44,5 @@ module.exports = options => {
 			apiKey: options.balenaApiKey,
 			apiUrl: options.balenaApiUrl,
 		},
-		worker: {
-			type: options.workerType,
-		},
 	};
 };
