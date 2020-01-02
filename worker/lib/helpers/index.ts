@@ -1,8 +1,23 @@
 import * as Bluebird from 'bluebird';
 import { spawn } from 'child_process';
+import * as config from 'config';
 import * as sdk from 'etcher-sdk';
-import * as mdns from 'multicast-dns';
+import { isObject, isEmpty, forEach } from 'lodash';
 import { networkInterfaces } from 'os';
+import * as mdns from 'multicast-dns';
+
+function cleanObject(object: Dictionary<any>) {
+	for (const key in object) {
+		cleanObject(object[key]);
+
+		if (
+			object[key] == null ||
+			(isObject(object[key]) && isEmpty(object[key]))
+		) {
+			delete object[key];
+		}
+	}
+}
 
 export async function getDrive(
 	device: string,
@@ -154,4 +169,34 @@ export function resolveLocalTarget(target: string): PromiseLike<string> {
 			resolve(target);
 		}
 	});
+}
+
+export async function getRuntimeConfiguration(
+	possibleWorkers: string[],
+): Promise<Leviathan.RuntimeConfiguration> {
+	const runtimeConfiguration: any = cleanObject(
+		config.get('worker.runtimeConfiguration'),
+	);
+
+	if (!(runtimeConfiguration.workerType in possibleWorkers)) {
+		throw new Error(
+			`${runtimeConfiguration.workerType} is not a supported worker`,
+		);
+	}
+
+	if (
+		runtimeConfiguration.network == null ||
+		(runtimeConfiguration.network.wired == null &&
+			runtimeConfiguration.network.Wireless == null)
+	) {
+		throw new Error('No network configuration provided');
+	}
+
+	forEach(runtimeConfiguration.network, value => {
+		if (value != null && !(value in networkInterfaces())) {
+			throw new Error(`Network interface ${value} is not available`);
+		}
+	});
+
+	return runtimeConfiguration as Leviathan.RuntimeConfiguration;
 }

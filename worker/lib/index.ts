@@ -3,27 +3,37 @@ import { spawn, ChildProcess } from 'child_process';
 import { multiWrite } from 'etcher-sdk';
 import * as express from 'express';
 import * as http from 'http';
-import { merge } from 'lodash';
+import { forEach, merge } from 'lodash';
 
-import { getIpFromIface, resolveLocalTarget } from './helpers';
+import {
+	getIpFromIface,
+	getRuntimeConfiguration,
+	resolveLocalTarget,
+} from './helpers';
 import { TestBotStandAlone, TestBotHat } from './workers/testbot';
 import Qemu from './workers/qemu';
 import { Readable } from 'stream';
 
-type workers = {
-	testbot_hat: typeof TestBotHat;
-	testbot_standalone: typeof TestBotStandAlone;
-	qemu: typeof Qemu;
-};
-const workersDict: { [key in keyof workers]: workers[key] } = {
+const workersDict: Dictionary<
+	typeof TestBotHat | typeof TestBotStandAlone | typeof Qemu
+> = {
 	testbot_hat: TestBotHat,
 	testbot_standalone: TestBotStandAlone,
 	qemu: Qemu,
 };
 
-async function setup(options: {
-	workdir: string;
-}): Promise<express.Application> {
+async function setup(): Promise<express.Application> {
+	const runtimeConfiguration = await getRuntimeConfiguration(
+		Object.keys(workersDict),
+	);
+
+	const worker: Leviathan.Worker = new workersDict[
+		runtimeConfiguration.workerType
+	]({
+		worker: { workdir: runtimeConfiguration.workdir },
+		network: runtimeConfiguration.network,
+	});
+
 	/**
 	 * Server context
 	 */
@@ -31,7 +41,6 @@ async function setup(options: {
 	const app = express();
 	const httpServer = http.createServer(app);
 
-	let worker: Leviathan.Worker;
 	let proxy: { proc?: ChildProcess; kill: () => void } = {
 		kill: function() {
 			if (proxy.proc != null) {
@@ -40,43 +49,7 @@ async function setup(options: {
 		},
 	};
 
-	/**
-	 * Select a worker route
-	 */
-	app.post(
-		'/select',
-		jsonParser,
-		async (
-			req: express.Request,
-			res: express.Response,
-			next: express.NextFunction,
-		) => {
-			try {
-				if (worker != null) {
-					await worker.teardown();
-				}
-
-				if (req.body.type != null && req.body.type in workersDict) {
-					worker = new workersDict[req.body.type as keyof workers](
-						merge(
-							{
-								worker: {
-									workdir: options.workdir,
-								},
-							},
-							req.body.options,
-						),
-					);
-					await worker.setup();
-					res.send('OK');
-				} else {
-					res.status(500).send('Invalid worker type');
-				}
-			} catch (err) {
-				next(err);
-			}
-		},
-	);
+	await worker.setup();
 
 	/**
 	 * Setup DeviceUnderTest routes
@@ -89,11 +62,6 @@ async function setup(options: {
 			next: express.NextFunction,
 		) => {
 			try {
-				if (worker == null) {
-					throw new Error(
-						'No worker has been selected, please call /select first',
-					);
-				}
 				await worker.powerOn();
 				res.send('OK');
 			} catch (err) {
@@ -109,11 +77,6 @@ async function setup(options: {
 			next: express.NextFunction,
 		) => {
 			try {
-				if (worker == null) {
-					throw new Error(
-						'No worker has been selected, please call /select first',
-					);
-				}
 				await worker.powerOff();
 				res.send('OK');
 			} catch (err) {
@@ -130,11 +93,6 @@ async function setup(options: {
 			next: express.NextFunction,
 		) => {
 			try {
-				if (worker == null) {
-					throw new Error(
-						'No worker has been selected, please call /select first',
-					);
-				}
 				await worker.network(req.body);
 				res.send('OK');
 			} catch (err) {
@@ -151,11 +109,6 @@ async function setup(options: {
 			next: express.NextFunction,
 		) => {
 			try {
-				if (worker == null) {
-					throw new Error(
-						'No worker has been selected, please call /select first',
-					);
-				}
 				if (req.body.target != null) {
 					res.send(await resolveLocalTarget(req.body.target));
 				} else {
@@ -174,11 +127,6 @@ async function setup(options: {
 			next: express.NextFunction,
 		) => {
 			try {
-				if (worker == null) {
-					throw new Error(
-						'No worker has been selected, please call /select first',
-					);
-				}
 				await worker.captureScreen('start');
 				res.send('OK');
 			} catch (err) {
@@ -194,12 +142,6 @@ async function setup(options: {
 			next: express.NextFunction,
 		) => {
 			try {
-				if (worker == null) {
-					throw new Error(
-						'No worker has been selected, please call /select first',
-					);
-				}
-
 				res.connection.setTimeout(0);
 				// Forcing the type as the return cannot be void
 				((await worker.captureScreen('stop')) as Readable).pipe(res);
@@ -219,12 +161,6 @@ async function setup(options: {
 		) => {
 			// For simplicity we will delegate to glider for now
 			try {
-				if (worker == null) {
-					throw new Error(
-						'No worker has been selected, please call /select first',
-					);
-				}
-
 				proxy.kill();
 				if (req.body.port != null) {
 					let ip;
@@ -266,11 +202,23 @@ async function setup(options: {
 			next: express.NextFunction,
 		) => {
 			try {
-				if (worker != null) {
-					await worker.teardown();
-				}
+				await worker.teardown();
 				proxy.kill();
 				res.send('OK');
+			} catch (e) {
+				next(e);
+			}
+		},
+	);
+	app.get(
+		'/capabilities',
+		async (
+			_req: express.Request,
+			res: express.Response,
+			next: express.NextFunction,
+		) => {
+			try {
+				res.send();
 			} catch (e) {
 				next(e);
 			}
@@ -287,12 +235,6 @@ async function setup(options: {
 	app.post(
 		'/dut/flash',
 		async (req: express.Request, res: express.Response) => {
-			if (worker == null) {
-				throw new Error(
-					'No worker has been selected, please call /select first',
-				);
-			}
-
 			function onProgress(progress: multiWrite.MultiDestinationProgress): void {
 				res.write(`progress: ${JSON.stringify(progress)}`);
 			}

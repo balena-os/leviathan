@@ -3,7 +3,16 @@ import { StatusCodeError } from 'request-promise/errors';
 import { Readable } from 'stream';
 
 declare global {
+	interface Dictionary<T> {
+		[key: string]: T;
+	}
 	namespace Leviathan {
+		interface RuntimeConfiguration {
+			workdir: string;
+			workerType: string;
+			screenCapture: boolean;
+			network: Leviathan.Options.network;
+		}
 		interface WorkerState {
 			network: { wired?: string; wireless?: string };
 		}
