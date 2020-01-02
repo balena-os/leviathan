@@ -11,7 +11,7 @@ const { fork } = require('child_process');
 const { ensureDir } = require('fs-extra');
 const { fs } = require('mz');
 const schema = require('../lib/schemas/multi-client-config.js');
-const { every, forEach } = require('lodash');
+const { once, every, forEach } = require('lodash');
 const { tmpdir } = require('os');
 const url = require('url');
 const path = require('path');
@@ -238,11 +238,79 @@ class State {
 	const state = yargs['non-interactive']
 		? new NonInteractiveState()
 		: new State();
+	let runQueue = [];
+
+	const children = {};
+
+	// Exit handling
+	process.on('exit', code => {
+		process.exitCode = code || 1;
+
+		if (Object.keys(children).length === 0) {
+			console.log('No workers found...NO TESTS RAN');
+		} else {
+			process.exitCode =
+				code ||
+				(every(children, child => {
+					return child.code === 0;
+				})
+					? 0
+					: 1);
+
+			if (yargs.print) {
+				children.forEach(child => {
+					console.log(`=====| ${child.outputPath}`);
+					console.log(fs.readFileSync(child.outputPath));
+					console.log(`=====`);
+				});
+			}
+		}
+	});
+
+	const signalHandler = once(async sig => {
+		state.info('Cleaning up');
+		// Prevent any New runs from happening
+		runQueue = [];
+		const promises = [];
+		forEach(children, child => {
+			promises.push(
+				new Promise(async (resolve, reject) => {
+					// Ignore errors coming from this file read
+					const procInfo = await fs
+						.readFile('/proc/' + child._child.pid + '/status')
+						.catch(() => {});
+
+					if (
+						procInfo != null &&
+						procInfo.toString().match(/State:\s+[RSDT]/)
+					) {
+						child._child.on('exit', resolve);
+						child._child.on('error', reject);
+						child._child.kill(sig);
+					} else {
+						resolve();
+					}
+				}),
+			);
+		});
+		await Promise.all(promises);
+
+		state.teardown();
+	});
+	// Signal Handling
+	[
+		// Make sure we pass down our signal
+		'SIGINT',
+		'SIGTERM',
+	].forEach(signal => {
+		process.on(signal, async sig => {
+			await signalHandler(sig);
+		});
+	});
 
 	try {
 		await ensureDir(yargs.workdir);
 
-		const runQueue = [];
 		// Blessed setup for pretty terminal output
 
 		let runConfigs = require(yargs.config);
@@ -285,66 +353,6 @@ class State {
 		}
 
 		state.info('Running Queue');
-
-		const children = {};
-
-		process.on('exit', code => {
-			process.exitCode = code || 1;
-
-			if (Object.keys(children).length === 0) {
-				console.log('No workers found...NO TESTS RAN');
-			} else {
-				process.exitCode =
-					code ||
-					every(children, child => {
-						return child.code === 0;
-					})
-						? 0
-						: 1;
-
-				if (yargs.print) {
-					children.forEach(child => {
-						console.log(`=====| ${child.outputPath}`);
-						console.log(fs.readFileSync(child.outputPath));
-						console.log(`=====`);
-					});
-				}
-			}
-		});
-		// Make sure we pass down our signal
-		['SIGINT', 'SIGTERM'].forEach(signal => {
-			process.on(signal, async sig => {
-				state.info('Cleaning up');
-				const promises = [];
-				forEach(children, child => {
-					promises.push(
-						new Promise(async (resolve, reject) => {
-							try {
-								const procInfo = (
-									await fs.readFile('/proc/' + child._child.pid + '/status')
-								).toString();
-
-								if (procInfo.match(/State:\s+[RSDT]/)) {
-									child._child.on('exit', resolve);
-									child._child.on('error', reject);
-									child._child.kill(sig);
-								} else {
-									resolve();
-								}
-							} catch (e) {
-								resolve();
-							}
-						}),
-					);
-				});
-				await Promise.all(promises);
-
-				state.teardown();
-
-				process.exit(1);
-			});
-		});
-
 		state.attachPanel(runQueue);
 
 		while (runQueue.length > 0) {
@@ -373,6 +381,14 @@ class State {
 				},
 			);
 
+			// child state
+			children[child.pid] = {
+				_child: child,
+				outputPath: `${yargs.workdir}/${url.parse(run.workers).hostname ||
+					child.pid}.out`,
+				exitCode: 1,
+			};
+
 			child.on('message', ({ type, data }) => {
 				switch (type) {
 					case 'log':
@@ -390,14 +406,6 @@ class State {
 				}
 			});
 
-			// child state
-			children[child.pid] = {
-				_child: child,
-				outputPath: `${yargs.workdir}/${url.parse(run.workers).hostname ||
-					child.pid}.out`,
-				exitCode: 1,
-			};
-
 			child.on('error', console.error);
 			child.stdout.on('data', run.log);
 			child.stderr.on('data', run.log);
@@ -413,6 +421,7 @@ class State {
 			`ERROR ENCOUNTERED: ${e.message}. \n Killing process in 10 seconds...`,
 		);
 		await require('bluebird').delay(10000);
+		process.exitCode = process.exitCode || 999;
 		process.kill(process.pid, 'SIGINT');
 	}
 })();
