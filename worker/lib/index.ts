@@ -210,20 +210,6 @@ async function setup(): Promise<express.Application> {
 			}
 		},
 	);
-	app.get(
-		'/capabilities',
-		async (
-			_req: express.Request,
-			res: express.Response,
-			next: express.NextFunction,
-		) => {
-			try {
-				res.send();
-			} catch (e) {
-				next(e);
-			}
-		},
-	);
 	app.use(function(
 		err: Error,
 		_req: express.Request,

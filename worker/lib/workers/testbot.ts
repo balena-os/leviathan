@@ -4,7 +4,7 @@ import * as sdk from 'etcher-sdk';
 import * as Board from 'firmata';
 import { getDrive, exec, manageHandlers } from '../helpers';
 import ScreenCapture from '../helpers/graphics';
-import NetworkManager, { Supported } from './nm';
+import NetworkManager, { Supported } from '../helpers/nm';
 import { fs } from 'mz';
 import { dirname, join } from 'path';
 import * as Stream from 'stream';
@@ -177,9 +177,11 @@ abstract class TestBot extends Board implements Leviathan.Worker {
 
 			await this.powerOff();
 		} finally {
-			this.teardownBoard();
-
 			if (signal != null) {
+				if (signal == 'SIGTERM' || signal == 'SIGINT') {
+					this.teardownBoard();
+				}
+
 				process.kill(process.pid, signal);
 			}
 		}
