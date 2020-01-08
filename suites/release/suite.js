@@ -206,14 +206,6 @@ module.exports = {
 			return this.context.get().worker.teardown();
 		});
 		this.log('Setting up worker');
-		await this.context.get().worker.select({
-			type: this.suite.options.worker.type,
-			options: {
-				network: {
-					wireless: 'wlan0',
-				},
-			},
-		});
 		await this.context
 			.get()
 			.worker.network(this.suite.options.balenaOS.network);

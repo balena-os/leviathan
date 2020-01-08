@@ -4,9 +4,7 @@ import * as config from 'config';
 (async function(): Promise<void> {
 	let port: number = config.get('worker.port');
 
-	const app = await setup({
-		workdir: config.get('worker.workdir'),
-	});
+	const app = await setup();
 
 	/**
 	 * Start Express Server

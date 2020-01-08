@@ -87,43 +87,35 @@ class NetworkManager {
 	}
 
 	private async addConnection(connection: any): Promise<string> {
-		const con = (
-			await this.bus.getProxyObject(
-				'org.freedesktop.NetworkManager',
-				'/org/freedesktop/NetworkManager/Settings',
-			)
-		).getInterface('org.freedesktop.NetworkManager.Settings');
+		const con = (await this.bus.getProxyObject(
+			'org.freedesktop.NetworkManager',
+			'/org/freedesktop/NetworkManager/Settings',
+		)).getInterface('org.freedesktop.NetworkManager.Settings');
 
 		return con.AddConnectionUnsaved(connection);
 	}
 
 	private async removeConnection(reference: Connection): Promise<void> {
-		const nodes = (
-			await this.bus.getProxyObject(
-				'org.freedesktop.NetworkManager',
-				'/org/freedesktop/NetworkManager/Settings',
-			)
-		).nodes;
+		const nodes = (await this.bus.getProxyObject(
+			'org.freedesktop.NetworkManager',
+			'/org/freedesktop/NetworkManager/Settings',
+		)).nodes;
 
 		if (nodes.includes(reference)) {
-			const con = (
-				await this.bus.getProxyObject(
-					'org.freedesktop.NetworkManager',
-					reference,
-				)
-			).getInterface('org.freedesktop.NetworkManager.Settings.Connection');
+			const con = (await this.bus.getProxyObject(
+				'org.freedesktop.NetworkManager',
+				reference,
+			)).getInterface('org.freedesktop.NetworkManager.Settings.Connection');
 
 			await con.Delete();
 		}
 	}
 
 	private async getDevice(iface: string): Promise<string> {
-		const con = (
-			await this.bus.getProxyObject(
-				'org.freedesktop.NetworkManager',
-				'/org/freedesktop/NetworkManager',
-			)
-		).getInterface('org.freedesktop.NetworkManager');
+		const con = (await this.bus.getProxyObject(
+			'org.freedesktop.NetworkManager',
+			'/org/freedesktop/NetworkManager',
+		)).getInterface('org.freedesktop.NetworkManager');
 
 		return con.GetDeviceByIpIface(iface);
 	}
@@ -132,12 +124,10 @@ class NetworkManager {
 		reference: Connection,
 		device: string,
 	): Promise<string> {
-		const con = (
-			await this.bus.getProxyObject(
-				'org.freedesktop.NetworkManager',
-				'/org/freedesktop/NetworkManager',
-			)
-		).getInterface('org.freedesktop.NetworkManager');
+		const con = (await this.bus.getProxyObject(
+			'org.freedesktop.NetworkManager',
+			'/org/freedesktop/NetworkManager',
+		)).getInterface('org.freedesktop.NetworkManager');
 
 		return con.ActivateConnection(reference, device, '/');
 	}
@@ -145,20 +135,16 @@ class NetworkManager {
 	private async deactivateConnection(
 		reference: ActiveConnection,
 	): Promise<void> {
-		const nodes = (
-			await this.bus.getProxyObject(
-				'org.freedesktop.NetworkManager',
-				'/org/freedesktop/NetworkManager/ActiveConnection',
-			)
-		).nodes;
+		const nodes = (await this.bus.getProxyObject(
+			'org.freedesktop.NetworkManager',
+			'/org/freedesktop/NetworkManager/ActiveConnection',
+		)).nodes;
 
 		if (nodes.includes(reference)) {
-			const con = (
-				await this.bus.getProxyObject(
-					'org.freedesktop.NetworkManager',
-					'/org/freedesktop/NetworkManager',
-				)
-			).getInterface('org.freedesktop.NetworkManager');
+			const con = (await this.bus.getProxyObject(
+				'org.freedesktop.NetworkManager',
+				'/org/freedesktop/NetworkManager',
+			)).getInterface('org.freedesktop.NetworkManager');
 
 			await con.DeactivateConnection(reference);
 		}
@@ -236,15 +222,12 @@ class NetworkManager {
 	public async teardown(signal?: NodeJS.Signals): Promise<void> {
 		process.removeListener('SIGINT', this.teardown);
 		process.removeListener('SIGTERM', this.teardown);
+
 		await this.teardowns.wired.run();
 		await this.teardowns.wireless.run();
-		this.bus.disconnect();
 
-		if (signal === 'SIGINT') {
-			process.exit(128 + os.constants.signals.SIGINT);
-		}
-		if (signal === 'SIGTERM') {
-			process.exit(128 + os.constants.signals.SIGTERM);
+		if (signal === 'SIGINT' || signal === 'SIGTERM') {
+			this.bus.disconnect();
 		}
 	}
 }

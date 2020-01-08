@@ -418,27 +418,29 @@ class Qemu extends EventEmitter implements Leviathan.Worker {
 			this.references.network = undefined;
 		}
 
-		if (this.references.pool != null) {
-			await this.references.pool.stopAsync();
-			this.references.pool = undefined;
-		}
-
-		if (this.hypervisor != null) {
-			await this.hypervisor.disconnectAsync();
-			this.hypervisor = undefined;
-		}
-
-		if (this.libvirtdProc != null) {
-			this.libvirtdProc.kill();
-			this.libvirtdProc = undefined;
-		}
-
-		if (this.virtlogdProc != null) {
-			this.virtlogdProc.kill();
-			this.virtlogdProc = undefined;
-		}
-
 		if (signal != null) {
+			if (signal == 'SIGTERM' || signal == 'SIGINT') {
+				if (this.references.pool != null) {
+					await this.references.pool.stopAsync();
+					this.references.pool = undefined;
+				}
+
+				if (this.hypervisor != null) {
+					await this.hypervisor.disconnectAsync();
+					this.hypervisor = undefined;
+				}
+
+				if (this.libvirtdProc != null) {
+					this.libvirtdProc.kill();
+					this.libvirtdProc = undefined;
+				}
+
+				if (this.virtlogdProc != null) {
+					this.virtlogdProc.kill();
+					this.virtlogdProc = undefined;
+				}
+			}
+
 			process.kill(process.pid, signal);
 		}
 

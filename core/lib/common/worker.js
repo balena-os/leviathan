@@ -88,10 +88,6 @@ module.exports = class Worker {
 		});
 	}
 
-	async select(worker) {
-		await rp.post({ uri: `${this.url}/select`, body: worker, json: true });
-	}
-
 	async on() {
 		await rp.post(`${this.url}/dut/on`);
 	}
