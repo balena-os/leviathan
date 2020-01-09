@@ -1,0 +1,12 @@
+{
+	"@(client|suites|core)/**/*.js": [
+		"prettier --config ./node_modules/resin-lint/config/.prettierrc --write",
+		"eslint",
+		"git add"
+	],
+    "worker/**/*.ts": [
+        "prettier --config ./node_modules/resin-lint/config/.prettierrc --write",
+        "resin-lint --typescript --no-prettier",
+        "git add"
+    ]
+}
