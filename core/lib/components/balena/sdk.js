@@ -259,10 +259,9 @@ module.exports = class BalenaSDK {
 		const applicationId = await this.balena.models.application
 			.get(application)
 			.get('id');
-		const deviceApiKey = (await this.balena.models.device.register(
-			applicationId,
-			uuid,
-		)).api_key;
+		const deviceApiKey = (
+			await this.balena.models.device.register(applicationId, uuid)
+		).api_key;
 		return deviceApiKey;
 	}
 

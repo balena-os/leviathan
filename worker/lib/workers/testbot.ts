@@ -2,13 +2,13 @@ import * as Bluebird from 'bluebird';
 import * as retry from 'bluebird-retry';
 import * as sdk from 'etcher-sdk';
 import * as Board from 'firmata';
-import { getDrive, exec, manageHandlers } from '../helpers';
-import ScreenCapture from '../helpers/graphics';
-import NetworkManager, { Supported } from '../helpers/nm';
+import { merge } from 'lodash';
 import { fs } from 'mz';
 import { dirname, join } from 'path';
 import * as Stream from 'stream';
-import { merge } from 'lodash';
+import { exec, getDrive, manageHandlers } from '../helpers';
+import ScreenCapture from '../helpers/graphics';
+import NetworkManager, { Supported } from '../helpers/nm';
 
 Bluebird.config({
 	cancellation: true,
@@ -178,7 +178,7 @@ abstract class TestBot extends Board implements Leviathan.Worker {
 			await this.powerOff();
 		} finally {
 			if (signal != null) {
-				if (signal == 'SIGTERM' || signal == 'SIGINT') {
+				if (signal === 'SIGTERM' || signal === 'SIGINT') {
 					this.teardownBoard();
 				}
 
@@ -187,7 +187,7 @@ abstract class TestBot extends Board implements Leviathan.Worker {
 		}
 	}
 
-	abstract async setup(): Promise<void>;
+	public abstract async setup(): Promise<void>;
 	protected abstract async powerOffDUT(): Promise<void>;
 	protected abstract async powerOnDUT(): Promise<void>;
 	protected abstract async switchSdToDUT(delay: number): Promise<void>;
@@ -232,7 +232,7 @@ class TestBotStandAlone extends TestBot implements Leviathan.Worker {
 			this.disk = options.worker.disk;
 		}
 
-		if (process.platform != 'linux' && this.disk == null) {
+		if (process.platform !== 'linux' && this.disk == null) {
 			throw new Error(
 				'We cannot automatically detect the testbot interface, please provide it manually',
 			);

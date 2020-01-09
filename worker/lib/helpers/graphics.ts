@@ -1,10 +1,10 @@
-import { spawn, ChildProcess } from 'child_process';
+import { ChildProcess, spawn } from 'child_process';
 import { ensureDir, remove } from 'fs-extra';
 import { fs } from 'mz';
 import { connect } from 'net';
 import { basename } from 'path';
-import { pack } from 'tar-fs';
 import { Readable } from 'stream';
+import { pack } from 'tar-fs';
 import { createGzip } from 'zlib';
 
 // This class is awrapper around a simple gstreamer pipe to capture a source into individual frames
@@ -75,9 +75,7 @@ export default class ScreenCapture {
 			// A little retry mechanism
 			const waitForSocket = (tries = 0) => {
 				if (tries > 20) {
-					this.exit.reason = `Timeout: Could not connect to VNC server ${
-						this.source.options.host
-					}:${this.source.options.port}`;
+					this.exit.reason = `Timeout: Could not connect to VNC server ${this.source.options.host}:${this.source.options.port}`;
 					return;
 				}
 
@@ -118,7 +116,7 @@ export default class ScreenCapture {
 
 					resolve(
 						pack(this.destination, {
-							map: function(header) {
+							map: header => {
 								header.name = basename(header.name);
 								return header;
 							},
@@ -130,9 +128,9 @@ export default class ScreenCapture {
 				// if it has not periodaclly and retry
 				const interval = setInterval(async () => {
 					if (this.proc != null) {
-						const procInfo = (await fs.readFile(
-							'/proc/' + this.proc.pid + '/status',
-						)).toString();
+						const procInfo = (
+							await fs.readFile('/proc/' + this.proc.pid + '/status')
+						).toString();
 
 						if (procInfo.match(/State:\s+[RSDT]/)) {
 							this.proc.kill('SIGINT');
@@ -158,14 +156,10 @@ export default class ScreenCapture {
 	private parseSource(): string {
 		switch (this.source.type) {
 			case 'rfbsrc':
-				return `${this.source.type} host=${this.source.options.host} port=${
-					this.source.options.port
-				} view-only=true`;
+				return `${this.source.type} host=${this.source.options.host} port=${this.source.options.port} view-only=true`;
 			case 'v4l2src':
 				// With our catpture HW there is an error when negotiating the resolution, so we crop the extra manually
-				return `${
-					this.source.type
-				} ! decodebin ! videocrop left=90 right=90 bottom=70 top=70`;
+				return `${this.source.type} ! decodebin ! videocrop left=90 right=90 bottom=70 top=70`;
 			default:
 				return this.source.options.type;
 		}

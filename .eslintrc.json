@@ -6,9 +6,9 @@
 		"node": true
 	},
 	"plugins": ["lodash", "jsdoc", "prettier"],
+	"extends": ["standard", "prettier"],
 	"parserOptions": {
-		"sourceType": "module",
-        "ecmaVersion": 8
+		"sourceType": "module"
 	},
 	"settings": {
 		"jsdoc": {

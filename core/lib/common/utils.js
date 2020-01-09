@@ -118,14 +118,16 @@ module.exports = {
 		printInstructionsSet('ASSERT', testCase.assert);
 		printInstructionsSet('CLEANUP', testCase.cleanup);
 
-		return (await inquirer.prompt([
-			{
-				type: 'confirm',
-				name: 'result',
-				message: 'Did the test pass?',
-				default: false,
-			},
-		])).result;
+		return (
+			await inquirer.prompt([
+				{
+					type: 'confirm',
+					name: 'result',
+					message: 'Did the test pass?',
+					default: false,
+				},
+			])
+		).result;
 	},
 	getDeviceUptime: async connection => {
 		const start = process.hrtime()[0];

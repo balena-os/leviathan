@@ -1,5 +1,4 @@
 import * as dbus from 'dbus-next';
-import * as os from 'os';
 
 type ActiveConnection = string;
 type Connection = ActiveConnection;
@@ -13,16 +12,20 @@ interface Options {
 	wired?: { nat: boolean };
 }
 
-class Teardown {
-	constructor(private fn: Function = () => {}) {}
+const emptyFunc = () => {
+	// Nothing.
+};
 
-	register(fn: Function) {
+class Teardown {
+	constructor(private fn: () => void = emptyFunc) {}
+
+	public register(fn: () => void) {
 		this.fn = fn;
 	}
 
-	async run() {
+	public async run() {
 		await this.fn();
-		this.fn = () => {};
+		this.fn = emptyFunc;
 	}
 }
 
@@ -40,9 +43,9 @@ class NetworkManager {
 		process.on('SIGTERM', this.teardown);
 	}
 
-	private static stringToArrayOfBytes(str: string): Array<number> {
-		let bytes = [];
-		for (var i = 0; i < str.length; ++i) {
+	private static stringToArrayOfBytes(str: string): number[] {
+		const bytes = [];
+		for (let i = 0; i < str.length; ++i) {
 			bytes.push(str.charCodeAt(i));
 		}
 		return bytes;
@@ -87,35 +90,43 @@ class NetworkManager {
 	}
 
 	private async addConnection(connection: any): Promise<string> {
-		const con = (await this.bus.getProxyObject(
-			'org.freedesktop.NetworkManager',
-			'/org/freedesktop/NetworkManager/Settings',
-		)).getInterface('org.freedesktop.NetworkManager.Settings');
+		const con = (
+			await this.bus.getProxyObject(
+				'org.freedesktop.NetworkManager',
+				'/org/freedesktop/NetworkManager/Settings',
+			)
+		).getInterface('org.freedesktop.NetworkManager.Settings');
 
 		return con.AddConnectionUnsaved(connection);
 	}
 
 	private async removeConnection(reference: Connection): Promise<void> {
-		const nodes = (await this.bus.getProxyObject(
-			'org.freedesktop.NetworkManager',
-			'/org/freedesktop/NetworkManager/Settings',
-		)).nodes;
+		const nodes = (
+			await this.bus.getProxyObject(
+				'org.freedesktop.NetworkManager',
+				'/org/freedesktop/NetworkManager/Settings',
+			)
+		).nodes;
 
 		if (nodes.includes(reference)) {
-			const con = (await this.bus.getProxyObject(
-				'org.freedesktop.NetworkManager',
-				reference,
-			)).getInterface('org.freedesktop.NetworkManager.Settings.Connection');
+			const con = (
+				await this.bus.getProxyObject(
+					'org.freedesktop.NetworkManager',
+					reference,
+				)
+			).getInterface('org.freedesktop.NetworkManager.Settings.Connection');
 
 			await con.Delete();
 		}
 	}
 
 	private async getDevice(iface: string): Promise<string> {
-		const con = (await this.bus.getProxyObject(
-			'org.freedesktop.NetworkManager',
-			'/org/freedesktop/NetworkManager',
-		)).getInterface('org.freedesktop.NetworkManager');
+		const con = (
+			await this.bus.getProxyObject(
+				'org.freedesktop.NetworkManager',
+				'/org/freedesktop/NetworkManager',
+			)
+		).getInterface('org.freedesktop.NetworkManager');
 
 		return con.GetDeviceByIpIface(iface);
 	}
@@ -124,10 +135,12 @@ class NetworkManager {
 		reference: Connection,
 		device: string,
 	): Promise<string> {
-		const con = (await this.bus.getProxyObject(
-			'org.freedesktop.NetworkManager',
-			'/org/freedesktop/NetworkManager',
-		)).getInterface('org.freedesktop.NetworkManager');
+		const con = (
+			await this.bus.getProxyObject(
+				'org.freedesktop.NetworkManager',
+				'/org/freedesktop/NetworkManager',
+			)
+		).getInterface('org.freedesktop.NetworkManager');
 
 		return con.ActivateConnection(reference, device, '/');
 	}
@@ -135,16 +148,20 @@ class NetworkManager {
 	private async deactivateConnection(
 		reference: ActiveConnection,
 	): Promise<void> {
-		const nodes = (await this.bus.getProxyObject(
-			'org.freedesktop.NetworkManager',
-			'/org/freedesktop/NetworkManager/ActiveConnection',
-		)).nodes;
+		const nodes = (
+			await this.bus.getProxyObject(
+				'org.freedesktop.NetworkManager',
+				'/org/freedesktop/NetworkManager/ActiveConnection',
+			)
+		).nodes;
 
 		if (nodes.includes(reference)) {
-			const con = (await this.bus.getProxyObject(
-				'org.freedesktop.NetworkManager',
-				'/org/freedesktop/NetworkManager',
-			)).getInterface('org.freedesktop.NetworkManager');
+			const con = (
+				await this.bus.getProxyObject(
+					'org.freedesktop.NetworkManager',
+					'/org/freedesktop/NetworkManager',
+				)
+			).getInterface('org.freedesktop.NetworkManager');
 
 			await con.DeactivateConnection(reference);
 		}

@@ -2,12 +2,15 @@ import * as Bluebird from 'bluebird';
 import { spawn } from 'child_process';
 import * as config from 'config';
 import * as sdk from 'etcher-sdk';
-import { isObject, isEmpty, forEach } from 'lodash';
-import { networkInterfaces } from 'os';
+import { forEach, isEmpty, isObject } from 'lodash';
 import * as mdns from 'multicast-dns';
+import { networkInterfaces } from 'os';
 
 function cleanObject(object: Dictionary<any>) {
 	for (const key in object) {
+		if (!object.hasOwnProperty(key)) {
+			continue;
+		}
 		cleanObject(object[key]);
 
 		if (
@@ -44,12 +47,12 @@ export async function getDrive(
 
 export function exec(
 	command: string,
-	args: Array<string>,
+	args: string[],
 	cwd: string,
 ): Bluebird<void> {
 	return new Bluebird((resolve, reject) => {
 		const proc = spawn(command, args, {
-			cwd: cwd,
+			cwd,
 			stdio: 'inherit',
 		});
 
@@ -91,7 +94,7 @@ export async function manageHandlers(
 	handler: (signal: NodeJS.Signals) => Promise<void>,
 	options: { register: boolean },
 ): Promise<void> {
-	for (const signal of ['SIGINT', 'SIGTERM'] as Array<NodeJS.Signals>) {
+	for (const signal of ['SIGINT', 'SIGTERM'] as NodeJS.Signals[]) {
 		if (options.register) {
 			process.on(signal, handler);
 		} else {
@@ -121,11 +124,10 @@ export function resolveLocalTarget(target: string): PromiseLike<string> {
 		if (/\.local$/.test(target)) {
 			const sockets: any[] = [];
 
-			const nics = networkInterfaces();
-			for (const i in nics) {
-				for (const j in nics[i]) {
-					if (nics[i][j].family === 'IPv4') {
-						sockets.push(mdns({ interface: nics[i][j].address }));
+			for (const interfaces of Object.values(networkInterfaces())) {
+				for (const ni of interfaces) {
+					if (ni.family === 'IPv4') {
+						sockets.push(mdns({ interface: ni.address }));
 					}
 				}
 			}

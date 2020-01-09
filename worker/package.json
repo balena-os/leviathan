@@ -5,7 +5,7 @@
 		"test": "test"
 	},
 	"scripts": {
-		"prettify": "prettier --config ./node_modules/resin-lint/config/.prettierrc --write \"{bin,lib,test}/**/*.ts\"",
+		"prettify": "prettier --config ../node_modules/resin-lint/config/.prettierrc --write \"{bin,lib,test}/**/*.ts\"",
 		"lint": "resin-lint --typescript lib/ bin/ && tsc --noEmit",
 		"clean": "rm -rf build",
 		"test": "npm run prettify && npm run lint && npm run test:cov",
@@ -60,12 +60,12 @@
 		"chai": "^4.2.0",
 		"chai-as-promised": "^7.1.1",
 		"chai-http": "^4.2.1",
-		"lint-staged": "^8.1.0",
 		"mocha": "^5.2.0",
 		"nyc": "^13.2.0",
-		"prettier": "^1.16.1",
+		"prettier": "^1.19.1",
 		"request": "^2.88.0",
 		"request-promise": "^4.2.4",
+		"resin-lint": "^3.1.1",
 		"sinon": "^7.2.3",
 		"tmp-promise": "^1.0.5",
 		"ts-mock-imports": "^1.2.2",

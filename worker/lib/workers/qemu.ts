@@ -1,16 +1,16 @@
-import { spawn, ChildProcess } from 'child_process';
 import * as Bluebird from 'bluebird';
 import * as retry from 'bluebird-retry';
+import { ChildProcess, spawn } from 'child_process';
 import * as sdk from 'etcher-sdk';
 import { EventEmitter } from 'events';
 import * as libvirt from 'libvirt';
 import { assignIn } from 'lodash';
-import { manageHandlers } from '../helpers';
-import ScreenCapture from '../helpers/graphics';
 import { fs } from 'mz';
-import { join, dirname } from 'path';
+import { dirname, join } from 'path';
 import * as Stream from 'stream';
 import * as xml from 'xml-js';
+import { manageHandlers } from '../helpers';
+import ScreenCapture from '../helpers/graphics';
 
 Bluebird.config({
 	cancellation: true,
@@ -419,7 +419,7 @@ class Qemu extends EventEmitter implements Leviathan.Worker {
 		}
 
 		if (signal != null) {
-			if (signal == 'SIGTERM' || signal == 'SIGINT') {
+			if (signal === 'SIGTERM' || signal === 'SIGINT') {
 				if (this.references.pool != null) {
 					await this.references.pool.stopAsync();
 					this.references.pool = undefined;
