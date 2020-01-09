@@ -22,11 +22,9 @@ const mapValues = require('lodash/mapValues');
 const Bluebird = require('bluebird');
 const config = require('config');
 const imagefs = require('resin-image-fs');
-const path = require('path');
 const fs = Bluebird.promisifyAll(require('fs'));
 const { join } = require('path');
 const pipeline = Bluebird.promisify(require('stream').pipeline);
-const unzip = require('unzip');
 const zlib = require('zlib');
 
 // TODO: This function should be implemented using Reconfix
@@ -105,20 +103,6 @@ module.exports = class BalenaOS {
 
 	unpack(download) {
 		const types = {
-			jenkins: async () => {
-				await pipeline(
-					fs.createReadStream(path.join(download.source, 'resin.img.zip')),
-					unzip.Parse(),
-				);
-
-				const version = await fs.readFileAsync(
-					path.join(download.source, 'VERSION_HOSTOS'),
-				);
-
-				return {
-					version,
-				};
-			},
 			local: async () => {
 				await pipeline(
 					fs.createReadStream(download.source),
