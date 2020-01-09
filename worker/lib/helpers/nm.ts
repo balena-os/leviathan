@@ -32,7 +32,11 @@ class Teardown {
 class NetworkManager {
 	constructor(
 		private options: Leviathan.Options['network'],
-		private bus = dbus.systemBus(),
+		private bus = dbus.sessionBus({
+			busAddress:
+				process.env.DBUS_SYSTEM_BUS_ADDRESS ||
+				'unix:path=/host/run/dbus/system_bus_socket',
+		}),
 		public teardowns: { wired: Teardown; wireless: Teardown } = {
 			wired: new Teardown(),
 			wireless: new Teardown(),

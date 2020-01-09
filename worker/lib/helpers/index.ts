@@ -11,7 +11,9 @@ function cleanObject(object: Dictionary<any>) {
 		if (!object.hasOwnProperty(key)) {
 			continue;
 		}
-		cleanObject(object[key]);
+		if (isObject(object[key])) {
+			cleanObject(object[key]);
+		}
 
 		if (
 			object[key] == null ||
@@ -20,6 +22,7 @@ function cleanObject(object: Dictionary<any>) {
 			delete object[key];
 		}
 	}
+	return object;
 }
 
 export async function getDrive(
@@ -180,7 +183,7 @@ export async function getRuntimeConfiguration(
 		config.get('worker.runtimeConfiguration'),
 	);
 
-	if (!(runtimeConfiguration.workerType in possibleWorkers)) {
+	if (!possibleWorkers.includes(runtimeConfiguration.workerType)) {
 		throw new Error(
 			`${runtimeConfiguration.workerType} is not a supported worker`,
 		);
@@ -196,7 +199,8 @@ export async function getRuntimeConfiguration(
 
 	forEach(runtimeConfiguration.network, value => {
 		if (value != null && !(value in networkInterfaces())) {
-			throw new Error(`Network interface ${value} is not available`);
+			// TODO: Think if this should throw instead.
+			console.error(`Network interface ${value} is not available`);
 		}
 	});
 

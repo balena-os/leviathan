@@ -14,6 +14,8 @@ Bluebird.config({
 	cancellation: true,
 });
 
+// TODO: Replace with SDK from the testbot project.
+
 /**
  * TestBot Hardware config
  */
@@ -64,6 +66,47 @@ abstract class TestBot extends Board implements Leviathan.Worker {
 		);
 	}
 
+	private async flashToDisk(
+		dst: sdk.sourceDestination.BlockDevice,
+		src: Stream.Readable,
+	) {
+		const sdkSource = new sdk.sourceDestination.SingleUseStreamSource(src);
+
+		// We have to wrap the call to pipeSourceToDestinations in another promise because it reports errors though
+		// a separate callback instead of rejecting the returned promise.
+		return new Promise((resolve, reject) => {
+			let finished = false;
+
+			const finishWithError = (msg: string, err: Error) => {
+				if (!finished) {
+					reject(err);
+				}
+				finished = true;
+				console.error(msg, err);
+			};
+
+			sdk.multiWrite
+				.pipeSourceToDestinations(
+					sdkSource,
+					[dst],
+					(destination, error) => {
+						finishWithError('Error reported while flashing', error);
+					},
+					(progress: sdk.multiWrite.MultiDestinationProgress) => {
+						this.emit('progress', progress);
+					},
+					true,
+				)
+				.then(() => resolve())
+				.catch(error =>
+					finishWithError(
+						'Error reported through rejection while flashing',
+						error,
+					),
+				);
+		});
+	}
+
 	/**
 	 * Flash SD card with operating system
 	 */
@@ -71,22 +114,12 @@ abstract class TestBot extends Board implements Leviathan.Worker {
 		this.activeFlash = Bluebird.try(async () => {
 			await this.switchSdToHost(5000);
 
-			const source = new sdk.sourceDestination.SingleUseStreamSource(stream);
-
-			// For linux, udev will provide us with a nice id for the testbot
+			// For linux, udev will provide us with a nice id for the testbot.
 			const drive = await getDrive(await this.getDevInterface());
 
-			await sdk.multiWrite.pipeSourceToDestinations(
-				source,
-				[drive],
-				(_destination, error) => {
-					throw error;
-				},
-				(progress: sdk.multiWrite.MultiDestinationProgress) => {
-					this.emit('progress', progress);
-				},
-				true,
-			);
+			console.log(`Start flashing the image`);
+			await this.flashToDisk(drive, stream);
+			console.log('Flashing completed');
 		});
 
 		await this.activeFlash;
@@ -158,6 +191,7 @@ abstract class TestBot extends Board implements Leviathan.Worker {
 	}
 
 	public async teardown(signal?: NodeJS.Signals): Promise<void> {
+		console.log('Performing teardown...');
 		try {
 			manageHandlers(this.teardown, {
 				register: false,
@@ -288,6 +322,9 @@ class TestBotStandAlone extends TestBot implements Leviathan.Worker {
 				resolver();
 			}
 		});
+
+		// Ensure DUT is off.
+		await this.powerOff();
 
 		manageHandlers(this.teardown, {
 			register: true,
@@ -463,6 +500,9 @@ class TestBotHat extends TestBot {
 				resolver();
 			}
 		});
+
+		// Ensure DUT is off.
+		await this.powerOff();
 
 		manageHandlers(this.teardown, {
 			register: true,
