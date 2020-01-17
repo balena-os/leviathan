@@ -2,17 +2,19 @@ import * as Bluebird from 'bluebird';
 import * as retry from 'bluebird-retry';
 import * as sdk from 'etcher-sdk';
 import * as Board from 'firmata';
-import { getDrive, exec, manageHandlers } from '../helpers';
-import ScreenCapture from '../helpers/graphics';
-import NetworkManager, { Supported } from '../helpers/nm';
+import { merge } from 'lodash';
 import { fs } from 'mz';
 import { dirname, join } from 'path';
 import * as Stream from 'stream';
-import { merge } from 'lodash';
+import { exec, getDrive, manageHandlers } from '../helpers';
+import ScreenCapture from '../helpers/graphics';
+import NetworkManager, { Supported } from '../helpers/nm';
 
 Bluebird.config({
 	cancellation: true,
 });
+
+// TODO: Replace with SDK from the testbot project.
 
 /**
  * TestBot Hardware config
@@ -64,6 +66,47 @@ abstract class TestBot extends Board implements Leviathan.Worker {
 		);
 	}
 
+	private async flashToDisk(
+		dst: sdk.sourceDestination.BlockDevice,
+		src: Stream.Readable,
+	) {
+		const sdkSource = new sdk.sourceDestination.SingleUseStreamSource(src);
+
+		// We have to wrap the call to pipeSourceToDestinations in another promise because it reports errors though
+		// a separate callback instead of rejecting the returned promise.
+		return new Promise((resolve, reject) => {
+			let finished = false;
+
+			const finishWithError = (msg: string, err: Error) => {
+				if (!finished) {
+					reject(err);
+				}
+				finished = true;
+				console.error(msg, err);
+			};
+
+			sdk.multiWrite
+				.pipeSourceToDestinations(
+					sdkSource,
+					[dst],
+					(destination, error) => {
+						finishWithError('Error reported while flashing', error);
+					},
+					(progress: sdk.multiWrite.MultiDestinationProgress) => {
+						this.emit('progress', progress);
+					},
+					true,
+				)
+				.then(() => resolve())
+				.catch(error =>
+					finishWithError(
+						'Error reported through rejection while flashing',
+						error,
+					),
+				);
+		});
+	}
+
 	/**
 	 * Flash SD card with operating system
 	 */
@@ -71,22 +114,12 @@ abstract class TestBot extends Board implements Leviathan.Worker {
 		this.activeFlash = Bluebird.try(async () => {
 			await this.switchSdToHost(5000);
 
-			const source = new sdk.sourceDestination.SingleUseStreamSource(stream);
-
-			// For linux, udev will provide us with a nice id for the testbot
+			// For linux, udev will provide us with a nice id for the testbot.
 			const drive = await getDrive(await this.getDevInterface());
 
-			await sdk.multiWrite.pipeSourceToDestinations(
-				source,
-				[drive],
-				(_destination, error) => {
-					throw error;
-				},
-				(progress: sdk.multiWrite.MultiDestinationProgress) => {
-					this.emit('progress', progress);
-				},
-				true,
-			);
+			console.log(`Start flashing the image`);
+			await this.flashToDisk(drive, stream);
+			console.log('Flashing completed');
 		});
 
 		await this.activeFlash;
@@ -158,6 +191,7 @@ abstract class TestBot extends Board implements Leviathan.Worker {
 	}
 
 	public async teardown(signal?: NodeJS.Signals): Promise<void> {
+		console.log('Performing teardown...');
 		try {
 			manageHandlers(this.teardown, {
 				register: false,
@@ -178,7 +212,7 @@ abstract class TestBot extends Board implements Leviathan.Worker {
 			await this.powerOff();
 		} finally {
 			if (signal != null) {
-				if (signal == 'SIGTERM' || signal == 'SIGINT') {
+				if (signal === 'SIGTERM' || signal === 'SIGINT') {
 					this.teardownBoard();
 				}
 
@@ -187,7 +221,7 @@ abstract class TestBot extends Board implements Leviathan.Worker {
 		}
 	}
 
-	abstract async setup(): Promise<void>;
+	public abstract async setup(): Promise<void>;
 	protected abstract async powerOffDUT(): Promise<void>;
 	protected abstract async powerOnDUT(): Promise<void>;
 	protected abstract async switchSdToDUT(delay: number): Promise<void>;
@@ -232,7 +266,7 @@ class TestBotStandAlone extends TestBot implements Leviathan.Worker {
 			this.disk = options.worker.disk;
 		}
 
-		if (process.platform != 'linux' && this.disk == null) {
+		if (process.platform !== 'linux' && this.disk == null) {
 			throw new Error(
 				'We cannot automatically detect the testbot interface, please provide it manually',
 			);
@@ -288,6 +322,9 @@ class TestBotStandAlone extends TestBot implements Leviathan.Worker {
 				resolver();
 			}
 		});
+
+		// Ensure DUT is off.
+		await this.powerOff();
 
 		manageHandlers(this.teardown, {
 			register: true,
@@ -463,6 +500,9 @@ class TestBotHat extends TestBot {
 				resolver();
 			}
 		});
+
+		// Ensure DUT is off.
+		await this.powerOff();
 
 		manageHandlers(this.teardown, {
 			register: true,

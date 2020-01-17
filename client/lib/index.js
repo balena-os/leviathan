@@ -28,6 +28,7 @@ async function isGzip(filePath) {
 
 async function getFilesFromDirectory(basePath, ignore = []) {
 	let files = [];
+
 	const entries = await fs.readdir(basePath);
 
 	for (const entry of entries) {

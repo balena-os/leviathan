@@ -37,9 +37,11 @@ module.exports = class CLI {
 
 		const Container = docker.getContainer(
 			// Get containerId from inside our container
-			(await exec(
-				'cat /proc/self/cgroup | head -1 | sed -n "s/.*\\([0-9a-z]\\{64\\}\\).*/\\1/p" | tr -d "\n"',
-			))[0],
+			(
+				await exec(
+					'cat /proc/self/cgroup | head -1 | sed -n "s/.*\\([0-9a-z]\\{64\\}\\).*/\\1/p" | tr -d "\n"',
+				)
+			)[0],
 		);
 		const Inspect = await Container.inspect();
 		const Mount = Inspect.Mounts.find(mount => {
@@ -61,7 +63,7 @@ module.exports = class CLI {
 		await ensureFile(join(Mount.Source, basename(image)));
 
 		this.logger.log('Preloading image');
-		await new Promise(async (resolve, reject) => {
+		await new Promise((resolve, reject) => {
 			const output = [];
 			const child = spawn(
 				'balena',

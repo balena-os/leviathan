@@ -1,7 +1,0 @@
-{
-	"*.js": [
-		"prettier --config ./node_modules/resin-lint/config/.prettierrc --write",
-		"eslint bin lib tests",
-		"git add"
-	]
-}

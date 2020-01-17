@@ -1,18 +1,17 @@
 import * as bodyParser from 'body-parser';
-import { spawn, ChildProcess } from 'child_process';
+import { ChildProcess, spawn } from 'child_process';
 import { multiWrite } from 'etcher-sdk';
 import * as express from 'express';
 import * as http from 'http';
-import { forEach, merge } from 'lodash';
+import { Readable } from 'stream';
 
 import {
 	getIpFromIface,
 	getRuntimeConfiguration,
 	resolveLocalTarget,
 } from './helpers';
-import { TestBotStandAlone, TestBotHat } from './workers/testbot';
 import Qemu from './workers/qemu';
-import { Readable } from 'stream';
+import { TestBotHat, TestBotStandAlone } from './workers/testbot';
 
 const workersDict: Dictionary<
 	typeof TestBotHat | typeof TestBotStandAlone | typeof Qemu
@@ -41,8 +40,8 @@ async function setup(): Promise<express.Application> {
 	const app = express();
 	const httpServer = http.createServer(app);
 
-	let proxy: { proc?: ChildProcess; kill: () => void } = {
-		kill: function() {
+	const proxy: { proc?: ChildProcess; kill: () => void } = {
+		kill: () => {
 			if (proxy.proc != null) {
 				proxy.proc.kill();
 			}

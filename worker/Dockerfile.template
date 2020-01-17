@@ -27,11 +27,10 @@ FROM balenalib/%%BALENA_MACHINE_NAME%%-node:10.14.0-buster-build AS node-build
 
 WORKDIR /tmp/node
 
-COPY package.json .
-
 RUN install_packages libdbus-1-dev libvirt-dev python
 
-RUN npm i
+COPY package*.json ./
+RUN npm ci
 
 COPY tsconfig.json .
 COPY typings typings
