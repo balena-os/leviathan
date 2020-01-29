@@ -2,8 +2,7 @@ node_modules
 build
 coverage
 .nyc*
-Dockerfile
 
-// Leviathan specific ignores
-client/bin/*.log
-client/bin/*.conf
+# Docker compose file is generated with make, as well as core/worker Dockerfile.
+core/Dockerfile
+worker/Dockerfile
