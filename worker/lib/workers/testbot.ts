@@ -147,11 +147,13 @@ abstract class TestBot extends Board implements Leviathan.Worker {
 	public async network(
 		configuration: Supported['configuration'],
 	): Promise<void> {
+		console.log('Start network setup');
 		if (this.networkCtl == null) {
 			throw new Error('Network not configured on this worker. Ignoring...');
 		}
 
 		if (configuration.wireless != null) {
+			console.log('Adding wireless connection...');
 			this.internalState.network = {
 				wireless: await this.networkCtl.addWirelessConnection(
 					configuration.wireless,
@@ -163,6 +165,7 @@ abstract class TestBot extends Board implements Leviathan.Worker {
 		}
 
 		if (configuration.wired != null) {
+			console.log('Adding wired connection...');
 			this.internalState.network = {
 				wired: await this.networkCtl.addWiredConnection(configuration.wired),
 			};
@@ -170,6 +173,7 @@ abstract class TestBot extends Board implements Leviathan.Worker {
 			await this.networkCtl.teardowns.wired.run();
 			this.internalState.network.wired = undefined;
 		}
+		console.log('Network setup completed');
 	}
 
 	/**

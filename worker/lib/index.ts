@@ -95,6 +95,7 @@ async function setup(): Promise<express.Application> {
 				await worker.network(req.body);
 				res.send('OK');
 			} catch (err) {
+				console.error(err);
 				next(err);
 			}
 		},

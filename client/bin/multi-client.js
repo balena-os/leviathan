@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-process.env['NODE_CONFIG_DIR'] = `${__dirname}/../config`;
+process.env.NODE_CONFIG_DIR = `${__dirname}/../config`;
 const config = require('config');
 
 const ajv = new (require('ajv'))({ allErrors: true });
@@ -11,7 +11,7 @@ const { fork } = require('child_process');
 const { ensureDir } = require('fs-extra');
 const { fs } = require('mz');
 const schema = require('../lib/schemas/multi-client-config.js');
-const { once, every, forEach } = require('lodash');
+const { once, every, map } = require('lodash');
 const { tmpdir } = require('os');
 const url = require('url');
 const path = require('path');
@@ -59,22 +59,29 @@ class NonInteractiveState {
 		list.forEach(elem => {
 			let workerId;
 			try {
-				workerId = url
-					.parse(elem.workers)
-					.hostname.split(/\./, 2)[0]
+				workerId = new url.URL(elem.workers).hostname
+					.split(/\./, 2)[0]
 					.substring(0, 7);
 			} catch (e) {
 				console.error(e);
 				workerId = elem.workers.toString();
 			}
 
-			elem.status = () => {
-				// Skip progress updates in non-interactive mode.
+			let lastStatusPercentage = 0;
+
+			elem.status = ({ message, percentage }) => {
+				const p = Math.round(percentage);
+				if (p - lastStatusPercentage > 10) {
+					console.log(`[${workerId}] ${message} - ${percentage}%`);
+					lastStatusPercentage = p;
+				}
 			};
 			elem.info = data => {
+				lastStatusPercentage = 0;
 				this.info(`[${workerId}] ${data.toString()}`);
 			};
 			elem.log = data => {
+				lastStatusPercentage = 0;
 				console.log(`[${workerId}] ${data.toString().trimEnd()}`);
 			};
 		});
@@ -271,29 +278,31 @@ class State {
 		state.info('Cleaning up');
 		// Prevent any New runs from happening
 		runQueue = [];
-		const promises = [];
-		forEach(children, child => {
-			promises.push(
-				new Promise(async (resolve, reject) => {
-					// Ignore errors coming from this file read
-					const procInfo = await fs
-						.readFile('/proc/' + child._child.pid + '/status')
-						.catch(() => {});
 
-					if (
-						procInfo != null &&
-						procInfo.toString().match(/State:\s+[RSDT]/)
-					) {
-						child._child.on('exit', resolve);
-						child._child.on('error', reject);
-						child._child.kill(sig);
-					} else {
-						resolve();
-					}
-				}),
-			);
-		});
-		await Promise.all(promises);
+		// Kill children.
+		await Promise.all(
+			map(children, child =>
+				fs
+					.readFile('/proc/' + child._child.pid + '/status')
+					.catch(() => null)
+					.then(
+						procInfo =>
+							new Promise((resolve, reject) => {
+								if (
+									procInfo != null &&
+									procInfo.toString().match(/State:\s+[RSDT]/)
+								) {
+									child._child.on('exit', resolve);
+									child._child.on('error', reject);
+									child._child.kill(sig);
+									state.info(`Killing PID ${child._child.pid}`);
+								} else {
+									resolve();
+								}
+							}),
+					),
+			),
+		);
 
 		state.teardown();
 	});
@@ -384,7 +393,7 @@ class State {
 			// child state
 			children[child.pid] = {
 				_child: child,
-				outputPath: `${yargs.workdir}/${url.parse(run.workers).hostname ||
+				outputPath: `${yargs.workdir}/${new url.URL(run.workers).hostname ||
 					child.pid}.out`,
 				exitCode: 1,
 			};
