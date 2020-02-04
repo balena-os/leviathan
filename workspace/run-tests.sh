@@ -9,4 +9,4 @@ fi
 ws_mount=$(pwd):/usr/src/app/workspace:ro
 suites_mount=$(pwd)/../suites:/usr/src/app/suites:ro
 
-docker run --rm -v $ws_mount -v $suites_mount --name $img_name-suite $img_name -n
+docker run --rm -v $ws_mount -v $suites_mount --name $img_name-suite --network=host $img_name -n

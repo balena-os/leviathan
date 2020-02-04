@@ -70,10 +70,9 @@ class NonInteractiveState {
 			let lastStatusPercentage = 0;
 
 			elem.status = ({ message, percentage }) => {
-				const p = Math.round(percentage);
-				if (p - lastStatusPercentage > 10) {
-					console.log(`[${workerId}] ${message} - ${percentage}%`);
-					lastStatusPercentage = p;
+				if (percentage - lastStatusPercentage > 10) {
+					console.log(`[${workerId}] ${message} - ${Math.round(percentage)}%`);
+					lastStatusPercentage = percentage;
 				}
 			};
 			elem.info = data => {
