@@ -31,17 +31,21 @@ const pipeline = Bluebird.promisify(require('stream').pipeline);
 const WebSocket = require('ws');
 const { parse } = require('url');
 const { createGzip, createGunzip } = require('zlib');
+const MachineState = require('./state');
 
 async function setup() {
 	let suite = null;
 	const upload = {};
 	const app = express();
 
+	const state = new MachineState();
+
 	expressWebSocket(app, null, {
 		perMessageDeflate: false,
 	});
 
 	app.post('/upload', async (req, res) => {
+		state.busy();
 		res.writeHead(202, {
 			'Content-Type': 'text/event-stream',
 			Connection: 'keep-alive',
@@ -127,7 +131,9 @@ async function setup() {
 	});
 
 	app.ws('/start', async (ws, req) => {
-		const reconnect = parse(req.originalUrl).query === 'reconnect';
+		state.busy();
+
+		const reconnect = parse(req.originalUrl).query === 'reconnect'; // eslint-disable-line
 		const running = suite != null;
 
 		// Keep the socket alive
@@ -228,9 +234,9 @@ async function setup() {
 				suite.send({ action: 'reconnect' });
 			}
 
-			// Make sure we get the handlers off to prevent a memory leak from happening
-			await new Promise((resolve, reject) => {
+			const suiteExitCode = await new Promise((resolve, reject) => {
 				ws.on('close', () => {
+					// Make sure we get the handlers off to prevent a memory leak from happening
 					if (suite != null) {
 						suite.stdout.off('data', stdHandler);
 						suite.stderr.off('data', stdHandler);
@@ -241,7 +247,14 @@ async function setup() {
 				suite.on('error', reject);
 				suite.on('exit', resolve);
 			});
+
+			if (suiteExitCode === 0) {
+				state.success();
+			} else {
+				state.failed();
+			}
 		} catch (e) {
+			state.failed();
 			if (ws.readyState === WebSocket.OPEN) {
 				ws.send(JSON.stringify({ type: 'error', data: { message: e.stack } }));
 			}
