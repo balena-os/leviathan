@@ -64,12 +64,12 @@ class NetworkManager {
 	private static wiredTemplate(method: string) {
 		return {
 			connection: {
-				id: NetworkManager.generateId(),
-				type: '802-3-ethernet',
-				autoconnect: false,
+				id: new dbus.Variant('s', NetworkManager.generateId()),
+				type: new dbus.Variant('s', '802-3-ethernet'),
+				autoconnect: new dbus.Variant('b', false),
 			},
-			ipv4: { method },
-			ipv6: { method: 'ignore' },
+			ipv4: { method: new dbus.Variant('s', method) },
+			ipv6: { method: new dbus.Variant('s', 'ignore') },
 		};
 	}
 
