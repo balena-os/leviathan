@@ -11,13 +11,10 @@ import {
 	resolveLocalTarget,
 } from './helpers';
 import Qemu from './workers/qemu';
-import { TestBotHat, TestBotStandAlone } from './workers/testbot';
+import { TestBotWorker } from './workers/testbot';
 
-const workersDict: Dictionary<
-	typeof TestBotHat | typeof TestBotStandAlone | typeof Qemu
-> = {
-	testbot_hat: TestBotHat,
-	testbot_standalone: TestBotStandAlone,
+const workersDict: Dictionary<typeof TestBotWorker | typeof Qemu> = {
+	testbot_hat: TestBotWorker,
 	qemu: Qemu,
 };
 
