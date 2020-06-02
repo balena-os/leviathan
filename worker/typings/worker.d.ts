@@ -16,15 +16,21 @@ declare global {
 		interface WorkerState {
 			network: { wired?: string; wireless?: string };
 		}
+
 		interface Worker extends EventEmitter {
 			readonly state: WorkerState;
 
+			/** Flash the attached drive (for example, with an OS image). */
 			flash(stream: Stream.Readable): Promise<void>;
+			/** Power on DUT. */
 			powerOn(): Promise<void>;
+			/** Power off DUT. */
 			powerOff(): Promise<void>;
 			setup(): Promise<void>;
 			teardown(signal?: NodeJS.Signals): Promise<void>;
+			/** Set up the specified network environment. */
 			network(configuration): Promise<void>;
+			/** Control HDMI capture process. */
 			captureScreen(action: 'start' | 'stop'): Promise<void | Readable>;
 		}
 
@@ -32,7 +38,6 @@ declare global {
 			worker: {
 				disk?: string;
 				workdir: string;
-				serialPort?: string;
 			};
 			network?:
 				| {

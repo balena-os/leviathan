@@ -3,6 +3,8 @@ build
 coverage
 .nyc*
 
+.balena/secrets/
+
 # Docker compose file is generated with make, as well as core/worker Dockerfile.
 core/Dockerfile
 worker/Dockerfile

@@ -1,0 +1,5 @@
+build-secrets:
+  services:
+    worker:
+      - source: .npmrc
+        dest: .npmrc
