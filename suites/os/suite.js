@@ -98,7 +98,8 @@ module.exports = {
 		'./tests/fingerprint',
 		'./tests/led',
 		'./tests/config-json',
-		'./tests/boot-splash',
+		// The boot splash test is currently disabled because of the excessive time spent on it.
+		// './tests/boot-splash',
 		'./tests/connectivity',
 	],
 };
