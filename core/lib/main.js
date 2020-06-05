@@ -248,7 +248,15 @@ async function setup() {
 				suite.on('exit', resolve);
 			});
 
-			if (suiteExitCode === 0) {
+			const success = suiteExitCode === 0;
+			ws.send(
+				JSON.stringify({
+					type: 'status',
+					data: { success },
+				}),
+			);
+
+			if (success) {
 				state.success();
 			} else {
 				state.failed();

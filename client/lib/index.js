@@ -270,7 +270,6 @@ module.exports = class Client extends PassThrough {
 			});
 
 			await new Promise((resolve, reject) => {
-				process.exitCode = 1;
 				const ws = new WebSocket(`ws://${this.uri.hostname}/start`);
 
 				// Keep the websocket alive
@@ -330,11 +329,15 @@ module.exports = class Client extends PassThrough {
 								this.write(data);
 								process.send({ type, data });
 								break;
+							case 'status':
+								if (!data.success) {
+									process.exitCode = 2;
+								}
+								break;
 							default:
 								process.send({ type, data });
 						}
 					} catch (e) {
-						process.exitCode = 1;
 						ws.close();
 						reject(e);
 					}
@@ -349,6 +352,7 @@ module.exports = class Client extends PassThrough {
 		return main(...arguments)
 			.catch(async error => {
 				process.exitCode = 1;
+				this.log(`Child ${process.pid} got an error:`);
 				this.log(error.stack);
 			})
 			.finally(async () => {
