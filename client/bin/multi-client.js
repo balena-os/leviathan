@@ -271,6 +271,13 @@ class State {
 				});
 			}
 		}
+
+		console.log(
+			`Exiting with ${process.exitCode}, input code = ${code}, children: ${map(
+				children,
+				c => c.code,
+			).join(',')}`,
+		);
 	});
 
 	const signalHandler = once(async sig => {
