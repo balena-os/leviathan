@@ -1,7 +1,8 @@
-process.env['NODE_CONFIG_DIR'] = `${__dirname}/../config`;
+process.env.NODE_CONFIG_DIR = `${__dirname}/../config`;
 const config = require('config');
 
 const Bluebird = require('bluebird');
+const retry = require('bluebird-retry');
 const { exists } = require('fs-extra');
 const md5 = require('md5-file/promise');
 const { fs, crypto } = require('mz');
@@ -89,7 +90,7 @@ module.exports = class Client extends PassThrough {
 				throw new Error(`${artifact.path} does not satisfy ${artifact.type}`);
 			}
 
-			if (artifact.name === 'image') {
+			if (artifact.name === 'image' && !(await isGzip(artifact.path))) {
 				const str = progStream({
 					length: stat.size,
 					time: 100,
@@ -101,18 +102,17 @@ module.exports = class Client extends PassThrough {
 						eta: progress.eta,
 					});
 				});
-				if (!(await isGzip(artifact.path))) {
-					const gzippedPath = join(this.workdir, artifact.name);
 
-					await pipeline(
-						fs.createReadStream(artifact.path),
-						str,
-						zlib.createGzip({ level: 6 }),
-						fs.createWriteStream(gzippedPath),
-					);
+				const gzippedPath = join(this.workdir, artifact.name);
 
-					artifact.path = gzippedPath;
-				}
+				await pipeline(
+					fs.createReadStream(artifact.path),
+					str,
+					zlib.createGzip({ level: 6 }),
+					fs.createWriteStream(gzippedPath),
+				);
+
+				artifact.path = gzippedPath;
 			}
 		}
 
@@ -158,104 +158,115 @@ module.exports = class Client extends PassThrough {
 			metadata.hash = await md5(artifact.path);
 			metadata.size = (await fs.stat(artifact.path)).size;
 		}
-		if (artifact.type === 'isDirectory' || artifact.type === 'isFile') {
-			metadata.stream = tar.pack(dirname(artifact.path), {
-				ignore: function(name) {
-					return ignore.some(value => {
-						const re = new RegExp(`.*${value}.*`);
-						return re.test(name);
-					});
-				},
-				map: function(header) {
-					header.name = header.name.replace(
-						basename(artifact.path),
-						artifact.name,
-					);
-					return header;
-				},
-				entries: [basename(artifact.path)],
-			});
-		}
 		if (artifact.type === 'isJSON') {
 			metadata.hash = crypto
 				.Hash('md5')
 				.update(`${artifact.data}\n`)
 				.digest('hex');
 			metadata.size = JSON.stringify(artifact.data).length;
-			metadata.stream = tarStream.pack();
-			metadata.stream.entry(
-				{ name: artifact.name },
-				JSON.stringify(artifact.data),
-			);
-			metadata.stream.finalize();
 		}
 
-		await new Promise(async (resolve, reject) => {
-			const str = progStream({
-				length: metadata.size,
-				time: 100,
-			});
-			const req = request.post({
-				uri: `${this.uri.href}upload`,
-				headers: {
-					'x-token': token,
-					'x-artifact': artifact.name,
-					'x-artifact-id': artifact.id,
-					'x-artifact-hash': metadata.hash,
-				},
-			});
+		let attempt = 0;
+		const uploadOperation = () =>
+			new Promise(async (resolve, reject) => {
+				attempt++;
+				this.log(`Sending to the testbot device, attempt ${attempt}...`);
 
-			req.on('end', resolve).on('error', reject);
-
-			// We need to record the end of our pipe, so we can unpipe in case cache will be used
-			const pipeEnd = zlib.createGzip({ level: 6 });
-			const line = pipeline(metadata.stream, str, pipeEnd)
-				.delay(1000)
-				.catch(reject);
-			pipeEnd.pipe(req);
-
-			req.on('data', async data => {
-				const computedLine = RegExp('^([a-z]*): (.*)').exec(data.toString());
-
-				if (computedLine != null && computedLine[1] === 'error') {
-					reject(new Error(computedLine[2]));
-					req.abort();
-				}
-				if (computedLine != null && computedLine[1] === 'upload') {
-					switch (computedLine[2]) {
-						case 'start':
-							this.status({
-								message: 'Uploading',
-								percentage: 0,
+				if (artifact.type === 'isDirectory' || artifact.type === 'isFile') {
+					metadata.stream = tar.pack(dirname(artifact.path), {
+						ignore: function(name) {
+							return ignore.some(value => {
+								const re = new RegExp(`.*${value}.*`);
+								return re.test(name);
 							});
+						},
+						map: function(header) {
+							header.name = header.name.replace(
+								basename(artifact.path),
+								artifact.name,
+							);
+							return header;
+						},
+						entries: [basename(artifact.path)],
+					});
+				} else if (artifact.type === 'isJSON') {
+					const serializedData = JSON.stringify(artifact.data);
+					metadata.size = serializedData.length;
+					metadata.stream = tarStream.pack();
+					metadata.stream.entry(
+						{ name: artifact.name },
+						serializedData,
+					);
+					metadata.stream.finalize();
+				}
 
-							str.on('progress', progress => {
+				const str = progStream({
+					length: metadata.size,
+					time: 100,
+				});
+				const req = request.post({
+					uri: `${this.uri.href}upload`,
+					headers: {
+						'x-token': token,
+						'x-artifact': artifact.name,
+						'x-artifact-id': artifact.id,
+						'x-artifact-hash': metadata.hash,
+					},
+				});
+
+				req.on('end', resolve).on('error', reject);
+
+				// We need to record the end of our pipe, so we can unpipe in case cache will be used
+				const pipeEnd = zlib.createGzip({ level: 6 });
+				const line = pipeline(metadata.stream, str, pipeEnd)
+					.delay(1000)
+					.catch(reject);
+				pipeEnd.pipe(req);
+
+				req.on('data', async data => {
+					const computedLine = RegExp('^([a-z]*): (.*)').exec(data.toString());
+
+					if (computedLine != null && computedLine[1] === 'error') {
+						reject(new Error(computedLine[2]));
+						req.abort();
+					}
+					if (computedLine != null && computedLine[1] === 'upload') {
+						switch (computedLine[2]) {
+							case 'start':
 								this.status({
 									message: 'Uploading',
-									percentage: progress.percentage,
-									eta: progress.eta,
+									percentage: 0,
 								});
-							});
-							await line;
-							break;
-						case 'cache':
-							pipeEnd.unpipe(req);
-							this.log('[Cache used]');
-							resolve();
-							break;
-						case 'done':
-							// For uploads that are too fast we will not even catch the end, so let's display it now
-							this.status({
-								message: 'Uploaded',
-								percentage: 100,
-							});
-							pipeEnd.unpipe(req);
-							resolve();
-							break;
+
+								str.on('progress', progress => {
+									this.status({
+										message: 'Uploading',
+										percentage: progress.percentage,
+										eta: progress.eta,
+									});
+								});
+								await line;
+								break;
+							case 'cache':
+								pipeEnd.unpipe(req);
+								this.log('[Cache used]');
+								resolve();
+								break;
+							case 'done':
+								// For uploads that are too fast we will not even catch the end, so let's display it now
+								this.status({
+									message: 'Uploaded',
+									percentage: 100,
+								});
+								pipeEnd.unpipe(req);
+								resolve();
+								break;
+						}
 					}
-				}
+				});
 			});
-		});
+
+		await retry(uploadOperation, { max_tries: 3 });
 	}
 
 	run() {
@@ -269,13 +280,93 @@ module.exports = class Client extends PassThrough {
 				process.exit(128 + constants.signals.SIGTERM);
 			});
 
+			let capturedError = null;
+			const wsMessageHandler = ws => async pkg => {
+				try {
+					const { type, data } = JSON.parse(pkg);
+
+					switch (type) {
+						case 'upload':
+							const { name, id, token } = data;
+
+							const artifact = {
+								name,
+								id,
+							};
+
+							switch (id) {
+								case 'suite':
+									artifact.path = makePath(suite);
+									artifact.type = 'isDirectory';
+									break;
+								case 'image':
+									artifact.path = makePath(image);
+									artifact.type = 'isFile';
+									break;
+								case 'config':
+									artifact.type = 'isJSON';
+									artifact.data = null;
+									if (await exists(makePath(conf))) {
+										artifact.data = require(makePath(conf));
+									} else {
+										artifact.data = JSON.parse(conf);
+									}
+									artifact.data.deviceType = deviceType;
+									break;
+								default:
+									throw new Error('Unexpected upload request. Panicking...');
+							}
+
+							await this.handleArtifact(artifact, token);
+							break;
+						case 'log':
+							this.write(data);
+							process.send({ type, data });
+							break;
+						case 'status':
+							if (!data.success) {
+								process.exitCode = 2;
+							}
+							break;
+						default:
+							process.send({ type, data });
+					}
+				} catch (e) {
+					capturedError = e;
+					ws.close();
+				}
+			};
+
+			const createWs = () =>
+				new Promise((resolve, reject) => {
+					const ws = new WebSocket(`ws://${this.uri.hostname}/start`);
+
+					const msgHandler = wsMessageHandler(ws);
+					ws.on('message', msgHandler);
+
+					ws.once('error', e => {
+						ws.off('error', msgHandler);
+						reject(e);
+					});
+
+					ws.once('ping', () => {
+						ws.pong('heartbeat');
+						ws.off('error', reject);
+						resolve(ws);
+					});
+				});
+
+			// Try establishing the WS multiple times.
+			const ws = await retry(createWs, { max_tries: 3 });
+
+			// And then await till it's closed.
 			await new Promise((resolve, reject) => {
-				const ws = new WebSocket(`ws://${this.uri.hostname}/start`);
+				if (capturedError) {
+					reject(capturedError);
+				}
 
 				// Keep the websocket alive
-				ws.on('ping', () => {
-					ws.pong('heartbeat');
-				});
+				ws.on('ping', () => ws.pong('heartbeat'));
 
 				process.stdin.on('data', data => {
 					ws.send(
@@ -287,64 +378,13 @@ module.exports = class Client extends PassThrough {
 				});
 
 				ws.on('error', reject);
-				ws.on('message', async pkg => {
-					try {
-						const { type, data } = JSON.parse(pkg);
-
-						switch (type) {
-							case 'upload':
-								const { name, id, token } = data;
-
-								const artifact = {
-									name,
-									id,
-								};
-
-								switch (id) {
-									case 'suite':
-										artifact.path = makePath(suite);
-										artifact.type = 'isDirectory';
-										break;
-									case 'image':
-										artifact.path = makePath(image);
-										artifact.type = 'isFile';
-										break;
-									case 'config':
-										artifact.type = 'isJSON';
-										artifact.data = null;
-										if (await exists(makePath(conf))) {
-											artifact.data = require(makePath(conf));
-										} else {
-											artifact.data = JSON.parse(conf);
-										}
-										artifact.data.deviceType = deviceType;
-										break;
-									default:
-										throw new Error('Unexpected upload request. Panicking...');
-								}
-
-								await this.handleArtifact(artifact, token);
-								break;
-							case 'log':
-								this.write(data);
-								process.send({ type, data });
-								break;
-							case 'status':
-								if (!data.success) {
-									process.exitCode = 2;
-								}
-								break;
-							default:
-								process.send({ type, data });
-						}
-					} catch (e) {
-						ws.close();
-						reject(e);
-					}
-				});
 				ws.on('close', () => {
 					process.stdin.destroy();
-					resolve();
+					if (capturedError) {
+						reject(capturedError);
+					} else {
+						resolve();
+					}
 				});
 			});
 		};
