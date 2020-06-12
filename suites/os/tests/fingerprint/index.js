@@ -15,10 +15,10 @@
 'use strict';
 
 module.exports = {
-	title: 'Check for OS corruption',
+	title: 'OS corruption tests',
 	tests: [
 		{
-			title: 'test resinos.fingerprint file',
+			title: 'resinos.fingerprint file test',
 			run: async function(test) {
 				let error = null;
 				try {
