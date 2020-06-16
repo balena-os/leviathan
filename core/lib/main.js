@@ -160,6 +160,7 @@ async function setup() {
 			}
 		};
 
+		let suiteStarted = false;
 		try {
 			ws.on('error', console.error);
 			ws.on('close', () => {
@@ -212,6 +213,7 @@ async function setup() {
 				suite = fork('./lib/common/suite', {
 					stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
 				});
+				suiteStarted = true;
 			}
 
 			ws.on('message', message => {
@@ -268,7 +270,9 @@ async function setup() {
 			}
 		} finally {
 			ws.close();
-			suite = null;
+			if (suiteStarted) {
+				suite = null;
+			}
 		}
 	});
 

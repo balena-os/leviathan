@@ -193,10 +193,7 @@ module.exports = class Client extends PassThrough {
 					const serializedData = JSON.stringify(artifact.data);
 					metadata.size = serializedData.length;
 					metadata.stream = tarStream.pack();
-					metadata.stream.entry(
-						{ name: artifact.name },
-						serializedData,
-					);
+					metadata.stream.entry({ name: artifact.name }, serializedData);
 					metadata.stream.finalize();
 				}
 
@@ -328,7 +325,12 @@ module.exports = class Client extends PassThrough {
 								process.exitCode = 2;
 							}
 							break;
+						case 'error':
+							process.exitCode = 3;
+							process.send({ type, data });
+							break;
 						default:
+							console.log(`Unexpected message received of type '${type}'`);
 							process.send({ type, data });
 					}
 				} catch (e) {
@@ -344,38 +346,40 @@ module.exports = class Client extends PassThrough {
 					const msgHandler = wsMessageHandler(ws);
 					ws.on('message', msgHandler);
 
-					ws.once('error', e => {
-						ws.off('error', msgHandler);
+					const initialErrorHandler = e => {
+						ws.off('ping', initialPingHandler);
 						reject(e);
-					});
-
-					ws.once('ping', () => {
+					};
+					const initialPingHandler = () => {
 						ws.pong('heartbeat');
 						ws.off('error', reject);
 						resolve(ws);
-					});
+					};
+
+					ws.once('error', initialErrorHandler);
+					ws.once('ping', initialPingHandler);
 				});
 
 			// Try establishing the WS multiple times.
 			const ws = await retry(createWs, { max_tries: 3 });
+
+			// Keep the websocket alive
+			ws.on('ping', () => ws.pong('heartbeat'));
+
+			process.stdin.on('data', data => {
+				ws.send(
+					JSON.stringify({
+						type: 'input',
+						data,
+					}),
+				);
+			});
 
 			// And then await till it's closed.
 			await new Promise((resolve, reject) => {
 				if (capturedError) {
 					reject(capturedError);
 				}
-
-				// Keep the websocket alive
-				ws.on('ping', () => ws.pong('heartbeat'));
-
-				process.stdin.on('data', data => {
-					ws.send(
-						JSON.stringify({
-							type: 'input',
-							data,
-						}),
-					);
-				});
 
 				ws.on('error', reject);
 				ws.on('close', () => {
