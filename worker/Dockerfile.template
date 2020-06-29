@@ -21,7 +21,7 @@ RUN cd usbsdmux && \
 
 FROM balenalib/%%BALENA_MACHINE_NAME%%-golang:1.14-buster-build AS go-build
 
-RUN go get -u github.com/nadoo/glider
+RUN GO111MODULE=on go get -u github.com/nadoo/glider@v0.9.3
 
 FROM balenalib/%%BALENA_MACHINE_NAME%%-node:10.14.0-buster-build AS node-build
 
