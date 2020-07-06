@@ -2,3 +2,5 @@
 *.img
 *.js
 *.conf
+
+reports/
