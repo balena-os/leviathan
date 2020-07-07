@@ -7,7 +7,9 @@ RUN npm ci
 COPY config ./config
 COPY lib ./lib
 COPY bin ./bin
+COPY entry.sh ./
 
 VOLUME /usr/src/app/workspace
+VOLUME /usr/src/app/reports
 
-ENTRYPOINT ["node", "bin/multi-client", "-c", "../workspace/config"]
+ENTRYPOINT ["/usr/src/app/entry.sh"]

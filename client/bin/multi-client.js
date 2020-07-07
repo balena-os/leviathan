@@ -10,6 +10,7 @@ const blessed = require('blessed');
 const { fork } = require('child_process');
 const { ensureDir } = require('fs-extra');
 const { fs } = require('mz');
+const nativeFs = require('fs');
 const schema = require('../lib/schemas/multi-client-config.js');
 const { once, every, map } = require('lodash');
 const { tmpdir } = require('os');
@@ -51,8 +52,18 @@ const yargs = require('yargs')
 	.showHelpOnFail(false, 'Something went wrong! run with --help').argv;
 
 class NonInteractiveState {
+	constructor() {
+		this.logFiles = {};
+	}
+
 	info(data) {
 		console.log(`INFO: ${data.toString()}`);
+	}
+
+	logForWorker(workerId, data) {
+		const str = data.toString().trimEnd();
+		console.log(`[${workerId}] ${str}`);
+		this.logFiles[workerId].write(`${str}\n`, 'utf8');
 	}
 
 	attachPanel(list) {
@@ -67,27 +78,37 @@ class NonInteractiveState {
 				workerId = elem.workers.toString();
 			}
 
+			this.logFiles[workerId] = nativeFs.createWriteStream(
+				`reports/worker-${workerId}.log`,
+			);
+
 			let lastStatusPercentage = 0;
 
 			elem.status = ({ message, percentage }) => {
 				if (percentage - lastStatusPercentage > 10) {
-					console.log(`[${workerId}] ${message} - ${Math.round(percentage)}%`);
+					this.logForWorker(
+						workerId,
+						`${message} - ${Math.round(percentage)}%`,
+					);
 					lastStatusPercentage = percentage;
 				}
 			};
 			elem.info = data => {
 				lastStatusPercentage = 0;
-				this.info(`[${workerId}] ${data.toString()}`);
+				this.logForWorker(workerId, `INFO: ${data}`);
 			};
 			elem.log = data => {
 				lastStatusPercentage = 0;
-				console.log(`[${workerId}] ${data.toString().trimEnd()}`);
+				this.logForWorker(workerId, data);
 			};
 		});
 	}
 
 	teardown() {
-		console.log('Finished.');
+		if (this.logFiles) {
+			Object.values(this.logFiles).forEach(log => log.end());
+			this.logFiles = null;
+		}
 	}
 }
 
@@ -236,7 +257,10 @@ class State {
 	}
 
 	teardown() {
-		this.blessed.screen.destroy();
+		if (this.blessed) {
+			this.blessed.screen.destroy();
+			this.blessed = null;
+		}
 	}
 }
 
