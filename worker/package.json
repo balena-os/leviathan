@@ -16,7 +16,7 @@
 		"test:fast": "npm run build:test && mocha"
 	},
 	"dependencies": {
-		"@balena/testbot": "^1.1.0",
+		"@balena/testbot": "^1.5.0",
 		"@types/bluebird": "^3.5.25",
 		"@types/config": "0.0.34",
 		"async-mutex": "^0.1.3",
@@ -26,7 +26,7 @@
 		"config": "^3.2.2",
 		"dbus-next": "^0.7.1",
 		"drivelist": "^8.0.6",
-		"etcher-sdk": "^1.3.1",
+		"etcher-sdk": "^2.0.16",
 		"express": "^4.16.4",
 		"firmata": "^2.0.0",
 		"fs-extra": "^8.1.0",

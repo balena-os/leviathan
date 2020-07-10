@@ -11,6 +11,7 @@ const { fork } = require('child_process');
 const { ensureDir } = require('fs-extra');
 const { fs } = require('mz');
 const nativeFs = require('fs');
+const request = require('request');
 const schema = require('../lib/schemas/multi-client-config.js');
 const { once, every, map } = require('lodash');
 const { tmpdir } = require('os');
@@ -63,24 +64,27 @@ class NonInteractiveState {
 	logForWorker(workerId, data) {
 		const str = data.toString().trimEnd();
 		console.log(`[${workerId}] ${str}`);
-		this.logFiles[workerId].write(`${str}\n`, 'utf8');
+		this.logFiles[workerId].workerLog.write(`${str}\n`, 'utf8');
 	}
 
 	attachPanel(list) {
 		list.forEach(elem => {
+			let workerUrl = elem.workers;
 			let workerId;
 			try {
-				workerId = new url.URL(elem.workers).hostname
+				workerId = new url.URL(workerUrl).hostname
 					.split(/\./, 2)[0]
 					.substring(0, 7);
 			} catch (e) {
 				console.error(e);
 				workerId = elem.workers.toString();
+				workerUrl = null;
 			}
 
-			this.logFiles[workerId] = nativeFs.createWriteStream(
-				`reports/worker-${workerId}.log`,
-			);
+			this.logFiles[workerId] = {
+				workerLog: nativeFs.createWriteStream(`reports/worker-${workerId}.log`),
+				workerUrl,
+			};
 
 			let lastStatusPercentage = 0;
 
@@ -104,10 +108,28 @@ class NonInteractiveState {
 		});
 	}
 
-	teardown() {
+	async teardown() {
 		if (this.logFiles) {
-			Object.values(this.logFiles).forEach(log => log.end());
+			const downloads = Object.entries(this.logFiles).map(
+				([workerId, workerData]) => {
+					workerData.workerLog.end();
+					if (!workerData.workerUrl) {
+						return Promise.resolve();
+					}
+					const dutLogUrl = `${workerData.workerUrl}reports/dut-serial.txt`;
+					console.log(`Downloading DUT serial log with ${dutLogUrl}`);
+					const download = request
+						.get(dutLogUrl)
+						.pipe(
+							nativeFs.createWriteStream(`reports/dut-serial-${workerId}.log`),
+						);
+					return new Promise(resolve =>
+						download.on('end', resolve).on('error', resolve),
+					);
+				},
+			);
 			this.logFiles = null;
+			await Promise.all(downloads);
 		}
 	}
 }
@@ -256,7 +278,7 @@ class State {
 		this.blessed.screen.render();
 	}
 
-	teardown() {
+	async teardown() {
 		if (this.blessed) {
 			this.blessed.screen.destroy();
 			this.blessed = null;
@@ -334,7 +356,7 @@ class State {
 			),
 		);
 
-		state.teardown();
+		await state.teardown();
 	});
 	// Signal Handling
 	[

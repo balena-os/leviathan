@@ -1,5 +1,6 @@
 import { TestBotHat } from '@balena/testbot';
 import { EventEmitter } from 'events';
+import { createWriteStream } from 'fs';
 import { join } from 'path';
 import * as Stream from 'stream';
 import { manageHandlers } from '../helpers';
@@ -8,6 +9,8 @@ import NetworkManager, { Supported } from '../helpers/nm';
 
 // TODO: Consider moving network and screen capture logic to testbot SDK.
 
+const dutSerialPath = '/reports/dut-serial.txt';
+
 /** Worker implementation based on testbot. */
 class TestBotWorker extends EventEmitter implements Leviathan.Worker {
 	private internalState: Leviathan.WorkerState = { network: {} };
@@ -15,6 +18,7 @@ class TestBotWorker extends EventEmitter implements Leviathan.Worker {
 	private readonly screenCapturer?: ScreenCapture;
 
 	private readonly hatBoard: TestBotHat;
+	private dutLogStream: Stream.Writable | null = null;
 
 	constructor(options: Leviathan.Options) {
 		super();
@@ -50,14 +54,20 @@ class TestBotWorker extends EventEmitter implements Leviathan.Worker {
 	}
 
 	public async powerOn() {
+		const dutLog = await this.hatBoard.openDutSerial();
+		if (dutLog) {
+			this.dutLogStream = createWriteStream(dutSerialPath);
+			dutLog.pipe(this.dutLogStream);
+		}
+
 		await this.hatBoard.setVout(5);
 		await this.hatBoard.powerOn();
-
 		console.log('Vout=', await this.hatBoard.readVout());
 	}
 
 	public async powerOff() {
 		await this.hatBoard.powerOff();
+		this.dutLogStream?.end();
 	}
 
 	public async network(configuration: Supported['configuration']) {

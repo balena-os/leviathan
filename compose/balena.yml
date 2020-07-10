@@ -2,6 +2,7 @@ version: '2'
 volumes:
   core-storage:
   worker-storage:
+  reports-storage:
 services:
   core:
     privileged: true
@@ -9,6 +10,7 @@ services:
     network_mode: 'host'
     volumes:
       - 'core-storage:/data'
+      - 'reports-storage:/reports'
     labels:
       share: 'core-storage'
       io.balena.features.balena-socket: '1'
@@ -20,6 +22,7 @@ services:
     ipc: 'host'
     volumes:
       - 'worker-storage:/data'
+      - 'reports-storage:/reports'
     labels:
       io.balena.features.dbus: '1'
       io.balena.features.balena-socket: '1'

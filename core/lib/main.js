@@ -31,6 +31,7 @@ const pipeline = Bluebird.promisify(require('stream').pipeline);
 const WebSocket = require('ws');
 const { parse } = require('url');
 const { createGzip, createGunzip } = require('zlib');
+const setReportsHandler = require('./reports');
 const MachineState = require('./state');
 
 async function setup() {
@@ -43,6 +44,8 @@ async function setup() {
 	expressWebSocket(app, null, {
 		perMessageDeflate: false,
 	});
+
+	setReportsHandler(app);
 
 	app.post('/upload', async (req, res) => {
 		state.busy();
