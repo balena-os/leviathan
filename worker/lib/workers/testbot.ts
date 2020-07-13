@@ -50,7 +50,9 @@ class TestBotWorker extends EventEmitter implements Leviathan.Worker {
 	}
 
 	public async flash(stream: Stream.Readable) {
+		console.log('Start flashing...');
 		await this.hatBoard.flash(stream);
+		console.log('Flashing completed.');
 	}
 
 	public async powerOn() {

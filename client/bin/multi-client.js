@@ -116,7 +116,7 @@ class NonInteractiveState {
 					if (!workerData.workerUrl) {
 						return Promise.resolve();
 					}
-					const dutLogUrl = `${workerData.workerUrl}reports/dut-serial.txt`;
+					const dutLogUrl = `${workerData.workerUrl}/reports/dut-serial.txt`;
 					console.log(`Downloading DUT serial log with ${dutLogUrl}`);
 					const download = request
 						.get(dutLogUrl)
