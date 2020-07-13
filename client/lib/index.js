@@ -381,8 +381,12 @@ module.exports = class Client extends PassThrough {
 					reject(capturedError);
 				}
 
-				ws.on('error', reject);
+				ws.on('error', e => {
+					this.log(`WS connection error: ${e.name} ${e.message}`);
+					reject(e);
+				});
 				ws.on('close', () => {
+					this.log('WS connection is closed');
 					process.stdin.destroy();
 					if (capturedError) {
 						reject(capturedError);

@@ -10,12 +10,10 @@ import {
 	getRuntimeConfiguration,
 	resolveLocalTarget,
 } from './helpers';
-import Qemu from './workers/qemu';
 import { TestBotWorker } from './workers/testbot';
 
-const workersDict: Dictionary<typeof TestBotWorker | typeof Qemu> = {
+const workersDict: Dictionary<typeof TestBotWorker> = {
 	testbot_hat: TestBotWorker,
-	qemu: Qemu,
 };
 
 async function setup(): Promise<express.Application> {
