@@ -105,28 +105,38 @@ class NonInteractiveState {
 				lastStatusPercentage = 0;
 				this.logForWorker(workerId, data);
 			};
+			elem.teardown = () => this.teardownForWorker(workerId);
 		});
+	}
+
+	async teardownForWorker(workerId) {
+		if (!this.logFiles) {
+			return;
+		}
+		const workerData = this.logFiles[workerId];
+		if (!workerData) {
+			return;
+		}
+		delete this.logFiles[workerId];
+
+		workerData.workerLog.end();
+		if (!workerData.workerUrl) {
+			return;
+		}
+		const dutLogUrl = `${workerData.workerUrl}/reports/dut-serial.txt`;
+		console.log(`Downloading DUT serial log with ${dutLogUrl}`);
+		const download = request
+			.get(dutLogUrl)
+			.pipe(nativeFs.createWriteStream(`reports/dut-serial-${workerId}.log`));
+		await new Promise(resolve =>
+			download.on('end', resolve).on('error', resolve),
+		);
 	}
 
 	async teardown() {
 		if (this.logFiles) {
-			const downloads = Object.entries(this.logFiles).map(
-				([workerId, workerData]) => {
-					workerData.workerLog.end();
-					if (!workerData.workerUrl) {
-						return Promise.resolve();
-					}
-					const dutLogUrl = `${workerData.workerUrl}/reports/dut-serial.txt`;
-					console.log(`Downloading DUT serial log with ${dutLogUrl}`);
-					const download = request
-						.get(dutLogUrl)
-						.pipe(
-							nativeFs.createWriteStream(`reports/dut-serial-${workerId}.log`),
-						);
-					return new Promise(resolve =>
-						download.on('end', resolve).on('error', resolve),
-					);
-				},
+			const downloads = Object.keys(this.logFiles).map(workerId =>
+				this.teardownForWorker(workerId),
 			);
 			this.logFiles = null;
 			await Promise.all(downloads);
@@ -475,6 +485,9 @@ class State {
 
 			child.on('exit', code => {
 				children[child.pid].code = code;
+				if (run.teardown) {
+					run.teardown();
+				}
 			});
 		}
 	} catch (e) {
