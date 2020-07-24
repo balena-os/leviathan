@@ -2,4 +2,5 @@ bin/*.gz
 bin/config.js
 bin/*.log
 
-node_modules
+node_modules/
+build/

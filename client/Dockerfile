@@ -5,8 +5,13 @@ COPY package* ./
 RUN npm ci
 
 COPY config ./config
+COPY *config* ./
 COPY lib ./lib
 COPY bin ./bin
+COPY test ./test
+
+RUN npm test && npm run build
+
 COPY entry.sh ./
 
 VOLUME /usr/src/app/workspace
