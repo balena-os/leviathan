@@ -3,7 +3,7 @@
 		"bluebird": "^3.5.3",
 		"bluebird-retry": "^0.11.0",
 		"fs-extra": "^8.1.0",
-		"jpeg-js": "^0.3.6",
+		"jpeg-js": "^0.4.1",
 		"lodash": "^4.17.11",
 		"mz": "^2.7.0",
 		"request": "^2.88.0",
