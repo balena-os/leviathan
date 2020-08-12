@@ -8,12 +8,15 @@
 		"multi-client": "bin/multi-client.js"
 	},
 	"scripts": {
-		"prettify": "prettier --config ../.prettierrc --write \"{bin,lib,tests}/**/*.js\"",
-		"lint": "eslint -c ../.eslintrc.* bin lib tests",
-		"single-start": "node bin/single-client.js",
-		"single-start-es5": "babel-node --presets @babel/env bin/single-client.js",
-		"multi-start": "node bin/multi-client.js",
-		"multi-start-es5": "babel-node --presets @babel/env bin/multi-client.js"
+		"prettify": "balena-lint --typescript --fix bin/ lib/ test/ *.js",
+		"lint:js": "eslint -c ../.eslintrc.* bin lib",
+		"lint": "balena-lint --typescript bin/ lib/ *.js && balena-lint --typescript --tests test/ && npm run lint:js",
+		"test": "jest",
+		"build": "tsc && cp -r ./config ./build/config",
+		"single-start": "npm run build && cd build && node bin/single-client.js",
+		"single-start-es5": "npm run build && cd build && babel-node --presets @babel/env bin/single-client.js",
+		"multi-start": "npm run build && cd build && node bin/multi-client.js",
+		"multi-start-es5": "npm run build && cd build && babel-node --presets @babel/env bin/multi-client.js"
 	},
 	"dependencies": {
 		"ajv": "^6.10.2",
@@ -39,6 +42,8 @@
 		"@babel/core": "^7.6.0",
 		"@babel/node": "^7.6.1",
 		"@babel/preset-env": "^7.6.0",
+		"@balena/lint": "^5.1.0",
+		"@types/jest": "^26.0.7",
 		"eslint": "^4.19.1",
 		"eslint-config-prettier": "^4.0.0",
 		"eslint-config-standard": "^11.0.0",
@@ -49,6 +54,9 @@
 		"eslint-plugin-prettier": "^3.0.1",
 		"eslint-plugin-promise": "^3.6.0",
 		"eslint-plugin-standard": "^3.0.1",
-		"prettier": "^1.16.4"
+		"jest": "^26.1.0",
+		"prettier": "^1.16.4",
+		"ts-jest": "^26.1.3",
+		"typescript": "^3.9.7"
 	}
 }

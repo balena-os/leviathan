@@ -1,12 +1,21 @@
 {
-	"@(client|suites|core)/**/*.js": [
+	"client/**/*.ts": [
+	    "cd client && balena-lint --typescript --fix"
+	],
+	"client/**/*.js": [
+	    "cd client && balena-lint --typescript --fix",
+	    "eslint -c .eslintrc.json"
+	],
+	"client/test/**/*.@(ts|js)": [
+	    "cd client && balena-lint --typescript --no-prettier --tests"
+	],
+	"worker/**/*.ts": [
+		"cd worker && balena-lint --typescript --fix"
+	],
+
+	"@(suites|core)/**/*.js": [
 		"prettier --config ./node_modules/resin-lint/config/.prettierrc --write",
 		"eslint",
 		"git add"
-	],
-    "worker/**/*.ts": [
-        "prettier --config ./node_modules/resin-lint/config/.prettierrc --write",
-        "resin-lint --typescript",
-        "git add"
-    ]
+	]
 }

@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import {BalenaCloudInteractor} from "../lib/balena";
+
 process.env.NODE_CONFIG_DIR = `${__dirname}/../config`;
 const config = require('config');
 
@@ -54,7 +56,7 @@ const yargs = require('yargs')
 
 class NonInteractiveState {
 	constructor() {
-		this.logFiles = {};
+		this.workersData = {};
 	}
 
 	info(data) {
@@ -64,7 +66,7 @@ class NonInteractiveState {
 	logForWorker(workerId, data) {
 		const str = data.toString().trimEnd();
 		console.log(`[${workerId}] ${str}`);
-		this.logFiles[workerId].workerLog.write(`${str}\n`, 'utf8');
+		this.workersData[workerId].workerLog.write(`${str}\n`, 'utf8');
 	}
 
 	attachPanel(list) {
@@ -81,9 +83,14 @@ class NonInteractiveState {
 				workerUrl = null;
 			}
 
-			this.logFiles[workerId] = {
-				workerLog: nativeFs.createWriteStream(`reports/worker-${workerId}.log`),
+			let prefix = workerId;
+			if (elem.workerPrefix) {
+				prefix = `${workerId}-${elem.workerPrefix}`;
+			}
+			this.workersData[workerId] = {
+				workerLog: nativeFs.createWriteStream(`reports/worker-${prefix}.log`),
 				workerUrl,
+				prefix,
 			};
 
 			let lastStatusPercentage = 0;
@@ -110,14 +117,14 @@ class NonInteractiveState {
 	}
 
 	async teardownForWorker(workerId) {
-		if (!this.logFiles) {
+		if (!this.workersData) {
 			return;
 		}
-		const workerData = this.logFiles[workerId];
+		const workerData = this.workersData[workerId];
 		if (!workerData) {
 			return;
 		}
-		delete this.logFiles[workerId];
+		delete this.workersData[workerId];
 
 		workerData.workerLog.end();
 		if (!workerData.workerUrl) {
@@ -127,18 +134,18 @@ class NonInteractiveState {
 		console.log(`Downloading DUT serial log with ${dutLogUrl}`);
 		const download = request
 			.get(dutLogUrl)
-			.pipe(nativeFs.createWriteStream(`reports/dut-serial-${workerId}.log`));
+			.pipe(nativeFs.createWriteStream(`reports/dut-serial-${workerData.prefix}.log`));
 		await new Promise(resolve =>
 			download.on('end', resolve).on('error', resolve),
 		);
 	}
 
 	async teardown() {
-		if (this.logFiles) {
-			const downloads = Object.keys(this.logFiles).map(workerId =>
+		if (this.workersData) {
+			const downloads = Object.keys(this.workersData).map(workerId =>
 				this.teardownForWorker(workerId),
 			);
-			this.logFiles = null;
+			this.workersData = null;
 			await Promise.all(downloads);
 		}
 	}
@@ -398,26 +405,25 @@ class State {
 
 		state.info('Computing Run Queue');
 
+		const balenaCloud = new BalenaCloudInteractor(balena);
 		for (const runConfig of runConfigs) {
 			if (runConfig.workers instanceof Array) {
 				runConfig.workers.forEach(worker => {
 					runQueue.push({ ...runConfig, workers: worker });
 				});
 			} else if (runConfig.workers instanceof Object) {
-				await balena.auth.loginWithToken(runConfig.workers.apiKey);
-				const tags = await balena.models.device.tags.getAllByApplication(
-					runConfig.workers.balenaApplication,
+				await balenaCloud.authenticate(runConfig.workers.apiKey);
+				const matchingDevices = await balenaCloud.selectDevicesWithDUT(
+						runConfig.workers.balenaApplication,
+						runConfig.deviceType
 				);
 
-				for (const tag of tags.filter(tag => {
-					return tag.tag_key === 'DUT' && tag.value === runConfig.deviceType;
-				})) {
-					if (!(await balena.models.device.hasDeviceUrl(tag.device.__id))) {
-						throw new Error('Worker not publicly available. Panicking...');
-					}
+				for (const device of matchingDevices) {
+					await balenaCloud.checkDeviceUrl(device);
 					runQueue.push({
 						...runConfig,
-						workers: await balena.models.device.getDeviceUrl(tag.device.__id),
+						workers: await balenaCloud.resolveDeviceUrl(device),
+						workerPrefix: device.fileNamePrefix(),
 					});
 				}
 			}
