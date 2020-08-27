@@ -17,7 +17,7 @@
 'use strict'
 
 const path = require('path')
-const utils = require('../lib/utils')
+const utils = require('../../lib/utils')
 
 module.exports = {
   title: 'Move device between applications',
