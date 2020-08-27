@@ -12,6 +12,12 @@ NAME PLACEHOLDER
 
 WORK IN PROGRESS
 
+To run the tests using a manual worker, first make sure you edit the ENV_FILE located in the root directory of the project and change the required variables as suited.
+
+Then start the testing with the following command:
+
+$ source ENV_FILE && make
+
 ## Support
 
 If you're having any problem, please [raise an issue][newissue] on GitHub and

@@ -1,0 +1,25 @@
+#! /bin/bash
+
+set -a
+
+BALENA_TESTS_APPLICATION_NAME= < name of the app that Leviathan will create - 'testapp' for example >
+
+BALENA_TESTS_API_URL=balena-cloud.com
+BALENA_TESTS_API_STAGING_URL=balena-staging.com
+
+BALENA_TESTS_DEVICE_TYPE= < device type: 'raspberrypi3' for example >
+BALENA_TESTS_BALENA_VERSION= < version to be tested  - '2.53.9+rev1.prod' for example >
+
+BALENA_TESTS_API_KEY= <production api key>
+BALENA_TESTS_API_KEY_STAGING= <staging api key>
+
+BALENA_TESTS_EMAIL=
+BALENA_TESTS_PASSWORD=
+BALENA_TESTS_ENABLE_INTERACTIVE_TESTS=yes
+BALENA_TESTS_WORKER=manual
+BALENA_TESTS_NETWORK=wifi
+BALENA_TESTS_WIFI_SSID= < wifi SSID >
+BALENA_TESTS_WIFI_KEY= < wifi PSK >
+BALENA_TESTS_TMPDIR=/tmp/test
+
+BALENA_TESTS_DEVICE= < SD / USB device node to be used for flashing - /dev/sdf for example >
