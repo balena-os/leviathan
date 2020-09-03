@@ -20,7 +20,7 @@ const path = require('path')
 const utils = require('../lib/utils')
 
 module.exports = {
-  title: 'Kernel module build',
+  title: 'Build and push an out-of-tree kernel module (device specific test)',
   run: async (test, context, options, components) => {
     const clonePath = path.join(options.tmpdir, 'kernel-module-build')
     const hash = await utils.pushKernelModuleRepoToBalenaDevice({
@@ -44,7 +44,6 @@ module.exports = {
     test.notMatch([ deviceLogs ], [ /rmmod: ERROR/ ], 'Device logs shouldn\'t output "rmmod: ERROR"')
     test.notMatch([ deviceLogs ], [ /could not load module/ ], 'Device logs shouldn\'t output "could not load module"')
     test.match([ deviceLogs ], [ /hello/ ], 'Device logs output "hello"')
-    test.match([ deviceLogs ], [ /done!/ ], 'Device logs output "done!')
 
     const dmesgDeviceLogs = await components.balena.sdk.executeCommandInHostOS(
       'dmesg -T',
