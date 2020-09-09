@@ -15,18 +15,18 @@ Instructions for Linux Ubuntu 20.04 distribution.
 **Clone**
 
 - Clone this repository with `git clone --recursive` or   
-- Run `git clone` and then `git submodule update --init --recursive`
+- Run `git clone` and then `git submodule update --init --recursive` to install submodules.
 
 **Configuration needed**
 
-  - Install node and npm. LTS versions.  
-  - NPM auth token with read permission atleast to install packages locally (`~/.npmrc`) and when pushing to BalenCloud (~/leviathan/.balena/.npmrc)
-  - Create a `balena.yml` in the `.balena` directory to handle secrets only while pushing to BalenaCloud. 
-  - `git submodule update --init --recursive` if not done at the time of cloning.
-  - Create your configuration in the `workspace` directory for testing.
-  - Put on your BalenaOS image for the device type you are testing with, and make sure the extension is `.img.gz` inside the `workspace` directory.
+  - Install node and npm in your system. LTS versions recommended.  
+  - Add NPM auth token with read permission to [install private packages](https://docs.npmjs.com/using-private-packages-in-a-ci-cd-workflow#create-and-check-in-a-project-specific-npmrc-file) locally in your system (in a `~/.npmrc` located in home directory). If pushing to balenaCloud, then place the `.npmrc` file over at `<cloned_repo>/.balena/secrets/.npmrc`
+  - If pushing new release to balenaCloud, then a [Build Time only Secret File](https://www.balena.io/docs/learn/deploy/deployment/#build-time-secrets-and-variables) `.balena.yml` will be needed. Create a `balena.yml` in the `.balena` directory. 
+  - Don't forget to install submodules with `git submodule update --init --recursive`
+  - Create your configuration `config.json` in the `workspace` directory for testing with instructions mentioned in [testbot repository](https://github.com/balena-io/testbot/).
+  - Place the balenaOS image for the deviceType you are testing with, and make sure the extension is `.img.gz` inside the `workspace` directory.
   
-**Packages needed**
+**Packages needed for installation**
 
 (Taken from `Dockerfile.template` of each service, might be incomplete)
 
@@ -53,7 +53,7 @@ npm cache clear --force
 
 The `npm install` should finish install without any errors if configured right 
 
-## Pushing new release to BalenaCloud
+## Pushing new release to balenaCloud
 
 After configuring Leviathan, run the command 
 
@@ -63,7 +63,7 @@ PUSH=<appname> make balena
 
 ## Support
 
-If you're having any problem, please [raise an issue][newissue] on GitHub and the Balena team will be happy to help.
+If you're having any problem, please [raise an issue][newissue] on GitHub and the balena team will be happy to help.
 
 ## Contribute
 
