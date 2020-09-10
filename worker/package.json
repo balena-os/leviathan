@@ -16,7 +16,7 @@
 		"test:fast": "npm run build:test && mocha"
 	},
 	"dependencies": {
-		"@balena/testbot": "^1.5.0",
+		"@balena/testbot": "^1.6.0",
 		"@types/bluebird": "^3.5.25",
 		"@types/config": "0.0.34",
 		"async-mutex": "^0.1.3",
