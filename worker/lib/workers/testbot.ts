@@ -17,7 +17,7 @@ import NetworkManager, { Supported } from '../helpers/nm';
 const dutSerialPath = '/reports/dut-serial.txt';
 
 const resolveDeviceInteractor = (hat: TestBotHat): DeviceInteractor => {
-	if (process.env.WORKER_DUT_TYPE === 'intel-nuc') {
+	if (process.env.TESTBOT_DUT_TYPE === 'intel-nuc') {
 		return new IntelNuc(hat);
 	}
 	return new RaspberryPi(hat);
@@ -75,12 +75,13 @@ class TestBotWorker extends EventEmitter implements Leviathan.Worker {
 			this.dutLogStream = createWriteStream(dutSerialPath);
 			dutLog.pipe(this.dutLogStream);
 		}
-
+		console.log('Trying to power on DUT...');
 		await this.deviceInteractor.powerOn();
 		console.log('Vout=', await this.hatBoard.readVout());
 	}
 
 	public async powerOff() {
+		console.log('Powering off DUT...');
 		await this.deviceInteractor.powerOff();
 		this.dutLogStream?.end();
 	}

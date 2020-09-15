@@ -55,11 +55,18 @@ async function setup(): Promise<express.Application> {
 			res: express.Response,
 			next: express.NextFunction,
 		) => {
+			const timer = setInterval(() => {
+				res.write('status: pending');
+			}, httpServer.keepAliveTimeout);
+
 			try {
 				await worker.powerOn();
-				res.send('OK');
 			} catch (err) {
 				next(err);
+			} finally {
+				clearInterval(timer);
+				res.write('OK');
+				res.end();
 			}
 		},
 	);
