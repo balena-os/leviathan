@@ -10,59 +10,52 @@
 
 ## Getting Started
 
-Leviathan needs configuration of both hardware and software to set it up. If you are setting up your standalone testbot, then please follow the instructions given below carefully before running tests on the Device Under Test (DUT). 
+To set up Leviathan both hardware and software need to be configured. If you are setting up your standalone testbot, then please follow the instructions given below carefully before running tests on the Device Under Test (DUT). 
 
 
-**Clone the repository**
+### Clone the repository
 
 - Clone this repository with `git clone --recursive` or   
 - Run `git clone` and then `git submodule update --init --recursive` to install submodules.
 
 
-**Prerequistes needed**
-  
-  - Install node and npm in your system. We recommend installing [LTS versions from NVM](https://github.com/nvm-sh/nvm#install--update-script).
-  - You would need access to balena's NPM registry.
-  - Download the image you want to test on your DUT from [balena.io/os](balena.io/os)
+### Prerequisites needed
+
+- Install node and npm in your system. We recommend installing [LTS versions from NVM](https://github.com/nvm-sh/nvm#install--update-script).
+- You would need access to balena's NPM registry.
+- Download the image you want to test on your DUT from [balena.io/os](balena.io/os)
 
 
-**Configuration needed**
+### Configuration needed
 
-  - Start building your standalone testbot by [following the guide](). 
-  - Add NPM auth token with read permission to [install private packages](https://docs.npmjs.com/using-private-packages-in-a-ci-cd-workflow#create-and-check-in-a-project-specific-npmrc-file).
-  - Create your test configuration, by creating a `config.json` file in the `workspace` directory, following instructions mentioned in the [testbot docs](https://github.com/balena-io/testbot/).
-  - Copy your downloaded balenaOS image inside the `workspace` directory.
-  - Extract, rename and recompress the image into the `.gz` format. Final file would look like `balena.img.gz` file.
+- Start building your standalone testbot by [following the guide](https://github.com/balena-io/testbot/blob/master/documentation/getting-started.md#quick-start-guide-for-testbot). 
+- Add NPM auth token with read permission to [install private packages](https://docs.npmjs.com/using-private-packages-in-a-ci-cd-workflow#create-and-check-in-a-project-specific-npmrc-file).
+- Create your test configuration, by creating a `config.json` file in the `workspace` directory, following instructions mentioned in the [testbot docs](https://github.com/balena-io/testbot/blob/master/documentation/getting-started.md#run-your-first-test).
+- Copy your downloaded balenaOS image inside the `workspace` directory.
+- Extract, rename, and recompress the image into the `.gz` format. The final file would look like `balena.img.gz` file.
 
 
-**Packages needed for installation**
+### Packages needed for installation
 
 (Taken from `Dockerfile.template` of each service, so might be incomplete or overkill)
 
-1. First step is to install OS packages that are needed. 
+1. Install OS packages
 
 ```
 sudo apt-get install qemu-kvm pkg-config libvirt-daemon-system bridge-utils libvirt-clients build-essential g++ python git make gcc gcc-multilib node-gyp libusb-dev libdbus-1-dev libvirt-dev qemu-system-x86
 ```
 
-2. Install global NPM packages needed
+2. Install NPM packages
 
 ```
 npm install node-pre-gyp node-gyp -g
-```
-
-3. Install NPM packages. 
-
-```
 npm install
 ```
 
-Make sure the `npm install` goes without errors (other than the optional dependencies), as it recursively installs packages for all 3 services. If it fails, you can follow the command below for troubleshooting. 
+Make sure the `npm install` goes without errors (other than the optional dependencies), as it recursively installs packages for all 3 services. If it fails, you can follow the commands below for troubleshooting. 
 
 
-**Run the tests**
-
-- Navigate to the workspace directory, 
+3. Run the tests by navigating to the workspace directory and running 
 
 ```
 ./run-tests.sh
@@ -94,7 +87,7 @@ build-secrets:
 ```
 
 
-**To push new release to balenaCloud**
+**To push a new release to balenaCloud**
 
 - Run the command with the <appname> as the name of your application.
 
@@ -108,13 +101,13 @@ If you're having any problem, please [raise an issue][newissue] on GitHub and th
 
 ## Contribute
 
-- Issue Tracker: [github.com/balena-io/balena-tests/issues][issues]
+- Issue Tracker: [github.com/balena-io/leviathan/issues][issues]
 - Source Code: [github.com/balena-io/leviathan][source]
 
 ## License
 
 The project is licensed under the Apache 2.0 license.
 
-[issues]: https://github.com/balena-io/balena-tests/issues
-[newissue]: https://github.com/balena-io/balena-tests/issues/new
-[source]: https://github.com/balena-io/balena-tests
+[issues]: https://github.com/balena-io/leviathan/issues
+[newissue]: https://github.com/balena-io/leviathan/issues/new
+[source]: https://github.com/balena-io/leviathan
