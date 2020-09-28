@@ -32,7 +32,7 @@ module.exports = {
 					error = e;
 				}
 
-				test.is(error, null, 'Device rootfs seems to be corrupted');
+				test.is(error, null, 'resinos.fingerpint match, integrity maintained');
 			},
 		},
 	],

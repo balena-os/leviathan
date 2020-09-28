@@ -80,8 +80,7 @@ module.exports = {
 					);
 				} else {
 					console.log(
-						'Test Unsuccesful, expected 2 reboots in the logs, observed ' +
-							testcount,
+						`Test Unsuccessful, expected 2 reboots in the logs, observed {testcount}`,
 					);
 				}
 
