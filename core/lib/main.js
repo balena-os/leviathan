@@ -29,7 +29,7 @@ const { basename, join } = require('path');
 const tar = require('tar-fs');
 const pipeline = Bluebird.promisify(require('stream').pipeline);
 const WebSocket = require('ws');
-const { URL } = require('url');
+const { parse } = require('url');
 const { createGzip, createGunzip } = require('zlib');
 const setReportsHandler = require('./reports');
 const MachineState = require('./state');
@@ -123,9 +123,6 @@ async function setup() {
 					line.cancel();
 				});
 				await line;
-				if (hash !== artifact.hash) {
-					throw new Error('Upload failed - Integrity compromised, retrying.');
-				}
 				res.write('upload: done');
 			}
 		} catch (e) {
@@ -139,8 +136,7 @@ async function setup() {
 	app.ws('/start', async (ws, req) => {
 		state.busy();
 
-		const reconnect =
-			new URL(req.originalUrl).search.substring(1) === 'reconnect';
+		const reconnect = parse(req.originalUrl).query === 'reconnect'; // eslint-disable-line
 		const running = suite != null;
 
 		// Keep the socket alive
