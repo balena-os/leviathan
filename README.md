@@ -22,7 +22,7 @@ To set up Leviathan both hardware and software need to be configured. If you are
 ### Prerequisites needed
 
 - Install node and npm in your system. We recommend installing [LTS versions from NVM](https://github.com/nvm-sh/nvm#install--update-script).
-- You would need access to balena's NPM registry.
+- **Important**, You would need access to balena's NPM registry beforehand to download private packages. 
 - Download the image you want to test on your DUT from [balena.io/os](balena.io/os)
 
 
@@ -72,7 +72,6 @@ rm -rf ~/.node-gyp
 npm cache clear --force
 ```
 
-
 ## Instructions for rig-owners 
 
 - If you are pushing new releases of Leviathan to balenaCloud, then place the `.npmrc` file over with NPM token at the location `leviathan/.balena/secrets/.npmrc`
@@ -94,6 +93,8 @@ build-secrets:
 ```
 PUSH=<appname> make balena
 ```
+
+To monitior leviathan tests connected to its pipeline for the rigs, you would need to request Jenkins access.
 
 ## Support
 
