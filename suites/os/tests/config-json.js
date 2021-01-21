@@ -206,7 +206,7 @@ module.exports = {
 				const serverFile = await this.context
 					.get()
 					.worker.executeCommandInHostOS(
-						"systemctl show dnsmasq  | grep ExecStart | sed -n 's/.*--servers-file=\\([^ ]*\\)\\s.*$/\\1/p'",
+						"systemctl show dnsmasq  | grep ExecStart= | sed -n 's/.*--servers-file=\\([^ ]*\\)\\s.*$/\\1/p'",
 						this.context.get().link,
 					);
 
