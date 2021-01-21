@@ -45,7 +45,7 @@ module.exports = {
 	title: 'Config.json configuration tests',
 	tests: [
 		{
-			title: '[Disabled] persistentLogging configuration test',
+			title: 'persistentLogging configuration test',
 			run: async function(test) {
 				const bootCount = parseInt(
 					await this.context
@@ -65,39 +65,18 @@ module.exports = {
 						this.context.get().link,
 					);
 
-				const testcount = parseInt(
-					await this.context
-						.get()
-						.worker.executeCommandInHostOS(
-							'journalctl --list-boots | wc -l',
-							this.context.get().link,
-						),
+				test.is(
+					parseInt(
+						await this.context
+							.get()
+							.worker.executeCommandInHostOS(
+								'journalctl --list-boots | wc -l',
+								this.context.get().link,
+							),
+					),
+					bootCount + 1,
+					'Device should show previous boot records',
 				);
-
-				if (testcount === bootCount + 1) {
-					console.log(
-						'Device should show previous boot records - Test Successful',
-					);
-				} else {
-					console.log(
-						'Test Unsuccesful, expected 2 reboots in the logs, observed ' +
-							testcount,
-					);
-				}
-
-				// Test disabled till https://github.com/balena-os/meta-balena/issues/1919 gets resolved
-				// test.is(
-				// parseInt(
-				// 	await this.context
-				// 		.get()
-				// 		.worker.executeCommandInHostOS(
-				// 			'journalctl --list-boots | wc -l',
-				// 			this.context.get().link,
-				// 		),
-				// ),
-				// 	bootCount + 1,
-				// 	'Device should show previous boot records',
-				// );
 			},
 		},
 		{
