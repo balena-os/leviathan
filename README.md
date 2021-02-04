@@ -1,6 +1,5 @@
 # Leviathan
 
-[![Build Status (master)](https://jenkins.dev.resin.io/buildStatus/icon?job=balena-tests-master)](https://jenkins.dev.resin.io/job/balena-tests-master/)
 [![GitHub Issues](https://img.shields.io/github/issues/balena-io/leviathan.svg)](https://github.com/balena-io/leviathan/issues)
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/balena-io/leviathan.svg)](https://github.com/balena-io/leviathan/pulls)
 [![node](https://img.shields.io/badge/node-v9.0.0-green.svg)](https://nodejs.org/download/release/v9.0.0/)
@@ -22,22 +21,20 @@ To set up Leviathan both hardware and software need to be configured. If you are
 ### Prerequisites needed
 
 - Install node and npm in your system. We recommend installing [LTS versions from NVM](https://github.com/nvm-sh/nvm#install--update-script).
-- **Important**, You would need access to balena's NPM registry beforehand to download private packages. 
 - Download the image you want to test on your DUT from [balena.io/os](balena.io/os)
 
 
 ### Configuration needed
 
 - Start building your standalone testbot by [following the guide](https://github.com/balena-io/testbot/blob/master/documentation/getting-started.md#quick-start-guide-for-testbot). 
-- Add NPM auth token with read permission to [install private packages](https://docs.npmjs.com/using-private-packages-in-a-ci-cd-workflow#create-and-check-in-a-project-specific-npmrc-file).
 - Create your test configuration, by creating a `config.json` file in the `workspace` directory, following instructions mentioned in the [testbot docs](https://github.com/balena-io/testbot/blob/master/documentation/getting-started.md#run-your-first-test).
-- Copy your downloaded balenaOS image inside the `workspace` directory.
-- Extract, rename, and recompress the image into the `.gz` format. The final file would look like `balena.img.gz` file.
+- Move the image zip file you want to test with inside the `workspace` directory in Leviathan.
+- Extract the image, rename it to balena.img, and recompress the image into the `.gz` format. The final file would look like `balena.img.gz` file and has to be in the `./leviathan/workspace` directory. 
 
 
 ### Packages needed for installation
 
-(Taken from `Dockerfile.template` of each service, so might be incomplete or overkill)
+(Taken from `Dockerfile.template` of each service, so might be incomplete or properly overkill)
 
 1. Install OS packages
 
@@ -72,7 +69,7 @@ rm -rf ~/.node-gyp
 npm cache clear --force
 ```
 
-## Instructions for rig-owners 
+## [Not Needed Anymore] Instructions for rig-owners 
 
 - If you are pushing new releases of Leviathan to balenaCloud, then place the `.npmrc` file over with NPM token at the location `leviathan/.balena/secrets/.npmrc`
 - Next, create a [build time only secret file](https://www.balena.io/docs/learn/deploy/deployment/#build-time-secrets-and-variables), `.balena.yml` will be needed. Create a `balena.yml` in the `.balena` directory with the following configuration. 
