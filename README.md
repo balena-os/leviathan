@@ -69,7 +69,7 @@ rm -rf ~/.node-gyp
 npm cache clear --force
 ```
 
-## [Not Needed Anymore] Instructions for rig-owners 
+## [Not Needed] Instructions for rig-owners 
 
 - If you are pushing new releases of Leviathan to balenaCloud, then place the `.npmrc` file over with NPM token at the location `leviathan/.balena/secrets/.npmrc`
 - Next, create a [build time only secret file](https://www.balena.io/docs/learn/deploy/deployment/#build-time-secrets-and-variables), `.balena.yml` will be needed. Create a `balena.yml` in the `.balena` directory with the following configuration. 
@@ -82,13 +82,12 @@ build-secrets:
         dest: .npmrc
 ```
 
-
 **To push a new release to balenaCloud**
 
 - Run the command with the <appname> as the name of your application.
 
 ```
-PUSH=<appname> make balena
+balena push <appname>
 ```
 
 To monitior leviathan tests connected to its pipeline for the rigs, you would need to request Jenkins access.
