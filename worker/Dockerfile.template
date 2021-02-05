@@ -19,9 +19,9 @@ RUN cd usbsdmux && \
   deactivate && \
   cd -
 
-FROM balenalib/%%BALENA_MACHINE_NAME%%-golang:1.14-buster-build AS go-build
+FROM balenalib/%%BALENA_MACHINE_NAME%%-golang:1.15-buster-build AS go-build
 
-RUN GO111MODULE=on go get -u github.com/nadoo/glider@v0.9.3
+RUN GO111MODULE=on go get -u github.com/nadoo/glider@v0.12.2
 
 FROM balenalib/%%BALENA_MACHINE_NAME%%-node:12-buster-build AS node-build
 
