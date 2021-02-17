@@ -19,9 +19,11 @@ WORKDIR /usr/app
 
 COPY --from=npm-install /tmp/node ./
 
-RUN wget https://github.com/balena-io/balena-cli/releases/download/v11.7.0/balena-cli-v11.7.0-linux-x64-standalone.zip && unzip balena-cli-v11.7.0-linux-x64-standalone.zip
+#RUN wget https://github.com/balena-io/balena-cli/releases/download/v11.7.0/balena-cli-v11.7.0-linux-x64-standalone.zip && unzip balena-cli-v11.7.0-linux-x64-standalone.zip
 # Give global access to balena-cli
-RUN ln -sf $(pwd)/balena-cli/balena /usr/local/bin/balena
+#RUN ln -sf $(pwd)/balena-cli/balena /usr/local/bin/balena
+RUN npm install balena-cli@12.7.0 -g --production --unsafe-perm
+
 
 COPY contracts contracts
 
