@@ -1,4 +1,4 @@
-version: '2'
+version: '2.1'
 volumes:
   core-storage:
   worker-storage:
@@ -6,20 +6,22 @@ volumes:
 services:
   core:
     privileged: true
-    build: ./core
-    network_mode: 'host'
+    build:
+      context: ./core
+    network_mode: host
     volumes:
       - 'core-storage:/data'
       - 'reports-storage:/reports'
     labels:
-      share: 'core-storage'
+      share: core-storage
       io.balena.features.balena-socket: '1'
   worker:
     privileged: true
-    build: ./worker
-    pid: 'host'
-    network_mode: 'host'
-    ipc: 'host'
+    build:
+      context: ./worker
+    pid: host
+    network_mode: host
+    ipc: host
     volumes:
       - 'worker-storage:/data'
       - 'reports-storage:/reports'
