@@ -86,13 +86,17 @@ module.exports = class Worker {
 
 			pipeline(fs.createReadStream(imagePath), req);
 		});
+		this.logger.log('Flash completed');
 	}
 
 	async on() {
+		this.logger.log('Powering on DUT');
 		await rp.post(`${this.url}/dut/on`);
+		this.logger.log('DUT powered on');
 	}
 
 	async off() {
+		this.logger.log('Powering off DUT');
 		await rp.post(`${this.url}/dut/off`);
 	}
 

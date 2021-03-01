@@ -30,7 +30,7 @@ WORKDIR /tmp/node
 RUN install_packages libdbus-1-dev libvirt-dev python
 
 COPY package*.json ./
-RUN res=0; ( cp /run/secrets/.npmrc $HOME && npm ci ) || res=1; rm $HOME/.npmrc; exit $res
+RUN npm ci
 
 COPY tsconfig.json .
 COPY typings typings
