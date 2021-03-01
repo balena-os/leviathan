@@ -110,29 +110,54 @@ module.exports = class BalenaOS {
 					fs.createWriteStream(this.image.path),
 				);
 
-				const version = /VERSION="(.*)"/g.exec(
-					await imagefs.readFile({
-						image: this.image.path,
-						partition: 1,
-						path: '/os-release',
-					}),
-				);
-				const variant = /VARIANT_ID="(.*)"/g.exec(
-					await imagefs.readFile({
-						image: this.image.path,
-						partition: 1,
-						path: '/os-release',
-					}),
-				);
+				const res = download.releaseInfo || { version: null, variant: null };
 
-				if (!version) {
-					throw new Error('Could not find OS version on the image.');
+				const readOsRelease = async (pattern, field) => {
+					this.logger.log(`Checking ${field} in os-release`);
+					try {
+						const value = pattern.exec(
+							await imagefs.readFile({
+								image: this.image.path,
+								partition: 1,
+								path: '/os-release',
+							}),
+						);
+						if (value) {
+							res[field] = value[1];
+							this.logger.log(
+								`Found ${field} in os-release file: ${res[field]}`,
+							);
+						}
+					} catch (e) {
+						// If os-release file isn't found, look inside the image to be flashed
+						// Especially in case of OS image inside flasher images. Example: Intel-NUC
+						try {
+							const value = pattern.exec(
+								await imagefs.readFile({
+									image: this.image.path,
+									partition: 2,
+									path: '/etc/os-release',
+								}),
+							);
+							if (value) {
+								res[field] = value[1];
+							}
+						} catch (err) {
+							this.logger.log(
+								`Cannot detect ${field} with os-release. Error: ${err}`,
+							);
+						}
+					}
+				};
+
+				if (!res.version) {
+					await readOsRelease(/VERSION="(.*)"/g, 'version');
+				}
+				if (!res.variant) {
+					await readOsRelease(/VARIANT_ID="(.*)"/g, 'variant');
 				}
 
-				return {
-					version: version != null ? version[1] : null,
-					variant: variant != null ? variant[1] : null,
-				};
+				return res;
 			},
 		};
 
@@ -146,6 +171,7 @@ module.exports = class BalenaOS {
 			await this.unpack({
 				type: download.type,
 				source: config.get('leviathan.uploads').image,
+				releaseInfo: download.releaseInfo,
 			}),
 		);
 	}

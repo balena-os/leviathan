@@ -1,4 +1,9 @@
-import { TestBotHat } from '@balena/testbot';
+import {
+	DeviceInteractor,
+	IntelNuc,
+	RaspberryPi,
+	TestBotHat,
+} from '@balena/testbot';
 import { EventEmitter } from 'events';
 import { createWriteStream } from 'fs';
 import { join } from 'path';
@@ -11,6 +16,13 @@ import NetworkManager, { Supported } from '../helpers/nm';
 
 const dutSerialPath = '/reports/dut-serial.txt';
 
+const resolveDeviceInteractor = (hat: TestBotHat): DeviceInteractor => {
+	if (process.env.TESTBOT_DUT_TYPE === 'intel-nuc') {
+		return new IntelNuc(hat);
+	}
+	return new RaspberryPi(hat);
+};
+
 /** Worker implementation based on testbot. */
 class TestBotWorker extends EventEmitter implements Leviathan.Worker {
 	private internalState: Leviathan.WorkerState = { network: {} };
@@ -18,12 +30,14 @@ class TestBotWorker extends EventEmitter implements Leviathan.Worker {
 	private readonly screenCapturer?: ScreenCapture;
 
 	private readonly hatBoard: TestBotHat;
+	private readonly deviceInteractor: DeviceInteractor;
 	private dutLogStream: Stream.Writable | null = null;
 
 	constructor(options: Leviathan.Options) {
 		super();
 
 		this.hatBoard = new TestBotHat();
+		this.deviceInteractor = resolveDeviceInteractor(this.hatBoard);
 
 		if (options != null) {
 			if (options.network != null) {
@@ -51,7 +65,7 @@ class TestBotWorker extends EventEmitter implements Leviathan.Worker {
 
 	public async flash(stream: Stream.Readable) {
 		console.log('Start flashing...');
-		await this.hatBoard.flash(stream);
+		await this.deviceInteractor.flash(stream);
 		console.log('Flashing completed.');
 	}
 
@@ -61,14 +75,14 @@ class TestBotWorker extends EventEmitter implements Leviathan.Worker {
 			this.dutLogStream = createWriteStream(dutSerialPath);
 			dutLog.pipe(this.dutLogStream);
 		}
-
-		await this.hatBoard.setVout(5);
-		await this.hatBoard.powerOn();
+		console.log('Trying to power on DUT...');
+		await this.deviceInteractor.powerOn();
 		console.log('Vout=', await this.hatBoard.readVout());
 	}
 
 	public async powerOff() {
-		await this.hatBoard.powerOff();
+		console.log('Powering off DUT...');
+		await this.deviceInteractor.powerOff();
 		this.dutLogStream?.end();
 	}
 
