@@ -11,9 +11,11 @@ import {
 	resolveLocalTarget,
 } from './helpers';
 import { TestBotWorker } from './workers/testbot';
+import Qemu from './workers/qemu';
 
-const workersDict: Dictionary<typeof TestBotWorker> = {
+const workersDict: Dictionary<typeof TestBotWorker | typeof Qemu> = {
 	testbot_hat: TestBotWorker,
+	qemu: Qemu,
 };
 
 async function setup(): Promise<express.Application> {

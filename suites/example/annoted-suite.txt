@@ -1,0 +1,123 @@
+/*
+ * Copyright 2018 balena
+ *
+ * @license Apache-2.0
+ */
+
+'use strict';
+
+const assert = require('assert');
+const fse = require('fs-extra');
+const { join } = require('path');
+const { homedir } = require('os');
+
+module.exports = {
+	title: 'Example test suite',
+	run: async function() {
+		const Worker = this.require('common/worker'); // this lets us use the worker methods (e.g on, off, flash)
+		const BalenaOS = this.require('components/os/balenaos'); // this lets us use some methods to manipulate the OS image before we flash it
+
+		await fse.ensureDir(this.suite.options.tmpdir);//ensures that a directory exists
+
+		// suite.options? - where does this come from
+		// in the core service, a Suite object is created - in the constructor, the .objects object is populated from the config.json that is sent as part of the test artifacts
+		// suite in this file refers to the suite object creates in core
+		// suite.options, 
+		// suite.context,
+		// suite.rootpath,
+		// suite.teardown,
+		// suite.state
+
+
+		//what is context? 
+		// you can set things in the suite.context so it's accessible by all tests
+
+
+		// suite.options.balenaOS - where does this come from -
+		// in the suite we send, there is a conf.js - this exports an options. In the suite constructor in core, its appended into the options for the suite object
+		this.suite.context.set({ 
+			utils: this.require('common/utils'), // util functions
+			sshKeyPath: join(homedir(), 'id'),
+			link: `${this.suite.options.balenaOS.config.uuid.slice(0, 7)}.local`, // here is the address of the DUT
+			worker: new Worker(this.suite.deviceType.slug, this.getLogger()), // the worker - so we can use the testbot - at the moment, the deviceType isn't used by the worker.... - the worker type (qemu, testbot etc) is set by an env variable
+		});
+
+
+		// these network optiosn come from the conf.js in this suite directory - but that gets populated from the workspace config.js..
+		// Network definitions
+		if (this.suite.options.balenaOS.network.wired === true) {
+			this.suite.options.balenaOS.network.wired = {
+				nat: true,
+			};
+		} else {
+			delete this.suite.options.balenaOS.network.wired;
+		}
+		if (this.suite.options.balenaOS.network.wireless === true) {
+			this.suite.options.balenaOS.network.wireless = {
+				ssid: this.suite.options.id,
+				psk: `${this.suite.options.id}_psk`,
+				nat: true,
+			};
+		} else {
+			delete this.suite.options.balenaOS.network.wireless;
+		}
+
+		this.suite.context.set({
+			os: new BalenaOS(
+				{
+					deviceType: this.suite.deviceType.slug,
+					network: this.suite.options.balenaOS.network,
+					configJson: {
+						uuid: this.suite.options.balenaOS.config.uuid,
+						os: {
+							sshKeys: [
+								await this.context
+									.get()
+									.utils.createSSHKey(this.context.get().sshKeyPath),
+							],
+						},
+						// persistentLogging is managed by the supervisor and only read at first boot
+						persistentLogging: true,
+					},
+				},
+				this.getLogger(),
+			),
+		});
+
+		this.suite.teardown.register(() => {
+			this.log('Removing image');
+			fse.unlinkSync('/data/image');
+			this.log('Worker teardown');
+			return this.context.get().worker.teardown();
+		});
+		this.log('Setting up worker');
+		await this.context
+			.get()
+			.worker.network(this.suite.options.balenaOS.network);
+
+		await this.context.get().os.fetch({
+			type: this.suite.options.balenaOS.download.type,
+			version: this.suite.options.balenaOS.download.version,
+			releaseInfo: this.suite.options.balenaOS.releaseInfo,
+		});
+		await this.context.get().os.configure();
+		await this.context.get().worker.off(); // Ensure DUT is off before starting tests
+		await this.context.get().worker.flash(this.context.get().os.image.path);
+		await this.context.get().worker.on();
+
+		this.log('Waiting for device to be reachable');
+		assert.equal(
+			await this.context
+				.get()
+				.worker.executeCommandInHostOS(
+					'cat /etc/hostname',
+					this.context.get().link,
+				),
+			this.context.get().link.split('.')[0],
+			'Device should be reachable',
+		);
+	},
+	tests: [
+		'./tests/example-test',
+	],
+};
