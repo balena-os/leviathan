@@ -59,7 +59,7 @@ module.exports = {
 				console.log(application);
 			});
 
-		this.teardown.register(() => {
+		this.suite.teardown.register(() => {
 			return this.context
 				.get()
 				.balena.sdk.models.application.remove(
@@ -69,11 +69,8 @@ module.exports = {
 
 		// download os
 		this.log('downloading os');
-		/* await this.context.get().balena.sdk.models.os.download(this.suite.deviceType.slug).then(function(stream) {
-			stream.pipe(fse.createWriteStream('/data/image'));
-		}); */
 		await exec(
-			'balena os download raspberrypi3 -o /data/image --version v2.58.3+rev1.dev',
+			`balena os download ${this.suite.deviceType.slug} -o /data/dl.img `,
 		);
 
 		if (this.suite.options.balenaOS.network.wireless === true) {
@@ -83,6 +80,12 @@ module.exports = {
 				nat: true,
 			};
 		}
+
+		/* if (this.suite.options.balenaOS.network.wired === true) {
+			this.suite.options.balenaOS.network.wired = {
+				nat: true,
+			};
+		} */
 
 		this.log('Setting up worker');
 		await this.context
@@ -94,7 +97,7 @@ module.exports = {
 		await exec(`balena login --token ${this.suite.options.balena.apiKey}`);
 		this.log('Configure image');
 		await exec(
-			`balena os configure /data/image -a ${
+			`balena os configure /data/dl.img -a ${
 				this.suite.context.get().app_name
 			} --config-network wifi --config-wifi-key ${
 				this.suite.options.balenaOS.network.wireless.psk
@@ -103,10 +106,16 @@ module.exports = {
 			}  `,
 		); // need version - this is why we extract it in balenaos.js
 
+		/* await exec(
+			`balena os configure /data/dl.img -a ${
+				this.suite.context.get().app_name
+			} --config-network wired --version 2.38.0+rev1`,
+		); */
+
 		// flash image to DUT
 		this.log('Begin flashing');
 		await this.context.get().worker.off(); // Ensure DUT is off before starting tests
-		await this.context.get().worker.flash('/data/image');
+		await this.context.get().worker.flash('/data/dl.img');
 		await this.context.get().worker.on();
 
 		// check to see if the device is on the dashboard
@@ -136,7 +145,7 @@ module.exports = {
 
 		this.suite.teardown.register(() => {
 			this.log('Removing image');
-			fse.unlinkSync('/data/image'); // Delete the unpacked an modified image from the testbot cache to prevent use in the next suite
+			fse.unlinkSync('/data/dl.img'); // Delete the unpacked an modified image from the testbot cache to prevent use in the next suite
 			this.context.get().balena.sdk.models.device.remove(uuid);
 			this.log('Worker teardown');
 			return this.context.get().worker.teardown();
