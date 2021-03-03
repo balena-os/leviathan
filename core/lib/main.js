@@ -196,7 +196,7 @@ async function setup() {
 							clearInterval(interval);
 							clearTimeout(timeout);
 							reject(new Error('Upload timed out'));
-						}, 300000);
+						}, 600000);
 						const interval = setInterval(() => {
 							if (upload.token == null) {
 								clearInterval(interval);
