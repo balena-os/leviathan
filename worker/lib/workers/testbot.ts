@@ -1,4 +1,5 @@
 import {
+	BalenaFin,
 	DeviceInteractor,
 	IntelNuc,
 	RaspberryPi,
@@ -17,6 +18,9 @@ import NetworkManager, { Supported } from '../helpers/nm';
 const dutSerialPath = '/reports/dut-serial.txt';
 
 const resolveDeviceInteractor = (hat: TestBotHat): DeviceInteractor => {
+	if (process.env.TESTBOT_DUT_TYPE === 'fincm3') {
+		return new BalenaFin(hat);
+	}
 	if (process.env.TESTBOT_DUT_TYPE === 'intel-nuc') {
 		return new IntelNuc(hat);
 	}

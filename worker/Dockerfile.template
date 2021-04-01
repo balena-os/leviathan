@@ -1,23 +1,23 @@
-FROM balenalib/%%BALENA_MACHINE_NAME%%-python:3.5.6-buster-build AS firmware
+#FROM balenalib/%%BALENA_MACHINE_NAME%%-python:3.5.6-buster-build AS firmware
 
-RUN install_packages git libusb-dev
+#RUN install_packages git libusb-dev
 
-WORKDIR /src
+#WORKDIR /src
 
-RUN git clone https://github.com/PaulStoffregen/teensy_loader_cli.git -b 2.1
-RUN cd teensy_loader_cli && \
-  make && \
-  cd -
+#RUN git clone https://github.com/PaulStoffregen/teensy_loader_cli.git -b 2.1
+#RUN cd teensy_loader_cli && \
+#  make && \
+#  cd -
 
-RUN git clone https://github.com/balena-io-modules/usbsdmux.git
-RUN cd usbsdmux && \
-  virtualenv -p python3 venv && \
-  . venv/bin/activate && \
-  pip install pyinstaller && \
-  python setup.py install && \
-  pyinstaller --onefile venv/bin/usbsdmux-configure && \
-  deactivate && \
-  cd -
+#RUN git clone https://github.com/balena-io-modules/usbsdmux.git
+#RUN cd usbsdmux && \
+#  virtualenv -p python3 venv && \
+#  . venv/bin/activate && \
+#  pip install pyinstaller && \
+#  python setup.py install && \
+#  pyinstaller --onefile venv/bin/usbsdmux-configure && \
+#  deactivate && \
+#  cd -
 
 FROM balenalib/%%BALENA_MACHINE_NAME%%-golang:1.15-buster-build AS go-build
 
@@ -43,22 +43,22 @@ FROM balenalib/%%BALENA_MACHINE_NAME%%-node:12-buster-run
 
 ENV UDEV=1
 
-WORKDIR /usr/app/firmware
+#WORKDIR /usr/app/firmware
 
-RUN install_packages \
-  libusb-dev libdbus-1-dev \
-  gstreamer1.0-tools gstreamer1.0-plugins-base gstreamer1.0-plugins-bad gstreamer1.0-plugins-good \
-  qemu-system-x86 libvirt-daemon-system bridge-utils iproute2 dnsmasq iptables ebtables
+#RUN install_packages \
+#  libusb-dev libdbus-1-dev \
+#  gstreamer1.0-tools gstreamer1.0-plugins-base gstreamer1.0-plugins-bad gstreamer1.0-plugins-good \
+#  qemu-system-x86 libvirt-daemon-system bridge-utils iproute2 dnsmasq iptables ebtables
 
 # Disable all cgroup controls as we do not use them
-RUN sed -i 's/^#cgroup_controllers =.*/cgroup_controllers = []/g' /etc/libvirt/qemu.conf
+#RUN sed -i 's/^#cgroup_controllers =.*/cgroup_controllers = []/g' /etc/libvirt/qemu.conf
 
 COPY --from=go-build /go/bin/glider /usr/local/bin
 
-COPY --from=firmware /src/usbsdmux/dist/usbsdmux-configure /usr/local/bin
-COPY --from=firmware /src/teensy_loader_cli/teensy_loader_cli /usr/local/bin
-COPY firmware/StandardFirmataPlus.ino.hex .
-COPY firmware/SDcardSwitch.ino.hex .
+#COPY --from=firmware /src/usbsdmux/dist/usbsdmux-configure /usr/local/bin
+#COPY --from=firmware /src/teensy_loader_cli/teensy_loader_cli /usr/local/bin
+#COPY firmware/StandardFirmataPlus.ino.hex .
+#COPY firmware/SDcardSwitch.ino.hex .
 
 WORKDIR /usr/app
 
