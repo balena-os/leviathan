@@ -27,6 +27,8 @@ const pipeline = Bluebird.promisify(require('stream').pipeline);
 const request = require('request');
 const rp = require('request-promise');
 
+const exec = Bluebird.promisify(require('child_process').exec);
+
 module.exports = class Worker {
 	constructor(
 		deviceType,
@@ -155,7 +157,7 @@ module.exports = class Worker {
 		target,
 		timeout = {
 			interval: 10000,
-			tries: 60,
+			tries: 10,
 		},
 	) {
 		let ip = /.*\.local/.test(target) ? await this.ip(target) : target;
@@ -186,4 +188,54 @@ module.exports = class Worker {
 			},
 		);
 	}
+
+	async pushContainerToDUT(target, source, containerName){
+		// use cli to push container 
+		await retry(
+			async () => {
+				await exec(
+					`balena push ${target} --source ${source} --nolive --detached`,
+				);
+			},
+			{
+				max_tries: 10,
+				interval: 5000,
+			},
+		);
+
+		// now wait for new container to be available
+		await utils.waitUntil(async () => {
+			const state = await rp({
+				method: 'GET',
+				uri: `http://${target}:48484/v2/containerId`,
+				json: true,
+			});
+
+			return state.services[containerName] != null;
+		});
+
+		const state = await rp({
+			method: 'GET',
+			uri: `http://${target}:48484/v2/containerId`,
+			json: true,
+		});
+		
+		return state
+	}
+
+	async executeCommandInContainer(command, containerName, target){
+		// get container ID
+		const state = await rp({
+			method: 'GET',
+			uri: `http://${target}:48484/v2/containerId`,
+			json: true,
+		});
+
+		const stdout = await this.executeCommandInHostOS(
+				`balena exec ${state.services[containerName]} ${command}`,
+				target,
+		);
+		return stdout;
+	}
+
 };

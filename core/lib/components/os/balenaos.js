@@ -154,7 +154,7 @@ module.exports = class BalenaOS {
 					await readOsRelease(/VERSION="(.*)"/g, 'version');
 				}
 				if (!res.variant) {
-					await readOsRelease(/VARIANT_ID="(.*)"/g, 'variant');
+					await readOsRelease(/VARIANT="(.*)"/g, 'variant');
 				}
 
 				return res;
