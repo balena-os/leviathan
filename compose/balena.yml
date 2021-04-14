@@ -15,6 +15,7 @@ services:
     labels:
       share: core-storage
       io.balena.features.balena-socket: '1'
+      io.balena.features.dbus: '1'
   worker:
     privileged: true
     build:
