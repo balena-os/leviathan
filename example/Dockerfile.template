@@ -1,0 +1,13 @@
+FROM balenalib/%%BALENA_MACHINE_NAME%%-node:12-buster-run
+WORKDIR /usr/src/app
+
+COPY package* ./
+RUN npm ci
+
+COPY index.js ./
+COPY entry.sh ./
+
+VOLUME /usr/src/app/workspace
+VOLUME /usr/src/app/reports
+
+ENTRYPOINT ["/usr/src/app/entry.sh"]
