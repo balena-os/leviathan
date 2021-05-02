@@ -1,0 +1,65 @@
+Use multi-client to:
+
+I think that having 1 suite - 1 device could be better though:
+as we are now, we can just run test suite 1, get the result, then run test suite 2
+in the future, we run test suite 1, and test suite 2 on another device in parallel
+
+- spawn client, run test suite 1
+- spawn client, run test suite 2
+
+
+
+Investigation in timeouts
+TODO: 
+ 1. Limit the bandwidth on the testbot
+ 2. Find that Pattern 
+ 3. test some way that the retry mechanism works. 
+
+
+
+Hack Friday 
+
+- Execute multiple test suites on workers
+    - Run test suites parallely on all workers available but disregard variants 
+    - Workers are like server instances.
+    - If only one worker available, then run them on series on the worker. 
+        - Queue them? 
+
+
+
+
+- logging - throw error if no image 
+- uniquely name the logs - avoid overwriting
+- reports_devicetype-UUID-test_suites - suggested format 
+
+things to check - 
+- 2 configs, 2 devices * 
+- 2 configs, 3 devices * 
+- 3 configs, 2 devices * - 1 will wait 
+- 2 configs, 1 device - The only scenario Leviathan can't handle at the moment
+
+- 3 configs with 1 device - serial logs - device logs
+
+----- what is the exit code
+
+
+
+## TestbotSDK changes 
+
+1. Download development image using the SDK 
+2. Convert createDeviceInteractor (tools.ts) to standard library and make sure it's available to everyone and then implement it in leviathan. 
+
+## Make Leviathan Better 
+
+1. Add comments everywhere for explanation
+2, Throw an error if an OS image doesn't exist in the path. 
+
+
+## DToverlay Tests
+
+You can get SUPERVISOR_API_KEY from the database, with a db.all('select * from apiSecret', console.log) and using the "global" key. What API endpoints do you need and why?
+
+Looks prospective. 
+
+
+## Check Testbot

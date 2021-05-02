@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import {BalenaCloudInteractor} from "../lib/balena";
+import { BalenaCloudInteractor } from "../lib/balena";
 
 process.env.NODE_CONFIG_DIR = `${__dirname}/../config`;
 const config = require('config');
@@ -14,14 +14,14 @@ const { ensureDir } = require('fs-extra');
 const { fs } = require('mz');
 const nativeFs = require('fs');
 const request = require('request');
+const rp = require('request-promise');
 const schema = require('../lib/schemas/multi-client-config.js');
 const { once, every, map } = require('lodash');
 const { tmpdir } = require('os');
 const url = require('url');
 const path = require('path');
-
 const yargs = require('yargs')
-	.usage('Usage: $0 [options]')
+.usage('Usage: $0 [options]')
 	.option('h', {
 		alias: 'help',
 		description: 'display help message',
@@ -69,9 +69,12 @@ class NonInteractiveState {
 		this.workersData[workerId].workerLog.write(`${str}\n`, 'utf8');
 	}
 
-	attachPanel(list) {
-		list.forEach(elem => {
+	attachPanel(elem) {
+		// list.forEach(elem => {
 			let workerUrl = elem.workers;
+			let suite = elem.suite.split(`/`).pop();
+
+			// /usr/src/app/workspace/../suites/os
 			let workerId;
 			try {
 				workerId = new url.URL(workerUrl).hostname
@@ -85,7 +88,7 @@ class NonInteractiveState {
 
 			let prefix = workerId;
 			if (elem.workerPrefix) {
-				prefix = `${workerId}-${elem.workerPrefix}`;
+				prefix = `${workerId}-${elem.workerPrefix}-${suite}`;
 			}
 			this.workersData[workerId] = {
 				workerLog: nativeFs.createWriteStream(`reports/worker-${prefix}.log`),
@@ -113,7 +116,7 @@ class NonInteractiveState {
 				this.logForWorker(workerId, data);
 			};
 			elem.teardown = () => this.teardownForWorker(workerId);
-		});
+		// });
 	}
 
 	async teardownForWorker(workerId) {
@@ -205,7 +208,7 @@ class State {
 			},
 		});
 
-		this.blessed.screen.key(['C-c'], function() {
+		this.blessed.screen.key(['C-c'], function () {
 			process.kill(process.pid, 'SIGINT');
 		});
 
@@ -387,7 +390,7 @@ class State {
 	});
 	// Signal Handling
 	[
-		// Make sure we pass down our signal
+		// Make sure we pass down our send(state.getState())(state.getState())nal
 		'SIGINT',
 		'SIGTERM',
 	].forEach(signal => {
@@ -411,100 +414,204 @@ class State {
 			);
 		}
 
-		runConfigs = runConfigs instanceof Object ? [runConfigs] : runConfigs;
+		// Make sure we full fill this instanceof call since it makes sense to know what type is the runConfig we are passing
+		// runConfigs = runConfigs instanceof Object ? [runConfigs] : runConfigs;
 
 		state.info('Computing Run Queue');
 
 		const balenaCloud = new BalenaCloudInteractor(balena);
+		// For pushing test jobs to standalone testbot with 
 		for (const runConfig of runConfigs) {
 			if (runConfig.workers instanceof Array) {
 				runConfig.workers.forEach(worker => {
-					runQueue.push({ ...runConfig, workers: worker });
+					runQueue.push({ ...runConfig, workers: worker, matchingDevices: null });
 				});
 			} else if (runConfig.workers instanceof Object) {
 				await balenaCloud.authenticate(runConfig.workers.apiKey);
 				const matchingDevices = await balenaCloud.selectDevicesWithDUT(
-						runConfig.workers.balenaApplication,
-						runConfig.deviceType
+					runConfig.workers.balenaApplication,
+					runConfig.deviceType
 				);
 
-				for (const device of matchingDevices) {
-					await balenaCloud.checkDeviceUrl(device);
-					runQueue.push({
-						...runConfig,
-						workers: await balenaCloud.resolveDeviceUrl(device),
-						workerPrefix: device.fileNamePrefix(),
-					});
+				// console.log("Matching devices are: ")
+				// console.log(matchingDevices)
+				//  Throw an error if no matching workers are found. 
+				if (matchingDevices.length === 0) {
+					throw new Error(
+						`No workers found for deviceType: ${runConfig.deviceType}`,
+					);
 				}
+
+				runQueue.push({
+					...runConfig,
+					matchingDevices: matchingDevices,
+					workers: null,
+					workerPrefix: null,
+				});
+
+				// Here it is creating a job for every matching device -> change this 
+				// for (const device of matchingDevices) {
+				// 	await balenaCloud.checkDeviceUrl(device);
+				// 	runQueue.push({
+				// 		...runConfig,
+				// 		workers: await balenaCloud.resolveDeviceUrl(device),
+				// 		workerPrefix: device.fileNamePrefix(),
+				// 	});
+				// }
 			}
 		}
 
+		// get all devices that have matching DUT
+		// determine which of those are busy -- require 
+
+
+
+		// for every config in config.js
+		// we add into queue
+		// while the queue is > 0
+		// pop from queue
+		// is there a matching worker
+		// yes - create single client child process
+		// no  - push back to the back of the queue
+
+
+
 		state.info('Running Queue');
-		state.attachPanel(runQueue);
-
+		// state.attachPanel(runQueue);
+		// While jobs are in the runqueue
 		while (runQueue.length > 0) {
+			console.log(`Run queue is: `)
+			console.log(runQueue)
+			// check if there are workers available - if there is, then assign to run.workers
 			const run = runQueue.pop();
-			const child = fork(
-				path.join(__dirname, 'single-client'),
-				[
-					'-d',
-					run.deviceType,
-					'-i',
-					run.image,
-					'-c',
-					run.config instanceof Object
-						? JSON.stringify(run.config)
-						: run.config,
-					'-s',
-					run.suite,
-					'-u',
-					run.workers,
-				],
-				{
-					stdio: 'pipe',
-					env: {
-						CI: true,
+			// check to see if there are available workers
+			if (run.matchingDevices !== null){ // this means its an application, not an array of specific workers - yes
+				console.log(`Matching workers are: ${run.matchingDevices}`)
+				for (var device of run.matchingDevices) {
+					// check if device is idle
+					console.log(`This is device: ${device}`)
+					console.log(`This is device: ${typeof(device)}`)
+					let deviceUrl = await balenaCloud.resolveDeviceUrl(device)
+					console.log(deviceUrl)
+					console.log(typeof(deviceUrl))
+					let state = await rp.get(`${(url.parse(deviceUrl)).href}/state`); // what does state look like? Json object?
+					// Should be string being returned as response
+					console.log(`State of device ${deviceUrl} is ${state}`)
+					if (state === "IDLE") {
+						console.log(`Found Idle worker ${deviceUrl}`)
+						// Create single client and break from loop 👍
+						run.workers = deviceUrl
+						run.workerPrefix = device.fileNamePrefix()
+						break
+					}
+				}
+			}
+			console.log("Now we are here");
+			console.log(run)
+			// if run.workers != null, we have a device!
+			if (run.workers === null){
+				// we have no idle workers - so push to the back of the queue\
+				//  Why don't we do this IF above when we know it is idle
+				 
+				// This seems like the way so it works with the array of workers scenario as well
+				// otherwise we have to have this client spawning code in multple places (my opinion anyway) - Yeah seems right, I am just checking internally. Since if we do it above then the code keeps running for multiple times
+	
+				
+				// goes like this, if the workers is an array in config.js - nothing has changed, works as it always did
+				// if the workers in config.js is an application - then (line 432) workers attributed of the `run` is set to null, and we pass the array of matching devices too
+					// so the above code happens - (468 to 485) - if a device is found, then run.workers gets a device, otherwise it stays null 
+					// setTimeout(() => {console.log(`No idle ${runConfig.deviceType} found in the rig, device is currently ${state}`)}, 20000)
+				
+					// if(log === true){
+					//	log = false
+					//	console.log(`No idle ${runConfig.deviceType} found in the rig, device is currently ${state}`)
+					//	setTimeout(() => { log = true}, 20000)
+					// }
+					console.log(`No idle ${run.deviceType} found in the rig`)
+					runQueue.unshift(run) // if there is only 1 element in the array left, this code will be run quite often if there is no delay
+				/*
+				run : {
+					deviceType: rpi3
+					workers: ..
+					timer: 
+				}
+				
+
+				timer for no idle devices log -
+					- when timer expires -> log = true
+
+					(if log = true)
+						print log
+						restart timer
+
+				*/
+
+			} else {
+				console.log("Attaching panel");
+				state.attachPanel(run)
+				console.log("Creating single client");
+				const child = fork(
+					path.join(__dirname, 'single-client'),
+					[
+						'-d',
+						run.deviceType,
+						'-i',
+						run.image,
+						'-c',
+						run.config instanceof Object
+							? JSON.stringify(run.config)
+							: run.config,
+						'-s',
+						run.suite,
+						'-u',
+						run.workers,
+					],
+					{
+						stdio: 'pipe',
+						env: {
+							CI: true,
+						},
 					},
-				},
-			);
+				);
 
-			// child state
-			children[child.pid] = {
-				_child: child,
-				outputPath: `${yargs.workdir}/${new url.URL(run.workers).hostname ||
-					child.pid}.out`,
-				exitCode: 1,
-			};
+				// child state
+				children[child.pid] = {
+					_child: child,
+					outputPath: `${yargs.workdir}/${new url.URL(run.workers).hostname ||
+						child.pid}.out`,
+					exitCode: 1,
+				};
 
-			child.on('message', ({ type, data }) => {
-				switch (type) {
-					case 'log':
-						run.log(data);
-						break;
-					case 'status':
-						run.status(data);
-						break;
-					case 'info':
-						run.info(data);
-						break;
-					case 'error':
-						run.log(data.message);
-						break;
-				}
-			});
+				child.on('message', ({ type, data }) => {
+					switch (type) {
+						case 'log':
+							run.log(data);
+							break;
+						case 'status':
+							run.status(data);
+							break;
+						case 'info':
+							run.info(data);
+							break;
+						case 'error':
+							run.log(data.message);
+							break;
+					}
+				});
 
-			child.on('error', console.error);
-			child.stdout.on('data', run.log);
-			child.stderr.on('data', run.log);
+				child.on('error', console.error);
+				child.stdout.on('data', run.log);
+				child.stderr.on('data', run.log);
 
-			run.info(`WORKER URL: ${run.workers}`);
+				run.info(`WORKER URL: ${run.workers}`);
 
-			child.on('exit', code => {
-				children[child.pid].code = code;
-				if (run.teardown) {
-					run.teardown();
-				}
-			});
+				child.on('exit', code => {
+					children[child.pid].code = code;
+					if (run.teardown) {
+						run.teardown();
+					}
+				});
+			}
 		}
 	} catch (e) {
 		state.info(
