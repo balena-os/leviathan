@@ -29,7 +29,7 @@ const { basename, join } = require('path');
 const tar = require('tar-fs');
 const pipeline = Bluebird.promisify(require('stream').pipeline);
 const WebSocket = require('ws');
-const { parse } = require('url');
+const { parse } = require('url'); // eslint-disable-line
 const { createGzip, createGunzip } = require('zlib');
 const setReportsHandler = require('./reports');
 const MachineState = require('./state');
@@ -168,6 +168,7 @@ async function setup() {
 			ws.on('error', console.error);
 			ws.on('close', () => {
 				clearInterval(interval);
+				state.idle();
 			});
 
 			if (running && !reconnect) {
@@ -289,6 +290,14 @@ async function setup() {
 				})
 				.pipe(createGzip())
 				.pipe(res);
+		} catch (e) {
+			res.status(500).send(e.stack);
+		}
+	});
+
+	app.get('/state', async (_req, res) => {
+		try {
+			res.status(200).send(state.getState());
 		} catch (e) {
 			res.status(500).send(e.stack);
 		}

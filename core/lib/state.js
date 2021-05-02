@@ -104,6 +104,7 @@ module.exports = class MachineState {
 
 	failed() {
 		this.update(States.FAILED);
+		this.idleTimer = setTimeout(() => this.idle(), IDLE_TIMEOUT_MS);
 	}
 
 	busy() {
@@ -112,5 +113,14 @@ module.exports = class MachineState {
 
 	isBusy() {
 		return this.state === States.BUSY;
+	}
+
+	// Get current state of worker from LED color
+	getState() {
+		var ret = {};
+		for (var key in States) {
+			ret[States[key]] = key;
+		}
+		return ret[this.state];
 	}
 };
