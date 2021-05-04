@@ -159,6 +159,14 @@ module.exports = class BalenaOS {
 
 				return res;
 			},
+
+			gunzip: async () => {
+				await pipeline(
+					fs.createReadStream(download.source),
+					zlib.createGunzip(),
+					fs.createWriteStream(this.image.path),
+				);
+			}
 		};
 
 		return types[download.type]();
