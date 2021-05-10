@@ -25,6 +25,7 @@ const Bluebird = require('bluebird');
 const retry = require('bluebird-retry');
 
 const utils = require('../../common/utils');
+const exec = Bluebird.promisify(require('child_process').exec);
 
 module.exports = class BalenaSDK {
 	constructor(
@@ -417,5 +418,82 @@ module.exports = class BalenaSDK {
 				.getWithServiceDetails(device)
 				.get('current_services'),
 		);
+	}
+
+	// push release - return commit
+	async pushReleaseToApp(application, directory){
+		await exec(
+			`balena push ${application} --source ${directory}`
+		  );
+		//check new commit of app
+		let commit = await this.balena.models.application.get(
+			application
+		)
+		.get("commit");
+
+		return commit
+	}
+	// wait until service is running( service, commit)
+	async waitUntilServicesRunning(uuid, services, commit){
+		await utils.waitUntil(async () => {
+			let deviceServices = await this.balena.models.device.getWithServiceDetails(
+				uuid
+			  );
+			let running = false
+			running = services.every((service) => {
+				return (deviceServices.current_services[service][0].status === "Running") && (deviceServices.current_services[service][0].commit === commit)
+			})
+			return running;
+		}, false)
+	}
+
+	// execute command in container
+	async executeCommandInContainer(command, containerName, uuid){
+		// get the container ID of container through balena engine
+		const containerId = await this.executeCommandInHostOS(
+			`balena ps --format "{{.Names}}" | grep ${containerName}`,
+			uuid
+		);
+
+		const stdout = await this.executeCommandInHostOS(
+			`balena exec ${containerId} ${command}`,
+			uuid
+		);
+
+		return stdout
+	}
+	// check if logs contain/don't contain
+	async checkLogsContain(uuid, contains, _start=null, _end=null){
+		let logs = await this.balena.logs.history(uuid)
+          .map((log) => {
+            return log.message;
+          });
+
+		let startIndex = (_start != null)? logs.indexOf(_start) : 0 
+		let endIndex = (_end != null)? logs.indexOf(_end) : (logs.length)
+		
+        let slicedLogs = logs.slice(startIndex, endIndex);
+
+        let pass = false;
+        slicedLogs.forEach((element) => {
+          if (element.includes(contains)) {
+            pass = true;
+          }
+        });
+
+		return pass
+	}
+
+	// get supervisor version
+	async getSupervisorVersion(uuid){
+		let supervisor = await this.executeCommandInHostOS(
+		  `balena exec resin_supervisor cat package.json | grep version`,
+		  uuid
+		);
+		// we get something like - `"version": "12.3.5"`
+		supervisor = supervisor.split(" ");
+		supervisor = supervisor[1].replace(`"`,``);
+		supervisor = supervisor.replace(`",`, ``);
+		return supervisor
 	}
 };
