@@ -31,33 +31,40 @@ export function groupTagsData(allAppTags: DeviceTag[]): DeviceInfo[] {
 /**
  * Interacts with balenaCloud for the client
  */
-
 export class BalenaCloudInteractor {
 	constructor(private sdk: BalenaSDK) {}
 	/**
 	 * Authenticate balenaSDK with API key
 	 */
-
 	async authenticate(apiKey: string) {
 		await this.sdk.auth.loginWithToken(apiKey);
 	}
 
 	/**
-	 * @returns devices containing the DUT tag on balenaCloud application with value as the device type being tested
+	 * @returns list of online devices containing the DUT tag with device type being tested as the value
 	 */
-
 	async selectDevicesWithDUT(
 		appName: string,
 		dutType: string,
 	): Promise<DeviceInfo[]> {
 		const tags = await this.sdk.models.device.tags.getAllByApplication(appName);
-		return groupTagsData(tags).filter((info) => info.tags['DUT'] === dutType);
+		const taggedDevices = groupTagsData(tags).filter(
+			(device) => device.tags['DUT'] === dutType,
+		);
+		for (const taggedDevice of taggedDevices) {
+			const online = await this.sdk.models.device.isOnline(
+				taggedDevice.deviceId,
+			);
+			if (!online) {
+				taggedDevices.splice(taggedDevices.indexOf(taggedDevice), 1);
+			}
+		}
+		return taggedDevices;
 	}
 
 	/**
 	 * @throws error when public url for the device type is not accessible
 	 */
-
 	async checkDeviceUrl(device: DeviceInfo) {
 		const enabled = await this.sdk.models.device.hasDeviceUrl(device.deviceId);
 		if (!enabled) {
@@ -68,7 +75,6 @@ export class BalenaCloudInteractor {
 	/**
 	 * @returns device's public URL
 	 */
-
 	async resolveDeviceUrl(device: DeviceInfo): Promise<string> {
 		return this.sdk.models.device.getDeviceUrl(device.deviceId);
 	}
