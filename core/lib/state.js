@@ -74,7 +74,7 @@ const States = {
 	BUSY: 'blue',
 };
 
-const IDLE_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes.
+const IDLE_TIMEOUT_MS = 5 * 30 * 1000; // 5 minutes
 
 module.exports = class MachineState {
 	constructor() {
