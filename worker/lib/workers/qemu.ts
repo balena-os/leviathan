@@ -36,7 +36,7 @@ class Qemu extends EventEmitter implements Leviathan.Worker {
 					? options.worker.disk
 					: '/data/os.img';
 
-			if (options.screen != null) {
+			/*if (options.screen != null) {
 				this.screenCapturer = new ScreenCapture(
 					{
 						type: 'rfbsrc',
@@ -51,7 +51,7 @@ class Qemu extends EventEmitter implements Leviathan.Worker {
 					},
 					join(options.worker.workdir, 'capture'),
 				);
-			}
+			}*/
 		}
 
 		this.references = {};

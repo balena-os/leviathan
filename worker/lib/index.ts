@@ -26,6 +26,7 @@ async function setup(): Promise<express.Application> {
 	]({
 		worker: { workdir: runtimeConfiguration.workdir },
 		network: runtimeConfiguration.network,
+		screen: runtimeConfiguration.screenCapture
 	});
 
 	/**

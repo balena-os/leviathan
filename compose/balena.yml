@@ -11,6 +11,7 @@ services:
     network_mode: host
     volumes:
       - 'core-storage:/data'
+      - 'worker-storage:/worker'
       - 'reports-storage:/reports'
     labels:
       share: core-storage

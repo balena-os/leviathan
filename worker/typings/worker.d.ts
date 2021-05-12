@@ -48,7 +48,8 @@ declare global {
 						wireless?: string;
 						wired: string;
 				  };
-			screen?: { VNC: { host: string; port: string }; HDMI: { dev: number } };
+			//screen?: { VNC: { host: string; port: string }; HDMI: { dev: number } };
+			screen?: { VNC: { host: string; port: string }; HDMI: { dev: number } } | boolean;
 		}
 	}
 }
