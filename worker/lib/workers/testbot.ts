@@ -44,7 +44,7 @@ class TestBotWorker extends EventEmitter implements Leviathan.Worker {
 				this.networkCtl = new NetworkManager(options.network);
 			}
 
-			if (options.screen != null) {
+			if (options.screenCapture === true) {
 				this.screenCapturer = new ScreenCapture(
 					{
 						type: 'v4l2src',
