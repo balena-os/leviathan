@@ -238,8 +238,31 @@ await exec(
 ); 
 ```
 
-### Using balena sdk
-Balena SDK is imported into the testing environment by default, so you can create an instance of the SDK and use it to manipulate the device or applications from within tests (in this exampe using context so we can use it in all tests): 
+### Cloud helpers
+The `BalenaSDK` class, defined in `core/components/balena/sdk`, contains an instance of the balena sdk, as well as some helper methods that you can examine in the file. The `balena` attribute of the class contains the sdk, which can then be used as follows:
+```js
+const Cloud = this.require("components/balena/sdk");
+
+this.suite.context.set({
+	cloud: new Balena(`https://api.balena-cloud.com/`, this.getLogger())
+});
+
+
+// login
+await this.context
+	.get()
+	.cloud.balena.auth.loginWithToken(this.suite.options.balena.apiKey);
+
+// create a balena application
+await this.context.get().cloud.balena.models.application.create({
+	name: `NAME`,
+	deviceType: `DEVICE_TYPE`,
+	organization: `ORG`,
+});
+
+```
+
+Alternatively, Balena SDK is imported into the testing environment by default, so you can create an instance of the SDK and use it without the cloud helpers class:
 
 ```js
 this.suite.context.set({

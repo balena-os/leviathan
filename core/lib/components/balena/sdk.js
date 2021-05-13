@@ -27,6 +27,34 @@ const retry = require('bluebird-retry');
 const utils = require('../../common/utils');
 const exec = Bluebird.promisify(require('child_process').exec);
 
+/**
+ * The `BalenaSDK` class contains an instance of the balena sdk, as well as some helper methods to interact with a device via the cloud. 
+ * The `balena` attribute of the class contains the sdk,and can be used as follows in a test suite:
+ *
+ * @example
+ * ```js
+ * const Cloud = this.require("components/balena/sdk");
+ *
+ * this.suite.context.set({
+ *	cloud: new Balena(`https://api.balena-cloud.com/`, this.getLogger())
+ * });
+ * 
+ * // login
+ * await this.context
+ *	.get()
+ *	.cloud.balena.auth.loginWithToken(this.suite.options.balena.apiKey);
+ * 
+ * 
+ * // create a balena application
+ * await this.context.get().cloud.balena.models.application.create({
+ * 	name: `NAME`,
+ * 	deviceType: `DEVICE_TYPE`,
+ *  organization: `ORG`,
+ * });
+ * 
+ * ```
+ */
+
 module.exports = class BalenaSDK {
 	constructor(
 		apiUrl,
@@ -420,7 +448,10 @@ module.exports = class BalenaSDK {
 		);
 	}
 
-	// push release - return commit
+	/** Pushes a release to an application, from a given directory 
+	 * @param application the balena application name
+	 * @param directory the directory name containing the docker-compose for the application and the source files
+	*/
 	async pushReleaseToApp(application, directory){
 		await exec(
 			`balena push ${application} --source ${directory}`
@@ -433,7 +464,11 @@ module.exports = class BalenaSDK {
 
 		return commit
 	}
-	// wait until service is running( service, commit)
+	/** Waits until given servuces are all running on a device, on a given commit
+	 * @param uuid the uuid of the device
+	 * @param services an array of the service names
+	 * @param commit the release commit hash that services should be on
+	*/
 	async waitUntilServicesRunning(uuid, services, commit){
 		await utils.waitUntil(async () => {
 			let deviceServices = await this.balena.models.device.getWithServiceDetails(
@@ -447,7 +482,11 @@ module.exports = class BalenaSDK {
 		}, false)
 	}
 
-	// execute command in container
+	/** Executes the command in the targetted container of a device
+	 * @param command the command to be run
+	 * @param containerName the name of the service/container to run the command in
+	 * @param uuid the uuid of the device
+	*/
 	async executeCommandInContainer(command, containerName, uuid){
 		// get the container ID of container through balena engine
 		const containerId = await this.executeCommandInHostOS(
@@ -462,7 +501,12 @@ module.exports = class BalenaSDK {
 
 		return stdout
 	}
-	// check if logs contain/don't contain
+	/** Checks if device logs contain a string
+	 * @param uuid the uuid of the device
+	 * @param contains string to look for in the logs
+	 * @param start (optional) start the search from this log
+	 * @param start (optional) end the search at this log
+	*/
 	async checkLogsContain(uuid, contains, _start=null, _end=null){
 		let logs = await this.balena.logs.history(uuid)
           .map((log) => {
@@ -484,7 +528,9 @@ module.exports = class BalenaSDK {
 		return pass
 	}
 
-	// get supervisor version
+	/** Returns the supervisor version on the device
+	 * @param uuid the uuid of the device
+	*/
 	async getSupervisorVersion(uuid){
 		let supervisor = await this.executeCommandInHostOS(
 		  `balena exec resin_supervisor cat package.json | grep version`,
