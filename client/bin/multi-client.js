@@ -135,7 +135,7 @@ class NonInteractiveState {
 		const downloadLog = request
 			.get(dutLogUrl)
 			.pipe(nativeFs.createWriteStream(`reports/dut-serial-${workerData.prefix}.log`));
-		await new Promise(resolve =>
+		let downloadLogDone =  new Promise(resolve =>
 			downloadLog.on('end', resolve).on('error', resolve),
 		);
 		const dutArtifactUrl = `${workerData.workerUrl}/artifacts`;
@@ -143,9 +143,11 @@ class NonInteractiveState {
 		const downloadImages = request
 			.get(dutArtifactUrl)
 			.pipe(nativeFs.createWriteStream(`reports/artifacts-${workerData.prefix}.tar.gz`));
-		await new Promise(resolve =>
+		let downloadArtifactDone =  new Promise(resolve =>
 			downloadImages.on('end', resolve).on('error', resolve),
 		);
+
+		await Promise.all([downloadLogDone, downloadArtifactDone])
 	}
 
 	async teardown() {
