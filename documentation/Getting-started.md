@@ -299,6 +299,32 @@ module.exports = {
 }
 ```
 
+
+### Screen capture
+If screen capture is supported and appropriate hardware is attached, the video output of the DUT can be captured. For the testbot, this requires a compatible video capture device to be connected, that works with v4l2 and enumerates on the `/dev/video0 interface`.
+
+If that is the case, then capture can be started using the `Worker` class `capture()` method, for example:
+```js
+const Worker = this.require('common/worker');
+const worker = new Worker('DEVICE_TYPE_SLUG', this.getLogger())
+await worker.capture('start');
+```
+
+This will trigger video capture to start, and frames will be saved as `jpg` files to the shared volume at `/data/capture`. Capture will continue until stopped with:
+
+```js
+await worker.capture('stop');
+```
+### Sending reports and artifacts back to the client from the testbot
+By default, serial logs (given that the hardware is set up correctly), and the logs from the tests will be sent back to the client that started the test, upon the test finishing. Other artifacts can be sent back to the client using the `archiver` method. This method is available within any test:
+
+```js
+this.archiver.add(`FILE OR DIRECTORY`)
+```
+
+Using this method, at the end of the test, any artifacts added to the archive are zipped and downloaded by the client.
+
+
 ### What should go in the suite.js of a suite
 The recommended pattern is to put the code that gets the device into the state ready for the tests, into the suite. 
 Usually, this will include:
