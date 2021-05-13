@@ -49,6 +49,7 @@ declare global {
 						wired: string;
 				  };
 			screen?: { VNC: { host: string; port: string }; HDMI: { dev: number } };
+			screenCapture?: boolean
 		}
 	}
 }

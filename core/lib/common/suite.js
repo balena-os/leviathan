@@ -22,6 +22,7 @@ const isEmpty = require('lodash/isEmpty');
 const isObject = require('lodash/isObject');
 const isString = require('lodash/isString');
 const template = require('lodash/template');
+const fs = require('fs-extra');
 
 const AJV = require('ajv');
 const ajv = new AJV();
@@ -93,6 +94,10 @@ class Suite {
 	async init() {
 		await Bluebird.try(async () => {
 			await this.installDependencies();
+			if(fs.existsSync(config.get('leviathan.artifacts'))){
+				this.state.log(`Removing artifacts from previous tests...`);
+				fs.emptyDirSync(config.get('leviathan.artifacts'))
+			}
 			this.rootTree = this.resolveTestTree(
 				path.join(config.get('leviathan.uploads.suite'), 'suite'),
 			);

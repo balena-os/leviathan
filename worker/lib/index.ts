@@ -26,6 +26,7 @@ async function setup(): Promise<express.Application> {
 	]({
 		worker: { workdir: runtimeConfiguration.workdir },
 		network: runtimeConfiguration.network,
+		screenCapture: runtimeConfiguration.screenCapture
 	});
 
 	/**
@@ -144,9 +145,8 @@ async function setup(): Promise<express.Application> {
 			next: express.NextFunction,
 		) => {
 			try {
-				res.connection.setTimeout(0);
-				// Forcing the type as the return cannot be void
-				((await worker.captureScreen('stop')) as Readable).pipe(res);
+				await worker.captureScreen('stop');
+				res.send('OK')
 			} catch (err) {
 				next(err);
 			}
