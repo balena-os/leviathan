@@ -416,7 +416,7 @@ class State {
 		state.info('Computing Run Queue');
 
 		const balenaCloud = new BalenaCloudInteractor(balena);
-		// Iterates through test jobs and pushes jobs to available testbot workers 
+		// Iterates through test jobs and pushes jobs to available testbot workers
 		for (const runConfig of runConfigs) {
 			if (runConfig.workers instanceof Array) {
 				runConfig.workers.forEach(worker => {
@@ -429,7 +429,7 @@ class State {
 					runConfig.deviceType
 				);
 
-				//  Throw an error if no matching workers are found. 
+				//  Throw an error if no matching workers are found.
 				if (matchingDevices.length === 0) {
 					throw new Error(
 						`No workers found for deviceType: ${runConfig.deviceType}`,
@@ -448,42 +448,43 @@ class State {
 		state.info(`[Running Queue] Suites currently in queue: ${runQueue.map((run) => path.parse(run.suite).base)}`);
 		// While jobs are present the runQueue
 		while (runQueue.length > 0) {
-			const run = runQueue.pop();
+			const job = runQueue.pop();
 			// If matching workers for the job are available then allot them a job
-			if (run.matchingDevices !== null) { // specifically for an application since worker URL's are specific are automatically allocated 
-				for (var device of run.matchingDevices) {
+			if (job.matchingDevices !== null) { // specifically for an application since worker URL's are specific are automatically allocated
+				for (var device of job.matchingDevices) {
 					// check if device is idle & public URL is reachable
 					let deviceUrl = await balenaCloud.resolveDeviceUrl(device)
 					let state = await rp.get(`${(url.parse(deviceUrl)).href}/state`);
 					if (state === "IDLE") {
-						// Create single client and break from loop to run the job 👍
-						run.workers = deviceUrl
-						run.workerPrefix = device.fileNamePrefix()
+						// Create single client and break from loop to job the job 👍
+						job.workers = deviceUrl
+						job.workerPrefix = device.fileNamePrefix()
 						break
 					}
 				}
 			}
 
-			if (run.workers === null) {
+			if (job.workers === null) {
 				// No idle workers currently - the job is pushed to the back of the queue
-				runQueue.unshift(run)
+				runQueue.unshift(job)
 			} else {
-				state.attachPanel(run)
+				// Start the job on the assigned worker
+				state.attachPanel(job)
 				const child = fork(
 					path.join(__dirname, 'single-client'),
 					[
 						'-d',
-						run.deviceType,
+						job.deviceType,
 						'-i',
-						run.image,
+						job.image,
 						'-c',
-						run.config instanceof Object
-							? JSON.stringify(run.config)
-							: run.config,
+						job.config instanceof Object
+							? JSON.stringify(job.config)
+							: job.config,
 						'-s',
-						run.suite,
+						job.suite,
 						'-u',
-						run.workers,
+						job.workers,
 					],
 					{
 						stdio: 'pipe',
@@ -496,7 +497,7 @@ class State {
 				// child state
 				children[child.pid] = {
 					_child: child,
-					outputPath: `${yargs.workdir}/${new url.URL(run.workers).hostname ||
+					outputPath: `${yargs.workdir}/${new url.URL(job.workers).hostname ||
 						child.pid}.out`,
 					exitCode: 1,
 				};
@@ -504,30 +505,30 @@ class State {
 				child.on('message', ({ type, data }) => {
 					switch (type) {
 						case 'log':
-							run.log(data);
+							job.log(data);
 							break;
 						case 'status':
-							run.status(data);
+							job.status(data);
 							break;
 						case 'info':
-							run.info(data);
+							job.info(data);
 							break;
 						case 'error':
-							run.log(data.message);
+							job.log(data.message);
 							break;
 					}
 				});
 
 				child.on('error', console.error);
-				child.stdout.on('data', run.log);
-				child.stderr.on('data', run.log);
+				child.stdout.on('data', job.log);
+				child.stderr.on('data', job.log);
 
-				run.info(`WORKER URL: ${run.workers}`);
+				job.info(`WORKER URL: ${job.workers}`);
 
 				child.on('exit', code => {
 					children[child.pid].code = code;
-					if (run.teardown) {
-						run.teardown();
+					if (job.teardown) {
+						job.teardown();
 					}
 				});
 			}
