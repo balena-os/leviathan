@@ -132,10 +132,12 @@ class NonInteractiveState {
 		}
 		const dutLogUrl = `${workerData.workerUrl}/reports/dut-serial.txt`;
 		console.log(`Downloading DUT serial log with ${dutLogUrl}`);
-		const download = request
+		const downloadLog = request
 			.get(dutLogUrl)
 			.pipe(nativeFs.createWriteStream(`reports/dut-serial-${workerData.prefix}.log`));
-
+		await new Promise(resolve =>
+			downloadLog.on('end', resolve).on('error', resolve),
+		);
 		const dutArtifactUrl = `${workerData.workerUrl}/artifacts`;
 		console.log(`Downloading artifacts`);
 		const downloadImages = request
