@@ -40,7 +40,7 @@ Information on properties in `config.js`:
 - `balenaApiKey` is the balenaCloud API key used when running the release suite. Ideally, you can add it as an environment variable and reference it with `process.env.BALENACLOUD_API_KEY`.
 - `balenaApiUrl` is the balenaCloud environment you are targetting for your test suite. Production is `'balena-cloud.com'` and staging is `'balena-staging.com'`.
 - `organization` is the balenaCloud organizations where test applications are created. Ideally, you can add it as an environment variable and reference it with `process.env.BALENACLOUD_ORG`.
-- `image` is the absolute path to the balenaOS image that is flashed onto the Device Under Test (DUT). The image should be kept under the `workspace` directory. The path after `__dirname` in the config is a path relative to the workspace directory. Make sure to rename the image to balena.img, and compress the image into the `.gz` format. The final file would look like `balena.img.gz` file as mentioned above in the config. 
+- `image` is the absolute path to the balenaOS image that is flashed onto the Device Under Test (DUT). The image should be kept under the `workspace` directory. The path after `__dirname` in the config is a path relative to the workspace directory. Make sure to rename the image to balena.img. If you provide `balena.img` as your balenaOS image, then Leviathan will compress it for you in `gz` format. We recommend compressing beforehand, as it saves time.  
 - `workers` is the property where we specify precisely on which testbots the test suites will be executed on. You can specify this in multiple ways as per the requirement. 
 
 ### Different `workers` configurations available
