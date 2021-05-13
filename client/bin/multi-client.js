@@ -140,7 +140,7 @@ class NonInteractiveState {
 		console.log(`Downloading artifacts`);
 		const downloadImages = request
 			.get(dutArtifactUrl)
-			.pipe(nativeFs.createWriteStream(`reports/artifacts.tar.gz`));
+			.pipe(nativeFs.createWriteStream(`reports/artifacts-${workerData.prefix}.tar.gz`));
 		await new Promise(resolve =>
 			downloadImages.on('end', resolve).on('error', resolve),
 		);
