@@ -1,7 +1,6 @@
 version: '2.1'
 volumes:
   core-storage:
-  worker-storage:
   reports-storage:
 services:
   core:
@@ -11,7 +10,6 @@ services:
     network_mode: host
     volumes:
       - 'core-storage:/data'
-      - 'worker-storage:/worker'
       - 'reports-storage:/reports'
     labels:
       share: core-storage
@@ -25,7 +23,7 @@ services:
     network_mode: host
     ipc: host
     volumes:
-      - 'worker-storage:/data'
+      - 'core-storage:/data'
       - 'reports-storage:/reports'
     labels:
       io.balena.features.dbus: '1'

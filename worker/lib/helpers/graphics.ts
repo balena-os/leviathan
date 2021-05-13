@@ -99,7 +99,7 @@ export default class ScreenCapture {
 		}
 	}
 
-	public stopCapture(): Promise<Readable> {
+	public stopCapture(): Promise<void> {
 		return new Promise(async (resolve, reject) => {
 			if (this.proc != null) {
 				const clean = () => {
@@ -113,15 +113,7 @@ export default class ScreenCapture {
 				};
 				const exitHandler = () => {
 					clean();
-
-					resolve(
-						pack(this.destination, {
-							map: header => {
-								header.name = basename(header.name);
-								return header;
-							},
-						}).pipe(createGzip()),
-					);
+					resolve();
 				};
 
 				// For an unknown reason the gst process sometimes refuses to die, so let's check

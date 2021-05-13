@@ -135,8 +135,14 @@ class NonInteractiveState {
 		const download = request
 			.get(dutLogUrl)
 			.pipe(nativeFs.createWriteStream(`reports/dut-serial-${workerData.prefix}.log`));
+
+		const dutArtifactUrl = `${workerData.workerUrl}/artifacts`;
+		console.log(`Downloading artifacts`);
+		const downloadImages = request
+			.get(dutArtifactUrl)
+			.pipe(nativeFs.createWriteStream(`reports/artifacts.tar.gz`));
 		await new Promise(resolve =>
-			download.on('end', resolve).on('error', resolve),
+			downloadImages.on('end', resolve).on('error', resolve),
 		);
 	}
 
