@@ -446,6 +446,7 @@ class State {
 		}
 
 		state.info(`[Running Queue] Suites currently in queue: ${runQueue.map((run) => path.parse(run.suite).base)}`);
+		const busyWorkers = []
 		// While jobs are present the runQueue
 		while (runQueue.length > 0) {
 			const job = runQueue.pop();
@@ -456,10 +457,13 @@ class State {
 					let deviceUrl = await balenaCloud.resolveDeviceUrl(device)
 					let state = await rp.get(`${(url.parse(deviceUrl)).href}/state`);
 					if (state === "IDLE") {
-						// Create single client and break from loop to job the job 👍
-						job.workers = deviceUrl
-						job.workerPrefix = device.fileNamePrefix()
-						break
+						// make sure that the worker being targetted isn't already about to be used by another child process
+						if(!busyWorkers.includes(deviceUrl)){
+							// Create single client and break from loop to job the job 👍
+							job.workers = deviceUrl
+							job.workerPrefix = device.fileNamePrefix()
+							break
+						}
 					}
 				}
 			}
@@ -493,6 +497,9 @@ class State {
 						},
 					},
 				);
+
+				// after creating child process, add the worker to the busy workers array
+				busyWorkers.push(job.workers)
 
 				// child state
 				children[child.pid] = {
@@ -530,6 +537,8 @@ class State {
 					if (job.teardown) {
 						job.teardown();
 					}
+					// remove the worker from the busy array once the job is finished
+					busyWorkers.splice(busyWorkers.indexOf(job.workers));
 				});
 			}
 		}
