@@ -239,7 +239,7 @@ await exec(
 ```
 
 ### Cloud helpers
-The `BalenaSDK` class, defined in `core/components/balena/sdk`, contains an instance of the balena sdk, as well as some helper methods that you can examine in the file. The `balena` attribute of the class contains the sdk, which can then be used as follows:
+The `BalenaSDK` class, defined in [`core/components/balena/sdk`](https://github.com/balena-os/leviathan/blob/master/core/lib/components/balena/sdk.js), contains an instance of the balena sdk, as well as some helper methods. The `balena` attribute of the class contains the sdk, which can then be used as follows:
 ```js
 const Cloud = this.require("components/balena/sdk");
 

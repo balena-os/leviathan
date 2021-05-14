@@ -449,25 +449,22 @@ module.exports = class BalenaSDK {
 	}
 
 	/** Pushes a release to an application, from a given directory 
-	 * @param application the balena application name
-	 * @param directory the directory name containing the docker-compose for the application and the source files
+	 * @param The balena application name to push the release to
+	 * @param The path to the directory containing the docker-compose/Dockerfile for the application and the source files
 	*/
 	async pushReleaseToApp(application, directory){
 		await exec(
 			`balena push ${application} --source ${directory}`
 		  );
 		//check new commit of app
-		let commit = await this.balena.models.application.get(
-			application
-		)
-		.get("commit");
+		let commit = await this.balena.models.application.get(application).get("commit");
 
 		return commit
 	}
-	/** Waits until given servuces are all running on a device, on a given commit
-	 * @param uuid the uuid of the device
-	 * @param services an array of the service names
-	 * @param commit the release commit hash that services should be on
+	/** Waits until given services are all running on a device, on a given commit
+	 * @param The UUID of the device
+	 * @param An array of the service names
+	 * @param The release commit hash that services should be on
 	*/
 	async waitUntilServicesRunning(uuid, services, commit){
 		await utils.waitUntil(async () => {
@@ -483,9 +480,9 @@ module.exports = class BalenaSDK {
 	}
 
 	/** Executes the command in the targetted container of a device
-	 * @param command the command to be run
-	 * @param containerName the name of the service/container to run the command in
-	 * @param uuid the uuid of the device
+	 * @param The command to be run
+	 * @param The name of the service/container to run the command in
+	 * @param The UUID of the device
 	*/
 	async executeCommandInContainer(command, containerName, uuid){
 		// get the container ID of container through balena engine
@@ -502,10 +499,10 @@ module.exports = class BalenaSDK {
 		return stdout
 	}
 	/** Checks if device logs contain a string
-	 * @param uuid the uuid of the device
-	 * @param contains string to look for in the logs
-	 * @param start (optional) start the search from this log
-	 * @param start (optional) end the search at this log
+	 * @param The UUID of the device
+	 * @param The string to look for in the logs
+	 * @param (optional) start the search from this log
+	 * @param (optional) end the search at this log
 	*/
 	async checkLogsContain(uuid, contains, _start=null, _end=null){
 		let logs = await this.balena.logs.history(uuid)
@@ -516,27 +513,33 @@ module.exports = class BalenaSDK {
 		let startIndex = (_start != null)? logs.indexOf(_start) : 0 
 		let endIndex = (_end != null)? logs.indexOf(_end) : (logs.length)
 		
-        let slicedLogs = logs.slice(startIndex, endIndex);
+		let slicedLogs = logs.slice(startIndex, endIndex);
 
-        let pass = false;
-        slicedLogs.forEach((element) => {
-          if (element.includes(contains)) {
-            pass = true;
-          }
-        });
+		let pass = false;
+		slicedLogs.forEach((element) => {
+			if (element.includes(contains)) {
+			pass = true;
+			}
+		});
 
 		return pass
 	}
 
-	/** Returns the supervisor version on the device
-	 * @param uuid the uuid of the device
+	/** Returns the supervisor version on a device
+	 * @param The UUID of the device
 	*/
 	async getSupervisorVersion(uuid){
+		let checkName =  await this.executeCommandInHostOS(
+			`balena ps | grep balena_supervisor`,
+			uuid
+		  );
+		let supervisorName = (checkName !== "") ? `balena_supervisor` : `resin_supervisor` 
+		
 		let supervisor = await this.executeCommandInHostOS(
-		  `balena exec resin_supervisor cat package.json | grep version`,
+		  `balena exec ${supervisorName} cat package.json | grep version`,
 		  uuid
 		);
-		// we get something like - `"version": "12.3.5"`
+		// The result takes the form - `"version": "12.3.5"` - so we must extract the version number
 		supervisor = supervisor.split(" ");
 		supervisor = supervisor[1].replace(`"`,``);
 		supervisor = supervisor.replace(`",`, ``);
