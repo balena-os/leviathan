@@ -68,12 +68,12 @@ module.exports = class CLI {
 			const child = spawn(
 				'balena',
 				[
-					`preload --docker ${socketPath} --app ${options.app} --commit ${
-						options.commit
-					} ${options.pin ? '--pin-device-to-release ' : ''} ${join(
+					`preload ${join(
 						Mount.Source,
 						basename(image),
-					)}`,
+					)} --docker ${socketPath} --app ${options.app} --commit ${
+						options.commit
+					} ${options.pin ? '--pin-device-to-release ' : ''}`,
 				],
 				{
 					stdio: 'pipe',
