@@ -90,7 +90,7 @@ module.exports = class Client extends PassThrough {
 				throw new Error(`${artifact.path} does not satisfy ${artifact.type}`);
 			}
 
-			if (artifact.name === 'image' && !(await isGzip(artifact.path))) {
+			if (artifact.name === 'os.img' && !(await isGzip(artifact.path))) {
 				const str = progStream({
 					length: stat.size,
 					time: 100,

@@ -74,7 +74,7 @@ const States = {
 	BUSY: 'blue',
 };
 
-const IDLE_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes.
+const IDLE_TIMEOUT_MS = 5 * 30 * 1000; // 5 minutes
 
 module.exports = class MachineState {
 	constructor() {
@@ -104,6 +104,7 @@ module.exports = class MachineState {
 
 	failed() {
 		this.update(States.FAILED);
+		this.idleTimer = setTimeout(() => this.idle(), IDLE_TIMEOUT_MS);
 	}
 
 	busy() {
@@ -112,5 +113,14 @@ module.exports = class MachineState {
 
 	isBusy() {
 		return this.state === States.BUSY;
+	}
+
+	// Get current state of worker from LED color
+	getState() {
+		var ret = {};
+		for (var key in States) {
+			ret[States[key]] = key;
+		}
+		return ret[this.state];
 	}
 };

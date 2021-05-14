@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import {BalenaCloudInteractor} from "../lib/balena";
+import { BalenaCloudInteractor } from "../lib/balena";
 
 process.env.NODE_CONFIG_DIR = `${__dirname}/../config`;
 const config = require('config');
@@ -14,12 +14,12 @@ const { ensureDir } = require('fs-extra');
 const { fs } = require('mz');
 const nativeFs = require('fs');
 const request = require('request');
+const rp = require('request-promise');
 const schema = require('../lib/schemas/multi-client-config.js');
 const { once, every, map } = require('lodash');
 const { tmpdir } = require('os');
 const url = require('url');
 const path = require('path');
-
 const yargs = require('yargs')
 	.usage('Usage: $0 [options]')
 	.option('h', {
@@ -69,51 +69,51 @@ class NonInteractiveState {
 		this.workersData[workerId].workerLog.write(`${str}\n`, 'utf8');
 	}
 
-	attachPanel(list) {
-		list.forEach(elem => {
-			let workerUrl = elem.workers;
-			let workerId;
-			try {
-				workerId = new url.URL(workerUrl).hostname
-					.split(/\./, 2)[0]
-					.substring(0, 7);
-			} catch (e) {
-				console.error(e);
-				workerId = elem.workers.toString();
-				workerUrl = null;
+	attachPanel(elem) {
+		let workerUrl = elem.workers;
+		let suite = elem.suite.split(`/`).pop();
+
+		let workerId;
+		try {
+			workerId = `${new url.URL(workerUrl).hostname
+				.split(/\./, 2)[0]
+				.substring(0, 7)}-${suite}`
+		} catch (e) {
+			console.error(e);
+			workerId = elem.workers.toString();
+			workerUrl = null;
+		}
+
+		let prefix = workerId;
+		if (elem.workerPrefix) {
+			prefix = `${workerId}-${elem.workerPrefix}`;
+		}
+		this.workersData[workerId] = {
+			workerLog: nativeFs.createWriteStream(`reports/worker-${prefix}.log`),
+			workerUrl,
+			prefix,
+		};
+
+		let lastStatusPercentage = 0;
+
+		elem.status = ({ message, percentage }) => {
+			if (percentage - lastStatusPercentage > 10) {
+				this.logForWorker(
+					workerId,
+					`${message} - ${Math.round(percentage)}%`,
+				);
+				lastStatusPercentage = percentage;
 			}
-
-			let prefix = workerId;
-			if (elem.workerPrefix) {
-				prefix = `${workerId}-${elem.workerPrefix}`;
-			}
-			this.workersData[workerId] = {
-				workerLog: nativeFs.createWriteStream(`reports/worker-${prefix}.log`),
-				workerUrl,
-				prefix,
-			};
-
-			let lastStatusPercentage = 0;
-
-			elem.status = ({ message, percentage }) => {
-				if (percentage - lastStatusPercentage > 10) {
-					this.logForWorker(
-						workerId,
-						`${message} - ${Math.round(percentage)}%`,
-					);
-					lastStatusPercentage = percentage;
-				}
-			};
-			elem.info = data => {
-				lastStatusPercentage = 0;
-				this.logForWorker(workerId, `INFO: ${data}`);
-			};
-			elem.log = data => {
-				lastStatusPercentage = 0;
-				this.logForWorker(workerId, data);
-			};
-			elem.teardown = () => this.teardownForWorker(workerId);
-		});
+		};
+		elem.info = data => {
+			lastStatusPercentage = 0;
+			this.logForWorker(workerId, `INFO: ${data}`);
+		};
+		elem.log = data => {
+			lastStatusPercentage = 0;
+			this.logForWorker(workerId, data);
+		};
+		elem.teardown = () => this.teardownForWorker(workerId);
 	}
 
 	async teardownForWorker(workerId) {
@@ -205,7 +205,7 @@ class State {
 			},
 		});
 
-		this.blessed.screen.key(['C-c'], function() {
+		this.blessed.screen.key(['C-c'], function () {
 			process.kill(process.pid, 'SIGINT');
 		});
 
@@ -355,7 +355,7 @@ class State {
 
 	const signalHandler = once(async sig => {
 		state.info('Cleaning up');
-		// Prevent any New runs from happening
+		// Prevent any new runs from happening
 		runQueue = [];
 
 		// Kill children.
@@ -387,7 +387,6 @@ class State {
 	});
 	// Signal Handling
 	[
-		// Make sure we pass down our signal
 		'SIGINT',
 		'SIGTERM',
 	].forEach(signal => {
@@ -411,100 +410,128 @@ class State {
 			);
 		}
 
-		runConfigs = runConfigs instanceof Object ? [runConfigs] : runConfigs;
+		// runConfig needs to be iterable to handle scenarios even when only one config is provided in config.js
+		runConfigs = Array.isArray(runConfigs) ? runConfigs : [runConfigs];
 
 		state.info('Computing Run Queue');
 
 		const balenaCloud = new BalenaCloudInteractor(balena);
+		// Iterates through test jobs and pushes jobs to available testbot workers
 		for (const runConfig of runConfigs) {
 			if (runConfig.workers instanceof Array) {
 				runConfig.workers.forEach(worker => {
-					runQueue.push({ ...runConfig, workers: worker });
+					runQueue.push({ ...runConfig, workers: worker, matchingDevices: null });
 				});
 			} else if (runConfig.workers instanceof Object) {
 				await balenaCloud.authenticate(runConfig.workers.apiKey);
 				const matchingDevices = await balenaCloud.selectDevicesWithDUT(
-						runConfig.workers.balenaApplication,
-						runConfig.deviceType
+					runConfig.workers.balenaApplication,
+					runConfig.deviceType
 				);
 
-				for (const device of matchingDevices) {
-					await balenaCloud.checkDeviceUrl(device);
-					runQueue.push({
-						...runConfig,
-						workers: await balenaCloud.resolveDeviceUrl(device),
-						workerPrefix: device.fileNamePrefix(),
-					});
+				//  Throw an error if no matching workers are found.
+				if (matchingDevices.length === 0) {
+					throw new Error(
+						`No workers found for deviceType: ${runConfig.deviceType}`,
+					);
 				}
+
+				runQueue.push({
+					...runConfig,
+					matchingDevices: matchingDevices,
+					workers: null,
+					workerPrefix: null,
+				});
 			}
 		}
 
-		state.info('Running Queue');
-		state.attachPanel(runQueue);
-
+		state.info(`[Running Queue] Suites currently in queue: ${runQueue.map((run) => path.parse(run.suite).base)}`);
+		// While jobs are present the runQueue
 		while (runQueue.length > 0) {
-			const run = runQueue.pop();
-			const child = fork(
-				path.join(__dirname, 'single-client'),
-				[
-					'-d',
-					run.deviceType,
-					'-i',
-					run.image,
-					'-c',
-					run.config instanceof Object
-						? JSON.stringify(run.config)
-						: run.config,
-					'-s',
-					run.suite,
-					'-u',
-					run.workers,
-				],
-				{
-					stdio: 'pipe',
-					env: {
-						CI: true,
+			const job = runQueue.pop();
+			// If matching workers for the job are available then allot them a job
+			if (job.matchingDevices !== null) { // specifically for an application since worker URL's are specific are automatically allocated
+				for (var device of job.matchingDevices) {
+					// check if device is idle & public URL is reachable
+					let deviceUrl = await balenaCloud.resolveDeviceUrl(device)
+					let state = await rp.get(`${(url.parse(deviceUrl)).href}/state`);
+					if (state === "IDLE") {
+						// Create single client and break from loop to job the job 👍
+						job.workers = deviceUrl
+						job.workerPrefix = device.fileNamePrefix()
+						break
+					}
+				}
+			}
+
+			if (job.workers === null) {
+				// No idle workers currently - the job is pushed to the back of the queue
+				runQueue.unshift(job)
+			} else {
+				// Start the job on the assigned worker
+				state.attachPanel(job)
+				const child = fork(
+					path.join(__dirname, 'single-client'),
+					[
+						'-d',
+						job.deviceType,
+						'-i',
+						job.image,
+						'-c',
+						job.config instanceof Object
+							? JSON.stringify(job.config)
+							: job.config,
+						'-s',
+						job.suite,
+						'-u',
+						job.workers,
+					],
+					{
+						stdio: 'pipe',
+						env: {
+							CI: true,
+						},
 					},
-				},
-			);
+				);
 
-			// child state
-			children[child.pid] = {
-				_child: child,
-				outputPath: `${yargs.workdir}/${new url.URL(run.workers).hostname ||
-					child.pid}.out`,
-				exitCode: 1,
-			};
+				// child state
+				children[child.pid] = {
+					_child: child,
+					outputPath: `${yargs.workdir}/${new url.URL(job.workers).hostname ||
+						child.pid}.out`,
+					exitCode: 1,
+				};
 
-			child.on('message', ({ type, data }) => {
-				switch (type) {
-					case 'log':
-						run.log(data);
-						break;
-					case 'status':
-						run.status(data);
-						break;
-					case 'info':
-						run.info(data);
-						break;
-					case 'error':
-						run.log(data.message);
-						break;
-				}
-			});
+				child.on('message', ({ type, data }) => {
+					switch (type) {
+						case 'log':
+							job.log(data);
+							break;
+						case 'status':
+							job.status(data);
+							break;
+						case 'info':
+							job.info(data);
+							break;
+						case 'error':
+							job.log(data.message);
+							break;
+					}
+				});
 
-			child.on('error', console.error);
-			child.stdout.on('data', run.log);
-			child.stderr.on('data', run.log);
+				child.on('error', console.error);
+				child.stdout.on('data', job.log);
+				child.stderr.on('data', job.log);
 
-			run.info(`WORKER URL: ${run.workers}`);
+				job.info(`WORKER URL: ${job.workers}`);
 
-			child.on('exit', code => {
-				children[child.pid].code = code;
-				if (run.teardown) {
-					run.teardown();
-				}
-			});
+				child.on('exit', code => {
+					children[child.pid].code = code;
+					if (job.teardown) {
+						job.teardown();
+					}
+				});
+			}
 		}
 	} catch (e) {
 		state.info(
