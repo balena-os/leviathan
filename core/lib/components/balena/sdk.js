@@ -25,6 +25,35 @@ const Bluebird = require('bluebird');
 const retry = require('bluebird-retry');
 
 const utils = require('../../common/utils');
+const exec = Bluebird.promisify(require('child_process').exec);
+
+/**
+ * The `BalenaSDK` class contains an instance of the balena sdk, as well as some helper methods to interact with a device via the cloud. 
+ * The `balena` attribute of the class contains the sdk,and can be used as follows in a test suite:
+ *
+ * @example
+ * ```js
+ * const Cloud = this.require("components/balena/sdk");
+ *
+ * this.suite.context.set({
+ *	cloud: new Balena(`https://api.balena-cloud.com/`, this.getLogger())
+ * });
+ * 
+ * // login
+ * await this.context
+ *	.get()
+ *	.cloud.balena.auth.loginWithToken(this.suite.options.balena.apiKey);
+ * 
+ * 
+ * // create a balena application
+ * await this.context.get().cloud.balena.models.application.create({
+ * 	name: `NAME`,
+ * 	deviceType: `DEVICE_TYPE`,
+ *  organization: `ORG`,
+ * });
+ * 
+ * ```
+ */
 
 module.exports = class BalenaSDK {
 	constructor(
@@ -417,5 +446,103 @@ module.exports = class BalenaSDK {
 				.getWithServiceDetails(device)
 				.get('current_services'),
 		);
+	}
+
+	/** Pushes a release to an application, from a given directory 
+	 * @param The balena application name to push the release to
+	 * @param The path to the directory containing the docker-compose/Dockerfile for the application and the source files
+	*/
+	async pushReleaseToApp(application, directory){
+		await exec(
+			`balena push ${application} --source ${directory}`
+		  );
+		//check new commit of app
+		let commit = await this.balena.models.application.get(application).get("commit");
+
+		return commit
+	}
+	/** Waits until given services are all running on a device, on a given commit
+	 * @param The UUID of the device
+	 * @param An array of the service names
+	 * @param The release commit hash that services should be on
+	*/
+	async waitUntilServicesRunning(uuid, services, commit){
+		await utils.waitUntil(async () => {
+			let deviceServices = await this.balena.models.device.getWithServiceDetails(
+				uuid
+			  );
+			let running = false
+			running = services.every((service) => {
+				return (deviceServices.current_services[service][0].status === "Running") && (deviceServices.current_services[service][0].commit === commit)
+			})
+			return running;
+		}, false)
+	}
+
+	/** Executes the command in the targetted container of a device
+	 * @param The command to be run
+	 * @param The name of the service/container to run the command in
+	 * @param The UUID of the device
+	*/
+	async executeCommandInContainer(command, containerName, uuid){
+		// get the container ID of container through balena engine
+		const containerId = await this.executeCommandInHostOS(
+			`balena ps --format "{{.Names}}" | grep ${containerName}`,
+			uuid
+		);
+
+		const stdout = await this.executeCommandInHostOS(
+			`balena exec ${containerId} ${command}`,
+			uuid
+		);
+
+		return stdout
+	}
+	/** Checks if device logs contain a string
+	 * @param The UUID of the device
+	 * @param The string to look for in the logs
+	 * @param (optional) start the search from this log
+	 * @param (optional) end the search at this log
+	*/
+	async checkLogsContain(uuid, contains, _start=null, _end=null){
+		let logs = await this.balena.logs.history(uuid)
+          .map((log) => {
+            return log.message;
+          });
+
+		let startIndex = (_start != null)? logs.indexOf(_start) : 0 
+		let endIndex = (_end != null)? logs.indexOf(_end) : (logs.length)
+		
+		let slicedLogs = logs.slice(startIndex, endIndex);
+
+		let pass = false;
+		slicedLogs.forEach((element) => {
+			if (element.includes(contains)) {
+			pass = true;
+			}
+		});
+
+		return pass
+	}
+
+	/** Returns the supervisor version on a device
+	 * @param The UUID of the device
+	*/
+	async getSupervisorVersion(uuid){
+		let checkName =  await this.executeCommandInHostOS(
+			`balena ps | grep balena_supervisor`,
+			uuid
+		  );
+		let supervisorName = (checkName !== "") ? `balena_supervisor` : `resin_supervisor` 
+		
+		let supervisor = await this.executeCommandInHostOS(
+		  `balena exec ${supervisorName} cat package.json | grep version`,
+		  uuid
+		);
+		// The result takes the form - `"version": "12.3.5"` - so we must extract the version number
+		supervisor = supervisor.split(" ");
+		supervisor = supervisor[1].replace(`"`,``);
+		supervisor = supervisor.replace(`",`, ``);
+		return supervisor
 	}
 };
