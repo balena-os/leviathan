@@ -465,8 +465,9 @@ module.exports = class BalenaSDK {
 	 * @param The UUID of the device
 	 * @param An array of the service names
 	 * @param The release commit hash that services should be on
+	 * @param (optional) The number of attemps to retry. Retries are spaced 30s apart
 	*/
-	async waitUntilServicesRunning(uuid, services, commit){
+	async waitUntilServicesRunning(uuid, services, commit, __times = 50){
 		await utils.waitUntil(async () => {
 			let deviceServices = await this.balena.models.device.getWithServiceDetails(
 				uuid
@@ -476,7 +477,7 @@ module.exports = class BalenaSDK {
 				return (deviceServices.current_services[service][0].status === "Running") && (deviceServices.current_services[service][0].commit === commit)
 			})
 			return running;
-		}, false)
+		}, false, __times)
 	}
 
 	/** Executes the command in the targetted container of a device
