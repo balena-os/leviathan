@@ -455,21 +455,26 @@ class State {
 				for (var device of job.matchingDevices) {
 					// check if device is idle & public URL is reachable
 					let deviceUrl = await balenaCloud.resolveDeviceUrl(device)
-					let state = await rp.get(`${(url.parse(deviceUrl)).href}/state`);
-					if (state === "IDLE") {
-						// make sure that the worker being targetted isn't already about to be used by another child process
-						if(!busyWorkers.includes(deviceUrl)){
-							// Create single client and break from loop to job the job 👍
-							job.workers = deviceUrl
-							job.workerPrefix = device.fileNamePrefix()
-							break
+					try{
+						let status = await rp.get(`${(url.parse(deviceUrl)).href}/state`);
+						if (status === "IDLE") {
+							// make sure that the worker being targetted isn't already about to be used by another child process
+							if(!busyWorkers.includes(deviceUrl)){
+								// Create single client and break from loop to job the job 👍
+								job.workers = deviceUrl
+								job.workerPrefix = device.fileNamePrefix()
+								break
+							}
 						}
+					} catch(e) {
+						state.info(`Couldn't retrieve worker ${device.deviceId} state...`)
 					}
 				}
 			}
 
 			if (job.workers === null) {
 				// No idle workers currently - the job is pushed to the back of the queue
+				await require('bluebird').delay(25000)
 				runQueue.unshift(job)
 			} else {
 				// Start the job on the assigned worker

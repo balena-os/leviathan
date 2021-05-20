@@ -48,6 +48,7 @@ async function setup() {
 	setReportsHandler(app);
 
 	app.post('/upload', async (req, res) => {
+		upload.retry = false;
 		state.busy();
 		res.writeHead(202, {
 			'Content-Type': 'text/event-stream',
@@ -107,26 +108,33 @@ async function setup() {
 						.digest('hex');
 				}
 			}
-
 			if (hash === artifact.hash) {
 				res.write('upload: cache');
+				upload.success = true
 			} else {
 				res.write('upload: start');
 				// Make sure we start clean
 				await remove(artifact.path);
+				const gz = createGunzip()
+				const tarExtr = tar.extract(config.get('leviathan.workdir'))
+
 				const line = pipeline(
 					req,
-					createGunzip(),
-					tar.extract(config.get('leviathan.workdir')),
-				);
-				req.on('close', () => {
-					line.cancel();
-				});
+					gz,
+					tarExtr,
+				).catch((err) =>{ 
+					console.log(err)
+					throw err 
+				})
+
 				await line;
+				upload.success = true
 				res.write('upload: done');
 			}
 		} catch (e) {
-			res.write(`error: ${e.message}`);
+			console.log(`detected error ${e}`)
+			upload.error = e
+			upload.success = false
 		} finally {
 			delete upload.token;
 			res.end();
@@ -173,43 +181,61 @@ async function setup() {
 
 			if (running && !reconnect) {
 				throw new Error(
-					'Already runing a suite. Please stop it or try again later.',
+					'Already running a suite. Please stop it or try again later.',
 				);
 			}
 
 			if (!running || !reconnect) {
 				for (const uploadName in config.get('leviathan.uploads')) {
-					upload.token = Math.random();
-					ws.send(
-						JSON.stringify({
-							type: 'upload',
-							data: {
-								id: uploadName,
-								name: basename(config.get('leviathan.uploads')[uploadName]),
-								token: upload.token,
-							},
-						}),
-					);
+					// put retry request here instead
+					upload.attempts = 0
+					upload.retry = true;
+					upload.success = null;
+					while(upload.retry === true){
+						upload.attempts = upload.attempts + 1
+						if (upload.attempts > 3){
+							throw new Error(`Upload failed too many times: ${upload.attempts}`) 
+						}
+						upload.token = Math.random();
+						ws.send(
+							JSON.stringify({
+								type: 'upload',
+								data: {
+									id: uploadName,
+									name: basename(config.get('leviathan.uploads')[uploadName]),
+									token: upload.token,
+									attempt: upload.attempts
+								},
+							}),
+						);
 
 					// Wait for the upload to be received and finished
-					await new Promise((resolve, reject) => {
-						const timeout = setTimeout(() => {
-							clearInterval(interval);
-							clearTimeout(timeout);
-							reject(new Error('Upload timed out'));
-						}, 600000);
-						const interval = setInterval(() => {
-							if (upload.token == null) {
+						await new Promise((resolve, reject) => {
+							const timeout = setTimeout(() => {
 								clearInterval(interval);
 								clearTimeout(timeout);
-								resolve();
-							}
-						}, 2000);
-						ws.once('close', () => {
-							clearInterval(interval);
-							clearTimeout(timeout);
+								reject(new Error('Upload timed out'));
+							}, 1200000);
+							const interval = setInterval(() => {
+								// upload.token is deleted when the upload has been done
+								if (upload.token == null) {
+									clearInterval(interval);
+									clearTimeout(timeout);
+									if (upload.success === true){
+										upload.retry = false
+										upload.attempts = 0
+									} else {
+										upload.retry = true
+									}
+									resolve();
+								}
+							}, 2000);
+							ws.once('close', () => {
+								clearInterval(interval);
+								clearTimeout(timeout);
+							});
 						});
-					});
+					}
 				}
 
 				// The reason we need to fork is because many 3rd party libariers output to stdout
