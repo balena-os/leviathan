@@ -48,6 +48,8 @@ async function setup() {
 	setReportsHandler(app);
 
 	app.post('/upload', async (req, res) => {
+		upload.retry = false;
+		console.log(`upload retry is ${upload.retry}`)
 		state.busy();
 		res.writeHead(202, {
 			'Content-Type': 'text/event-stream',
@@ -107,7 +109,6 @@ async function setup() {
 						.digest('hex');
 				}
 			}
-
 			if (hash === artifact.hash) {
 				res.write('upload: cache');
 			} else {
@@ -123,12 +124,27 @@ async function setup() {
 					line.cancel();
 				});
 				await line;
+				// now check the hash to see if it matches the original (if image)
+				if (artifact.name === 'os.img') {
+					console.log(`calculating hash for received image`)
+					let uploadHash = await md5(artifact.path);
+					console.log(`hash for received image is ${uploadHash}, expected ${artifact.hash}`)
+					if (uploadHash !== artifact.hash){
+						throw new Error(`Hashes did not match for path: ${artifact.path} -> expected ${artifact.hash}, got ${uploadHash}`);
+					}
+				}
 				res.write('upload: done');
 			}
 		} catch (e) {
 			res.write(`error: ${e.message}`);
+			console.log(`detected error ${e.message}`)
+			upload.retry = true
 		} finally {
-			delete upload.token;
+			// if upload.retry === true, then there was an error
+			if (upload.retry !== true){
+				console.log(`deleting token`)
+				delete upload.token;
+			}
 			res.end();
 		}
 	});
@@ -138,6 +154,11 @@ async function setup() {
 
 		const reconnect = parse(req.originalUrl).query === 'reconnect'; // eslint-disable-line
 		const running = suite != null;
+
+		// remove the previous runs image
+		/*if(fs.existsSync(config.get('leviathan.uploads.image'))){
+			fs.unlinkSync(config.get('leviathan.uploads.image'))
+		}*/
 
 		// Keep the socket alive
 		const interval = setInterval(function timeout() {
@@ -197,11 +218,13 @@ async function setup() {
 							clearInterval(interval);
 							clearTimeout(timeout);
 							reject(new Error('Upload timed out'));
-						}, 600000);
+						}, 1200000);
 						const interval = setInterval(() => {
+							// upload.token is deleted when the upload was successful
 							if (upload.token == null) {
 								clearInterval(interval);
 								clearTimeout(timeout);
+								console.log(`Upload completed`)
 								resolve();
 							}
 						}, 2000);
