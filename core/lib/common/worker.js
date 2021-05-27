@@ -204,22 +204,17 @@ module.exports = class Worker {
 		);
 
 		// now wait for new container to be available
+		let state = {};
 		await utils.waitUntil(async () => {
-			const state = await rp({
+			state = await rp({
 				method: 'GET',
 				uri: `http://${target}:48484/v2/containerId`,
 				json: true,
 			});
 
 			return state.services[containerName] != null;
-		});
+		}, false);
 
-		const state = await rp({
-			method: 'GET',
-			uri: `http://${target}:48484/v2/containerId`,
-			json: true,
-		});
-		
 		return state
 	}
 
