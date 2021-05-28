@@ -79,7 +79,10 @@ module.exports = class Client extends PassThrough {
 		process.send({ type: 'log', data });
 	}
 
-	async handleArtifact(artifact, token) {
+	async handleArtifact(artifact, token, attempt) {
+		if (attempt > 1){
+			this.log(`Previously failed to upload artifact ${artifact.name} - retrying...`);
+		}
 		const ignore = ['node_modules', 'package-lock.json'];
 
 		// Sanity checks + sanity checks
@@ -166,10 +169,8 @@ module.exports = class Client extends PassThrough {
 			metadata.size = JSON.stringify(artifact.data).length;
 		}
 
-		let attempt = 0;
 		const uploadOperation = () =>
 			new Promise(async (resolve, reject) => {
-				attempt++;
 				this.log(`Sending to the testbot device, attempt ${attempt}...`);
 
 				if (artifact.type === 'isDirectory' || artifact.type === 'isFile') {
@@ -211,13 +212,13 @@ module.exports = class Client extends PassThrough {
 					},
 				});
 
-				req.on('end', resolve).on('error', reject);
+				req.on('end', resolve).on('error', reject)
 
 				// We need to record the end of our pipe, so we can unpipe in case cache will be used
 				const pipeEnd = zlib.createGzip({ level: 6 });
 				const line = pipeline(metadata.stream, str, pipeEnd)
 					.delay(1000)
-					.catch(reject);
+					.catch(error => {throw error});
 				pipeEnd.pipe(req);
 
 				req.on('data', async data => {
@@ -262,8 +263,7 @@ module.exports = class Client extends PassThrough {
 					}
 				});
 			});
-
-		await retry(uploadOperation, { max_tries: 3 });
+		await uploadOperation()
 	}
 
 	run() {
@@ -284,7 +284,7 @@ module.exports = class Client extends PassThrough {
 
 					switch (type) {
 						case 'upload':
-							const { name, id, token } = data;
+							const { name, id, token, attempt} = data;
 
 							const artifact = {
 								name,
@@ -314,7 +314,7 @@ module.exports = class Client extends PassThrough {
 									throw new Error('Unexpected upload request. Panicking...');
 							}
 
-							await this.handleArtifact(artifact, token);
+							await this.handleArtifact(artifact, token, attempt);
 							break;
 						case 'log':
 							this.write(data);
