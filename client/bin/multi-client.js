@@ -456,7 +456,7 @@ class State {
 					// check if device is idle & public URL is reachable
 					let deviceUrl = await balenaCloud.resolveDeviceUrl(device)
 					try{
-						let status = await rp.get(`${(url.parse(deviceUrl)).href}/state`);
+						let status = await rp.get(`${deviceUrl}/state`);
 						if (status === "IDLE") {
 							// make sure that the worker being targetted isn't already about to be used by another child process
 							if(!busyWorkers.includes(deviceUrl)){

@@ -81,7 +81,7 @@ module.exports = class Client extends PassThrough {
 
 	async handleArtifact(artifact, token, attempt) {
 		if (attempt > 1){
-			this.log(`Previously failed to upload artifact - retrying...`);
+			this.log(`Previously failed to upload artifact ${artifact.name} - retrying...`);
 		}
 		const ignore = ['node_modules', 'package-lock.json'];
 
@@ -218,9 +218,7 @@ module.exports = class Client extends PassThrough {
 				const pipeEnd = zlib.createGzip({ level: 6 });
 				const line = pipeline(metadata.stream, str, pipeEnd)
 					.delay(1000)
-					.catch(e => {
-						throw e
-					});
+					.catch(error => {throw error});
 				pipeEnd.pipe(req);
 
 				req.on('data', async data => {

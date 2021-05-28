@@ -114,16 +114,12 @@ async function setup() {
 			} else {
 				res.write('upload: start');
 				// Make sure we start clean
-				await remove(artifact.path);
-				const gz = createGunzip()
-				const tarExtr = tar.extract(config.get('leviathan.workdir'))
-
+				await remove(artifact.path);				
 				const line = pipeline(
 					req,
-					gz,
-					tarExtr,
+					createGunzip(),
+					tar.extract(config.get('leviathan.workdir')),
 				).catch((err) =>{ 
-					console.log(err)
 					throw err 
 				})
 
@@ -132,7 +128,7 @@ async function setup() {
 				res.write('upload: done');
 			}
 		} catch (e) {
-			console.log(`detected error ${e}`)
+			console.log(`Error detected: ${e}`)
 			upload.error = e
 			upload.success = false
 		} finally {
