@@ -337,9 +337,13 @@ class State {
 					: 1);
 
 			if (yargs.print) {
-				children.forEach(child => {
+				Object.values(children).forEach(child => {
 					console.log(`=====| ${child.outputPath}`);
-					console.log(fs.readFileSync(child.outputPath));
+          try {
+            console.log(fs.readFileSync(child.outputPath));
+          } catch (e) {
+            console.log(`${e}`);
+          }
 					console.log(`=====`);
 				});
 			}
