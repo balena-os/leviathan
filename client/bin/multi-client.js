@@ -346,9 +346,16 @@ class State {
 		}
 
 		console.log(
-			`Exiting with ${process.exitCode}, input code = ${code}, children: ${map(
+			`Exiting with ${process.exitCode}, client = ${code}, children: ${map(
 				children,
-				c => c.code,
+				c => {
+          switch (c.code) {
+            case 0: return "0 (success)";
+            case 1: return "1 (error)";         // client/lib/index.js#L401
+            case 2: return "2 (test failure)";  // client/lib/index.js#L323
+            case 3: return "3 (test error)";    // client/lib/index.js#L328
+          }
+        },
 			).join(',')}`,
 		);
 	});
