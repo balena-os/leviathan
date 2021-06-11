@@ -12,6 +12,7 @@ module.exports = {
   },
   leviathan: {
     artifacts: '/tmp/artifacts',
+    downloads: '/tmp/downloads', // add an images directory in /tmp
     workdir: '/data',
     uploads: defer(function() {
       return mapValues({ image: 'os.img', config: 'config.json', suite: 'suite' }, value => {
