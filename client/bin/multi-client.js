@@ -65,7 +65,8 @@ class NonInteractiveState {
 
 	logForWorker(workerId, data) {
 		const str = data.toString().trimEnd();
-		console.log(`[${workerId}] ${str}`);
+		const timestamp = new Date().toUTCString()
+		console.log(`[${timestamp}][${workerId}] ${str}`);
 		this.workersData[workerId].workerLog.write(`${str}\n`, 'utf8');
 	}
 
