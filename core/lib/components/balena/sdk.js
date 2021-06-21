@@ -538,7 +538,6 @@ module.exports = class BalenaSDK {
 			uuid
 		  );
 		let supervisorName = (checkName !== "") ? `balena_supervisor` : `resin_supervisor`
-
 		let supervisor = await this.executeCommandInHostOS(
 		  `balena exec ${supervisorName} cat package.json | grep version`,
 		  uuid
