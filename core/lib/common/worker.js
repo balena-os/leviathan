@@ -190,7 +190,7 @@ module.exports = class Worker {
 	}
 
 	async pushContainerToDUT(target, source, containerName){
-		// use cli to push container 
+		// use cli to push container
 		await retry(
 			async () => {
 				await exec(
@@ -234,7 +234,7 @@ module.exports = class Worker {
 	}
 
 	async rebootDut (target) {
-		this.logger.log(`Rebooting DUT`);
+		this.logger.log(`Rebooting the DUT`);
 		await this.executeCommandInHostOS(
 			`touch /tmp/reboot-check && systemd-run --on-active=2 reboot`,
 			target,
@@ -242,14 +242,15 @@ module.exports = class Worker {
 		await utils.waitUntil(async () => {
 			return (
 				(await this.executeCommandInHostOS(
-					'[[ ! -f /tmp/reboot-check ]] && echo pass || echo fail',
+					'[[ ! -f /tmp/reboot-check ]] && echo pass',
 					target,
 				)) === 'pass'
 			);
-		}, true);
-		this.logger.log(`DUT has rebooted and is online.`);
+		}, false);
+		this.logger.log(`DUT has rebooted & is back online`);
 	};
 
+	// Check if this function really works
 	async fetchTestbotIp () {
 		await exec(`ip addr | awk '/inet.*wlan0/{print $2}' | cut -d\/ -f1`).trim()
 	}
