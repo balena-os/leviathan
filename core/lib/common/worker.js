@@ -233,4 +233,24 @@ module.exports = class Worker {
 		return stdout;
 	}
 
+	async rebootDut (target) {
+		this.logger.log(`Rebooting DUT`);
+		await this.executeCommandInHostOS(
+			`touch /tmp/reboot-check && systemd-run --on-active=2 reboot`,
+			target,
+		);
+		await utils.waitUntil(async () => {
+			return (
+				(await this.executeCommandInHostOS(
+					'[[ ! -f /tmp/reboot-check ]] && echo pass || echo fail',
+					target,
+				)) === 'pass'
+			);
+		}, true);
+		this.logger.log(`DUT has rebooted and is online.`);
+	};
+
+	async fetchTestbotIp () {
+		await exec(`ip addr | awk '/inet.*wlan0/{print $2}' | cut -d\/ -f1`).trim()
+	}
 };
