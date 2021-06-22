@@ -26,9 +26,7 @@ const once = require('lodash/once');
 const pipeline = Bluebird.promisify(require('stream').pipeline);
 const request = require('request');
 const rp = require('request-promise');
-
 const exec = Bluebird.promisify(require('child_process').exec);
-
 module.exports = class Worker {
 	constructor(
 		deviceType,
@@ -249,9 +247,4 @@ module.exports = class Worker {
 		}, false);
 		this.logger.log(`DUT has rebooted & is back online`);
 	};
-
-	// Check if this function really works
-	async fetchTestbotIp () {
-		await exec(`ip addr | awk '/inet.*wlan0/{print $2}' | cut -d\/ -f1`).trim()
-	}
 };

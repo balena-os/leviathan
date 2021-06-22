@@ -24,9 +24,11 @@ const fs = require('fs')
 const { join } = require("path");
 const Bluebird = require('bluebird');
 const retry = require('bluebird-retry');
-
 const utils = require('../../common/utils');
 const exec = Bluebird.promisify(require('child_process').exec);
+// const fse = require('fs-extra')
+// const semver = require('balena-semver')
+// var glob = require("glob")
 
 /**
  * The `BalenaSDK` class contains an instance of the balena sdk, as well as some helper methods to interact with a device via the cloud.
@@ -547,40 +549,56 @@ module.exports = class BalenaSDK {
 	}
 
 	/** Downloads provided version of balenaOS using balenaSDK
-	 * @param The balenaOS version you need to download, example: 2.80.3+rev1.dev. Default value: latest
+	 * @param The semver compatible balenaOS version that will be downloaded, example: `2.80.3+rev1.dev`. Default value: `latest` where latest development variant of balenaOS will be downloaded.
 	 * @param The device type for which balenaOS needs to be downloaded
 	*/
-	async fetchOS(version="latest", deviceType) {
+	async fetchOS(version = "latest", deviceType) {
 		if (version === "latest") {
-			// make sure we always flash the development variant
 			const versions = await this.balena.models.os.getSupportedVersions(deviceType);
+			// make sure we always flash the development variant
 			version = versions.latest.replace('prod', 'dev');
 		}
 
 		if (!fs.existsSync(`/data/images/`)) fs.mkdirSync(`/data/images/`);
 		const path = join(`/data/images/`, `balenaOs-${version}.img`);
 
-		// Where's the teardown of fetchOS goes? Should I add it to the worker teardown?
-		// that.suite.teardown.register(async () => {
-		//   that.log(`Image download teardown`);
-		//   try {
-		//     fse.unlinkSync(path);
-		//   } catch (err) {
-		//     that.log(`Error removing base image: ${err}`);
-		//   }
-		// });
+		// Caching implmentation in progress - Not yet complete
+		// glob("/data/images/balenaOs-*.img", (err, files) => {
+		// 	if (err) {
+		// 		throw err
+		// 	}
+		// 	console.log(files)
+		// 	files.forEach(async (file) => {
+		// 		try {
+		// 			console.log(`file found is ${file}`)
+		// 			await this.context.get().os.readOsRelease(file)
+		// 			let versionAvailable = await this.context.get().os.contract.version
+		// 			console.log(`verion found in the file is ${versionAvailable}`)
+
+		// 			/**
+		// 			 * Returns 0 if versionA == versionB, or
+		// 			 * 1 if versionA is greater, or
+		// 			 * -1 if versionB is greater.
+		// 			 * https://github.com/balena-io-modules/balena-semver#compareversiona-versionb--number
+		// 			 */
+		// 			if (semver.compare(versionAvailable, version) === 0) {
+		// 				this.log(`[Cache used]`);
+		// 				return path
+		// 			} else {
+		// 				console.log(`Deleting the file: ${file}`)
+		// 				fse.unlinkSync(file)
+		// 			}
+		// 		} catch (err) {
+		// 			// Image present might be corrupted, deleting...
+		// 			fse.unlinkSync(file)
+		// 		}
+		// 	})
+		// })
 
 		let attempt = 0;
 		const downloadLatestOS = async () => {
 			attempt++;
 			this.logger.log(`Fetching balenaOS version ${version}, attempt ${attempt}...`);
-			// FIXME this doesn't actually ever cache right now. We need to think about
-			// if we want to allow the suite to leave data behind?
-			// if (fs.existsSync(path)) {
-			//   that.log(`[Cache used]`);
-			//   return path;
-			// }
-
 			return await new Promise(async (resolve, reject) => {
 				await this.balena.models.os.download(deviceType, version, function (error, stream) {
 					if (error) {
