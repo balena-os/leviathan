@@ -155,8 +155,8 @@ module.exports = class Worker {
 		return JSON.parse(await rp.get(`${this.url}/dut/diagnostics`));
 	}
 
-	async network(network) {
-		await rp.post({
+	network(network) {
+		return rp.post({
 			uri: `${this.url}/dut/network`,
 			body: network,
 			json: true,

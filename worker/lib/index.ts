@@ -6,6 +6,7 @@ import * as http from 'http';
 import { getSdk } from 'balena-sdk';
 import config = require("config");
 import {
+	getIpFromIface,
 	resolveLocalTarget,
 } from './helpers';
 import { TestBotWorker } from './workers/testbot';
@@ -145,7 +146,23 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 		) => {
 			try {
 				await worker.network(req.body);
-				res.send('OK');
+
+				let ip;
+				if (req.body.wired && (worker.state.network.wired != null)) {
+					ip = {
+						ip: getIpFromIface(worker.state.network.wired),
+					};
+				}
+				if (req.body.wireless && (worker.state.network.wireless != null)) {
+					ip = {
+						ip: getIpFromIface(worker.state.network.wireless),
+					};
+				}
+				if (ip == null) {
+					throw new Error('DUT network could not be found');
+				}
+
+				res.send(ip);
 			} catch (err) {
 				console.error(err);
 				next(err);
