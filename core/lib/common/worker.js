@@ -26,9 +26,7 @@ const once = require('lodash/once');
 const pipeline = Bluebird.promisify(require('stream').pipeline);
 const request = require('request');
 const rp = require('request-promise');
-
 const exec = Bluebird.promisify(require('child_process').exec);
-
 module.exports = class Worker {
 	constructor(
 		deviceType,
@@ -190,7 +188,7 @@ module.exports = class Worker {
 	}
 
 	async pushContainerToDUT(target, source, containerName){
-		// use cli to push container 
+		// use cli to push container
 		await retry(
 			async () => {
 				await exec(
@@ -233,4 +231,20 @@ module.exports = class Worker {
 		return stdout;
 	}
 
+	async rebootDut (target) {
+		this.logger.log(`Rebooting the DUT`);
+		await this.executeCommandInHostOS(
+			`touch /tmp/reboot-check && systemd-run --on-active=2 reboot`,
+			target,
+		);
+		await utils.waitUntil(async () => {
+			return (
+				(await this.executeCommandInHostOS(
+					'[[ ! -f /tmp/reboot-check ]] && echo pass',
+					target,
+				)) === 'pass'
+			);
+		}, false);
+		this.logger.log(`DUT has rebooted & is back online`);
+	};
 };

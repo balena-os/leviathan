@@ -20,15 +20,18 @@ const map = require('lodash/map');
 const pick = require('lodash/pick');
 const find = require('lodash/find');
 const flatMapDeep = require('lodash/flatMapDeep');
-
+const fs = require('fs')
+const { join } = require("path");
 const Bluebird = require('bluebird');
 const retry = require('bluebird-retry');
-
 const utils = require('../../common/utils');
 const exec = Bluebird.promisify(require('child_process').exec);
+// const fse = require('fs-extra')
+// const semver = require('balena-semver')
+// var glob = require("glob")
 
 /**
- * The `BalenaSDK` class contains an instance of the balena sdk, as well as some helper methods to interact with a device via the cloud. 
+ * The `BalenaSDK` class contains an instance of the balena sdk, as well as some helper methods to interact with a device via the cloud.
  * The `balena` attribute of the class contains the sdk,and can be used as follows in a test suite:
  *
  * @example
@@ -38,20 +41,19 @@ const exec = Bluebird.promisify(require('child_process').exec);
  * this.suite.context.set({
  *	cloud: new Balena(`https://api.balena-cloud.com/`, this.getLogger())
  * });
- * 
+ *
  * // login
  * await this.context
  *	.get()
  *	.cloud.balena.auth.loginWithToken(this.suite.options.balena.apiKey);
- * 
- * 
+ *
  * // create a balena application
  * await this.context.get().cloud.balena.models.application.create({
  * 	name: `NAME`,
  * 	deviceType: `DEVICE_TYPE`,
  *  organization: `ORG`,
  * });
- * 
+ *
  * ```
  */
 
@@ -448,7 +450,7 @@ module.exports = class BalenaSDK {
 		);
 	}
 
-	/** Pushes a release to an application, from a given directory 
+	/** Pushes a release to an application, from a given directory
 	 * @param The balena application name to push the release to
 	 * @param The path to the directory containing the docker-compose/Dockerfile for the application and the source files
 	*/
@@ -511,9 +513,8 @@ module.exports = class BalenaSDK {
             return log.message;
           });
 
-		let startIndex = (_start != null)? logs.indexOf(_start) : 0 
+		let startIndex = (_start != null)? logs.indexOf(_start) : 0
 		let endIndex = (_end != null)? logs.indexOf(_end) : (logs.length)
-		
 		let slicedLogs = logs.slice(startIndex, endIndex);
 
 		let pass = false;
@@ -534,8 +535,8 @@ module.exports = class BalenaSDK {
 			`balena ps | grep balena_supervisor`,
 			uuid
 		  );
-		let supervisorName = (checkName !== "") ? `balena_supervisor` : `resin_supervisor` 
-		
+		let supervisorName = (checkName !== "") ? `balena_supervisor` : `resin_supervisor`
+
 		let supervisor = await this.executeCommandInHostOS(
 		  `balena exec ${supervisorName} cat package.json | grep version`,
 		  uuid
@@ -546,4 +547,79 @@ module.exports = class BalenaSDK {
 		supervisor = supervisor.replace(`",`, ``);
 		return supervisor
 	}
+
+	/** Downloads provided version of balenaOS using balenaSDK
+	 * @param The semver compatible balenaOS version that will be downloaded, example: `2.80.3+rev1.dev`. Default value: `latest` where latest development variant of balenaOS will be downloaded.
+	 * @param The device type for which balenaOS needs to be downloaded
+	*/
+	async fetchOS(version = "latest", deviceType) {
+		if (version === "latest") {
+			const versions = await this.balena.models.os.getSupportedVersions(deviceType);
+			// make sure we always flash the development variant
+			version = versions.latest.replace('prod', 'dev');
+		}
+
+		if (!fs.existsSync(`/data/images/`)) fs.mkdirSync(`/data/images/`);
+		const path = join(`/data/images/`, `balenaOs-${version}.img`);
+
+		// Caching implmentation in progress - Not yet complete
+		// glob("/data/images/balenaOs-*.img", (err, files) => {
+		// 	if (err) {
+		// 		throw err
+		// 	}
+		// 	console.log(files)
+		// 	files.forEach(async (file) => {
+		// 		try {
+		// 			console.log(`file found is ${file}`)
+		// 			await this.context.get().os.readOsRelease(file)
+		// 			let versionAvailable = await this.context.get().os.contract.version
+		// 			console.log(`verion found in the file is ${versionAvailable}`)
+
+		// 			/**
+		// 			 * Returns 0 if versionA == versionB, or
+		// 			 * 1 if versionA is greater, or
+		// 			 * -1 if versionB is greater.
+		// 			 * https://github.com/balena-io-modules/balena-semver#compareversiona-versionb--number
+		// 			 */
+		// 			if (semver.compare(versionAvailable, version) === 0) {
+		// 				this.log(`[Cache used]`);
+		// 				return path
+		// 			} else {
+		// 				console.log(`Deleting the file: ${file}`)
+		// 				fse.unlinkSync(file)
+		// 			}
+		// 		} catch (err) {
+		// 			// Image present might be corrupted, deleting...
+		// 			fse.unlinkSync(file)
+		// 		}
+		// 	})
+		// })
+
+		let attempt = 0;
+		const downloadLatestOS = async () => {
+			attempt++;
+			this.logger.log(`Fetching balenaOS version ${version}, attempt ${attempt}...`);
+			return await new Promise(async (resolve, reject) => {
+				await this.balena.models.os.download(deviceType, version, function (error, stream) {
+					if (error) {
+						fs.unlink(path, () => {
+							// Ignore.
+						})
+						reject(`Image download failed: ${error}`)
+					}
+					// Shows progress of image download for debugging purposes
+					// Commented, because too noisy for normal use
+					// stream.on('progress', data => {
+					//   console.log(`Downloading Image: ${data.percentage}`);
+					// });
+					stream.pipe(fs.createWriteStream(path))
+					stream.on('finish', () => {
+						console.log(`Download Successful: ${path}`)
+						resolve(path)
+					})
+				})
+			})
+		}
+		return retry(downloadLatestOS, { max_retries: 3, interval: 500 });
+	};
 };
