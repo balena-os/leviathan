@@ -103,7 +103,7 @@ module.exports = class BalenaOS {
 		this.network = options.network;
 		this.image = {
 			input: options.image || config.get('leviathan.uploads').image,
-			path: join(config.get('leviathan.workdir'), `image-${id()}`)
+			path: join(config.get('leviathan.downloads'), `image-${id()}`)
 		};
 		this.configJson = options.configJson || {};
 		this.contract = {
