@@ -253,7 +253,7 @@ class Suite {
 	}
 
 	async removeDownloads(){
-		if(fs.existsSync(config.get('leviathan.downloads'))){
+		if (fs.existsSync(config.get('leviathan.downloads'))) {
 			this.state.log(`Removing downloads directory...`);
 			fs.emptyDirSync(config.get('leviathan.downloads'))
 		}
