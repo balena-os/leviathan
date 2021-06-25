@@ -247,4 +247,24 @@ module.exports = class Worker {
 		}, false);
 		this.logger.log(`DUT has rebooted & is back online`);
 	};
+
+	async getOSVersion(target){
+		// maybe https://github.com/balena-io/leviathan/blob/master/core/lib/components/balena/sdk.js#L210
+		// will do? that one works entirely on the device though...
+		const output = await this.executeCommandInHostOS(
+			"cat /etc/os-release",
+			target
+		  );
+		let match;
+		output
+		  .split("\n")
+		  .every(x => {
+			if (x.startsWith("VERSION=")) {
+			  match = x.split("=")[1];
+			  return false;
+			}
+			return true;
+		  })
+		return match.replace(/"/g, '');
+	  }
 };
