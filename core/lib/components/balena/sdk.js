@@ -26,6 +26,8 @@ const Bluebird = require('bluebird');
 const retry = require('bluebird-retry');
 const utils = require('../../common/utils');
 const exec = Bluebird.promisify(require('child_process').exec);
+const config = require('config');
+
 // const fse = require('fs-extra')
 // const semver = require('balena-semver')
 // var glob = require("glob")
@@ -559,8 +561,7 @@ module.exports = class BalenaSDK {
 			version = versions.latest.replace('prod', 'dev');
 		}
 
-		if (!fs.existsSync(`/data/images/`)) fs.mkdirSync(`/data/images/`);
-		const path = join(`/data/images/`, `balenaOs-${version}.img`);
+		const path = join(config.get('leviathan.downloads'), `balenaOs-${version}.img`);
 
 		// Caching implmentation in progress - Not yet complete
 		// glob("/data/images/balenaOs-*.img", (err, files) => {

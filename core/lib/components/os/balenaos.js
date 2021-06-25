@@ -22,7 +22,7 @@ const mapValues = require('lodash/mapValues');
 const Bluebird = require('bluebird');
 const config = require('config');
 const imagefs = require('resin-image-fs');
-const fs = Bluebird.promisifyAll(require('fs'));
+const { fs } = require('mz');
 const { join } = require('path');
 const pipeline = Bluebird.promisify(require('stream').pipeline);
 const zlib = require('zlib');
@@ -46,7 +46,7 @@ const injectNetworkConfiguration = async (image, configuration) => {
 	}
 	if (configuration.wireless.ssid == null) {
 		throw new Error(
-			`Invalide wireless configuration: ${configuration.wireless}`,
+			`Invalid wireless configuration: ${configuration.wireless}`,
 		);
 	}
 
@@ -84,6 +84,16 @@ const injectNetworkConfiguration = async (image, configuration) => {
 	);
 };
 
+async function isGzip(filePath) {
+	const buf = Buffer.alloc(3);
+	await fs.read(await fs.open(filePath, 'r'), buf, 0, 3, 0);
+	return buf[0] === 0x1f && buf[1] === 0x8b && buf[2] === 0x08;
+}
+
+function id() {
+	return `${Math.random().toString(36).substring(2, 10)}`;
+}
+
 module.exports = class BalenaOS {
 	constructor(
 		options = {},
@@ -91,7 +101,10 @@ module.exports = class BalenaOS {
 	) {
 		this.deviceType = options.deviceType;
 		this.network = options.network;
-		this.image = { path: join(config.get('leviathan.workdir'), 'image') };
+		this.image = {
+			input: options.image || config.get('leviathan.uploads').image,
+			path: join(config.get('leviathan.downloads'), `image-${id()}`)
+		};
 		this.configJson = options.configJson || {};
 		this.contract = {
 			network: mapValues(this.network, value => {
@@ -99,89 +112,70 @@ module.exports = class BalenaOS {
 			}),
 		};
 		this.logger = logger;
+		this.releaseInfo = { version: null, variant: null };
 	}
 
-	unpack(download) {
-		const types = {
-			local: async () => {
-				await pipeline(
-					fs.createReadStream(download.source),
-					zlib.createGunzip(),
-					fs.createWriteStream(this.image.path),
+	// calling the fetch method will prepare the image to be used - either unzipping it or moving it to the working directory
+	async fetch() {
+		this.logger.log(`Unpacking the file: ${this.image.input}`);
+		const unpack = await isGzip(this.image.input);
+		if (unpack) {
+			await pipeline(
+				fs.createReadStream(this.image.input),
+				zlib.createGunzip(),
+				fs.createWriteStream(this.image.path),
+			);
+		} else {
+			// image is already unzipped, so no need to do anything
+			this.image.path = this.image.input;
+		}
+	}
+
+	async readOsRelease(image = this.image.path) {
+		const readVersion = async (pattern, field) => {
+			this.logger.log(`Checking ${field} in os-release`);
+			try {
+				const value = pattern.exec(
+					await imagefs.readFile({
+						image: image,
+						partition: 1,
+						path: '/os-release',
+					}),
 				);
-
-				const res = download.releaseInfo || { version: null, variant: null };
-
-				const readOsRelease = async (pattern, field) => {
-					this.logger.log(`Checking ${field} in os-release`);
-					try {
-						const value = pattern.exec(
-							await imagefs.readFile({
-								image: this.image.path,
-								partition: 1,
-								path: '/os-release',
-							}),
-						);
-						if (value) {
-							res[field] = value[1];
-							this.logger.log(
-								`Found ${field} in os-release file: ${res[field]}`,
-							);
-						}
-					} catch (e) {
-						// If os-release file isn't found, look inside the image to be flashed
-						// Especially in case of OS image inside flasher images. Example: Intel-NUC
-						try {
-							const value = pattern.exec(
-								await imagefs.readFile({
-									image: this.image.path,
-									partition: 2,
-									path: '/etc/os-release',
-								}),
-							);
-							if (value) {
-								res[field] = value[1];
-							}
-						} catch (err) {
-							this.logger.log(
-								`Cannot detect ${field} with os-release. Error: ${err}`,
-							);
-						}
+				if (value) {
+					this.releaseInfo[field] = value[1];
+					this.logger.log(
+						`Found ${field} in os-release file: ${this.releaseInfo[field]}`,
+					);
+				}
+			} catch (e) {
+				// If os-release file isn't found, look inside the image to be flashed
+				// Especially in case of OS image inside flasher images. Example: Intel-NUC
+				try {
+					const value = pattern.exec(
+						await imagefs.readFile({
+							image: image,
+							partition: 2,
+							path: '/etc/os-release',
+						}),
+					);
+					if (value) {
+						this.releaseInfo[field] = value[1];
 					}
-				};
-
-				if (!res.version) {
-					await readOsRelease(/VERSION="(.*)"/g, 'version');
+				} catch (err) {
+					this.logger.log(
+						`Cannot detect ${field} with os-release. Error: ${err}`,
+					);
 				}
-				if (!res.variant) {
-					await readOsRelease(/VARIANT="(.*)"/g, 'variant');
-				}
-
-				return res;
-			},
-
-			gunzip: async () => {
-				await pipeline(
-					fs.createReadStream(download.source),
-					zlib.createGunzip(),
-					fs.createWriteStream(this.image.path),
-				);
 			}
 		};
 
-		return types[download.type]();
-	}
-
-	async fetch(download) {
-		this.logger.log('Unpacking the operating system');
-		assignIn(
-			this.contract,
-			await this.unpack({
-				type: download.type,
-				source: config.get('leviathan.uploads').image,
-				releaseInfo: download.releaseInfo,
-			}),
-		);
+		await readVersion(/VERSION="(.*)"/g, 'version');
+		await readVersion(/VARIANT="(.*)"/g, 'variant');
+		assignIn(this.contract, {
+			version: this.releaseInfo.version,
+			variant: this.releaseInfo.variant,
+		});
 	}
 
 	addCloudConfig(configJson) {
@@ -189,7 +183,8 @@ module.exports = class BalenaOS {
 	}
 
 	async configure() {
-		this.logger.log(`Configuring balenaOS image: ${this.image.path}`);
+		this.readOsRelease();
+		this.logger.log(`Configuring balenaOS image: ${this.image.input}`);
 		if (this.configJson) {
 			await injectBalenaConfiguration(this.image.path, this.configJson);
 		}

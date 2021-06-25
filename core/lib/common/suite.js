@@ -94,6 +94,7 @@ class Suite {
 	async init() {
 		await Bluebird.try(async () => {
 			await this.installDependencies();
+			await fs.ensureDir(config.get('leviathan.downloads'));
 			if(fs.existsSync(config.get('leviathan.artifacts'))){
 				this.state.log(`Removing artifacts from previous tests...`);
 				fs.emptyDirSync(config.get('leviathan.artifacts'))
@@ -103,6 +104,7 @@ class Suite {
 			);
 		}).catch(async error => {
 			await this.removeDependencies();
+			await this.removeDownloads();
 			throw error;
 		});
 	}
@@ -171,6 +173,7 @@ class Suite {
 			await treeExpander([this.rootTree, tap]);
 		} finally {
 			await this.removeDependencies();
+			await this.removeDownloads();
 			await this.teardown.runAll();
 			tap.end();
 		}
@@ -247,6 +250,13 @@ class Suite {
 		await Bluebird.promisify(fse.remove)(
 			path.join(config.get('leviathan.uploads.suite'), 'node_modules'),
 		);
+	}
+
+	async removeDownloads(){
+		if (fs.existsSync(config.get('leviathan.downloads'))) {
+			this.state.log(`Removing downloads directory...`);
+			fs.emptyDirSync(config.get('leviathan.downloads'))
+		}
 	}
 }
 
