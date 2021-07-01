@@ -21,7 +21,7 @@ To set up Leviathan both hardware and software need to be configured. If you are
 ### Prerequisites needed
 
 - Install node and npm in your system. We recommend installing [LTS versions from NVM](https://github.com/nvm-sh/nvm#install--update-script).
-- Download the image you want to test on your DUT from [balena.io/os](balena.io/os)
+- Download the image you want to test on your DUT from [balena.io/os](https://balena.io/os#download).
 
 
 ### Configuration needed
