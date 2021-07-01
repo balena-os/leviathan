@@ -5,16 +5,16 @@
 [![node](https://img.shields.io/badge/node-v9.0.0-green.svg)](https://nodejs.org/download/release/v9.0.0/)
 [![License](https://img.shields.io/badge/license-APACHE%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-> A distributed testing framework 
+> A distributed testing framework
 
 ## Getting Started
 
-To set up Leviathan both hardware and software need to be configured. If you are setting up your standalone testbot, then please follow the instructions given below carefully before running tests on the Device Under Test (DUT). 
+To set up Leviathan both hardware and software need to be configured. If you are setting up your standalone testbot, then please follow the instructions given below carefully before running tests on the Device Under Test (DUT).
 
 
 ### Clone the repository
 
-- Clone this repository with `git clone --recursive` or   
+- Clone this repository with `git clone --recursive` or
 - Run `git clone` and then `git submodule update --init --recursive` to install submodules.
 
 
@@ -26,10 +26,10 @@ To set up Leviathan both hardware and software need to be configured. If you are
 
 ### Configuration needed
 
-- Start building your standalone testbot by [following the guide](https://github.com/balena-io/testbot/blob/master/documentation/getting-started.md#quick-start-guide-for-testbot). 
+- Start building your standalone testbot by [following the guide](https://github.com/balena-io/testbot/blob/master/documentation/getting-started.md#quick-start-guide-for-testbot).
 - Create your test configuration, by creating a `config.json` file in the `workspace` directory, following instructions mentioned in the [testbot docs](https://github.com/balena-io/testbot/blob/master/documentation/getting-started.md#run-your-first-test).
 - Move the image zip file you want to test with inside the `workspace` directory in Leviathan.
-- Extract the image, rename it to balena.img, and recompress the image into the `.gz` format. The final file would look like `balena.img.gz` file and has to be in the `./leviathan/workspace` directory. 
+- Extract the image, rename it to balena.img, and recompress the image into the `.gz` format. The final file would look like `balena.img.gz` file and has to be in the `./leviathan/workspace` directory.
 
 
 ### Packages needed for installation
@@ -49,10 +49,10 @@ npm install node-pre-gyp node-gyp -g
 npm install
 ```
 
-Make sure the `npm install` goes without errors (other than the optional dependencies), as it recursively installs packages for all 3 services. If it fails, you can follow the commands below for troubleshooting. 
+Make sure the `npm install` goes without errors (other than the optional dependencies), as it recursively installs packages for all 3 services. If it fails, you can follow the commands below for troubleshooting.
 
 
-3. Run the tests by navigating to the workspace directory and running 
+3. Run the tests by navigating to the workspace directory and running
 
 ```
 ./run-tests.sh
@@ -69,10 +69,10 @@ rm -rf ~/.node-gyp
 npm cache clear --force
 ```
 
-## [Not Needed] Instructions for rig-owners 
+## [Not Needed] Instructions for rig-owners
 
 - If you are pushing new releases of Leviathan to balenaCloud, then place the `.npmrc` file over with NPM token at the location `leviathan/.balena/secrets/.npmrc`
-- Next, create a [build time only secret file](https://www.balena.io/docs/learn/deploy/deployment/#build-time-secrets-and-variables), `.balena.yml` will be needed. Create a `balena.yml` in the `.balena` directory with the following configuration. 
+- Next, create a [build time only secret file](https://www.balena.io/docs/learn/deploy/deployment/#build-time-secrets-and-variables), `.balena.yml` will be needed. Create a `balena.yml` in the `.balena` directory with the following configuration.
 
 ```
 build-secrets:
