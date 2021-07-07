@@ -84,7 +84,7 @@ module.exports = {
 	},
 	waitUntil: async (
 		promise,
-		rejectionFail = true,
+		rejectionFail = false,
 		_times = 20,
 		_delay = 30000,
 	) => {
