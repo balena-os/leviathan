@@ -1,0 +1,215 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Quickstart | Leviathan Helpers</title>
+	<meta name="description" content="Documentation for Leviathan Helpers">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../../assets/css/main.css">
+	<link rel="stylesheet" href="../../assets/css/pages.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../../assets/js/search.json" data-base="../..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../../index.html" class="title">Leviathan Helpers</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../../modules.html">Globals</a>
+				</li>
+				<li>
+					<a href="quickstart.html">Getting-Started</a>
+				</li>
+				<li>
+					<a href="quickstart.html">Quickstart</a>
+				</li>
+			</ul>
+			<h1>Quickstart</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<a href="#quick-start" id="quick-start" style="color: inherit; text-decoration: none;">
+					<h1>Quick start</h1>
+				</a>
+				<p>This is a quick start guide for using the leviathan remote testing framework, with a testbot. As a prerequisite for this guide, you will have to prepare your testbot, using the following <a href="https://github.com/balena-io/testbot-hardware/blob/master/documentation/getting-started.md">guide</a>.</p>
+				<a href="#run-your-first-test-suite" id="run-your-first-test-suite" style="color: inherit; text-decoration: none;">
+					<h2>Run your first test suite</h2>
+				</a>
+				<p>Once you have set up a testbot, you can run your first tests.</p>
+				<ul>
+					<li>Ensure you have <code>docker</code> and node installed on your machine.</li>
+					<li>Clone the <a href="https://github.com/balena-io/leviathan">leviathan</a> repository and then <code>git submodule update --init --recursive</code> to install submodules.</li>
+					<li>Navigate to the <code>workspace</code> directory in the project using <code>cd workspace/</code></li>
+					<li>Create a <code>config.js</code> file in the <code>workspace</code> directory using the following template:</li>
+				</ul>
+				<pre><code class="language-js"><span style="color: #4EC9B0">module</span><span style="color: #D4D4D4">.</span><span style="color: #4EC9B0">exports</span><span style="color: #D4D4D4"> = {</span>
+<span style="color: #D4D4D4">    </span><span style="color: #9CDCFE">deviceType:</span><span style="color: #D4D4D4"> </span><span style="color: #CE9178">&#039;&lt;DUT device type, for example &quot;raspberrypi3-64&quot;&gt;&#039;</span><span style="color: #D4D4D4">,</span>
+<span style="color: #D4D4D4">    </span><span style="color: #9CDCFE">suite:</span><span style="color: #D4D4D4"> </span><span style="color: #CE9178">`</span><span style="color: #569CD6">${</span><span style="color: #9CDCFE">__dirname</span><span style="color: #569CD6">}</span><span style="color: #CE9178">/../suites/os`</span><span style="color: #D4D4D4">,</span>
+<span style="color: #D4D4D4">    </span><span style="color: #9CDCFE">config:</span><span style="color: #D4D4D4"> {</span>
+<span style="color: #D4D4D4">        </span><span style="color: #9CDCFE">networkWired:</span><span style="color: #D4D4D4"> </span><span style="color: #569CD6">false</span><span style="color: #D4D4D4">,</span>
+<span style="color: #D4D4D4">        </span><span style="color: #9CDCFE">networkWireless:</span><span style="color: #D4D4D4"> </span><span style="color: #569CD6">true</span><span style="color: #D4D4D4">,</span>
+<span style="color: #D4D4D4">        </span><span style="color: #9CDCFE">downloadVersion:</span><span style="color: #D4D4D4"> </span><span style="color: #CE9178">&#039;latest&#039;</span><span style="color: #D4D4D4">,</span>
+<span style="color: #D4D4D4">        </span><span style="color: #9CDCFE">interactiveTests:</span><span style="color: #D4D4D4"> </span><span style="color: #569CD6">false</span><span style="color: #D4D4D4">,</span>
+<span style="color: #D4D4D4">        </span><span style="color: #9CDCFE">balenaApiKey:</span><span style="color: #D4D4D4"> </span><span style="color: #9CDCFE">process</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">env</span><span style="color: #D4D4D4">.</span><span style="color: #4FC1FF">BALENACLOUD_API_KEY</span><span style="color: #D4D4D4">,</span>
+<span style="color: #D4D4D4">        </span><span style="color: #9CDCFE">balenaApiUrl:</span><span style="color: #D4D4D4"> </span><span style="color: #CE9178">&#039;balena-cloud.com&#039;</span><span style="color: #D4D4D4">,</span>
+<span style="color: #D4D4D4">        </span><span style="color: #9CDCFE">organization:</span><span style="color: #D4D4D4"> </span><span style="color: #9CDCFE">process</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">env</span><span style="color: #D4D4D4">.</span><span style="color: #4FC1FF">BALENACLOUD_ORG</span>
+<span style="color: #D4D4D4">    },</span>
+<span style="color: #D4D4D4">    </span><span style="color: #9CDCFE">image:</span><span style="color: #D4D4D4"> </span><span style="color: #CE9178">`</span><span style="color: #569CD6">${</span><span style="color: #9CDCFE">__dirname</span><span style="color: #569CD6">}</span><span style="color: #CE9178">/balena.img`</span><span style="color: #D4D4D4">,</span>
+<span style="color: #D4D4D4">    </span><span style="color: #9CDCFE">workers:</span><span style="color: #D4D4D4"> [</span><span style="color: #CE9178">&#039;http://&lt;short UUID of your testbot in balenaCloud&gt;.local&#039;</span><span style="color: #D4D4D4">],</span>
+<span style="color: #D4D4D4">};</span>
+</code></pre>
+				<ul>
+					<li>Use the tests from <a href="https://github.com/balena-os/meta-balena/tree/master/tests/suites">meta-balena</a> instead. OS test suite is recommended as it works with the least configuration. Either copy the OS test suite to the <code>suite</code> property path as mentioned in config.js or point the <code>suite</code> property to the path of the OS test suite.</li>
+					<li>Extract the image you want to test to <code>./leviathan/workspace</code> and rename it to <code>balena.img</code>. You can downloaded unmanaged image from <a href="balena.io/os">balena.io/os</a>.</li>
+					<li>Run the <code>run-tests.sh</code> script from the <code>workspace</code> directory and watch the logs. </li>
+					<li>At the end of the run, reports and logs about the test will be stored in <code>workspace/reports</code> directory.</li>
+					<li>With that, you have successfully completed your first test run.</li>
+				</ul>
+				<a href="#where-do-you-go-from-here" id="where-do-you-go-from-here" style="color: inherit; text-decoration: none;">
+					<h2>Where do you go from here?</h2>
+				</a>
+				<ol>
+					<li>Start by <a href="writing-tests.html">writing your first test</a>.</li>
+					<li>To know more about the config.js and it&#39;s properties, refer to <a href="config-reference.html">Config.js reference</a>.</li>
+					<li>To understand the bigger picture about the project read/watch these <a href="learn-more.html">resources</a>.</li>
+					<li>Some tips and references for <a href="reference-tips.html">writing better tests</a> with Leviathan.</li>
+				</ol>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="label pp-nav pp-group">
+						<span>Getting-<wbr><wbr>Started</span>
+					</li>
+					<li class="current pp-nav pp-page">
+						<a href="quickstart.html">Quickstart</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="config-reference.html">Config.js <wbr>Reference</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="writing-tests.html">Writing tests</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="reference-tips.html">Tips and <wbr>Reference</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="learn-more.html">Links, and more links</a>
+					</li>
+					<li class="label pp-nav pp-group">
+						<span>Helper <wbr>Methods</span>
+					</li>
+					<li class=" ">
+						<a href="../../modules.html">Modules</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../../modules/archiver.html">Archiver</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../../modules/context.html">Context</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../../modules/graphics.html">Graphics</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../../modules/leviathan_utility_helpers.html">Leviathan <wbr>Utility helpers</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../../modules/leviathan_worker_helpers.html">Leviathan <wbr>Worker helpers</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../../modules/state.html">State</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../../modules/sync_helper.html">Sync helper</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../../modules/teardown.html">Teardown</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../../modules/test.html">Test</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../../modules/balena_git_helpers.html">balena git helpers</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../../modules/balenacli_helpers.html">balenaCLI helpers</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../../modules/balenaos_helpers.html">balenaOS helpers</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../../modules/balenasdk_helpers.html">balenaSDK helpers</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-namespace"><span class="tsd-kind-icon">Namespace</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../../assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../../assets/js/search.json"><' + '/script>');</script>
+</body>
+</html>
