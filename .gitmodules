@@ -1,3 +1,6 @@
 [submodule "core/contracts"]
 	path = core/contracts
 	url = https://github.com/balena-io/contracts.git
+[submodule "meta-balena"]
+	path = meta-balena
+	url = https://github.com/balena-os/meta-balena.git
