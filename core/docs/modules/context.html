@@ -1,0 +1,204 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Context | Leviathan Helpers</title>
+	<meta name="description" content="Documentation for Leviathan Helpers">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+	<link rel="stylesheet" href="../assets/css/pages.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">Leviathan Helpers</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../modules.html">Globals</a>
+				</li>
+				<li>
+					<a href="context.html">Context</a>
+				</li>
+			</ul>
+			<h1>Module Context</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<a href="#context" id="context" style="color: inherit; text-decoration: none;">
+							<h1>Context</h1>
+						</a>
+					</div>
+					<p>The context class lets you share instances of objects across different tests. For example, if we
+						made an instance of the worker class in a suite, as above, other tests would not be able to see
+						it. An instance of the context class has a <code>set()</code> and a <code>get()</code> method, to both add or fetch
+					objects from the context. An example can be seen below:</p>
+					<dl class="tsd-comment-tags">
+						<dt>example</dt>
+						<dd><pre><code class="language-js"><span style="color: #569CD6">const</span><span style="color: #D4D4D4"> </span><span style="color: #4FC1FF">Worker</span><span style="color: #D4D4D4"> = </span><span style="color: #569CD6">this</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">require</span><span style="color: #D4D4D4">(</span><span style="color: #CE9178">&#039;common/worker&#039;</span><span style="color: #D4D4D4">);</span>
+<span style="color: #569CD6">this</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">suite</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">context</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">set</span><span style="color: #D4D4D4">({</span>
+<span style="color: #D4D4D4">    </span><span style="color: #9CDCFE">worker:</span><span style="color: #D4D4D4"> </span><span style="color: #569CD6">new</span><span style="color: #D4D4D4"> </span><span style="color: #DCDCAA">Worker</span><span style="color: #D4D4D4">(</span><span style="color: #4FC1FF">DEVICE_TYPE_SLUG</span><span style="color: #D4D4D4">, </span><span style="color: #569CD6">this</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">getLogger</span><span style="color: #D4D4D4">()), </span><span style="color: #6A9955">// Add an instance of worker to context</span>
+<span style="color: #D4D4D4">});</span>
+<span style="color: #C586C0">await</span><span style="color: #D4D4D4"> </span><span style="color: #569CD6">this</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">context</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">get</span><span style="color: #D4D4D4">().</span><span style="color: #9CDCFE">worker</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">flash</span><span style="color: #D4D4D4">() </span><span style="color: #6A9955">// Flash the DUT with the worker instance from context</span>
+</code></pre>
+							<p>The context can be used to share anything between tests - device uuids, app names and so on.</p>
+						</dd>
+					</dl>
+				</div>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Classes</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/context.export_.html" class="tsd-kind-icon">export&#61;</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="label pp-nav pp-group">
+						<span>Getting-<wbr><wbr>Started</span>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../pages/Getting-Started/quickstart.html">Quickstart</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../pages/Getting-Started/config-reference.html">Config.js <wbr>Reference</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../pages/Getting-Started/writing-tests.html">Writing tests</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../pages/Getting-Started/reference-tips.html">Tips and <wbr>Reference</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../pages/Getting-Started/learn-more.html">Links, and more links</a>
+					</li>
+					<li class="label pp-nav pp-group">
+						<span>Helper <wbr>Methods</span>
+					</li>
+					<li class=" ">
+						<a href="../modules.html">Modules</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="archiver.html">Archiver</a>
+					</li>
+					<li class="current tsd-kind-module">
+						<a href="context.html">Context</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="graphics.html">Graphics</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="leviathan_utility_helpers.html">Leviathan <wbr>Utility helpers</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="leviathan_worker_helpers.html">Leviathan <wbr>Worker helpers</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="state.html">State</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="sync_helper.html">Sync helper</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="teardown.html">Teardown</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="test.html">Test</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="balena_git_helpers.html">balena git helpers</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="balenacli_helpers.html">balenaCLI helpers</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="balenaos_helpers.html">balenaOS helpers</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="balenasdk_helpers.html">balenaSDK helpers</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-class tsd-parent-kind-module">
+						<a href="../classes/context.export_.html" class="tsd-kind-icon">export&#61;</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-namespace"><span class="tsd-kind-icon">Namespace</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.json"><' + '/script>');</script>
+</body>
+</html>
