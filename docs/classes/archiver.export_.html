@@ -55,10 +55,10 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="../modules/context.html">Context</a>
+					<a href="../modules/archiver.html">Archiver</a>
 				</li>
 				<li>
-					<a href="context.export_.html">export&#x3D;</a>
+					<a href="archiver.export_.html">export&#x3D;</a>
 				</li>
 			</ul>
 			<h1>Class export&#x3D;</h1>
@@ -83,15 +83,14 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="context.export_.html#ctx" class="tsd-kind-icon">ctx</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="context.export_.html#global" class="tsd-kind-icon">global</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="archiver.export_.html#location" class="tsd-kind-icon">location</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
-							<h3>helper Methods</h3>
+							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="context.export_.html#get" class="tsd-kind-icon">get</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="context.export_.html#set" class="tsd-kind-icon">set</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="archiver.export_.html#add" class="tsd-kind-icon">add</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="archiver.export_.html#getstream" class="tsd-kind-icon">get<wbr>Stream</a></li>
 							</ul>
 						</section>
 					</div>
@@ -100,93 +99,61 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="ctx" class="tsd-anchor"></a>
-					<h3>ctx</h3>
-					<div class="tsd-signature tsd-kind-icon">ctx<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
+					<a name="location" class="tsd-anchor"></a>
+					<h3>location</h3>
+					<div class="tsd-signature tsd-kind-icon">location<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/balena-io/leviathan/blob/2566878/core/lib/common/context.js#L45">lib/common/context.js:45</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-						</ul>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="global" class="tsd-anchor"></a>
-					<h3>global</h3>
-					<div class="tsd-signature tsd-kind-icon">global<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/balena-io/leviathan/blob/2566878/core/lib/common/context.js#L44">lib/common/context.js:44</a></li>
+							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/077b6a2/core/lib/common/archiver.js#L45">lib/common/archiver.js:45</a></li>
 						</ul>
 					</aside>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>helper Methods</h2>
+				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="get" class="tsd-anchor"></a>
-					<h3>get</h3>
+					<a name="add" class="tsd-anchor"></a>
+					<h3>add</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">get<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+						<li class="tsd-signature tsd-kind-icon">add<span class="tsd-signature-symbol">(</span>artifactPath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-io/leviathan/blob/2566878/core/lib/common/context.js#L74">lib/common/context.js:74</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/077b6a2/core/lib/common/archiver.js#L49">lib/common/archiver.js:49</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Method to fetch objects added to the context from suites and tests.</p>
-								</div>
-							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>artifactPath: <span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="set" class="tsd-anchor"></a>
-					<h3>set</h3>
+					<a name="getstream" class="tsd-anchor"></a>
+					<h3>get<wbr>Stream</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">set<span class="tsd-signature-symbol">(</span>obj<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Stream<span class="tsd-signature-symbol">(</span>artifactPath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">WriteStream</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-io/leviathan/blob/2566878/core/lib/common/context.js#L66">lib/common/context.js:66</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/077b6a2/core/lib/common/archiver.js#L56">lib/common/archiver.js:56</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Method use to add new objects to the context</p>
-								</div>
-								<dl class="tsd-comment-tags">
-									<dt>example</dt>
-									<dd><p>this.suite.context.set({
-											hup: {
-											doHUP: doHUP,
-											getOSVersion: getOSVersion,
-											initDUT: initDUT,
-											runRegistry: runRegistry,
-											archiveLogs: archiveLogs,
-											}
-										})</p>
-									</dd>
-								</dl>
-							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>obj: <span class="tsd-signature-type">object</span></h5>
+									<h5>artifactPath: <span class="tsd-signature-type">any</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">WriteStream</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -219,10 +186,10 @@
 					<li class=" ">
 						<a href="../modules.html">Modules</a>
 					</li>
-					<li class=" tsd-kind-module">
+					<li class="current tsd-kind-module">
 						<a href="../modules/archiver.html">Archiver</a>
 					</li>
-					<li class="current tsd-kind-module">
+					<li class=" tsd-kind-module">
 						<a href="../modules/context.html">Context</a>
 					</li>
 					<li class=" tsd-kind-module">
@@ -265,19 +232,16 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class tsd-parent-kind-module">
-						<a href="context.export_.html" class="tsd-kind-icon">export&#61;</a>
+						<a href="archiver.export_.html" class="tsd-kind-icon">export&#61;</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="context.export_.html#ctx" class="tsd-kind-icon">ctx</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="context.export_.html#global" class="tsd-kind-icon">global</a>
+								<a href="archiver.export_.html#location" class="tsd-kind-icon">location</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="context.export_.html#get" class="tsd-kind-icon">get</a>
+								<a href="archiver.export_.html#add" class="tsd-kind-icon">add</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="context.export_.html#set" class="tsd-kind-icon">set</a>
+								<a href="archiver.export_.html#getstream" class="tsd-kind-icon">get<wbr>Stream</a>
 							</li>
 						</ul>
 					</li>

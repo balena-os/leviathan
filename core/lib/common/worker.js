@@ -1,4 +1,6 @@
 /**
+ * # Worker helpers
+ * 
  * The worker class can be used to control the testbot hardware. In the `suite.js` file, you can
  * create an instance of it, and then use its methods to flash the DUT, power it on/off, and set up a
  * network AP for the DUT to connect to.

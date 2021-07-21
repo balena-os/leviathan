@@ -55,10 +55,10 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="../modules/state.html">State</a>
+					<a href="../modules/context.html">Context</a>
 				</li>
 				<li>
-					<a href="state.export_.html">export&#x3D;</a>
+					<a href="context.export_.html">export&#x3D;</a>
 				</li>
 			</ul>
 			<h1>Class export&#x3D;</h1>
@@ -83,17 +83,15 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="state.export_.html#_info" class="tsd-kind-icon">_info</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="state.export_.html#_log" class="tsd-kind-icon">_log</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="state.export_.html#_status" class="tsd-kind-icon">_status</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="context.export_.html#ctx" class="tsd-kind-icon">ctx</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="context.export_.html#global" class="tsd-kind-icon">global</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
-							<h3>Methods</h3>
+							<h3>helper Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="state.export_.html#info" class="tsd-kind-icon">info</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="state.export_.html#log" class="tsd-kind-icon">log</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="state.export_.html#status" class="tsd-kind-icon">status</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="context.export_.html#get" class="tsd-kind-icon">get</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="context.export_.html#set" class="tsd-kind-icon">set</a></li>
 							</ul>
 						</section>
 					</div>
@@ -102,12 +100,12 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="_info" class="tsd-anchor"></a>
-					<h3>_info</h3>
-					<div class="tsd-signature tsd-kind-icon">_info<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
+					<a name="ctx" class="tsd-anchor"></a>
+					<h3>ctx</h3>
+					<div class="tsd-signature tsd-kind-icon">ctx<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/balena-io/leviathan/blob/2566878/core/lib/common/state.js#L13">lib/common/state.js:13</a></li>
+							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/077b6a2/core/lib/common/context.js#L45">lib/common/context.js:45</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -117,96 +115,75 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="_log" class="tsd-anchor"></a>
-					<h3>_log</h3>
-					<div class="tsd-signature tsd-kind-icon">_log<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></div>
+					<a name="global" class="tsd-anchor"></a>
+					<h3>global</h3>
+					<div class="tsd-signature tsd-kind-icon">global<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/balena-io/leviathan/blob/2566878/core/lib/common/state.js#L11">lib/common/state.js:11</a></li>
+							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/077b6a2/core/lib/common/context.js#L44">lib/common/context.js:44</a></li>
 						</ul>
 					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="_status" class="tsd-anchor"></a>
-					<h3>_status</h3>
-					<div class="tsd-signature tsd-kind-icon">_status<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/balena-io/leviathan/blob/2566878/core/lib/common/state.js#L12">lib/common/state.js:12</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-						</ul>
-					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Methods</h2>
+				<h2>helper Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="info" class="tsd-anchor"></a>
-					<h3>info</h3>
+					<a name="get" class="tsd-anchor"></a>
+					<h3>get</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">info<span class="tsd-signature-symbol">(</span>info<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-io/leviathan/blob/2566878/core/lib/common/state.js#L47">lib/common/state.js:47</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/077b6a2/core/lib/common/context.js#L74">lib/common/context.js:74</a></li>
 								</ul>
 							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>info: <span class="tsd-signature-type">any</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Method to fetch objects added to the context from suites and tests.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
 						</li>
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="log" class="tsd-anchor"></a>
-					<h3>log</h3>
+					<a name="set" class="tsd-anchor"></a>
+					<h3>set</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">log<span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">set<span class="tsd-signature-symbol">(</span>obj<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-io/leviathan/blob/2566878/core/lib/common/state.js#L17">lib/common/state.js:17</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/077b6a2/core/lib/common/context.js#L66">lib/common/context.js:66</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Method use to add new objects to the context</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><p>this.suite.context.set({
+											hup: {
+											doHUP: doHUP,
+											getOSVersion: getOSVersion,
+											initDUT: initDUT,
+											runRegistry: runRegistry,
+											archiveLogs: archiveLogs,
+											}
+										})</p>
+									</dd>
+								</dl>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>message: <span class="tsd-signature-type">any</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="status" class="tsd-anchor"></a>
-					<h3>status</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">status<span class="tsd-signature-symbol">(</span>status<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/balena-io/leviathan/blob/2566878/core/lib/common/state.js#L32">lib/common/state.js:32</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>status: <span class="tsd-signature-type">any</span></h5>
+									<h5>obj: <span class="tsd-signature-type">object</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -245,7 +222,7 @@
 					<li class=" tsd-kind-module">
 						<a href="../modules/archiver.html">Archiver</a>
 					</li>
-					<li class=" tsd-kind-module">
+					<li class="current tsd-kind-module">
 						<a href="../modules/context.html">Context</a>
 					</li>
 					<li class=" tsd-kind-module">
@@ -257,7 +234,7 @@
 					<li class=" tsd-kind-module">
 						<a href="../modules/leviathan_worker_helpers.html">Leviathan <wbr>Worker helpers</a>
 					</li>
-					<li class="current tsd-kind-module">
+					<li class=" tsd-kind-module">
 						<a href="../modules/state.html">State</a>
 					</li>
 					<li class=" tsd-kind-module">
@@ -288,25 +265,19 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class tsd-parent-kind-module">
-						<a href="state.export_.html" class="tsd-kind-icon">export&#61;</a>
+						<a href="context.export_.html" class="tsd-kind-icon">export&#61;</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="state.export_.html#_info" class="tsd-kind-icon">_info</a>
+								<a href="context.export_.html#ctx" class="tsd-kind-icon">ctx</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="state.export_.html#_log" class="tsd-kind-icon">_log</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="state.export_.html#_status" class="tsd-kind-icon">_status</a>
+								<a href="context.export_.html#global" class="tsd-kind-icon">global</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="state.export_.html#info" class="tsd-kind-icon">info</a>
+								<a href="context.export_.html#get" class="tsd-kind-icon">get</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="state.export_.html#log" class="tsd-kind-icon">log</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="state.export_.html#status" class="tsd-kind-icon">status</a>
+								<a href="context.export_.html#set" class="tsd-kind-icon">set</a>
 							</li>
 						</ul>
 					</li>

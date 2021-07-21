@@ -3,7 +3,7 @@
 		"prettify": "prettier --config ../.prettierrc --write \"{lib,tests}/**/*.js\"",
 		"lint": "eslint -c ../.eslintrc.* lib tests",
 		"start": "node lib/main.js",
-		"docs": "rimraf docs/ && npx typedoc --tsconfig tsconfig.json"
+		"docs": "rimraf ../docs/ && npx typedoc --tsconfig tsconfig.json"
 	},
 	"dependencies": {
 		"ajv": "^6.5.0",

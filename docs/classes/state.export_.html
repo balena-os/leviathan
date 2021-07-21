@@ -55,10 +55,10 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="../modules/archiver.html">Archiver</a>
+					<a href="../modules/state.html">State</a>
 				</li>
 				<li>
-					<a href="archiver.export_.html">export&#x3D;</a>
+					<a href="state.export_.html">export&#x3D;</a>
 				</li>
 			</ul>
 			<h1>Class export&#x3D;</h1>
@@ -83,14 +83,17 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="archiver.export_.html#location" class="tsd-kind-icon">location</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="state.export_.html#_info" class="tsd-kind-icon">_info</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="state.export_.html#_log" class="tsd-kind-icon">_log</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="state.export_.html#_status" class="tsd-kind-icon">_status</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="archiver.export_.html#add" class="tsd-kind-icon">add</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="archiver.export_.html#getstream" class="tsd-kind-icon">get<wbr>Stream</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="state.export_.html#info" class="tsd-kind-icon">info</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="state.export_.html#log" class="tsd-kind-icon">log</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="state.export_.html#status" class="tsd-kind-icon">status</a></li>
 							</ul>
 						</section>
 					</div>
@@ -99,61 +102,114 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="location" class="tsd-anchor"></a>
-					<h3>location</h3>
-					<div class="tsd-signature tsd-kind-icon">location<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<a name="_info" class="tsd-anchor"></a>
+					<h3>_info</h3>
+					<div class="tsd-signature tsd-kind-icon">_info<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/balena-io/leviathan/blob/2566878/core/lib/common/archiver.js#L45">lib/common/archiver.js:45</a></li>
+							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/077b6a2/core/lib/common/state.js#L13">lib/common/state.js:13</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="_log" class="tsd-anchor"></a>
+					<h3>_log</h3>
+					<div class="tsd-signature tsd-kind-icon">_log<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/077b6a2/core/lib/common/state.js#L11">lib/common/state.js:11</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="_status" class="tsd-anchor"></a>
+					<h3>_status</h3>
+					<div class="tsd-signature tsd-kind-icon">_status<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/077b6a2/core/lib/common/state.js#L12">lib/common/state.js:12</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+						</ul>
+					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="add" class="tsd-anchor"></a>
-					<h3>add</h3>
+					<a name="info" class="tsd-anchor"></a>
+					<h3>info</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">add<span class="tsd-signature-symbol">(</span>artifactPath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">info<span class="tsd-signature-symbol">(</span>info<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-io/leviathan/blob/2566878/core/lib/common/archiver.js#L49">lib/common/archiver.js:49</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/077b6a2/core/lib/common/state.js#L47">lib/common/state.js:47</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>artifactPath: <span class="tsd-signature-type">any</span></h5>
+									<h5>info: <span class="tsd-signature-type">any</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="getstream" class="tsd-anchor"></a>
-					<h3>get<wbr>Stream</h3>
+					<a name="log" class="tsd-anchor"></a>
+					<h3>log</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Stream<span class="tsd-signature-symbol">(</span>artifactPath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">WriteStream</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">log<span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-io/leviathan/blob/2566878/core/lib/common/archiver.js#L56">lib/common/archiver.js:56</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/077b6a2/core/lib/common/state.js#L17">lib/common/state.js:17</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>artifactPath: <span class="tsd-signature-type">any</span></h5>
+									<h5>message: <span class="tsd-signature-type">any</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">WriteStream</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="status" class="tsd-anchor"></a>
+					<h3>status</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">status<span class="tsd-signature-symbol">(</span>status<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/077b6a2/core/lib/common/state.js#L32">lib/common/state.js:32</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>status: <span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -186,7 +242,7 @@
 					<li class=" ">
 						<a href="../modules.html">Modules</a>
 					</li>
-					<li class="current tsd-kind-module">
+					<li class=" tsd-kind-module">
 						<a href="../modules/archiver.html">Archiver</a>
 					</li>
 					<li class=" tsd-kind-module">
@@ -201,7 +257,7 @@
 					<li class=" tsd-kind-module">
 						<a href="../modules/leviathan_worker_helpers.html">Leviathan <wbr>Worker helpers</a>
 					</li>
-					<li class=" tsd-kind-module">
+					<li class="current tsd-kind-module">
 						<a href="../modules/state.html">State</a>
 					</li>
 					<li class=" tsd-kind-module">
@@ -232,16 +288,25 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class tsd-parent-kind-module">
-						<a href="archiver.export_.html" class="tsd-kind-icon">export&#61;</a>
+						<a href="state.export_.html" class="tsd-kind-icon">export&#61;</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="archiver.export_.html#location" class="tsd-kind-icon">location</a>
+								<a href="state.export_.html#_info" class="tsd-kind-icon">_info</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="state.export_.html#_log" class="tsd-kind-icon">_log</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="state.export_.html#_status" class="tsd-kind-icon">_status</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="archiver.export_.html#add" class="tsd-kind-icon">add</a>
+								<a href="state.export_.html#info" class="tsd-kind-icon">info</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="archiver.export_.html#getstream" class="tsd-kind-icon">get<wbr>Stream</a>
+								<a href="state.export_.html#log" class="tsd-kind-icon">log</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="state.export_.html#status" class="tsd-kind-icon">status</a>
 							</li>
 						</ul>
 					</li>
