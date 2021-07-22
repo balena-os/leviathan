@@ -57,6 +57,7 @@ export class BalenaCloudInteractor {
 		appName: string,
 		dutType: string,
 	): Promise<DeviceInfo[]> {
+		let selectedDevices = []
 		const tags = await this.sdk.models.device.tags.getAllByApplication(appName);
 		const taggedDevices = groupTagsData(tags).filter(
 			device => device.tags['DUT'] === dutType,
@@ -65,9 +66,9 @@ export class BalenaCloudInteractor {
 			const online = await this.sdk.models.device.isOnline(
 				taggedDevice.deviceId,
 			);
-			if (!online) taggedDevices.splice(taggedDevices.indexOf(taggedDevice), 1);
+			if (online) selectedDevices.push(taggedDevice);
 		}
-		return taggedDevices;
+		return selectedDevices;
 	}
 
 	/**

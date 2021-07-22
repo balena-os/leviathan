@@ -60,7 +60,8 @@ class NonInteractiveState {
 	}
 
 	info(data) {
-		console.log(`INFO: ${data.toString()}`);
+		const timestamp = new Date().toISOString()
+		console.log(`[${timestamp}] INFO: ${data.toString()}`);
 	}
 
 	logForWorker(workerId, data) {
@@ -479,8 +480,8 @@ class State {
 								break
 							}
 						}
-					} catch(e) {
-						state.info(`Couldn't retrieve worker ${device.deviceId} state...`)
+					} catch(err) {
+						state.info(`Couldn't retrieve ${device.tags.DUT} worker's state. Querying ${deviceUrl} and received ${err.name}: ${err.statusCode}`)
 					}
 				}
 			}
