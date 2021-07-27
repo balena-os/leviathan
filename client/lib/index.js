@@ -364,7 +364,9 @@ module.exports = class Client extends PassThrough {
 			const ws = await retry(createWs, { max_tries: 3 });
 
 			// Keep the websocket alive
-			ws.on('ping', () => ws.pong('heartbeat'));
+			ws.on('ping', () => {
+				ws.pong('heartbeat')
+			});
 
 			process.stdin.on('data', data => {
 				ws.send(
@@ -404,18 +406,6 @@ module.exports = class Client extends PassThrough {
 				this.log(error.stack);
 			})
 			.finally(async () => {
-				await new Promise((resolve, reject) => {
-					request
-						.get(`${this.uri.href}artifacts`)
-						.pipe(zlib.createGunzip())
-						.pipe(
-							fs.createWriteStream(
-								join(this.workdir, `${config.get('leviathan.artifacts')}.tar`),
-							),
-						)
-						.on('end', resolve)
-						.on('error', reject);
-				});
 				await rp.post(`${this.uri.href}stop`).catch(this.log);
 			});
 	}
