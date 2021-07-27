@@ -34,6 +34,14 @@ const { createGzip, createGunzip } = require('zlib');
 const setReportsHandler = require('./reports');
 const MachineState = require('./state');
 
+function createTimout() {
+	const pongTimeout = setTimeout(() => {
+		console.log(`Client didn't pong`);
+		throw new Error(`Client didn't respond in time`);
+	}, 1000 * 60);
+	return pongTimeout;
+}
+
 async function setup() {
 	let suite = null;
 	const upload = {};
@@ -110,27 +118,27 @@ async function setup() {
 			}
 			if (hash === artifact.hash) {
 				res.write('upload: cache');
-				upload.success = true
+				upload.success = true;
 			} else {
 				res.write('upload: start');
 				// Make sure we start clean
-				await remove(artifact.path);				
+				await remove(artifact.path);
 				const line = pipeline(
 					req,
 					createGunzip(),
 					tar.extract(config.get('leviathan.workdir')),
-				).catch((err) =>{ 
-					throw err 
-				})
+				).catch(err => {
+					throw err;
+				});
 
 				await line;
-				upload.success = true
+				upload.success = true;
 				res.write('upload: done');
 			}
 		} catch (e) {
-			console.log(`Error detected: ${e}`)
-			upload.error = e
-			upload.success = false
+			console.log(`Error detected: ${e}`);
+			upload.error = e;
+			upload.success = false;
 		} finally {
 			delete upload.token;
 			res.end();
@@ -148,7 +156,7 @@ async function setup() {
 			if (ws.readyState === WebSocket.OPEN) {
 				ws.ping('heartbeat');
 			}
-		}, 1000);
+		}, 1000 * 60);
 
 		// Handler definitions
 		const stdHandler = data => {
@@ -169,9 +177,16 @@ async function setup() {
 
 		let suiteStarted = false;
 		try {
+			// need to create first timeout
+			const tm = createTimout();
+			ws.on('pong', () => {
+				tm.refresh();
+			});
+
 			ws.on('error', console.error);
 			ws.on('close', () => {
 				clearInterval(interval);
+				clearTimeout(tm);
 				state.idle();
 			});
 
@@ -184,13 +199,15 @@ async function setup() {
 			if (!running || !reconnect) {
 				for (const uploadName in config.get('leviathan.uploads')) {
 					// put retry request here instead
-					upload.attempts = 0
+					upload.attempts = 0;
 					upload.retry = true;
 					upload.success = null;
-					while(upload.retry === true){
-						upload.attempts = upload.attempts + 1
-						if (upload.attempts > 3){
-							throw new Error(`Upload failed too many times: ${upload.attempts}`) 
+					while (upload.retry === true) {
+						upload.attempts = upload.attempts + 1;
+						if (upload.attempts > 3) {
+							throw new Error(
+								`Upload failed too many times: ${upload.attempts}`,
+							);
 						}
 						upload.token = Math.random();
 						ws.send(
@@ -200,15 +217,16 @@ async function setup() {
 									id: uploadName,
 									name: basename(config.get('leviathan.uploads')[uploadName]),
 									token: upload.token,
-									attempt: upload.attempts
+									attempt: upload.attempts,
 								},
 							}),
 						);
 
-					// Wait for the upload to be received and finished
+						// Wait for the upload to be received and finished
 						await new Promise((resolve, reject) => {
 							const timeout = setTimeout(() => {
 								clearInterval(interval);
+								clearTimeout(tm);
 								clearTimeout(timeout);
 								reject(new Error('Upload timed out'));
 							}, 1200000);
@@ -216,12 +234,13 @@ async function setup() {
 								// upload.token is deleted when the upload has been done
 								if (upload.token == null) {
 									clearInterval(interval);
+									clearTimeout(tm);
 									clearTimeout(timeout);
-									if (upload.success === true){
-										upload.retry = false
-										upload.attempts = 0
+									if (upload.success === true) {
+										upload.retry = false;
+										upload.attempts = 0;
 									} else {
-										upload.retry = true
+										upload.retry = true;
 									}
 									resolve();
 								}
@@ -229,6 +248,7 @@ async function setup() {
 							ws.once('close', () => {
 								clearInterval(interval);
 								clearTimeout(timeout);
+								clearTimeout(tm);
 							});
 						});
 					}
@@ -291,6 +311,18 @@ async function setup() {
 			}
 		} catch (e) {
 			state.failed();
+			if (suite != null) {
+				await new Promise((resolve, reject) => {
+					console.log('Stopping suite');
+					suite.kill('SIGINT');
+					console.log('Waiting for suite to exit');
+					suite.on('exit', () => {
+						console.log('Exited suite');
+						resolve();
+					});
+				});
+				suite = null;
+			}
 			if (ws.readyState === WebSocket.OPEN) {
 				ws.send(JSON.stringify({ type: 'error', data: { message: e.stack } }));
 			}
