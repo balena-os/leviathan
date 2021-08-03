@@ -2,6 +2,7 @@ node_modules/
 client/
 workspace/
 documentation/
+docs/
 
 .balena/secrets/
 core/docs
