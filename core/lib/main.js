@@ -33,6 +33,7 @@ const { parse } = require('url'); // eslint-disable-line
 const { createGzip, createGunzip } = require('zlib');
 const setReportsHandler = require('./reports');
 const MachineState = require('./state');
+const { createWriteStream } = require('fs');
 
 async function setup() {
 	let suite = null;
@@ -140,6 +141,8 @@ async function setup() {
 	app.ws('/start', async (ws, req) => {
 		state.busy();
 
+		const logPath = `/reports/worker.log`
+		const logStream = createWriteStream(logPath)
 		const reconnect = parse(req.originalUrl).query === 'reconnect'; // eslint-disable-line
 		const running = suite != null;
 
@@ -159,12 +162,14 @@ async function setup() {
 						data: data.toString('utf-8').trimEnd(),
 					}),
 				);
+				logStream.write(`${data.toString('utf-8')}`, 'utf8')
 			}
 		};
 		const msgHandler = message => {
 			if (ws.readyState === WebSocket.OPEN) {
 				ws.send(JSON.stringify(message));
 			}
+			logStream.write(`${message.data.toString(`utf-8`)}`, 'utf8')
 		};
 
 		let suiteStarted = false;
@@ -299,6 +304,7 @@ async function setup() {
 			}
 		} finally {
 			ws.close();
+			logStream.end()
 			if (suiteStarted) {
 				suite = null;
 			}
