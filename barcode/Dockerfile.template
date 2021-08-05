@@ -1,0 +1,12 @@
+FROM balenalib/%%BALENA_MACHINE_NAME%%-node:12-buster-build AS node-build
+
+COPY package* ./
+RUN npm ci
+
+COPY lib lib
+
+COPY tests /tmp/tests
+COPY entry.sh ./
+
+
+CMD [ "./entry.sh" ]
