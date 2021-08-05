@@ -33,6 +33,7 @@ const { parse } = require('url'); // eslint-disable-line
 const { createGzip, createGunzip } = require('zlib');
 const setReportsHandler = require('./reports');
 const MachineState = require('./state');
+const { createWriteStream } = require('fs');
 
 async function setup() {
 	let suite = null;
@@ -140,6 +141,8 @@ async function setup() {
 	app.ws('/start', async (ws, req) => {
 		state.busy();
 
+		const logPath = `/reports/worker.log`
+		const logStream = createWriteStream(logPath)
 		const reconnect = parse(req.originalUrl).query === 'reconnect'; // eslint-disable-line
 		const running = suite != null;
 
@@ -159,12 +162,14 @@ async function setup() {
 						data: data.toString('utf-8').trimEnd(),
 					}),
 				);
+				logStream.write(`${data.toString('utf-8')}`, 'utf8')
 			}
 		};
 		const msgHandler = message => {
 			if (ws.readyState === WebSocket.OPEN) {
 				ws.send(JSON.stringify(message));
 			}
+			logStream.write(`${message.data.toString(`utf-8`)}`, 'utf8')
 		};
 
 		let suiteStarted = false;
@@ -182,57 +187,60 @@ async function setup() {
 			}
 
 			if (!running || !reconnect) {
-				for (const uploadName in config.get('leviathan.uploads')) {
-					// put retry request here instead
-					upload.attempts = 0
-					upload.retry = true;
-					upload.success = null;
-					while(upload.retry === true){
-						upload.attempts = upload.attempts + 1
-						if (upload.attempts > 3){
-							throw new Error(`Upload failed too many times: ${upload.attempts}`) 
-						}
-						upload.token = Math.random();
-						ws.send(
-							JSON.stringify({
-								type: 'upload',
-								data: {
-									id: uploadName,
-									name: basename(config.get('leviathan.uploads')[uploadName]),
-									token: upload.token,
-									attempt: upload.attempts
-								},
-							}),
-						);
+				if(process.env.LOCAL !== `local`){	
+					for (const uploadName in config.get('leviathan.uploads')) {
+						// put retry request here instead
+						upload.attempts = 0
+						upload.retry = true;
+						upload.success = null;
+						while(upload.retry === true){
+							upload.attempts = upload.attempts + 1
+							if (upload.attempts > 3){
+								throw new Error(`Upload failed too many times: ${upload.attempts}`) 
+							}
+							upload.token = Math.random();
+							ws.send(
+								JSON.stringify({
+									type: 'upload',
+									data: {
+										id: uploadName,
+										name: basename(config.get('leviathan.uploads')[uploadName]),
+										token: upload.token,
+										attempt: upload.attempts
+									},
+								}),
+							);
 
-					// Wait for the upload to be received and finished
-						await new Promise((resolve, reject) => {
-							const timeout = setTimeout(() => {
-								clearInterval(interval);
-								clearTimeout(timeout);
-								reject(new Error('Upload timed out'));
-							}, 1200000);
-							const interval = setInterval(() => {
-								// upload.token is deleted when the upload has been done
-								if (upload.token == null) {
+						// Wait for the upload to be received and finished
+							await new Promise((resolve, reject) => {
+								const timeout = setTimeout(() => {
 									clearInterval(interval);
 									clearTimeout(timeout);
-									if (upload.success === true){
-										upload.retry = false
-										upload.attempts = 0
-									} else {
-										upload.retry = true
+									reject(new Error('Upload timed out'));
+								}, 1200000);
+								const interval = setInterval(() => {
+									// upload.token is deleted when the upload has been done
+									if (upload.token == null) {
+										clearInterval(interval);
+										clearTimeout(timeout);
+										if (upload.success === true){
+											upload.retry = false
+											upload.attempts = 0
+										} else {
+											upload.retry = true
+										}
+										resolve();
 									}
-									resolve();
-								}
-							}, 2000);
-							ws.once('close', () => {
-								clearInterval(interval);
-								clearTimeout(timeout);
+								}, 2000);
+								ws.once('close', () => {
+									clearInterval(interval);
+									clearTimeout(timeout);
+								});
 							});
-						});
+						}
 					}
 				}
+				
 
 				// The reason we need to fork is because many 3rd party libariers output to stdout
 				// so we need to capture that
@@ -296,6 +304,7 @@ async function setup() {
 			}
 		} finally {
 			ws.close();
+			logStream.end()
 			if (suiteStarted) {
 				suite = null;
 			}
