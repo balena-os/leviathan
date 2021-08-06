@@ -322,7 +322,10 @@ module.exports = class Client extends PassThrough {
 							break;
 						case 'status':
 							if (!data.success) {
+								this.log(`Test suite has exited with: FAIL`)
 								process.exitCode = 2;
+							} else {
+								this.log(`Test suite has exited with: PASS`)
 							}
 							break;
 						case 'error':
