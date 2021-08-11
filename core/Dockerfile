@@ -1,0 +1,33 @@
+FROM balenalib/intel-nuc-node:10-buster-build AS npm-install
+
+ENV npm_config_unsafe_perm=true
+
+WORKDIR /tmp/node
+
+COPY package*.json ./
+RUN npm ci
+
+FROM balenalib/intel-nuc-node:10-buster-build
+
+ENV UDEV=1
+ENV DBUS_SYSTEM_BUS_ADDRESS=unix:path=/host/run/dbus/system_bus_socket
+
+ENV npm_config_unsafe_perm=true
+
+RUN install_packages jq git vim rsync unzip bluez
+
+WORKDIR /usr/app
+
+COPY --from=npm-install /tmp/node ./
+
+RUN npm install balena-cli@12.40.0 -g --production --unsafe-perm
+
+COPY contracts contracts
+
+COPY lib lib
+COPY config config
+COPY entry.sh ./
+
+EXPOSE 80
+
+CMD [ "./entry.sh" ]

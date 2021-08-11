@@ -1,0 +1,76 @@
+FROM balenalib/intel-nuc-python:3.5.6-buster-build AS firmware
+
+RUN install_packages git libusb-dev
+
+WORKDIR /src
+
+RUN git clone https://github.com/PaulStoffregen/teensy_loader_cli.git -b 2.1
+RUN cd teensy_loader_cli && \
+  make && \
+  cd -
+
+RUN git clone https://github.com/balena-io-modules/usbsdmux.git
+RUN cd usbsdmux && \
+  virtualenv -p python3 venv && \
+  . venv/bin/activate && \
+  pip install pyinstaller && \
+  python setup.py install && \
+  pyinstaller --onefile venv/bin/usbsdmux-configure && \
+  deactivate && \
+  cd -
+
+FROM balenalib/intel-nuc-golang:1.15-buster-build AS go-build
+
+RUN GO111MODULE=on go get -u github.com/nadoo/glider@v0.12.2
+
+FROM balenalib/intel-nuc-node:10-buster-build AS node-build
+
+WORKDIR /tmp/node
+
+RUN install_packages libdbus-1-dev libvirt-dev python
+
+COPY package*.json ./
+RUN npm ci
+
+COPY tsconfig.json .
+COPY typings typings
+COPY lib lib
+COPY bin bin
+
+RUN npm run build
+
+FROM balenalib/intel-nuc-node:10-buster-run
+
+ENV UDEV=1
+
+WORKDIR /usr/app/firmware
+
+RUN install_packages \
+  libusb-dev libdbus-1-dev \
+  gstreamer1.0-tools gstreamer1.0-plugins-base gstreamer1.0-plugins-bad gstreamer1.0-plugins-good \
+  qemu-system-x86 libvirt-daemon-system bridge-utils iproute2 dnsmasq iptables ebtables
+
+# Disable all cgroup controls as we do not use them
+RUN sed -i 's/^#cgroup_controllers =.*/cgroup_controllers = []/g' /etc/libvirt/qemu.conf
+
+COPY --from=go-build /go/bin/glider /usr/local/bin
+
+COPY --from=firmware /src/usbsdmux/dist/usbsdmux-configure /usr/local/bin
+COPY --from=firmware /src/teensy_loader_cli/teensy_loader_cli /usr/local/bin
+COPY firmware/StandardFirmataPlus.ino.hex .
+COPY firmware/SDcardSwitch.ino.hex .
+
+WORKDIR /usr/app
+
+COPY config config
+COPY entry.sh .
+
+COPY --from=node-build /tmp/node/package.json .
+COPY --from=node-build /tmp/node/node_modules node_modules
+COPY --from=node-build /tmp/node/build build
+
+EXPOSE 2000
+
+ENV WORKER_TYPE=qemu
+
+CMD [ "./entry.sh" ]

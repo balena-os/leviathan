@@ -2,6 +2,7 @@ version: '2'
 volumes:
   core-storage:
   worker-storage:
+  reports-storage:
 services:
   core:
     privileged: true
@@ -10,6 +11,7 @@ services:
     volumes:
       - 'core-storage:/data'
       - '/var/run/docker.sock:/var/run/docker.sock'
+      - 'reports-storage:/reports'
     labels:
       share: 'core-storage'
   worker:
@@ -20,4 +22,5 @@ services:
     ipc: 'host'
     volumes:
       - '/var/run/dbus:/host/run/dbus:rw'
+      - 'reports-storage:/reports'
       - 'worker-storage:/data'
