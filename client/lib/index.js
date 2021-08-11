@@ -87,7 +87,11 @@ module.exports = class Client extends PassThrough {
 
 		// Sanity checks + sanity checks
 		if (artifact.path != null) {
-			const stat = await fs.stat(artifact.path);
+			try {
+				const stat = await fs.stat(artifact.path);
+			} catch (err) {
+				console.log(err);
+			}
 
 			if (!stat[artifact.type]()) {
 				throw new Error(`${artifact.path} does not satisfy ${artifact.type}`);
