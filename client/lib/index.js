@@ -221,6 +221,13 @@ module.exports = class Client extends PassThrough {
 					.catch(error => {throw error});
 				pipeEnd.pipe(req);
 
+				req.on('response', function (response) {
+					if (Math.floor(response.statusCode / 100) != 2) {
+						reject(new Error('request failed with status: ' + response.statusCode));
+						req.abort();
+					}
+				});
+
 				req.on('data', async data => {
 					const computedLine = RegExp('^([a-z]*): (.*)').exec(data.toString());
 
