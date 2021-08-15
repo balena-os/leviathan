@@ -181,10 +181,14 @@ class Suite {
 		try {
 			await treeExpander([this.rootTree, tap]);
 		} finally {
+			// Teardown all running test suites before removing assets & dependencies
+			this.state.log(`Test suite completed. Tearing down now.`);
+			await this.teardown.runAll();
 			await this.removeDependencies();
 			await this.removeDownloads();
-			await this.teardown.runAll();
+			this.state.log(`Teardown complete.`);
 			tap.end();
+			this.state.log(`Test Finished`);
 		}
 	}
 

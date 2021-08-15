@@ -1,6 +1,6 @@
 /**
  * # Worker helpers
- * 
+ *
  * The worker class can be used to control the testbot hardware. In the `suite.js` file, you can
  * create an instance of it, and then use its methods to flash the DUT, power it on/off, and set up a
  * network AP for the DUT to connect to.
@@ -38,6 +38,7 @@
 const Bluebird = require('bluebird');
 const retry = require('bluebird-retry');
 const utils = require('../common/utils');
+const Archiver = require('../common/archiver');
 const config = require('config');
 const isNumber = require('lodash/isNumber');
 const { fs } = require('mz');
@@ -45,6 +46,7 @@ const once = require('lodash/once');
 const pipeline = Bluebird.promisify(require('stream').pipeline);
 const request = require('request');
 const rp = require('request-promise');
+
 const exec = Bluebird.promisify(require('child_process').exec);
 module.exports = class Worker {
 	constructor(
@@ -348,5 +350,26 @@ module.exports = class Worker {
 			return true;
 		});
 		return match.replace(/"/g, '');
+	}
+
+	/**
+	 * Helper to archive journal logs to be used in the suite teardown
+	 *
+	 * @param {*} target
+	 * @category helper
+	 */
+	async archiveLogs(target) {
+		this.logger.log(`Retreiving journal logs...`);
+		try {
+			const journal = await this.executeCommandInHostOS(
+				`journalctl --no-pager -a -b all`,
+				target,
+			);
+			const journalLogsPath = '/tmp/journal.log';
+			fs.writeFileSync(journalLogsPath, journal);
+			await Archiver.add(journalLogsPath);
+		} catch (e) {
+			this.logger.log(`Couldn't retrieve journal logs with error ${e}`);
+		}
 	}
 };
