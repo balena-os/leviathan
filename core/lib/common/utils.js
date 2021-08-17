@@ -62,7 +62,7 @@ const getSSHClientDisposer = config => {
 				assignIn(
 					{
 						agent: process.env.SSH_AUTH_SOCK,
-						keepaliveInterval: 20000,
+						keepaliveInterval: 10000 * 60 * 5, // 5 minute interval
 					},
 					conf,
 				),
