@@ -132,6 +132,26 @@ class NonInteractiveState {
 		if (!workerData.workerUrl) {
 			return;
 		}
+
+		const reporter = fork(
+			path.join(__dirname, '..' , 'lib', 'reporter'),
+			[
+				'-p',
+				`reports/worker-${workerData.prefix}.log`,
+			],
+			{
+				stdio: 'pipe',
+			},
+		);
+
+		console.log(`Generating test summary`);
+		reporter.stdout.pipe(nativeFs.createWriteStream(`reports/test-summary-${workerData.prefix}.log`))
+		let summaryPromise = new Promise((resolve, reject) => {
+			reporter.on('exit', code => {
+				resolve()
+			});
+		})
+
 		const dutLogUrl = `${workerData.workerUrl}/reports/dut-serial.txt`;
 		console.log(`Downloading DUT serial log with ${dutLogUrl}`);
 		const downloadLog = request
@@ -149,7 +169,7 @@ class NonInteractiveState {
 			downloadImages.on('end', resolve).on('error', resolve),
 		);
 
-		await Promise.all([downloadLogDone, downloadArtifactDone])
+		await Promise.all([downloadLogDone, downloadArtifactDone, summaryPromise])
 	}
 
 	async teardown() {
