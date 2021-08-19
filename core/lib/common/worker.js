@@ -38,7 +38,7 @@
 const Bluebird = require('bluebird');
 const retry = require('bluebird-retry');
 const utils = require('../common/utils');
-const Archiver = require('../common/archiver');
+const archiver = require('../common/archiver');
 const config = require('config');
 const isNumber = require('lodash/isNumber');
 const { fs } = require('mz');
@@ -48,6 +48,13 @@ const request = require('request');
 const rp = require('request-promise');
 
 const exec = Bluebird.promisify(require('child_process').exec);
+
+function id() {
+	return `${Math.random()
+		.toString(36)
+		.substring(2, 10)}`;
+}
+
 module.exports = class Worker {
 	constructor(
 		deviceType,
@@ -159,19 +166,19 @@ module.exports = class Worker {
 	) {
 		return /.*\.local/.test(target)
 			? retry(
-					() => {
-						return rp.get({
-							uri: `${this.url}/dut/ip`,
-							body: { target },
-							json: true,
-						});
-					},
-					{
-						max_tries: timeout.tries,
-						interval: timeout.interval,
-						throw_original: true,
-					},
-			  )
+				() => {
+					return rp.get({
+						uri: `${this.url}/dut/ip`,
+						body: { target },
+						json: true,
+					});
+				},
+				{
+					max_tries: timeout.tries,
+					interval: timeout.interval,
+					throw_original: true,
+				},
+			)
 			: target;
 	}
 
@@ -330,13 +337,13 @@ module.exports = class Worker {
 	/**
 	 * Fetches OS version available on the DUT's `/etc/os-release` file
 	 *
+	 * @remark This method works entirely on the device though.
 	 * @param {string} target
 	 * @returns {string} returns OS version
 	 * @category helper
 	 */
 	async getOSVersion(target) {
-		// maybe https://github.com/balena-io/leviathan/blob/master/core/lib/components/balena/sdk.js#L210
-		// will do? that one works entirely on the device though...
+		// Could be used: https://github.com/balena-io/leviathan/blob/master/core/lib/components/balena/sdk.js#L210
 		const output = await this.executeCommandInHostOS(
 			'cat /etc/os-release',
 			target,
@@ -353,23 +360,24 @@ module.exports = class Worker {
 	}
 
 	/**
-	 * Helper to archive journal logs to be used in the suite teardown
+	 * Helper to archive the output of a HostOS command stored inside a file.
 	 *
-	 * @param {*} target
+	 * @remark the default command that runs is `journalctl --no-pager --no-hostname -a -b all`
+	 * @param {string} title The name of the directory in which logs will be archived. Usuallly
+	 * this value is the name of the test suite (Available in the test using `this.id`)
+	 * @param {string} target local UUID of the DUT, example:`${UUID}.local`
+	 * @param {string} command The command you need to run and store output for.
 	 * @category helper
 	 */
-	async archiveLogs(target) {
-		this.logger.log(`Retreiving journal logs...`);
+	async archiveLogs(title, target, command = "journalctl --no-pager --no-hostname -a -b all") {
+		const logFilePath = `/tmp/${command.split(' ')[0]}-${id()}.log`;
+		this.logger.log(`Retreiving ${command.split(' ')[0]} logs to the file ${logFilePath} ...`);
 		try {
-			const journal = await this.executeCommandInHostOS(
-				`journalctl --no-pager -a -b all`,
-				target,
-			);
-			const journalLogsPath = '/tmp/journal.log';
-			fs.writeFileSync(journalLogsPath, journal);
-			await Archiver.add(journalLogsPath);
+			const commandOutput = await this.executeCommandInHostOS(`${command}`, target);
+			fs.writeFileSync(logFilePath, commandOutput);
+			await archiver.add(title, logFilePath);
 		} catch (e) {
-			this.logger.log(`Couldn't retrieve journal logs with error ${e}`);
+			this.logger.log(`Couldn't retrieve logs with error: ${e}`);
 		}
 	}
 };

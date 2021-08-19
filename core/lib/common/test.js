@@ -1,5 +1,5 @@
 /**
- * # Test logic for Leviathan tests
+ * # Test logic for running Leviathan tests
  *
  * @module Test
  */
@@ -53,7 +53,7 @@ module.exports = class Test {
 			},
 		};
 
-		this.archiver = new Archiver(id);
+		this.archiver = Archiver;
 		this.context = new Context(this.suite.context);
 	}
 

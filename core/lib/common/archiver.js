@@ -4,11 +4,22 @@
  * By default, serial logs (given that the hardware is set up correctly), and the
  * logs from the tests will be sent back to the client that started the test, upon
  * the test finishing. Other artifacts can be sent back to the client using the
- * `archiver` method. This method is available within any test:
+ * `archiver` method.
+ *
+ * The Archiver is imported into each test and hence the methods can be accessed within any test. Check
+ * `test.js` to check the imports. To archive a file:
  *
  * @example
  * ```js
- * this.archiver.add(`path/of/FILE`)
+ * 	await this.Archiver.add(this.id, "Path/to/file/needs/to/be/archived");
+ * ```
+ *
+ * To directly archive the output of a command, example: `journalctl` or `dmesg` commands. Use the
+ * `archiveLogs` helper accessible through `worker` context.
+ *
+ * * @example
+ * ```js
+ * 	await this.context.get().worker.archiveLogs(title, target, command);
  * ```
  *
  * Using this method, at the end of the test, any artifacts added to the archive are compressed and
@@ -41,22 +52,33 @@ const { createWriteStream } = require('fs');
 const { copy, ensureDir } = require('fs-extra');
 const { basename, join } = require('path');
 
-module.exports = class Archiver {
-	constructor(id) {
-		this.location = join(config.get('leviathan.artifacts'), id);
-	}
-
-	async add(artifactPath) {
-		const archivePath = join(this.location, basename(artifactPath));
-
-		await ensureDir(this.location);
+module.exports = {
+	/**
+	 * Archive a file to be later sent to the client as an artifact.
+	 *
+	 * @param {string} id The name of the directory in which logs will be archived. Usuallly this value is the name of the
+	 * test suite (Available in the test using `this.id`)
+	 * @param {string} artifactPath The absolute path of the file needed to be archived.
+	 */
+	add: async (id, artifactPath) => {
+		const baseLocation = join(config.get('leviathan.artifacts'), id)
+		const archivePath = join(baseLocation, basename(artifactPath));
+		await ensureDir(baseLocation);
 		await copy(artifactPath, archivePath);
-	}
+	},
 
-	async getStream(artifactPath) {
-		const archivePath = join(this.location, basename(artifactPath));
-
-		await ensureDir(this.location);
+	/**
+	 * Archive the file as a stream to be later sent to the client as an artifact.
+	 *
+	 * @param {string} id The name of the directory in which logs will be archived. Usuallly this value is the name of the
+	 * test suite (Available in the test using `this.id`)
+	 * @param {string} artifactPath The absolute path of the file needed to be archived.
+	 * @returns stream of the file
+	 */
+	getStream: async (id, artifactPath) => {
+		const baseLocation = join(config.get('leviathan.artifacts'), id)
+		const archivePath = join(baseLocation, basename(artifactPath));
+		await ensureDir(baseLocation);
 		return createWriteStream(archivePath);
 	}
 };

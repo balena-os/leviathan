@@ -75,11 +75,20 @@
 					<p>By default, serial logs (given that the hardware is set up correctly), and the
 						logs from the tests will be sent back to the client that started the test, upon
 						the test finishing. Other artifacts can be sent back to the client using the
-					<code>archiver</code> method. This method is available within any test:</p>
+					<code>archiver</code> method.</p>
+					<p>The Archiver is imported into each test and hence the methods can be accessed within any test. Check
+					<code>test.js</code> to check the imports. To archive a file:</p>
 					<dl class="tsd-comment-tags">
 						<dt>example</dt>
-						<dd><pre><code class="language-js"><span style="color: #569CD6">this</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">archiver</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">add</span><span style="color: #D4D4D4">(</span><span style="color: #CE9178">`path/of/FILE`</span><span style="color: #D4D4D4">)</span>
+						<dd><pre><code class="language-js"><span style="color: #D4D4D4">    </span><span style="color: #C586C0">await</span><span style="color: #D4D4D4"> </span><span style="color: #569CD6">this</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">Archiver</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">add</span><span style="color: #D4D4D4">(</span><span style="color: #569CD6">this</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">id</span><span style="color: #D4D4D4">, </span><span style="color: #CE9178">&quot;Path/to/file/needs/to/be/archived&quot;</span><span style="color: #D4D4D4">);</span>
 </code></pre>
+							<p>To directly archive the output of a command, example: <code>journalctl</code> or <code>dmesg</code> commands. Use the
+							<code>archiveLogs</code> helper accessible through <code>worker</code> context.</p>
+							<ul>
+								<li>@example<pre><code class="language-js"><span style="color: #D4D4D4">  </span><span style="color: #C586C0">await</span><span style="color: #D4D4D4"> </span><span style="color: #569CD6">this</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">context</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">get</span><span style="color: #D4D4D4">().</span><span style="color: #9CDCFE">worker</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">archiveLogs</span><span style="color: #D4D4D4">(</span><span style="color: #9CDCFE">title</span><span style="color: #D4D4D4">, </span><span style="color: #9CDCFE">target</span><span style="color: #D4D4D4">, </span><span style="color: #9CDCFE">command</span><span style="color: #D4D4D4">);</span>
+</code></pre>
+								</li>
+							</ul>
 							<p>Using this method, at the end of the test, any artifacts added to the archive are compressed and
 								downloaded by the client. These are available in the <code>workspace/reports</code> directory at the end of
 							the test. This can also be helpful when storing artifacts/reports/logs after a test suite run.</p>
@@ -92,11 +101,108 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Classes</h3>
+							<h3>Namespaces</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/archiver.export_.html" class="tsd-kind-icon">export&#61;</a></li>
+								<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="archiver.export_.html" class="tsd-kind-icon">export&#61;</a></li>
 							</ul>
 						</section>
+						<section class="tsd-index-section ">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-module"><a href="archiver.html#export_-1" class="tsd-kind-icon">export&#61;</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-module">
+					<a name="export_-1" class="tsd-anchor"></a>
+					<h3>export&#61;</h3>
+					<div class="tsd-signature tsd-kind-icon">export&#61;<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>add<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, artifactPath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>getStream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, artifactPath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">WriteStream</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/b3e9c08/core/lib/common/archiver.js#L53">lib/common/archiver.js:53</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5>add<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, artifactPath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								<ul class="tsd-parameters">
+									<li class="tsd-parameter-signature">
+										<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-literal">
+											<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, artifactPath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+										</ul>
+										<ul class="tsd-descriptions">
+											<li class="tsd-description">
+												<div class="tsd-comment tsd-typography">
+													<div class="lead">
+														<p>Archive a file to be later sent to the client as an artifact.</p>
+													</div>
+												</div>
+												<h4 class="tsd-parameters-title">Parameters</h4>
+												<ul class="tsd-parameters">
+													<li>
+														<h5>id: <span class="tsd-signature-type">string</span></h5>
+														<div class="tsd-comment tsd-typography">
+															<p>The name of the directory in which logs will be archived. Usuallly this value is the name of the
+															test suite (Available in the test using <code>this.id</code>)</p>
+														</div>
+													</li>
+													<li>
+														<h5>artifactPath: <span class="tsd-signature-type">string</span></h5>
+														<div class="tsd-comment tsd-typography">
+															<p>The absolute path of the file needed to be archived.</p>
+														</div>
+													</li>
+												</ul>
+												<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+											</li>
+										</ul>
+									</li>
+								</ul>
+							</li>
+							<li class="tsd-parameter">
+								<h5>get<wbr>Stream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, artifactPath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">WriteStream</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								<ul class="tsd-parameters">
+									<li class="tsd-parameter-signature">
+										<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-literal">
+											<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, artifactPath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">WriteStream</span><span class="tsd-signature-symbol">&gt;</span></li>
+										</ul>
+										<ul class="tsd-descriptions">
+											<li class="tsd-description">
+												<div class="tsd-comment tsd-typography">
+													<div class="lead">
+														<p>Archive the file as a stream to be later sent to the client as an artifact.</p>
+													</div>
+												</div>
+												<h4 class="tsd-parameters-title">Parameters</h4>
+												<ul class="tsd-parameters">
+													<li>
+														<h5>id: <span class="tsd-signature-type">string</span></h5>
+														<div class="tsd-comment tsd-typography">
+															<p>The name of the directory in which logs will be archived. Usuallly this value is the name of the
+															test suite (Available in the test using <code>this.id</code>)</p>
+														</div>
+													</li>
+													<li>
+														<h5>artifactPath: <span class="tsd-signature-type">string</span></h5>
+														<div class="tsd-comment tsd-typography">
+															<p>The absolute path of the file needed to be archived.</p>
+														</div>
+													</li>
+												</ul>
+												<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">WriteStream</span><span class="tsd-signature-symbol">&gt;</span></h4>
+												<p>stream of the file</p>
+											</li>
+										</ul>
+									</li>
+								</ul>
+							</li>
+						</ul>
 					</div>
 				</section>
 			</section>
@@ -130,6 +236,11 @@
 					</li>
 					<li class="current tsd-kind-module">
 						<a href="archiver.html">Archiver</a>
+						<ul>
+							<li class=" tsd-kind-namespace tsd-parent-kind-module">
+								<a href="archiver.export_.html">export&#61;</a>
+							</li>
+						</ul>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="context.html">Context</a>
@@ -171,8 +282,8 @@
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-					<li class=" tsd-kind-class tsd-parent-kind-module">
-						<a href="../classes/archiver.export_.html" class="tsd-kind-icon">export&#61;</a>
+					<li class=" tsd-kind-property tsd-parent-kind-module">
+						<a href="archiver.html#export_-1" class="tsd-kind-icon">export&#61;</a>
 					</li>
 				</ul>
 			</nav>
