@@ -17,12 +17,11 @@ const yargs = require('yargs')
 
 (async () => {
     var TSR = require('tap-mocha-reporter')
-    let report = nativeFs.createReadStream(yargs.path)
-        .pipe(TSR('spec'))
-
+    let reportInput = nativeFs.createReadStream(yargs.path)
+    let reportOutput = reportInput.pipe(TSR('spec'))
 
     let reportPromise = new Promise((resolve, reject) => {
-        report.on('finish', () => {
+        reportInput.on('end', () => {
             resolve()
         })
     })
