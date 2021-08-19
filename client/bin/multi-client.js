@@ -146,7 +146,7 @@ class NonInteractiveState {
 
 		console.log(`Generating test summary`);
 		reporter.stdout.pipe(nativeFs.createWriteStream(`reports/test-summary-${workerData.prefix}.log`))
-		let summaryPromise = new Promise((resolve, reject) => {
+		let summaryPromise = new Promise(resolve => {
 			reporter.on('exit', code => {
 				resolve()
 			});
