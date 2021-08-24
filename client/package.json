@@ -16,7 +16,7 @@
 		"single-start": "npm run build && cd build && node bin/single-client.js",
 		"single-start-es5": "npm run build && cd build && babel-node --presets @babel/env bin/single-client.js",
 		"multi-start": "npm run build && cd build && node bin/multi-client.js",
-		"multi-start-es5": "npm run build && cd build && babel-node --presets @babel/env bin/multi-client.js"
+		"multi-start-es5": "npm run build && cd build && node bin/multi-client.js"
 	},
 	"dependencies": {
 		"ajv": "^6.10.2",
