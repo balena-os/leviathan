@@ -145,7 +145,10 @@ class Suite {
 				template(title)({
 					options: this.context.get(),
 				}),
-				{ buffered: false },
+				{
+					buffered: false,
+					bail: true,
+				},
 				async t => {
 					if (run != null) {
 						try {
