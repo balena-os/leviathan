@@ -47,7 +47,7 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 	}
 
 	public async teardown(signal?: NodeJS.Signals): Promise<void> {
-		this.powerOff();
+		await this.powerOff();
 
 		manageHandlers(this.signalHandler, {
 			register: false,
@@ -123,53 +123,75 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 			networkArgs).concat(
 			firmwareArgs[deviceArch]).concat(
 			qmpArgs);
-		const subprocess = spawn('qemu-system-x86_64', args);
-		subprocess.on('spawn', () => {
-			console.log("QEMU started");
-			this.qemuProc = subprocess;
-		});
-		subprocess.on('exit', (code, signal) => {
-			console.log(`QEMU exited with code ${code}`);
-			this.qemuProc = null;
-		});
-		subprocess.on('error', (err) => {
-			console.error('Failed to start qemu', err);
+
+		return new Promise((resolve, reject) => {
+			this.qemuProc = spawn('qemu-system-x86_64', args);
+			this.qemuProc.on('exit', (code, signal) => {
+				reject(new Error(`QEMU exited with code ${code}`));
+			});
+			this.qemuProc.on('error', (err) => {
+				reject(err);
+			});
+
+			resolve();
 		});
 	}
 
 	public async powerOff(): Promise<void> {
-		if (this.qemuProc && this.qemuProc.kill()) {
-			this.qemuProc = null;
-		}
-
-		if (this.dnsmasqProc && this.dnsmasqProc.kill()) {
-			this.dnsmasqProc = null;
+		console.log("Qemu: powerOff()");
+		if (this.qemuProc && !this.qemuProc.killed) {
+			this.qemuProc.kill();
 		}
 	}
 
-	private async setupBridge(bridgeName: string, bridgeAddress: string): Promise<void> {
-		console.log("Qemu: setupBridge()");
-		spawn('brctl', ['show', 'br0']).on('exit', (code) => {
-			if (code == 0) {
-				console.log("Qemu: bridge already exists");
-			} else {
-				spawn('brctl', ['addbr', bridgeName]).on('exit', (code) => {
+	private async createBridge(bridgeName: string, bridgeAddress: string): Promise<void> {
+		return new Promise((resolve, reject) => {
+			spawn(
+				'brctl', ['addbr', bridgeName]
+			).on('exit', (code) => {
+				if (code == 0) {
+					resolve();
+				} else {
+					reject(new Error(`failed creating bridge ${bridgeName} with code ${code}`));
+				}
+			});
+		}).then(() => {
+			return new Promise((resolve, reject) => {
+				spawn(
+					'ip', ['link', 'set', 'dev', bridgeName, 'up']
+				).on('exit', (code) => {
 					if (code == 0) {
-						console.log('Qemu: created bridge');
+						resolve();
 					} else {
-						console.log('Qemu: failed to create bridge');
+						reject(new Error(`failed to bring interface ${bridgeName} up with code ${code}`));
 					}
 				});
-			}
+			});
+		}).then(() => {
+			return new Promise((resolve, reject) => {
+				spawn(
+					'ip', ['addr', 'add', `${bridgeAddress}/24`, 'dev', bridgeName]
+				).on('exit', (code) => {
+					if (code == 0) {
+						resolve();
+					} else {
+						reject(new Error(`failed assigning address to interface ${bridgeName} with code ${code}`));
+					}
+				});
+			});
 		});
+	}
 
-		spawn('ip', ['link', 'set', 'dev', bridgeName, 'up']).on('exit', (code) => {
-			if (code != 0) {
-				console.error(`Failed to bring ${bridgeName} up`);
-			}
+	private async setupBridge(bridgeName: string, bridgeAddress: string): Promise<void> {
+		return new Promise((resolve, reject) => {
+			spawn('brctl', ['show', bridgeName]).on('exit', (code) => {
+				if (code == 0) {
+					resolve();
+				} else {
+					return this.createBridge(bridgeName, bridgeAddress);
+				}
+			});
 		});
-
-		spawn('ip', ['addr', 'add', '192.168.100.1/24', 'dev', bridgeName]);
 	}
 
 	public async network(configuration: {
@@ -178,42 +200,43 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 		const bridgeName: string = 'br0';
 		const bridgeAddress: string = '192.168.100.1';
 		const ipRange: Array<string> = ['192.168.100.128', '192.168.100.254'];
-		await this.setupBridge(bridgeName, bridgeAddress);
-		const dnsmasqArgs = [`--interface=${bridgeName}`,
-							 '--except-interface=lo',
-							 '--bind-interfaces',
+		const dnsmasqArgs = [`--listen-address=${bridgeAddress}`,
 							 `--dhcp-range=${ipRange.join(',')}`,
 							 '--conf-file',
-							 `--pid-file=/var/run/qemu-dnsmasq-${bridgeName}.pid`,
+							 '--bind-interfaces',
+							 '--no-daemon',
 							 `--dhcp-leasefile=/var/run/qemu-dnsmasq-${bridgeName}.leases`,
-							 '--dhcp-no-override',
-							 '--log-facility=/var/run/qemu-dnsmasq.log'
 		];
 
-		if (this.dnsmasqProc == null) {
-			const subprocess = spawn(
-				'dnsmasq', dnsmasqArgs, {stdio: 'inherit'});
+		return this.setupBridge(bridgeName, bridgeAddress).then(() => {
+			return new Promise((resolve, reject) => {
+				if (this.dnsmasqProc && !this.dnsmasqProc.killed) {
+					// dnsmasq is already running
+					resolve();
+				} else {
 
-			subprocess.on('spawn', () => {
-				this.dnsmasqProc = subprocess;
+					this.dnsmasqProc = spawn('dnsmasq', dnsmasqArgs, {stdio: 'inherit'});
+
+					this.dnsmasqProc.on('exit',
+						(code, signal) => {
+							console.log(`dnsmasq exited with ${code}`)
+							if (code != 0) {
+								throw new Error(`dnsmasq exited with code ${code}`);
+							}
+						}
+					);
+
+					this.dnsmasqProc.on('error',
+						(err: Error) => {
+							console.log("error launching dnsmasq");
+							reject(err);
+						}
+					);
+
+					resolve();
+				}
 			});
-
-			subprocess.on('exit',
-				(status, signal) => {
-					if (status != 0) {
-						throw new Error(`dnsmasq exited with status ${status}`);
-					}
-
-					this.dnsmasqProc = null;
-				}
-			);
-
-			subprocess.on('error',
-				(err) => {
-					throw err;
-				}
-			);
-		}
+		});
 	}
 
 	public async captureScreen(
