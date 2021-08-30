@@ -24,12 +24,7 @@ class BalenaFinLed {
 	}
 
 	safeWrite(path, value) {
-		try {
-			return fs.writeFile(path, value);
-		} catch (e) {
-			// Ignore.
-			return Promise.resolve();
-		}
+		return fs.writeFile(path, value).catch(e => {});
 	}
 
 	async color(color) {
