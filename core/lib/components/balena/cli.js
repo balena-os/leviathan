@@ -48,15 +48,15 @@
 const Docker = require('dockerode');
 const { pathExists, ensureFile } = require('fs-extra');
 const { exec, spawn } = require('mz/child_process');
-const { basename, dirname, join } = require('path');
+const { join } = require('path');
 
 module.exports = class CLI {
 	constructor(
-		apiUrl='balena-cloud.com',
+		apiUrl = 'balena-cloud.com',
 		logger = { log: console.log, status: console.log, info: console.log },
 	) {
 		this.logger = logger;
-		exec(`BALENARC_BALENA_URL=${apiUrl}`)
+		exec(`BALENARC_BALENA_URL=${apiUrl}`);
 	}
 
 	/**
@@ -92,8 +92,8 @@ module.exports = class CLI {
 				: false;
 		});
 
-		image = image.replace(Mount.Destination, "")
-		
+		image = image.replace(Mount.Destination, '');
+
 		// We have to deal with the fact that our image exist on the fs the preloader runs in a different
 		// path than where our docker daemon runs. Until we fix the issue on the preloader
 		await ensureFile(join(Mount.Source, image));
@@ -107,7 +107,7 @@ module.exports = class CLI {
 					`preload ${join(
 						Mount.Source,
 						image,
-					)} --docker ${socketPath} --app ${options.app} --commit ${
+					)} --docker ${socketPath} --fleet ${options.app} --commit ${
 						options.commit
 					} ${options.pin ? '--pin-device-to-release ' : ''}`,
 				],
