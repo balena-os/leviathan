@@ -31,6 +31,19 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 				options.worker != null && options.worker.disk != null
 					? options.worker.disk
 					: '/data/os.img';
+
+			if (options.screenCapture) {
+				this.screenCapturer = new ScreenCapture(
+					{
+						type: 'rfbsrc',
+						options: {
+							host: '127.0.0.1',
+							port: '5900',
+						},
+					},
+					join(options.worker.workdir, 'capture')
+				)
+			}
 		}
 
 		this.signalHandler = this.teardown.bind(this);
@@ -52,6 +65,10 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 		manageHandlers(this.signalHandler, {
 			register: false,
 		});
+
+		if (this.screenCapturer != null) {
+			await this.screenCapturer.teardown();
+		}
 	}
 
 	public async flash(stream: Stream.Readable): Promise<void> {
@@ -123,6 +140,14 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 			networkArgs).concat(
 			firmwareArgs[deviceArch]).concat(
 			qmpArgs);
+
+		if (this.screenCapturer != null) {
+			let gfxArgs = [
+				'-vnc', ':0',
+			];
+
+			args = args.concat(gfxArgs);
+		}
 
 		return new Promise((resolve, reject) => {
 			this.qemuProc = spawn('qemu-system-x86_64', args);
@@ -242,6 +267,16 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 	public async captureScreen(
 		action: 'start' | 'stop',
 	): Promise<void | Stream.Readable> {
+		if (this.screenCapturer == null) {
+			throw new Error('Screen capture not configured');
+		}
+
+		switch (action) {
+			case 'start':
+				return this.screenCapturer.startCapture();
+			case 'stop':
+				return this.screenCapturer.stopCapture();
+		}
 	}
 }
 
