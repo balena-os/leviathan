@@ -166,19 +166,19 @@ module.exports = class Worker {
 	) {
 		return /.*\.local/.test(target)
 			? retry(
-				() => {
-					return rp.get({
-						uri: `${this.url}/dut/ip`,
-						body: { target },
-						json: true,
-					});
-				},
-				{
-					max_tries: timeout.tries,
-					interval: timeout.interval,
-					throw_original: true,
-				},
-			)
+					() => {
+						return rp.get({
+							uri: `${this.url}/dut/ip`,
+							body: { target },
+							json: true,
+						});
+					},
+					{
+						max_tries: timeout.tries,
+						interval: timeout.interval,
+						throw_original: true,
+					},
+			  )
 			: target;
 	}
 
@@ -222,7 +222,7 @@ module.exports = class Worker {
 			tries: 10,
 		},
 	) {
-		let ip = /.*\.local/.test(target) ? await this.ip(target) : target;
+		const ip = /.*\.local/.test(target) ? await this.ip(target) : target;
 
 		return retry(
 			async () => {
@@ -369,11 +369,21 @@ module.exports = class Worker {
 	 * @param {string} command The command you need to run and store output for.
 	 * @category helper
 	 */
-	async archiveLogs(title, target, command = "journalctl --no-pager --no-hostname -a -b all") {
+	async archiveLogs(
+		title,
+		target,
+		command = 'journalctl --no-pager --no-hostname -a -b all',
+	) {
 		const logFilePath = `/tmp/${command.split(' ')[0]}-${id()}.log`;
-		this.logger.log(`Retreiving ${command.split(' ')[0]} logs to the file ${logFilePath} ...`);
+		this.logger.log(
+			`Retreiving ${command.split(' ')[0]} logs to the file ${logFilePath} ...`,
+		);
 		try {
-			const commandOutput = await this.executeCommandInHostOS(`${command}`, target);
+			const commandOutput = await this.executeCommandInHostOS(
+				`${command}`,
+				target,
+				{ interval: 10000, tries: 3 },
+			);
 			fs.writeFileSync(logFilePath, commandOutput);
 			await archiver.add(title, logFilePath);
 		} catch (e) {
