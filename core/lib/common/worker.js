@@ -376,7 +376,7 @@ module.exports = class Worker {
 	) {
 		const logFilePath = `/tmp/${command.split(' ')[0]}-${id()}.log`;
 		this.logger.log(
-			`Retreiving ${command.split(' ')[0]} logs to the file ${logFilePath} ...`,
+			`Retrieving ${command.split(' ')[0]} logs to the file ${logFilePath} ...`,
 		);
 		try {
 			const commandOutput = await this.executeCommandInHostOS(
