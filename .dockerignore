@@ -1,8 +1,6 @@
-node_modules/
+**/node_modules
 client/
 workspace/
 documentation/
 docs/
-
-.balena/secrets/
-core/docs
+suites/
