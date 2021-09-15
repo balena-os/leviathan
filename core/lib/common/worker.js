@@ -148,6 +148,13 @@ module.exports = class Worker {
 		await rp.post(`${this.url}/dut/off`);
 	}
 
+	/**
+	 * Gather diagnostics from testbot
+	 */
+	async readOutput() {
+		await rp.post(`${this.url}/dut/readOutput`);
+	}
+
 	async network(network) {
 		await rp.post({
 			uri: `${this.url}/dut/network`,
