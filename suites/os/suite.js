@@ -6,13 +6,12 @@
 
 'use strict';
 
-const assert = require('assert');
 const fse = require('fs-extra');
 const { join } = require('path');
 const { homedir } = require('os');
 
 module.exports = {
-	title: 'Unmanaged BalenaOS release suite',
+	title: 'Testbot Diagnositcs: End-2-End Tests',
 	run: async function() {
 		const Worker = this.require('common/worker');
 		const BalenaOS = this.require('components/os/balenaos');
@@ -25,6 +24,7 @@ module.exports = {
 			link: `${this.suite.options.balenaOS.config.uuid.slice(0, 7)}.local`,
 			worker: new Worker(this.suite.deviceType.slug, this.getLogger()),
 		});
+
 		// Network definitions
 		if (this.suite.options.balenaOS.network.wired === true) {
 			this.suite.options.balenaOS.network.wired = {
@@ -71,6 +71,7 @@ module.exports = {
 			this.log('Worker teardown');
 			return this.context.get().worker.teardown();
 		});
+
 		this.log('Setting up worker');
 		await this.context
 			.get()
@@ -82,28 +83,6 @@ module.exports = {
 			releaseInfo: this.suite.options.balenaOS.releaseInfo,
 		});
 		await this.context.get().os.configure();
-		await this.context.get().worker.off(); // Ensure DUT is off before starting tests
-		await this.context.get().worker.flash(this.context.get().os.image.path);
-		await this.context.get().worker.on();
-
-		this.log('Waiting for device to be reachable');
-		assert.equal(
-			await this.context
-				.get()
-				.worker.executeCommandInHostOS(
-					'cat /etc/hostname',
-					this.context.get().link,
-				),
-			this.context.get().link.split('.')[0],
-			'Device should be reachable',
-		);
 	},
-	tests: [
-		'./tests/fingerprint',
-		'./tests/led',
-		'./tests/config-json',
-		// The boot splash test is currently disabled because of the excessive time spent on it.
-		// './tests/boot-splash',
-		'./tests/connectivity',
-	],
+	tests: ['./tests/flash', './tests/power-cycle', './tests/serial'],
 };
