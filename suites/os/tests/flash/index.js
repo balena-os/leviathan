@@ -1,6 +1,4 @@
 /*
- * Copyright 2018 balena
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,33 +14,24 @@
 
 'use strict';
 
-// Test identification
-const id = `${Math.random()
-	.toString(36)
-	.substring(2, 10)}`;
-
-module.exports = options => {
-	return {
-		id,
-		balenaOS: {
-			download: {
-				type: options.downloadType,
-				version: options.downloadVersion,
-				source: options.downloadSource,
-			},
-			network: {
-				wired: options.networkWired,
-				wireless: options.networkWireless,
+module.exports = {
+	title: 'Testbot Flash Test',
+	tests: [
+		{
+			title: 'Flashing a image',
+			run: async function(test) {
+				try {
+					await this.context.get().worker.off(); // Ensure DUT is off before starting tests
+					await this.context
+						.get()
+						.worker.flash(this.context.get().os.image.path);
+				} catch (err) {
+					throw new Error(`Flashing failed with error: ${err}`);
+				}
+				test.true(
+					`Image ${this.context.get().os.image.path} was flashed successfully`,
+				);
 			},
 		},
-		balena: {
-			application: {
-				env: {
-					delta: options.supervisorDelta || false,
-				},
-			},
-			apiKey: options.balenaApiKey,
-			apiUrl: options.balenaApiUrl,
-		},
-	};
+	],
 };
