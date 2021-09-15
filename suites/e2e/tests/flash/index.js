@@ -29,7 +29,8 @@ module.exports = {
 					throw new Error(`Flashing failed with error: ${err}`);
 				}
 				test.true(
-					`Image ${this.context.get().os.image.path} was flashed successfully`,
+					true,
+					`${this.context.get().os.image.path} should be flashed properly`,
 				);
 			},
 		},

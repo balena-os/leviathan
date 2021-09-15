@@ -105,25 +105,17 @@ async function setup(): Promise<express.Application> {
 			}
 		},
 	);
-	app.post(
-		'/dut/readOutput',
+	app.get(
+		'/dut/diagnostics',
 		async (
 			_req: express.Request,
 			res: express.Response,
 			next: express.NextFunction,
 		) => {
-			const timer = setInterval(() => {
-				res.write('status: pending');
-			}, httpServer.keepAliveTimeout);
-
 			try {
-				await worker.readOutput();
+				res.send(await worker.diagnostics());
 			} catch (err) {
 				next(err);
-			} finally {
-				clearInterval(timer);
-				res.write('OK');
-				res.end();
 			}
 		},
 	);
