@@ -151,8 +151,8 @@ module.exports = class Worker {
 	/**
 	 * Gather diagnostics from testbot
 	 */
-	async readOutput() {
-		await rp.post(`${this.url}/dut/readOutput`);
+	async diagnostics() {
+		return JSON.parse(await rp.get(`${this.url}/dut/diagnostics`));
 	}
 
 	async network(network) {
@@ -342,6 +342,7 @@ module.exports = class Worker {
 				(await this.executeCommandInHostOS(
 					'[[ ! -f /tmp/reboot-check ]] && echo pass',
 					target,
+					{ interval: 10000, tries: 10 },
 				)) === 'pass'
 			);
 		}, false);

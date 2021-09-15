@@ -88,6 +88,10 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 		});
 	}
 
+	public async diagnostics() {
+		console.log("Some diagnostics here");
+	}
+
 	public async teardown(signal?: NodeJS.Signals): Promise<void> {
 		await this.powerOff();
 

@@ -14,7 +14,7 @@
 
 'use strict';
 
-const { Bluebird } = require('Bluebird');
+const { delay } = require('bluebird');
 
 module.exports = {
 	title: 'Testbot Power Test',
@@ -23,30 +23,27 @@ module.exports = {
 			title: 'Power cycling the DUT',
 			run: async function(test) {
 				await this.context.get().worker.on();
-				await Bluebird.delay(4 * 1000); // Wait 4s before measuring Vout.
+				await delay(4 * 1000); // Wait 4s before measuring Vout.
 				const maxDeviation = 0.15; // 8%
-				const testbot = await this.context.get().worker.readOutput();
+				const testbot = await this.context.get().worker.diagnostics();
+				test.true(
+					testbot.vout >= testbot.deviceVoltage * maxDeviation,
+					'Output voltage should be more than the expected minimum voltage',
+				);
 
-				const outVoltage = testbot.vout;
+				test.true(
+					testbot.vout < testbot.deviceVoltage * (1 + maxDeviation),
+					'Output Voltage should be less than the expected maximum voltage.',
+				);
 
-				if (outVoltage >= testbot.deviceVoltage * maxDeviation) {
-					test.true('Output Voltage is above expected under max deviation');
-				}
-
-				if (outVoltage < testbot.deviceVoltage * (1 + maxDeviation)) {
-					test.true(
-						"Output Voltage isn't that high either under max deviation. Chill the DUT is fine.",
-					);
-				}
-
-				const outCurrent = testbot.amperage;
 				// The lowest power device we currently have drew 0.03A when tested
-				if (outCurrent > 0.03) {
-					test.true('Output current is above 0.03. Ready for take off.');
-				}
+				test.true(
+					testbot.amperage > 0.03,
+					'Output current should be above the 0.03 limit',
+				);
 
 				this.log('Waiting for device to be reachable');
-				test.is(
+				test.equal(
 					await this.context
 						.get()
 						.worker.executeCommandInHostOS(
@@ -58,9 +55,7 @@ module.exports = {
 				);
 
 				await this.context.get().worker.off();
-				test.true(
-					'Device is able to power-cycle. Just put it to bed. Next test.',
-				);
+				test.true(true, 'Device should be able to power cycle properly.');
 			},
 		},
 	],
