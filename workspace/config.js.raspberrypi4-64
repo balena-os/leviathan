@@ -1,0 +1,12 @@
+module.exports = {
+	deviceType: 'raspberrypi4-64',
+	suite: `${__dirname}/../suites/os`,
+	config: {
+		networkWired: false,
+		networkWireless: true,
+		downloadType: 'local',
+		interactiveTests: false,
+	},
+	image: `${__dirname}/balena-staging-rpi4_idle-raspberrypi4-64-2.82.10+rev2-dev-v12.9.3.img.gz`,
+	workers: ['http://192.168.1.99'],
+};

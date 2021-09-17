@@ -1,0 +1,12 @@
+module.exports = {
+	deviceType: 'intel-nuc',
+	suite: `${__dirname}/../suites/os`,
+	config: {
+		networkWired: true,
+		networkWireless: false,
+		downloadType: 'local',
+		interactiveTests: false,
+	},
+	image: `${__dirname}/balena-image-generic-amd64.balenaos.img.gz`,
+	workers: ['http://localhost'],
+};
