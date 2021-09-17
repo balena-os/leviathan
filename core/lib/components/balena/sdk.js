@@ -612,8 +612,6 @@ module.exports = class BalenaSDK {
 			const versions = await this.balena.models.os.getSupportedVersions(
 				deviceType,
 			);
-			// make sure we always flash the development variant
-			version = versions.latest.replace('prod', 'dev');
 		}
 
 		const path = join(
