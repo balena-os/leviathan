@@ -1,26 +1,31 @@
 version: '2'
 volumes:
   core-storage:
-  worker-storage:
+  reports-storage:
 services:
   core:
-    privileged: true
     build: ./core
     network_mode: 'host'
     volumes:
       - 'core-storage:/data'
-      - '/var/run/docker.sock:/var/run/docker.sock'
-    labels:
-      share: 'core-storage'
+      - 'reports-storage:/reports'
+    environment:
+      - UDEV=0
   worker:
-    privileged: true
     build: 
       context: ./worker
       args:
         - SKIP_INSTALL_BINARY=true
-    pid: 'host'
+    devices:
+      - "/dev/net/tun:/dev/net/tun"
+      - "/dev/kvm:/dev/kvm"
+    cap_add:
+      - NET_ADMIN # allow network setup
+    build: ./worker
     network_mode: 'host'
-    ipc: 'host'
     volumes:
-      - '/var/run/dbus:/host/run/dbus:rw'
-      - 'worker-storage:/data'
+      - 'core-storage:/data'
+      - 'reports-storage:/reports'
+    environment:
+      - UDEV=0
+      - WORKER_TYPE=qemu
