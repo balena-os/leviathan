@@ -28,7 +28,7 @@ ENV UDEV=1
 RUN install_packages \
   libusb-1.0.0-dev libdbus-1-dev \
   gstreamer1.0-tools gstreamer1.0-plugins-base gstreamer1.0-plugins-bad gstreamer1.0-plugins-good \
-  qemu-system-x86 libvirt-daemon-system bridge-utils iproute2 dnsmasq iptables ebtables
+  qemu-system-x86 ovmf libvirt-daemon-system bridge-utils iproute2 dnsmasq iptables ebtables
 
 # Disable all cgroup controls as we do not use them
 RUN sed -i 's/^#cgroup_controllers =.*/cgroup_controllers = []/g' /etc/libvirt/qemu.conf
