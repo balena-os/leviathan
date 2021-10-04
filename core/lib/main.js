@@ -111,27 +111,27 @@ async function setup() {
 			}
 			if (hash === artifact.hash) {
 				res.write('upload: cache');
-				upload.success = true
+				upload.success = true;
 			} else {
 				res.write('upload: start');
 				// Make sure we start clean
-				await remove(artifact.path);				
+				await remove(artifact.path);
 				const line = pipeline(
 					req,
 					createGunzip(),
 					tar.extract(config.get('leviathan.workdir')),
-				).catch((err) =>{ 
-					throw err 
-				})
+				).catch(err => {
+					throw err;
+				});
 
 				await line;
-				upload.success = true
+				upload.success = true;
 				res.write('upload: done');
 			}
 		} catch (e) {
-			console.log(`Error detected: ${e}`)
-			upload.error = e
-			upload.success = false
+			console.log(`Error detected: ${e}`);
+			upload.error = e;
+			upload.success = false;
 		} finally {
 			delete upload.token;
 			res.end();
@@ -141,8 +141,8 @@ async function setup() {
 	app.ws('/start', async (ws, req) => {
 		state.busy();
 
-		const logPath = `/reports/worker.log`
-		const logStream = createWriteStream(logPath)
+		const logPath = `/reports/worker.log`;
+		const logStream = createWriteStream(logPath);
 		const reconnect = parse(req.originalUrl).query === 'reconnect'; // eslint-disable-line
 		const running = suite != null;
 
@@ -162,14 +162,14 @@ async function setup() {
 						data: data.toString('utf-8').trimEnd(),
 					}),
 				);
-				logStream.write(`${data.toString('utf-8')}`, 'utf8')
+				logStream.write(`${data.toString('utf-8')}`, 'utf8');
 			}
 		};
 		const msgHandler = message => {
 			if (ws.readyState === WebSocket.OPEN) {
 				ws.send(JSON.stringify(message));
 			}
-			logStream.write(`${message.data.toString(`utf-8`)}`, 'utf8')
+			logStream.write(`${message.data.toString(`utf-8`)}`, 'utf8');
 		};
 
 		let suiteStarted = false;
@@ -187,16 +187,18 @@ async function setup() {
 			}
 
 			if (!running || !reconnect) {
-				if(process.env.LOCAL !== `local`){	
+				if (process.env.LOCAL !== `local`) {
 					for (const uploadName in config.get('leviathan.uploads')) {
 						// put retry request here instead
-						upload.attempts = 0
+						upload.attempts = 0;
 						upload.retry = true;
 						upload.success = null;
-						while(upload.retry === true){
-							upload.attempts = upload.attempts + 1
-							if (upload.attempts > 3){
-								throw new Error(`Upload failed too many times: ${upload.attempts}`) 
+						while (upload.retry === true) {
+							upload.attempts = upload.attempts + 1;
+							if (upload.attempts > 3) {
+								throw new Error(
+									`Upload failed too many times: ${upload.attempts}`,
+								);
 							}
 							upload.token = Math.random();
 							ws.send(
@@ -206,12 +208,12 @@ async function setup() {
 										id: uploadName,
 										name: basename(config.get('leviathan.uploads')[uploadName]),
 										token: upload.token,
-										attempt: upload.attempts
+										attempt: upload.attempts,
 									},
 								}),
 							);
 
-						// Wait for the upload to be received and finished
+							// Wait for the upload to be received and finished
 							await new Promise((resolve, reject) => {
 								const timeout = setTimeout(() => {
 									clearInterval(interval);
@@ -223,11 +225,11 @@ async function setup() {
 									if (upload.token == null) {
 										clearInterval(interval);
 										clearTimeout(timeout);
-										if (upload.success === true){
-											upload.retry = false
-											upload.attempts = 0
+										if (upload.success === true) {
+											upload.retry = false;
+											upload.attempts = 0;
 										} else {
-											upload.retry = true
+											upload.retry = true;
 										}
 										resolve();
 									}
@@ -240,7 +242,6 @@ async function setup() {
 						}
 					}
 				}
-				
 
 				// The reason we need to fork is because many 3rd party libariers output to stdout
 				// so we need to capture that
@@ -281,9 +282,13 @@ async function setup() {
 					resolve();
 				});
 				suite.on('error', reject);
-				suite.on('exit', resolve);
+				suite.on('exit', code => {
+					console.log(`exit`);
+					resolve(code);
+				});
 			});
 
+			console.log(`Suite exit code is: ${suiteExitCode}`);
 			const success = suiteExitCode === 0;
 			ws.send(
 				JSON.stringify({
@@ -304,7 +309,7 @@ async function setup() {
 			}
 		} finally {
 			ws.close();
-			logStream.end()
+			logStream.end();
 			if (suiteStarted) {
 				suite = null;
 			}
