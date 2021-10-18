@@ -1,13 +1,14 @@
 SHELL = /bin/bash
+COMPOSE=$(shell if command -v docker-compose; then echo "docker-compose"; else echo "docker compose"; fi)
 
 Dockerfile:
-	@find . -maxdepth 2 -type f -name 'Dockerfile.template' -exec bash -c 'npx dockerfile-template -d BALENA_MACHINE_NAME="intel-nuc" -f {} > `dirname {}`/Dockerfile' \;
+	@find . -maxdepth 2 -type f -name 'Dockerfile.template' -exec bash -c 'npx --yes dockerfile-template -d BALENA_MACHINE_NAME="intel-nuc" -f {} > `dirname {}`/Dockerfile' \;
 
 local: Dockerfile
 	@ln -sf ./compose/generic-x86.yml ./docker-compose.yml
 ifndef DRY
-	@docker-compose build $(SERVICES)
-	@docker-compose up $(SERVICES)
+	@${COMPOSE} build $(SERVICES)
+	@${COMPOSE} up $(SERVICES)
 endif
 
 balena:
@@ -21,7 +22,7 @@ endif
 endif
 
 clean:
-	@docker-compose down
+	@${COMPOSE} down
 	@find . -maxdepth 2 -type f -name 'Dockerfile' -exec rm {} +
 	@rm docker-compose.yml
 
