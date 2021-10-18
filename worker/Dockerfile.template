@@ -41,6 +41,12 @@ WORKDIR /usr/app
 COPY config config
 COPY entry.sh .
 
+# create qemu-bridge-helper ACL file
+# https://wiki.qemu.org/Features/HelperNetworking
+RUN mkdir -p /etc/qemu \
+	&& echo "allow all" > /etc/qemu/bridge.conf \
+	&& chmod 0640 /etc/qemu/bridge.conf
+
 COPY --from=node-build /tmp/node/package.json .
 COPY --from=node-build /tmp/node/node_modules node_modules
 COPY --from=node-build /tmp/node/build build
