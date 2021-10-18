@@ -6,7 +6,7 @@ FROM balenalib/%%BALENA_MACHINE_NAME%%-node:12-buster-build AS node-build
 
 WORKDIR /tmp/node
 
-RUN install_packages libusb-1.0.0-dev libdbus-1-dev libvirt-dev python
+RUN install_packages libusb-1.0.0-dev libdbus-1-dev python
 
 ARG SKIP_INSTALL_BINARY
 
@@ -28,10 +28,7 @@ ENV UDEV=1
 RUN install_packages \
   libusb-1.0.0-dev libdbus-1-dev \
   gstreamer1.0-tools gstreamer1.0-plugins-base gstreamer1.0-plugins-bad gstreamer1.0-plugins-good \
-  qemu-system-x86 ovmf libvirt-daemon-system bridge-utils iproute2 dnsmasq iptables ebtables
-
-# Disable all cgroup controls as we do not use them
-RUN sed -i 's/^#cgroup_controllers =.*/cgroup_controllers = []/g' /etc/libvirt/qemu.conf
+  qemu-system-x86 ovmf bridge-utils iproute2 dnsmasq iptables ebtables
 
 COPY --from=go-build /go/bin/glider /usr/local/bin
 
