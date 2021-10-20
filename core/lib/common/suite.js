@@ -88,6 +88,7 @@ class Suite {
 		this.context = new Context();
 		this.teardown = new Teardown();
 		this.state = new State();
+		this.passing = null;
 
 		try {
 			this.deviceType = require(`../../contracts/contracts/hw.device-type/${conf.deviceType}/contract.json`);
@@ -190,6 +191,7 @@ class Suite {
 			await this.removeDependencies();
 			await this.removeDownloads();
 			this.state.log(`Teardown complete.`);
+			this.passing = tap.passing();
 			tap.end();
 			this.state.log(`Test Finished`);
 		}
@@ -279,6 +281,14 @@ class Suite {
 (async () => {
 	const suite = new Suite();
 
+	process.on('SIGINT', async () => {
+		suite.state.log(`Suite recieved SIGINT`);
+		await suite.teardown.runAll();
+		await suite.removeDependencies();
+		await suite.removeDownloads();
+		process.exit(128);
+	});
+
 	const messageHandler = message => {
 		const { action } = message;
 
@@ -294,5 +304,12 @@ class Suite {
 	suite.printRunQueueSummary();
 	await suite.run();
 
+	suite.state.log(`Suite run complete`);
 	process.off('message', messageHandler);
+	suite.state.log(`Exiting suite child process...`);
+	if (suite.passing) {
+		process.exit();
+	} else {
+		process.exit(1);
+	}
 })();
