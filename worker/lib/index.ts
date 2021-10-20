@@ -6,6 +6,7 @@ import * as http from 'http';
 import { getSdk } from 'balena-sdk';
 import { resolveLocalTarget } from './helpers';
 import { TestBotWorker } from './workers/testbot';
+import { TestBotRelay } from './workers/testbot-relay';
 import QemuWorker from './workers/qemu';
 import { Contract } from '../typings/worker';
 
@@ -23,10 +24,11 @@ const balena = getSdk({
 	apiUrl: 'https://api.balena-cloud.com/',
 });
 
-const workersDict: Dictionary<typeof TestBotWorker | typeof QemuWorker> = {
+const workersDict: Dictionary<typeof TestBotWorker | typeof QemuWorker | typeof TestBotRelay> = {
 	testbot_hat: TestBotWorker,
+	testbot_relay: TestBotRelay,
 	qemu: QemuWorker,
-};
+}
 
 const balenaLockPath = process.env.BALENA_APP_LOCK_PATH?.replace('.lock', '');
 
