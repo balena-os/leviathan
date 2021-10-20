@@ -3,7 +3,9 @@ import {
 	IntelNuc,
 	RaspberryPi,
 	TestBotHat,
-	BalenaFin
+	BalenaFin,
+	BalenaFinV09,
+	BeagleBone
 } from '@balena/testbot';
 import { EventEmitter } from 'events';
 import { createWriteStream } from 'fs';
@@ -18,6 +20,12 @@ import NetworkManager, { Supported } from '../helpers/nm';
 const dutSerialPath = '/reports/dut-serial.txt';
 
 const resolveDeviceInteractor = (hat: TestBotHat): DeviceInteractor => {
+	if (process.env.TESTBOT_DUT_TYPE === 'beaglebone-black') {
+		return new BeagleBone(hat);
+	}
+	if (process.env.TESTBOT_DUT_TYPE === 'fincm3-v09') {
+		return new BalenaFinV09(hat);
+	}
 	if (process.env.TESTBOT_DUT_TYPE === 'fincm3') {
 		return new BalenaFin(hat);
 	}
