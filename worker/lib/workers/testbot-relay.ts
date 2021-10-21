@@ -109,6 +109,7 @@ class TestBotRelay extends EventEmitter implements Leviathan.Worker {
         // if its a flasher image (e.g nuc, beaglebon), you have to do more
         if (process.env.PROVISION_TYPE === `flasher`){
             // toggle the sd mux to the DUT
+			await this.relayOff();
             await this.hatBoard.switchSdToDUT(1000);
 
 			await Bluebird.delay(1000 * 10)
