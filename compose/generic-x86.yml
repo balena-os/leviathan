@@ -29,3 +29,4 @@ services:
     environment:
       - UDEV=0
       - WORKER_TYPE=qemu
+      - SCREEN_CAPTURE=true
