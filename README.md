@@ -9,7 +9,7 @@
 
 ## Getting Started
 
-To set up Leviathan both hardware and software need to be configured. If you are setting up your standalone testbot, then please follow the instructions given below carefully before running tests on the Device Under Test (DUT).
+Leviathan allows for running tests either on a device connected to and controlled by a testbot rig, or on a virtualized QEMU worker. The below instructions provide a quick reference to get started.
 
 ### Clone the repository
 
@@ -21,10 +21,25 @@ To set up Leviathan both hardware and software need to be configured. If you are
 - Install node and npm in your system. We recommend installing [LTS versions from NVM](https://github.com/nvm-sh/nvm#install--update-script).
 - Download the image you want to test on your DUT from [balena.io/os](https://balena.io/os#download).
 
-### Configuration needed
+### Worker setup
+#### Testbot
 
-- Start building your standalone testbot by [following the guide](https://github.com/balena-io/testbot/blob/master/documentation/getting-started.md#quick-start-guide-for-testbot).
-- Create your test configuration, by creating a `config.json` file in the `workspace` directory, following instructions mentioned in the [leviathan docs](https://github.com/balena-os/leviathan/blob/master/documentation/quickstart.md).
+Start building your standalone testbot by [following the guide](https://github.com/balena-io/testbot/blob/master/documentation/getting-started.md#quick-start-guide-for-testbot).
+
+#### QEMU
+Run `make local` to build the core and worker services and run the worker using docker-compose. Worker configuration variables can be specified in `compose/generic-x86.yml`, under `environment`. The default configuration should suffice in most cases.
+
+| Variable            | Description                                         |
+| -----------         | --------------------------------------------------- |
+| QEMU_ARCH           | Architecture to virtualize (default: x86_64)        |
+| QEMU_CPUS           | Number of CPUs to virtualize (default: 4)           |
+| QEMU_MEMORY         | Amount of memory to virtualize (default: 2G)        |
+| QEMU_BRIDGE_NAME    | Name of bridge to use for networking (default: br0) |
+| QEMU_BRIDGE_ADDRESS | IP address to assign to bridge                      |
+| QEMU_DHCP_RANGE     | Range of DHCP addresses to hand out to workers      |
+
+#### Configuration
+- Create your test configuration, by creating a `config.json` file in the `workspace` directory, following instructions mentioned in the [leviathan docs](https://github.com/balena-os/leviathan/blob/master/documentation/quickstart.md). For QEMU workers, use localhost instead of the `*.local` address.
 - Extract the image you want to test to `./leviathan/workspace` and rename it to `balena.img`
 
 ### Running tests
