@@ -22,6 +22,7 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 	private dnsmasqProc: ChildProcess | null = null;
 	private internalState: Leviathan.WorkerState = { network: {wired: 'enp0s3'} };
 	private screenCapturer: ScreenCapture;
+	private qemuOptions: Leviathan.QemuOptions;
 
 	constructor(options: Leviathan.Options) {
 		super();
@@ -45,6 +46,12 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 				)
 			}
 		}
+
+    if (options.qemu) {
+      this.qemuOptions = options.qemu;
+      console.log("QEMU options:");
+      console.log(this.qemuOptions);
+    }
 
 		this.signalHandler = this.teardown.bind(this);
 	}
@@ -114,24 +121,25 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 	}
 
 	public async powerOn(): Promise<void> {
-		let deviceArch = 'amd64';
+		let deviceArch = this.qemuOptions.architecture;
 		let baseArgs = [
 			'-nographic',
-			'-m', '2G',
-			'-smp', '4',
+			'-m', this.qemuOptions.memory,
+			'-smp', this.qemuOptions.cpus,
 			'-drive', 'format=raw,file=/data/os.img,if=virtio',
 		];
 		let archArgs: { [arch: string]: Array<string> } = {
-			'amd64': [
+			'x86_64': [
 				'-M', 'pc',
 				'--enable-kvm',
 				'-cpu', 'max'
 			],
 			'aarch64': [],
 		};
-		let networkArgs = ['-net', 'nic,model=e1000', '-net', 'bridge,br=br0'];
+		let networkArgs = ['-net', 'nic,model=e1000',
+                       '-net', `bridge,br=${this.qemuOptions.network.bridgeName}`];
 		let firmwareArgs: { [arch: string]: Array<string> } = {
-			'amd64': ['-bios', '/usr/share/OVMF/OVMF_CODE.fd'],
+			'x86_64': ['-bios', '/usr/share/OVMF/OVMF_CODE.fd'],
 			'aarch64': ['-bios', '/usr/share/qemu-efi-aarch64/QEMU_EFI.fd'],
 		};
 		let qmpArgs = ['-qmp', 'tcp:localhost:4444,server,nowait'];
@@ -150,7 +158,7 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 		}
 
 		return new Promise((resolve, reject) => {
-			this.qemuProc = spawn('qemu-system-x86_64', args);
+			this.qemuProc = spawn(`qemu-system-${deviceArch}`, args);
 			this.qemuProc.on('exit', (code, signal) => {
 				reject(new Error(`QEMU exited with code ${code}`));
 			});
@@ -222,16 +230,16 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 	public async network(configuration: {
 		wired?: { nat: boolean };
 	}): Promise<void> {
-		const bridgeName: string = 'br0';
-		const bridgeAddress: string = '192.168.100.1';
-		const ipRange: Array<string> = ['192.168.100.128', '192.168.100.254'];
-		const dnsmasqArgs = [`--listen-address=${bridgeAddress}`,
-							 `--dhcp-range=${ipRange.join(',')}`,
-							 '--conf-file',
-							 '--bind-interfaces',
-							 '--no-daemon',
-							 `--dhcp-leasefile=/var/run/qemu-dnsmasq-${bridgeName}.leases`,
-		];
+    const bridgeName: string = this.qemuOptions.network.bridgeName;
+    const bridgeAddress: string = this.qemuOptions.network.bridgeAddress;
+    const dnsmasqArgs = [
+      `--interface=${bridgeName}`,
+      `--dhcp-range=${this.qemuOptions.network.dhcpRange}`,
+      '--conf-file',
+      '--bind-interfaces',
+      '--no-daemon',
+      `--dhcp-leasefile=/var/run/qemu-dnsmasq-${bridgeName}.leases`,
+    ];
 
 		return this.setupBridge(bridgeName, bridgeAddress).then(() => {
 			return new Promise((resolve, reject) => {
