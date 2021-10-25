@@ -172,9 +172,15 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 
 	public async powerOff(): Promise<void> {
 		console.log("Qemu: powerOff()");
-		if (this.qemuProc && !this.qemuProc.killed) {
-			this.qemuProc.kill();
-		}
+		return new Promise((resolve, reject) => {
+			if (this.qemuProc && !this.qemuProc.killed) {
+				// don't return until the process is dead
+				!this.qemuProc.on('exit', resolve)
+				this.qemuProc.kill();
+			} else {
+				resolve();
+			}
+		});
 	}
 
 	private async createBridge(bridgeName: string, bridgeAddress: string): Promise<void> {
