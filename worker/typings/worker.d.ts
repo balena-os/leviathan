@@ -12,9 +12,21 @@ declare global {
 			workerType: string;
 			screenCapture: boolean;
 			network: Leviathan.Options.network;
+			qemu: Leviathan.QemuOptions;
 		}
 		interface WorkerState {
 			network: { wired?: string; wireless?: string };
+		}
+
+		interface QemuOptions {
+			network: {
+				bridgeName: string;
+				bridgeAddress: string;
+				dhcpRange: string
+			};
+			architecture: string;
+			cpus: string;
+			memory: string;
 		}
 
 		interface Worker extends EventEmitter {
@@ -49,7 +61,8 @@ declare global {
 						wired: string;
 				  };
 			screen?: { VNC: { host: string; port: string }; HDMI: { dev: number } };
-			screenCapture?: boolean
+			screenCapture?: boolean;
+			qemu?: QemuOptions;
 		}
 	}
 }
