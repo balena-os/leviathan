@@ -686,6 +686,6 @@ module.exports = class BalenaSDK {
 				});
 			});
 		};
-		return retry(downloadLatestOS, { max_retries: 3, interval: 500 });
+		return retry(downloadLatestOS, { max_tries: 3, interval: 500 });
 	}
 };
