@@ -26,7 +26,7 @@ const { join } = require('path');
 
 const Archiver = require('./archiver');
 const Context = require('./context');
-
+const config = require('config');
 module.exports = class Test {
 	constructor(id, suite) {
 		this.suite = {

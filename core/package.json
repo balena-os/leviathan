@@ -39,6 +39,7 @@
 		"ws": "^7.1.2"
 	},
 	"devDependencies": {
+		"@types/config": "0.0.39",
 		"eslint": "^4.19.1",
 		"eslint-config-prettier": "^4.0.0",
 		"eslint-config-standard": "^11.0.0",
