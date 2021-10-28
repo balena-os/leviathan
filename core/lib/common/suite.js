@@ -89,6 +89,15 @@ class Suite {
 		this.teardown = new Teardown();
 		this.state = new State();
 		this.passing = null;
+		this.testSummary = {
+			stats: {
+				tests: 0,
+				passes: 0,
+				fails: 0,
+				ran: 0,
+			},
+			tests: {},
+		};
 
 		try {
 			this.deviceType = require(`../../contracts/contracts/hw.device-type/${conf.deviceType}/contract.json`);
@@ -156,23 +165,21 @@ class Suite {
 							await Reflect.apply(Bluebird.method(run), test, [t]);
 						} catch (error) {
 							t.threw(error);
-
-							if (this.options.replOnFailure) {
-								await utils.repl(
-									{
-										context: this.context.get(),
-									},
-									{
-										name: t.name,
-									},
-								);
-							}
 						} finally {
 							await test.finish();
 						}
 					}
 
 					if (tests == null) {
+						this.testSummary.stats.ran++;
+						let result = testNode.passing();
+						if (result) {
+							this.testSummary.tests[title] = 'pass';
+							this.testSummary.stats.passes++;
+						} else {
+							this.testSummary.tests[title] = 'fail';
+							this.testSummary.stats.fails++;
+						}
 						return;
 					}
 					for (const node of tests) {
@@ -188,6 +195,7 @@ class Suite {
 			// Teardown all running test suites before removing assets & dependencies
 			this.state.log(`Test suite completed. Tearing down now.`);
 			await this.teardown.runAll();
+			await this.createJsonSummary();
 			await this.removeDependencies();
 			await this.removeDownloads();
 			this.state.log(`Teardown complete.`);
@@ -239,6 +247,8 @@ class Suite {
 			this.state.log(`${'\t'.repeat(depth)} ${title}`);
 
 			if (tests == null) {
+				this.testSummary.stats.tests++;
+				this.testSummary.tests[title] = 'skipped';
 				return;
 			}
 
@@ -263,6 +273,12 @@ class Suite {
 		);
 	}
 
+	async createJsonSummary() {
+		this.state.log(`Creating JSON test summary...`);
+		let data = JSON.stringify(this.testSummary, null, 4);
+		await fs.writeFileSync(`/reports/test-summary.json`, data);
+	}
+
 	async removeDependencies() {
 		this.state.log(`Removing npm dependencies for suite:`);
 		await Bluebird.promisify(fse.remove)(
@@ -284,6 +300,7 @@ class Suite {
 	process.on('SIGINT', async () => {
 		suite.state.log(`Suite recieved SIGINT`);
 		await suite.teardown.runAll();
+		await suite.createJsonSummary();
 		await suite.removeDependencies();
 		await suite.removeDownloads();
 		process.exit(128);
