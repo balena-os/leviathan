@@ -133,25 +133,6 @@ class NonInteractiveState {
 			return;
 		}
 
-		const reporter = fork(
-			path.join(__dirname, '..' , 'lib', 'reporter'),
-			[
-				'-p',
-				`reports/worker-${workerData.prefix}.log`,
-			],
-			{
-				stdio: 'pipe',
-			},
-		);
-
-		console.log(`Generating test summary`);
-		reporter.stdout.pipe(nativeFs.createWriteStream(`reports/test-summary-${workerData.prefix}.log`))
-		let summaryPromise = new Promise(resolve => {
-			reporter.on('exit', code => {
-				resolve()
-			});
-		})
-
 		const dutLogUrl = `${workerData.workerUrl}/reports/dut-serial.txt`;
 		console.log(`Downloading DUT serial log with ${dutLogUrl}`);
 		const downloadLog = request
@@ -168,8 +149,16 @@ class NonInteractiveState {
 		let downloadArtifactDone =  new Promise(resolve =>
 			downloadImages.on('end', resolve).on('error', resolve),
 		);
+		const dutSummaryUrl = `${workerData.workerUrl}/reports/test-summary.json`;
+		console.log(`Downloading test summary with ${dutSummaryUrl}`);
+		const downloadSummary = request
+			.get(dutSummaryUrl)
+			.pipe(nativeFs.createWriteStream(`reports/test-summary-${workerData.prefix}.json`));
+		let downloadSummaryDone =  new Promise(resolve =>
+			downloadSummary.on('end', resolve).on('error', resolve),
+		);
 
-		await Promise.all([downloadLogDone, downloadArtifactDone, summaryPromise])
+		await Promise.all([downloadLogDone, downloadArtifactDone, downloadSummaryDone])
 	}
 
 	async teardown() {
