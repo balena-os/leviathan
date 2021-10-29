@@ -8,6 +8,8 @@ WORKDIR /tmp/node
 
 RUN install_packages libdbus-1-dev libvirt-dev python
 
+ARG SKIP_INSTALL_BINARY
+
 COPY package*.json ./
 RUN npm ci
 
