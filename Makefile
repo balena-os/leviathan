@@ -1,8 +1,12 @@
 SHELL = /bin/bash
-COMPOSE=$(shell if command -v docker-compose; then echo "docker-compose"; else echo "docker compose"; fi)
+COMPOSE=$(shell \
+		if command -v docker-compose &> /dev/null; \
+		then echo "docker-compose"; \
+		else echo "docker compose"; \
+	fi)
 
 Dockerfile:
-	@find . -maxdepth 2 -type f -name 'Dockerfile.template' -exec bash -c 'npx --yes dockerfile-template -d BALENA_MACHINE_NAME="intel-nuc" -f {} > `dirname {}`/Dockerfile' \;
+	find . -maxdepth 2 -type f -name 'Dockerfile.template' -exec bash -c 'npm_config_yes=true npx dockerfile-template -d BALENA_MACHINE_NAME="intel-nuc" -f {} > `dirname {}`/Dockerfile' \;
 
 local: Dockerfile
 	@ln -sf ./compose/generic-x86.yml ./docker-compose.yml
