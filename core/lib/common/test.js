@@ -23,10 +23,15 @@
 'use strict';
 
 const { join } = require('path');
-
-const Archiver = require('./archiver');
+const { Archiver } = require('@balena/leviathan-test-helpers');
 const Context = require('./context');
-const config = require('config');
+
+// Not using the helper defined in Leviathan, moved to the test-helpers package
+// const Archiver = require('./archiver');
+
+// By importing the config package here, we make the global config available
+// const config = require('config');
+
 module.exports = class Test {
 	constructor(id, suite) {
 		this.suite = {

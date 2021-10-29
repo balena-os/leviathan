@@ -26,11 +26,11 @@
 'use strict';
 
 const assignIn = require('lodash/assignIn');
-const config = require('config');
 const isEmpty = require('lodash/isEmpty');
 const isObject = require('lodash/isObject');
 const isString = require('lodash/isString');
 const template = require('lodash/template');
+const config = require('config');
 const fs = require('fs-extra');
 
 const AJV = require('ajv');
@@ -39,8 +39,6 @@ const ajv = new AJV();
 require('ajv-semver')(ajv);
 
 const Bluebird = require('bluebird');
-
-const fse = require('fs-extra');
 const npm = require('npm');
 const { tmpdir } = require('os');
 const path = require('path');
@@ -49,7 +47,9 @@ const Context = require('./context');
 const State = require('./state');
 const Teardown = require('./teardown');
 const Test = require('./test');
-const utils = require('./utils');
+const { Utils } = require('@balena/leviathan-test-helpers');
+
+const utils = new Utils();
 
 function cleanObject(object) {
 	if (!isObject(object)) {
@@ -286,7 +286,7 @@ class Suite {
 
 	async removeDependencies() {
 		this.state.log(`Removing npm dependencies for suite:`);
-		await Bluebird.promisify(fse.remove)(
+		await Bluebird.promisify(fs.remove)(
 			path.join(config.get('leviathan.uploads.suite'), 'node_modules'),
 		);
 	}
