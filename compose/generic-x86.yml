@@ -14,7 +14,10 @@ services:
       share: 'core-storage'
   worker:
     privileged: true
-    build: ./worker
+    build: 
+      context: ./worker
+      args:
+        - SKIP_INSTALL_BINARY=true
     pid: 'host'
     network_mode: 'host'
     ipc: 'host'
