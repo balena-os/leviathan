@@ -28,3 +28,4 @@ services:
     labels:
       io.balena.features.dbus: '1'
       io.balena.features.balena-socket: '1'
+      io.balena.features.balena-api: '1'

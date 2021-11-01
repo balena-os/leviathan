@@ -136,7 +136,7 @@ class Suite {
 
 		// Recursive DFS
 		const treeExpander = async ([
-			{ interactive, os, skip, deviceType, title, run, tests },
+			{ interactive, os, skip, deviceType, title, workerContract, run, tests },
 			testNode,
 		]) => {
 			// Check our contracts
@@ -146,7 +146,10 @@ class Suite {
 				(deviceType != null && !ajv.compile(deviceType)(this.deviceType)) ||
 				(os != null &&
 					this.context.get().os != null &&
-					!ajv.compile(os)(this.context.get().os.contract))
+					!ajv.compile(os)(this.context.get().os.contract) ||
+				(workerContract != null &&
+					this.context.get().workerContract != null) &&
+					!ajv.compile(workerContract)(this.context.get().workerContract))
 			) {
 				return;
 			}

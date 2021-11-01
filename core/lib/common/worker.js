@@ -191,6 +191,10 @@ module.exports = class Worker {
 		await rp.post({ uri: `${this.url}/teardown`, json: true });
 	}
 
+	async getContract(){
+		return rp.get({ uri: `${this.url}/contract`, json: true });
+	}
+
 	capture(action) {
 		switch (action) {
 			case 'start':
