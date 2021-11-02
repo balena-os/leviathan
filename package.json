@@ -1,6 +1,6 @@
 {
   "name": "leviathan",
-  "version": "1.28.34",
+  "version": "1.28.35",
   "scripts": {
     "prettify": "for component in 'suites' 'worker' 'core' 'client'; do npm --prefix $component run prettify; done",
     "lint": "for component in 'suites' 'worker' 'core' 'client'; do npm --prefix $component run lint; done",
@@ -40,6 +40,6 @@
     }
   },
   "versionist": {
-    "publishedAt": "2021-11-02T09:03:55.430Z"
+    "publishedAt": "2021-11-02T19:02:41.486Z"
   }
 }
