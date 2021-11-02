@@ -73,55 +73,60 @@ module.exports = class Worker {
 	 * @category helper
 	 */
 	async flash(imagePath) {
-		this.logger.log('Preparing to flash');
+		if(process.env.DEBUG_KEEP_IMG){
+			this.logger.log('[DEBUG] Skip flashing');
+			return
+		} else {
+			this.logger.log('Preparing to flash');
 
-		await new Promise(async (resolve, reject) => {
-			const req = rp.post({ uri: `${this.url}/dut/flash` });
+			await new Promise(async (resolve, reject) => {
+				const req = rp.post({ uri: `${this.url}/dut/flash` });
 
-			req.catch(error => {
-				reject(error);
-			});
-			req.finally(() => {
-				if (lastStatus !== 'done') {
-					reject(new Error('Unexpected end of TCP connection'));
-				}
-
-				resolve();
-			});
-
-			let lastStatus;
-			req.on('data', data => {
-				const computedLine = RegExp('(.+?): (.*)').exec(data.toString());
-
-				if (computedLine) {
-					if (computedLine[1] === 'error') {
-						req.cancel();
-						reject(new Error(computedLine[2]));
+				req.catch(error => {
+					reject(error);
+				});
+				req.finally(() => {
+					if (lastStatus !== 'done') {
+						reject(new Error('Unexpected end of TCP connection'));
 					}
 
-					if (computedLine[1] === 'progress') {
-						once(() => {
-							this.logger.log('Flashing');
-						});
-						// Hide any errors as the lines we get can be half written
-						const state = JSON.parse(computedLine[2]);
-						if (state != null && isNumber(state.percentage)) {
-							this.logger.status({
-								message: 'Flashing',
-								percentage: state.percentage,
+					resolve();
+				});
+
+				let lastStatus;
+				req.on('data', data => {
+					const computedLine = RegExp('(.+?): (.*)').exec(data.toString());
+
+					if (computedLine) {
+						if (computedLine[1] === 'error') {
+							req.cancel();
+							reject(new Error(computedLine[2]));
+						}
+
+						if (computedLine[1] === 'progress') {
+							once(() => {
+								this.logger.log('Flashing');
 							});
+							// Hide any errors as the lines we get can be half written
+							const state = JSON.parse(computedLine[2]);
+							if (state != null && isNumber(state.percentage)) {
+								this.logger.status({
+									message: 'Flashing',
+									percentage: state.percentage,
+								});
+							}
+						}
+
+						if (computedLine[1] === 'status') {
+							lastStatus = computedLine[2];
 						}
 					}
+				});
 
-					if (computedLine[1] === 'status') {
-						lastStatus = computedLine[2];
-					}
-				}
+				pipeline(fs.createReadStream(imagePath), req);
 			});
-
-			pipeline(fs.createReadStream(imagePath), req);
-		});
-		this.logger.log('Flash completed');
+			this.logger.log('Flash completed');
+		}
 	}
 
 	/**
