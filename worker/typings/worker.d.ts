@@ -27,6 +27,7 @@ declare global {
 			architecture: string;
 			cpus: string;
 			memory: string;
+			debug: boolean;
 		}
 
 		interface Worker extends EventEmitter {

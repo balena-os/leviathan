@@ -158,7 +158,12 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 		}
 
 		return new Promise((resolve, reject) => {
-			this.qemuProc = spawn(`qemu-system-${deviceArch}`, args);
+			let options = {};
+			if (this.qemuOptions.debug) {
+				options = {stdio: 'inherit'};
+			}
+
+			this.qemuProc = spawn(`qemu-system-${deviceArch}`, args, options);
 			this.qemuProc.on('exit', (code, signal) => {
 				reject(new Error(`QEMU exited with code ${code}`));
 			});
