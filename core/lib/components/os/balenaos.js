@@ -148,14 +148,14 @@ module.exports = class BalenaOS {
 			path: join(config.get('leviathan.downloads'), `image-${id()}`),
 		};
 		this.configJson = options.configJson || {};
-		this.contract = new contrato.Contract({
+		this.contract = {
 			type: 'test.os',
 			data: {
 				network: mapValues(this.network, value => {
 					return typeof value === 'boolean' ? value : true;
 				}),
 			}
-		});
+		};
 		this.logger = logger;
 		this.releaseInfo = { version: null, variant: null };
 		console.log(this.contract)
@@ -233,8 +233,8 @@ module.exports = class BalenaOS {
 			version: this.releaseInfo.version,
 			variant: this.releaseInfo.variant,
 		});*/
-		this.contract.raw.data['version'] = this.releaseInfo.version;
-		this.contract.raw.data['variant'] = this.releaseInfo.variant;
+		this.contract.data['version'] = this.releaseInfo.version;
+		this.contract.data['variant'] = this.releaseInfo.variant;
 	}
 
 	addCloudConfig(configJson) {

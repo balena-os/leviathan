@@ -141,17 +141,18 @@ class Suite {
 			testNode,
 		]) => {
 			// Check our contracts
-			const suiteContract = new contrato.Contract({})
-			suiteContract.addChildren([
-				this.deviceType,
-				this.context.get().os.contract
-			])
-			const testContract = new contrato.Contract(contract);
-			let result = suiteContract.satisfiesChildContract(testContract)
-			if (
-				!result
-			) {
-				return;
+			if(contract != null){
+				const suiteContract = new contrato.Contract({})
+				const os = (this.context.get().os != null) ? this.context.get().os.contract : {}
+				suiteContract.addChildren([
+					new contrato.Contract(this.deviceType),
+					new contrato.Contract(os)
+				])
+				const testContract = new contrato.Contract(contract);
+				let result = suiteContract.satisfiesChildContract(testContract)
+				if (!result) {
+					return;
+				}
 			}
 
 			const test = new Test(title, this);
