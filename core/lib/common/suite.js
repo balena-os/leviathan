@@ -199,7 +199,10 @@ class Suite {
 			await this.teardown.runAll();
 			await this.createJsonSummary();
 			await this.removeDependencies();
-			await this.removeDownloads();
+			// This env variable can be used to keep a configured, unpacked image for use when developing tests
+			if(process.env.DEBUG_KEEP_IMG !== true){
+				await this.removeDownloads();
+			}
 			this.state.log(`Teardown complete.`);
 			this.passing = tap.passing();
 			tap.end();
