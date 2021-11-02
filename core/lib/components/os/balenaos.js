@@ -64,6 +64,8 @@ const { fs } = require('mz');
 const { join } = require('path');
 const pipeline = Bluebird.promisify(require('stream').pipeline);
 const zlib = require('zlib');
+const contrato = require('@balena/contrato');
+const { contains } = require('lodash/fp');
 
 // TODO: This function should be implemented using Reconfix
 const injectBalenaConfiguration = (image, configuration) => {
@@ -146,13 +148,17 @@ module.exports = class BalenaOS {
 			path: join(config.get('leviathan.downloads'), `image-${id()}`),
 		};
 		this.configJson = options.configJson || {};
-		this.contract = {
-			network: mapValues(this.network, value => {
-				return typeof value === 'boolean' ? value : true;
-			}),
-		};
+		this.contract = new contrato.Contract({
+			type: 'test.os',
+			data: {
+				network: mapValues(this.network, value => {
+					return typeof value === 'boolean' ? value : true;
+				}),
+			}
+		});
 		this.logger = logger;
 		this.releaseInfo = { version: null, variant: null };
+		console.log(this.contract)
 	}
 
 	/**
@@ -223,10 +229,12 @@ module.exports = class BalenaOS {
 
 		await readVersion(/VERSION="(.*)"/g, 'version');
 		await readVersion(/VARIANT="(.*)"/g, 'variant');
-		assignIn(this.contract, {
+		/*assignIn(this.contract, {
 			version: this.releaseInfo.version,
 			variant: this.releaseInfo.variant,
-		});
+		});*/
+		this.contract.raw.data['version'] = this.releaseInfo.version;
+		this.contract.raw.data['variant'] = this.releaseInfo.variant;
 	}
 
 	addCloudConfig(configJson) {

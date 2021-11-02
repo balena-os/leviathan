@@ -50,6 +50,7 @@ const State = require('./state');
 const Teardown = require('./teardown');
 const Test = require('./test');
 const utils = require('./utils');
+const contrato = require('@balena/contrato');
 
 function cleanObject(object) {
 	if (!isObject(object)) {
@@ -136,17 +137,19 @@ class Suite {
 
 		// Recursive DFS
 		const treeExpander = async ([
-			{ interactive, os, skip, deviceType, title, run, tests },
+			{ interactive, skip, title, run, tests, contract },
 			testNode,
 		]) => {
 			// Check our contracts
+			const suiteContract = new contrato.Contract({})
+			suiteContract.addChildren([
+				this.deviceType,
+				this.context.get().os.contract
+			])
+			const testContract = new contrato.Contract(contract);
+			let result = suiteContract.satisfiesChildContract(testContract)
 			if (
-				skip ||
-				(interactive && !this.options.interactiveTests) ||
-				(deviceType != null && !ajv.compile(deviceType)(this.deviceType)) ||
-				(os != null &&
-					this.context.get().os != null &&
-					!ajv.compile(os)(this.context.get().os.contract))
+				!result
 			) {
 				return;
 			}
