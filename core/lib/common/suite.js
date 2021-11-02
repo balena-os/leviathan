@@ -90,6 +90,7 @@ class Suite {
 		this.state = new State();
 		this.passing = null;
 		this.testSummary = {
+			suite: ``,
 			stats: {
 				tests: 0,
 				passes: 0,
@@ -121,6 +122,7 @@ class Suite {
 			this.rootTree = this.resolveTestTree(
 				path.join(config.get('leviathan.uploads.suite'), 'suite'),
 			);
+			this.testSummary.suite = this.rootTree.title
 		}).catch(async error => {
 			await this.removeDependencies();
 			await this.removeDownloads();
