@@ -6,6 +6,7 @@
 		"docs": "rimraf ../docs/ && npx typedoc --tsconfig tsconfig.json"
 	},
 	"dependencies": {
+		"@balena/contrato": "^0.6.5",
 		"ajv": "^6.5.0",
 		"ajv-semver": "git+https://github.com/balena-io-modules/ajv-semver.git#resin-semver",
 		"any-promise": "^1.3.0",
