@@ -20,7 +20,7 @@ WORKDIR /usr/app
 
 COPY --from=npm-install /tmp/node ./
 
-RUN npm install balena-cli@12.48.0 -g --production --unsafe-perm
+RUN npm install balena-cli@12.51.1 -g --production --unsafe-perm
 
 COPY contracts contracts
 
