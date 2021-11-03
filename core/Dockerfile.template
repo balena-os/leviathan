@@ -1,13 +1,15 @@
-FROM balenalib/%%BALENA_MACHINE_NAME%%-node:10-buster-build AS npm-install
+FROM balenalib/%%BALENA_ARCH%%-node:12-bullseye-20211015 AS npm-install
 
 ENV npm_config_unsafe_perm=true
 
 WORKDIR /tmp/node
 
+RUN install_packages git python3 make build-essential
+
 COPY package*.json ./
 RUN npm ci
 
-FROM balenalib/%%BALENA_MACHINE_NAME%%-node:10-buster-build
+FROM balenalib/%%BALENA_ARCH%%-node:12-bullseye-20211015
 
 ENV UDEV=1
 ENV DBUS_SYSTEM_BUS_ADDRESS=unix:path=/host/run/dbus/system_bus_socket
@@ -19,6 +21,8 @@ RUN install_packages jq git vim rsync unzip bluez
 WORKDIR /usr/app
 
 COPY --from=npm-install /tmp/node ./
+
+RUN install_packages python3 make build-essential openssh-client
 
 RUN npm install balena-cli@12.51.1 -g --production --unsafe-perm
 
