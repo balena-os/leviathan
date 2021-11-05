@@ -11,9 +11,11 @@ import {
 	resolveLocalTarget,
 } from './helpers';
 import { TestBotWorker } from './workers/testbot';
+import Container from './workers/container';
 
-const workersDict: Dictionary<typeof TestBotWorker> = {
+const workersDict: Dictionary<typeof TestBotWorker | typeof Container> = {
 	testbot_hat: TestBotWorker,
+	container: Container
 };
 
 async function setup(): Promise<express.Application> {
