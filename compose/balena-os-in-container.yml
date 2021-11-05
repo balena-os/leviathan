@@ -1,0 +1,29 @@
+version: '2'
+volumes:
+  core-storage:
+  reports-storage:
+services:
+  core:
+    privileged: true
+    build: ./core
+    network_mode: 'host'
+    volumes:
+      - 'core-storage:/data'
+      - 'reports-storage:/reports'
+    labels:
+      share: 'core-storage'
+  worker:
+    privileged: true
+    build: 
+      context: ./worker
+      args:
+        - SKIP_INSTALL_BINARY=true
+        - INSTALL_DOCKER=true
+    pid: 'host'
+    environment:
+      - WORKER_TYPE=container
+    network_mode: 'host'
+    ipc: 'host'
+    volumes:
+      - 'core-storage:/data'
+      - 'reports-storage:/reports'
