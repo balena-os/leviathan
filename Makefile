@@ -6,7 +6,7 @@ COMPOSE=$(shell \
 	fi)
 
 Dockerfile:
-	find . -maxdepth 2 -type f -name 'Dockerfile.template' -exec bash -c 'npm_config_yes=true npx dockerfile-template -d BALENA_MACHINE_NAME="intel-nuc" -f {} > `dirname {}`/Dockerfile' \;
+	find . -maxdepth 2 -type f -name 'Dockerfile.template' -exec bash -c 'npm_config_yes=true npx dockerfile-template -d BALENA_ARCH="amd64" -f {} > `dirname {}`/Dockerfile' \;
 
 local: Dockerfile
 	@ln -sf ./compose/generic-x86.yml ./docker-compose.yml
