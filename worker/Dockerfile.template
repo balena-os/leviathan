@@ -1,4 +1,4 @@
-FROM balenalib/%%BALENA_MACHINE_NAME%%-golang:1.15-buster-build AS go-build
+FROM balenalib/%%BALENA_ARCH%%-golang:1.15-buster-build AS go-build
 
 RUN GO111MODULE=on go get -u github.com/nadoo/glider@v0.12.2
 
