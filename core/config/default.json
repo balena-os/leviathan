@@ -1,0 +1,19 @@
+{
+  "express": {
+    "port": 80
+  },
+  "worker": {
+    "url": "http://127.0.0.1",
+    "port": 2000
+  },
+  "leviathan": {
+    "artifacts": "/tmp/artifacts",
+    "downloads": "/data/downloads",
+    "workdir": "/data",
+    "uploads": {
+      "image": "/data/os.img",
+      "config": "/data/config.json",
+      "suite": "/data/suite/"
+    }
+  }
+}
