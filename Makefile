@@ -15,6 +15,13 @@ ifndef DRY
 	@${COMPOSE} up $(SERVICES)
 endif
 
+container: Dockerfile
+	@ln -sf ./compose/balena-os-in-container.yml ./docker-compose.yml
+ifndef DRY
+	@${COMPOSE} build $(SERVICES)
+	@${COMPOSE} up $(SERVICES)
+endif
+
 balena:
 	@ln -sf ./compose/balena.yml ./docker-compose.yml
 ifndef DRY

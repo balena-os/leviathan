@@ -10,6 +10,7 @@ RUN install_packages libdbus-1-dev libvirt-dev python make build-essential
 
 ARG SKIP_INSTALL_BINARY
 
+
 COPY package*.json ./
 RUN npm ci
 
@@ -29,6 +30,10 @@ RUN install_packages \
   libusb-dev libdbus-1-dev \
   gstreamer1.0-tools gstreamer1.0-plugins-base gstreamer1.0-plugins-bad gstreamer1.0-plugins-good \
   qemu-system-x86 libvirt-daemon-system bridge-utils iproute2 dnsmasq iptables ebtables
+
+ARG INSTALL_DOCKER
+
+RUN if [ $INSTALL_DOCKER ]; then install_packages docker.io docker-compose git; fi;
 
 # Disable all cgroup controls as we do not use them
 RUN sed -i 's/^#cgroup_controllers =.*/cgroup_controllers = []/g' /etc/libvirt/qemu.conf
