@@ -6,11 +6,15 @@ services:
   core:
     build: ./core
     network_mode: 'host'
+    privileged: true
     volumes:
       - 'core-storage:/data'
       - 'reports-storage:/reports'
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /dev:/dev
     environment:
       - UDEV=0
+      - WORKER_TYPE=qemu
   worker:
     build: 
       context: ./worker
