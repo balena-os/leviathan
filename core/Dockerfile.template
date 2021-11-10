@@ -14,7 +14,7 @@ ENV DBUS_SYSTEM_BUS_ADDRESS=unix:path=/host/run/dbus/system_bus_socket
 
 ENV npm_config_unsafe_perm=true
 
-RUN install_packages jq git vim rsync unzip bluez
+RUN install_packages jq git vim rsync unzip bluez qemu-utils
 
 WORKDIR /usr/app
 
