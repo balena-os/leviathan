@@ -18,7 +18,6 @@
 
 const Bluebird = require('bluebird');
 const { fork } = require('child_process');
-const { getFilesFromDirectory } = require('./common/utils');
 const config = require('config');
 const express = require('express');
 const expressWebSocket = require('express-ws');
@@ -27,6 +26,7 @@ const md5 = require('md5-file/promise');
 const { fs, crypto } = require('mz');
 const { basename, join } = require('path');
 const tar = require('tar-fs');
+const path = require('path');
 const pipeline = Bluebird.promisify(require('stream').pipeline);
 const WebSocket = require('ws');
 const { parse } = require('url'); // eslint-disable-line
@@ -34,6 +34,29 @@ const { createGzip, createGunzip } = require('zlib');
 const setReportsHandler = require('./reports');
 const MachineState = require('./state');
 const { createWriteStream } = require('fs');
+
+async function getFilesFromDirectory(basePath, ignore = []) {
+	async function _recursive(_basePath, _ignore = []) {
+		let files = [];
+		const entries = await fs.readdir(_basePath);
+		for (const entry of entries) {
+			if (_ignore.includes(entry)) {
+				continue;
+			}
+			const stat = await fs.stat(path.join(_basePath, entry));
+			if (stat.isFile()) {
+				files.push(path.join(_basePath, entry));
+			}
+			if (stat.isDirectory()) {
+				files = files.concat(
+					await _recursive(path.join(_basePath, entry), _ignore),
+				);
+			}
+		}
+		return files;
+	}
+	return _recursive(basePath, ignore);
+}
 
 async function setup() {
 	let suite = null;
@@ -60,24 +83,20 @@ async function setup() {
 			if (parseFloat(req.headers['x-token']) !== upload.token) {
 				throw new Error('Unauthorized upload');
 			}
-
 			const artifact = {
 				name: req.headers['x-artifact'],
-				path: config.get('leviathan.uploads')[req.headers['x-artifact-id']],
+				path: config.get(`leviathan.uploads.${req.headers['x-artifact-id']}`),
 				hash: req.headers['x-artifact-hash'],
 			};
 			const ignore = ['node_modules', 'package-lock.json'];
-
 			let hash = null;
 			if (await pathExists(artifact.path)) {
 				const stat = await fs.stat(artifact.path);
-
 				if (stat.isFile()) {
 					hash = await md5(artifact.path);
 				}
 				if (stat.isDirectory()) {
 					const struct = await getFilesFromDirectory(artifact.path, ignore);
-
 					const expand = await Promise.all(
 						struct.map(async entry => {
 							return {
@@ -89,7 +108,6 @@ async function setup() {
 							};
 						}),
 					);
-
 					expand.sort((a, b) => {
 						const splitA = a.path.split('/');
 						const splitB = b.path.split('/');
@@ -123,7 +141,6 @@ async function setup() {
 				).catch(err => {
 					throw err;
 				});
-
 				await line;
 				upload.success = true;
 				res.write('upload: done');

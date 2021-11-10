@@ -37,8 +37,8 @@
 
 const Bluebird = require('bluebird');
 const retry = require('bluebird-retry');
-const utils = require('../common/utils');
-const archiver = require('../common/archiver');
+const { Utils } = require('@balena/leviathan-test-helpers');
+const archiver = require('@balena/leviathan-test-helpers');
 const config = require('config');
 const isNumber = require('lodash/isNumber');
 const { fs } = require('mz');
@@ -47,6 +47,7 @@ const pipeline = Bluebird.promisify(require('stream').pipeline);
 const request = require('request');
 const rp = require('request-promise');
 
+const utils = new Utils();
 const exec = Bluebird.promisify(require('child_process').exec);
 
 function id() {
@@ -73,15 +74,13 @@ module.exports = class Worker {
 	 * @category helper
 	 */
 	async flash(imagePath) {
-		if(process.env.DEBUG_KEEP_IMG){
+		if (process.env.DEBUG_KEEP_IMG) {
 			this.logger.log('[DEBUG] Skip flashing');
-			return
+			return;
 		} else {
 			this.logger.log('Preparing to flash');
-
 			await new Promise(async (resolve, reject) => {
 				const req = rp.post({ uri: `${this.url}/dut/flash` });
-
 				req.catch(error => {
 					reject(error);
 				});
@@ -89,14 +88,12 @@ module.exports = class Worker {
 					if (lastStatus !== 'done') {
 						reject(new Error('Unexpected end of TCP connection'));
 					}
-
 					resolve();
 				});
 
 				let lastStatus;
 				req.on('data', data => {
 					const computedLine = RegExp('(.+?): (.*)').exec(data.toString());
-
 					if (computedLine) {
 						if (computedLine[1] === 'error') {
 							req.cancel();
@@ -116,13 +113,11 @@ module.exports = class Worker {
 								});
 							}
 						}
-
 						if (computedLine[1] === 'status') {
 							lastStatus = computedLine[2];
 						}
 					}
 				});
-
 				pipeline(fs.createReadStream(imagePath), req);
 			});
 			this.logger.log('Flash completed');
@@ -171,19 +166,19 @@ module.exports = class Worker {
 	) {
 		return /.*\.local/.test(target)
 			? retry(
-					() => {
-						return rp.get({
-							uri: `${this.url}/dut/ip`,
-							body: { target },
-							json: true,
-						});
-					},
-					{
-						max_tries: timeout.tries,
-						interval: timeout.interval,
-						throw_original: true,
-					},
-			  )
+				() => {
+					return rp.get({
+						uri: `${this.url}/dut/ip`,
+						body: { target },
+						json: true,
+					});
+				},
+				{
+					max_tries: timeout.tries,
+					interval: timeout.interval,
+					throw_original: true,
+				},
+			)
 			: target;
 	}
 
