@@ -189,6 +189,7 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 	}
 
 	private async createBridge(bridgeName: string, bridgeAddress: string): Promise<void> {
+		console.log(`Entering createbridge`)
 		return new Promise((resolve, reject) => {
 			spawn(
 				'brctl', ['addbr', bridgeName]
@@ -200,6 +201,7 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 				}
 			});
 		}).then(() => {
+			console.log(`doing createbridge THEN`)
 			return new Promise((resolve, reject) => {
 				spawn(
 					'ip', ['link', 'set', 'dev', bridgeName, 'up']
@@ -212,11 +214,26 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 				});
 			});
 		}).then(() => {
+			console.log(`doing create bridge THEN THEN`)
+			console.log(bridgeAddress)
+			console.log(bridgeName)
 			return new Promise((resolve, reject) => {
-				spawn(
+				let s = spawn(
 					'ip', ['addr', 'add', `${bridgeAddress}/24`, 'dev', bridgeName]
-				).on('exit', (code) => {
+				)
+				
+				s.stdout.on('data', function(data) {
+					console.log(data)
+			    })
+
+				s.on(`close`, function(code){
+					console.log(`Close, ${code}`)
+				})
+
+				s.on('exit', (code) => {
+					console.log(`Exited with code ${code}`)
 					if (code == 0) {
+						console.log(`resolve A`)
 						resolve();
 					} else {
 						reject(new Error(`failed assigning address to interface ${bridgeName} with code ${code}`));
@@ -227,6 +244,7 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 	}
 
 	private async setupBridge(bridgeName: string, bridgeAddress: string): Promise<void> {
+		console.log(`Doing setupBridge`)
 		return new Promise((resolve, reject) => {
 			spawn('brctl', ['show', bridgeName]).on('exit', (code) => {
 				if (code == 0) {
@@ -251,11 +269,13 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
       '--no-daemon',
       `--dhcp-leasefile=/var/run/qemu-dnsmasq-${bridgeName}.leases`,
     ];
-
-		return this.setupBridge(bridgeName, bridgeAddress).then(() => {
+	console.log(`SETTING UP NETWORK`)
+		this.setupBridge(bridgeName, bridgeAddress).then(() => {
+			console.log(`SETUPBRIDGE THEN`)
 			return new Promise((resolve, reject) => {
 				if (this.dnsmasqProc && !this.dnsmasqProc.killed) {
 					// dnsmasq is already running
+					console.log(`dnsmasq already running`)
 					resolve();
 				} else {
 
