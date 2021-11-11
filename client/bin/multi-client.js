@@ -443,7 +443,13 @@ class State {
 		for (const runConfig of runConfigs) {
 			if (runConfig.workers instanceof Array) {
 				runConfig.workers.forEach(worker => {
-					runQueue.push({ ...runConfig, workers: worker, matchingDevices: null });
+					runQueue.push({
+						...runConfig,
+						matchingDevices: [worker],
+						workers: null,
+						workerPrefix: null,
+						array: true
+					});
 				});
 			} else if (runConfig.workers instanceof Object) {
 				await balenaCloud.authenticate(runConfig.workers.apiKey);
@@ -474,24 +480,29 @@ class State {
 		while (runQueue.length > 0) {
 			const job = runQueue.pop();
 			// If matching workers for the job are available then allot them a job
-			if (job.matchingDevices !== null) { // specifically for an application since worker URL's are specific are automatically allocated
-				for (var device of job.matchingDevices) {
-					// check if device is idle & public URL is reachable
-					let deviceUrl = await balenaCloud.resolveDeviceUrl(device)
-					try{
-						let status = await rp.get(`${deviceUrl}/state`);
-						if (status === "IDLE") {
-							// make sure that the worker being targetted isn't already about to be used by another child process
-							if(!busyWorkers.includes(deviceUrl)){
-								// Create single client and break from loop to job the job 👍
-								job.workers = deviceUrl
+			for (var device of job.matchingDevices) {
+				// check if device is idle & public URL is reachable
+				let deviceUrl = ''
+				if(!job.array){
+					deviceUrl = await balenaCloud.resolveDeviceUrl(device)
+				} else {
+					deviceUrl = device;
+				}
+				try{
+					let status = await rp.get(`${deviceUrl}/state`);
+					if (status === "IDLE") {
+						// make sure that the worker being targetted isn't already about to be used by another child process
+						if(!busyWorkers.includes(deviceUrl)){
+							// Create single client and break from loop to job the job 👍
+							job.workers = deviceUrl
+							if(!job.array){
 								job.workerPrefix = device.fileNamePrefix()
-								break
 							}
+							break
 						}
-					} catch(err) {
-						state.info(`Couldn't retrieve ${device.tags.DUT} worker's state. Querying ${deviceUrl} and received ${err.name}: ${err.statusCode}`)
 					}
+				} catch(err) {
+					state.info(`Couldn't retrieve ${device.tags.DUT} worker's state. Querying ${deviceUrl} and received ${err.name}: ${err.statusCode}`)
 				}
 			}
 
