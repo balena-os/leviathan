@@ -85,8 +85,8 @@ module.exports = class BalenaSDK {
 		command,
 		device,
 		timeout = {
-			interval: 10000,
-			tries: 60,
+			interval: 3000,
+			tries: 3,
 		},
 	) {
 		const sshPort = 22;
