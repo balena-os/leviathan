@@ -1,0 +1,20 @@
+on:
+  pull_request:
+    types: [opened, synchronize, closed]
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: balena-io/balena-ci@v0.3.2
+        with:
+          balena_token: ${{ secrets.BALENA_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          fleet: balena/testbot-rig
+          versionbot: false
+          environment: balena-cloud.com
+          create_ref: true
