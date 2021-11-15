@@ -11,9 +11,11 @@ import {
 	resolveLocalTarget,
 } from './helpers';
 import { TestBotWorker } from './workers/testbot';
+import QemuWorker from './workers/qemu';
 
-const workersDict: Dictionary<typeof TestBotWorker> = {
+const workersDict: Dictionary<typeof TestBotWorker | typeof QemuWorker> = {
 	testbot_hat: TestBotWorker,
+  qemu: QemuWorker,
 };
 
 async function setup(): Promise<express.Application> {
@@ -26,7 +28,8 @@ async function setup(): Promise<express.Application> {
 	]({
 		worker: { workdir: runtimeConfiguration.workdir },
 		network: runtimeConfiguration.network,
-		screenCapture: runtimeConfiguration.screenCapture
+		screenCapture: runtimeConfiguration.screenCapture,
+		qemu: runtimeConfiguration.qemu,
 	});
 
 	/**
