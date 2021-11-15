@@ -165,8 +165,8 @@ module.exports = class Worker {
 	ip(
 		target,
 		timeout = {
-			interval: 10000,
-			tries: 60,
+			interval: 5000,
+			tries: 10,
 		},
 	) {
 		return /.*\.local/.test(target)
@@ -227,8 +227,8 @@ module.exports = class Worker {
 		command,
 		target,
 		timeout = {
-			interval: 10000,
-			tries: 10,
+			interval: 3000,
+			tries: 3,
 		},
 	) {
 		const ip = /.*\.local/.test(target) ? await this.ip(target) : target;
@@ -278,7 +278,7 @@ module.exports = class Worker {
 				);
 			},
 			{
-				max_tries: 10,
+				max_tries: 5,
 				interval: 5000,
 			},
 		);
