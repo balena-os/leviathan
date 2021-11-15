@@ -6,7 +6,7 @@ FROM balenalib/%%BALENA_ARCH%%-node:12-bullseye-20211015 AS node-build
 
 WORKDIR /tmp/node
 
-RUN install_packages libusb-1.0.0-dev libdbus-1-dev python make build-essential
+RUN install_packages libusb-1.0.0-dev libdbus-1-dev python make build-essential git
 
 ARG SKIP_INSTALL_BINARY
 
