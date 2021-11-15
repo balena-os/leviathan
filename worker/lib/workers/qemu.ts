@@ -232,7 +232,7 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 				if (code == 0) {
 					resolve();
 				} else {
-					return this.createBridge(bridgeName, bridgeAddress);
+					resolve(this.createBridge(bridgeName, bridgeAddress));
 				}
 			});
 		});
