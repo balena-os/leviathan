@@ -13,7 +13,8 @@
 		"skipLibCheck": true,
 		"resolveJsonModule": true,
 		"strictNullChecks": true,
-		"noImplicitAny": true
+		"noImplicitAny": true,
+		"allowJs": true
 	},
 	"include": [
 		"./typings/*.d.ts",

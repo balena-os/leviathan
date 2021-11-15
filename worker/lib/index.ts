@@ -3,6 +3,7 @@ import { ChildProcess, spawn } from 'child_process';
 import { multiWrite } from 'etcher-sdk';
 import * as express from 'express';
 import * as http from 'http';
+const { getSdk } = require('balena-sdk');
 import { Readable } from 'stream';
 
 import {
@@ -47,6 +48,35 @@ async function setup(): Promise<express.Application> {
 		},
 	};
 
+
+	const supportedTags = [
+		`dut`,
+		`screencapture`,
+		`modem`,
+	]
+	// parse labels and create 'contract'
+	let contract: any = {
+		uuid: process.env.BALENA_DEVICE_UUID,
+		workerType: process.env.WORKER_TYPE
+	}
+	const balena = getSdk({
+		apiUrl: "https://api.balena-cloud.com/"
+	});	
+	if(typeof process.env.BALENA_API_KEY === 'string' && typeof process.env.BALENA_DEVICE_UUID === 'string'){
+		await balena.auth.loginWithToken(process.env.BALENA_API_KEY);
+		const tags = await balena.models.device.tags.getAllByDevice(process.env.BALENA_DEVICE_UUID);
+		for(let tag of tags){
+			if(supportedTags.includes(tag.tag_key)){
+				if(tag.value === "true")
+					contract[tag.tag_key] = true
+				else
+					contract[tag.tag_key] = tag.value
+			}
+		}
+	} else {
+		console.log(`API key not available...`)
+	}
+	
 	await worker.setup();
 
 	/**
@@ -120,6 +150,21 @@ async function setup(): Promise<express.Application> {
 				} else {
 					throw new Error('Target missing');
 				}
+			} catch (err) {
+				next(err);
+			}
+		},
+	);
+	app.get(
+		'/contract',
+		jsonParser,
+		async (
+			req: express.Request,
+			res: express.Response,
+			next: express.NextFunction,
+		) => {
+			try {
+				res.send(JSON.stringify(contract));
 			} catch (err) {
 				next(err);
 			}
