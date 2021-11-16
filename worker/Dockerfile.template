@@ -1,7 +1,3 @@
-FROM balenalib/%%BALENA_ARCH%%-golang:1.15-buster-build AS go-build
-
-RUN GO111MODULE=on go get -u github.com/nadoo/glider@v0.12.2
-
 FROM balenalib/%%BALENA_ARCH%%-node:12-bullseye-20211015 AS node-build
 
 WORKDIR /tmp/node
@@ -24,14 +20,10 @@ FROM balenalib/%%BALENA_ARCH%%-node:12-bullseye-20211015
 
 ENV UDEV=1
 
-
 RUN install_packages \
   libusb-1.0.0-dev libdbus-1-dev \
   gstreamer1.0-tools gstreamer1.0-plugins-base gstreamer1.0-plugins-bad gstreamer1.0-plugins-good \
   qemu-system-x86 ovmf bridge-utils iproute2 dnsmasq iptables ebtables
-
-COPY --from=go-build /go/bin/glider /usr/local/bin
-
 
 WORKDIR /usr/app
 
@@ -41,8 +33,8 @@ COPY entry.sh .
 # create qemu-bridge-helper ACL file
 # https://wiki.qemu.org/Features/HelperNetworking
 RUN mkdir -p /etc/qemu \
-	&& echo "allow all" > /etc/qemu/bridge.conf \
-	&& chmod 0640 /etc/qemu/bridge.conf
+  && echo "allow all" > /etc/qemu/bridge.conf \
+  && chmod 0640 /etc/qemu/bridge.conf
 
 COPY --from=node-build /tmp/node/package.json .
 COPY --from=node-build /tmp/node/node_modules node_modules
