@@ -1,6 +1,5 @@
 module.exports = {
 	worker: {
-		port: process.env.WORKER_PORT || 2000,
 		runtimeConfiguration: {
 			workdir: process.env.WORKDIR || '/data',
 			workerType: process.env.WORKER_TYPE || 'testbot_hat',

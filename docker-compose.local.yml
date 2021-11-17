@@ -2,6 +2,7 @@ version: '2'
 volumes:
   core-storage:
   reports-storage:
+  leviathan:
 services:
   core:
     build: ./core
@@ -9,10 +10,10 @@ services:
     volumes:
       - 'core-storage:/data'
       - 'reports-storage:/reports'
+      - 'leviathan:/run/leviathan'
     environment:
       - UDEV=0
       - WORKER_TYPE=qemu
-      - WORKER_PORT=${WORKER_PORT}
       - CORE_PORT=${CORE_PORT}
   worker:
     build: 
@@ -28,11 +29,11 @@ services:
     volumes:
       - 'core-storage:/data'
       - 'reports-storage:/reports'
+      - 'leviathan:/run/leviathan'
     environment:
       - UDEV=0
       - WORKER_TYPE=qemu
       - SCREEN_CAPTURE=true
-      - WORKER_PORT=${WORKER_PORT}
   client:
     build: ./client
     network_mode: host

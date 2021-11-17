@@ -61,7 +61,7 @@ module.exports = class Worker {
 		logger = { log: console.log, status: console.log, info: console.log },
 	) {
 		this.deviceType = deviceType;
-		this.url = `${config.get('worker.url')}:${config.get('worker.port')}`;
+		this.url = `http://unix:/run/leviathan/worker.sock:`;
 		this.logger = logger;
 	}
 

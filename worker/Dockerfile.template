@@ -40,6 +40,4 @@ COPY --from=node-build /tmp/node/package.json .
 COPY --from=node-build /tmp/node/node_modules node_modules
 COPY --from=node-build /tmp/node/build build
 
-EXPOSE 2000
-
 CMD [ "./entry.sh" ]

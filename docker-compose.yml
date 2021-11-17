@@ -2,6 +2,7 @@ version: '2.1'
 volumes:
   core-storage:
   reports-storage:
+  leviathan:
 services:
   core:
     privileged: true
@@ -11,6 +12,7 @@ services:
     volumes:
       - 'core-storage:/data'
       - 'reports-storage:/reports'
+      - 'leviathan:/run/leviathan'
     labels:
       share: core-storage
       io.balena.features.balena-socket: '1'
@@ -25,6 +27,7 @@ services:
     volumes:
       - 'core-storage:/data'
       - 'reports-storage:/reports'
+      - 'leviathan:/run/leviathan'
     labels:
       io.balena.features.dbus: '1'
       io.balena.features.balena-socket: '1'
