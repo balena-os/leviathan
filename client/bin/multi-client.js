@@ -489,7 +489,7 @@ class State {
 					deviceUrl = device;
 				}
 				try{
-					let status = await rp.get(`${deviceUrl}/state`);
+					let status = await rp.get((new url.URL('/state', deviceUrl)).toString());
 					if (status === "IDLE") {
 						// make sure that the worker being targetted isn't already about to be used by another child process
 						if(!busyWorkers.includes(deviceUrl)){
@@ -502,7 +502,7 @@ class State {
 						}
 					}
 				} catch(err) {
-					state.info(`Couldn't retrieve ${device.tags.DUT} worker's state. Querying ${deviceUrl} and received ${err.name}: ${err.statusCode}`)
+					state.info(`Couldn't retrieve ${device.tags ? device.tags.DUT : device} worker's state. Querying ${deviceUrl} and received ${err.name}: ${err.statusCode}`)
 				}
 			}
 
