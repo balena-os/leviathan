@@ -268,7 +268,11 @@ async function setup(): Promise<express.Application> {
 
 			try {
 				worker.on('progress', onProgress);
-				await worker.flash(req);
+				console.log("Request is")
+				console.log(req)
+				console.log(req.body.imagePath)
+				console.log(JSON.stringify(req))
+				// await worker.flash(req.);
 			} catch (e) {
 				res.write(`error: ${e.message}`);
 			} finally {

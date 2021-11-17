@@ -78,7 +78,11 @@ module.exports = class Worker {
 			this.logger.log('Preparing to flash');
 
 			await new Promise(async (resolve, reject) => {
-				const req = rp.post({ uri: `${this.url}/dut/flash` });
+				const req = rp.post({
+					uri: `${this.url}/dut/flash`,
+					body: { imagePath: imagePath },
+					json: true
+				});
 
 				req.catch((error) => {
 					reject(error);
@@ -87,7 +91,6 @@ module.exports = class Worker {
 					if (lastStatus !== 'done') {
 						reject(new Error('Unexpected end of TCP connection'));
 					}
-
 					resolve();
 				});
 
@@ -120,8 +123,6 @@ module.exports = class Worker {
 						}
 					}
 				});
-
-				pipeline(fs.createReadStream(imagePath), req);
 			});
 			this.logger.log('Flash completed');
 		}
@@ -169,19 +170,19 @@ module.exports = class Worker {
 	) {
 		return /.*\.local/.test(target)
 			? retry(
-					() => {
-						return rp.get({
-							uri: `${this.url}/dut/ip`,
-							body: { target },
-							json: true,
-						});
-					},
-					{
-						max_tries: timeout.tries,
-						interval: timeout.interval,
-						throw_original: true,
-					},
-			  )
+				() => {
+					return rp.get({
+						uri: `${this.url}/dut/ip`,
+						body: { target },
+						json: true,
+					});
+				},
+				{
+					max_tries: timeout.tries,
+					interval: timeout.interval,
+					throw_original: true,
+				},
+			)
 			: target;
 	}
 

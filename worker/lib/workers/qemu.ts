@@ -37,6 +37,7 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 		super();
 
 		if (options != null) {
+			console.log("Options ARE:")
 			this.image =
 				options.worker != null && options.worker.disk != null
 					? options.worker.disk
@@ -126,28 +127,28 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 		});
 	}
 
-	public async flash(stream: Stream.Readable): Promise<void> {
+	public async flash(imagePath: string): Promise<void> {
 		this.activeFlash = new Bluebird(async (resolve, reject) => {
 			await this.powerOff();
 
-			const source = new sdk.sourceDestination.SingleUseStreamSource(stream);
+			// const source = new sdk.sourceDestination.SingleUseStreamSource(stream);
 
-			const destination = new sdk.sourceDestination.File(
-				this.image,
-				sdk.sourceDestination.File.OpenFlags.ReadWrite,
-			);
+			// const destination = new sdk.sourceDestination.File(
+			// 	this.image,
+			// 	sdk.sourceDestination.File.OpenFlags.ReadWrite,
+			// );
 
-			await sdk.multiWrite.pipeSourceToDestinations(
-				source,
-				[destination],
-				(_destination, error) => {
-					reject(error);
-				},
-				(progress: sdk.multiWrite.MultiDestinationProgress) => {
-					this.emit('progress', progress);
-				},
-				true,
-			);
+			// await sdk.multiWrite.pipeSourceToDestinations(
+			// 	source,
+			// 	[destination],
+			// 	(_destination, error) => {
+			// 		reject(error);
+			// 	},
+			// 	(progress: sdk.multiWrite.MultiDestinationProgress) => {
+			// 		this.emit('progress', progress);
+			// 	},
+			// 	true,
+			// );
 
 			// Image files must be resized using qemu-img to create space for the data partition
 			console.debug(`Resizing qemu image...`);
