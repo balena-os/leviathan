@@ -209,33 +209,14 @@ async function setup(): Promise<express.Application> {
 			res: express.Response,
 			next: express.NextFunction,
 		) => {
-			// For simplicity we will delegate to glider for now
+			// This function is effectively stubbed and does nothing except return 127.0.0.1.
+			// Glider has been removed from the worker, since the old proxy tests were always
+			// passing even without a working proxy, they were invalid.
+			// New proxy tests install glider in a container on the DUT and don't use this endpoint.
+			console.warn(`proxy endpoint has been deprecated, returning localhost`)
 			try {
-				proxy.kill();
 				if (req.body.port != null) {
-					let ip;
-
-					if (worker.state.network.wired != null) {
-						ip = {
-							ip: getIpFromIface(worker.state.network.wired),
-						};
-					}
-
-					if (worker.state.network.wireless != null) {
-						ip = {
-							ip: getIpFromIface(worker.state.network.wireless),
-						};
-					}
-
-					if (ip == null) {
-						throw new Error('DUT network could not be found');
-					}
-
-					process.off('exit', proxy.kill);
-					proxy.proc = spawn('glider', ['-listen', req.body.port]);
-					process.on('exit', proxy.kill);
-
-					res.send(ip);
+					res.send('127.0.0.1');
 				} else {
 					res.send('OK');
 				}
