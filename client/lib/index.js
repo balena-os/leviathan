@@ -332,7 +332,10 @@ module.exports = class Client extends PassThrough {
 							process.send({ type, data });
 							break;
 						case 'status':
-							if (!data.success) {
+							if (data.message === `Flashing`){
+								this.log(`Flashing: ${data.percentage}%`)
+							}
+							else if (!data.success) {
 								this.log(`Test suite has exited with: FAIL`)
 								process.exitCode = 2;
 							} else {

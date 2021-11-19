@@ -11,6 +11,7 @@ services:
       - 'reports-storage:/reports'
     environment:
       - UDEV=0
+      - WORKER_TYPE=qemu
   worker:
     build: 
       context: ./worker
