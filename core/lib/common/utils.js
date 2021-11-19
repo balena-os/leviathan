@@ -112,8 +112,8 @@ module.exports = {
 	waitUntil: async (
 		promise,
 		rejectionFail = false,
-		_times = 7,
-		_delay = 15000,
+		_times = 20,
+		_delay = 30000,
 	) => {
 		const _waitUntil = async timesR => {
 			if (timesR === 0) {
