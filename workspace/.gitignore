@@ -2,7 +2,6 @@
 *.img
 *.js
 *.conf
-*.docker
 
 reports/
 saved-images/
