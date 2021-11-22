@@ -1,8 +1,12 @@
 SHELL = /bin/bash
 COMPOSE=$(shell \
-		if command -v docker-compose &> /dev/null; \
-		then echo "docker-compose"; \
-		else echo "docker compose"; \
+	if command -v docker-compose &> /dev/null; \
+	then \
+		echo "docker-compose"; \
+	else \
+		curl -fsSL https://github.com/docker/compose/releases/download/1.29.2/run.sh -o ./docker-compose &> /dev/null && \
+		chmod +x ./docker-compose && \
+		echo "./docker-compose"; \
 	fi)
 
 Dockerfile:
@@ -11,8 +15,13 @@ Dockerfile:
 local: Dockerfile
 	@ln -sf ./compose/generic-x86.yml ./docker-compose.yml
 ifndef DRY
-	@${COMPOSE} build $(SERVICES)
-	@${COMPOSE} up $(SERVICES)
+	@${COMPOSE} up --build $(SERVICES)
+endif
+
+detached: Dockerfile
+	@ln -sf ./compose/generic-x86.yml ./docker-compose.yml
+ifndef DRY
+	@${COMPOSE} up --detach --build $(SERVICES)
 endif
 
 balena:
@@ -29,7 +38,6 @@ clean:
 	@${COMPOSE} down
 	@find . -maxdepth 2 -type f -name 'Dockerfile' -exec rm {} +
 	@rm docker-compose.yml
-
 
 .PHONY: build-docker-image test enter code-check clean
 

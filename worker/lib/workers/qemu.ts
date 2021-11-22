@@ -254,7 +254,7 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 
 		// Disable DNS entirely, as we only require DHCP and this avoids problems
 		// with running multiple instances of dnsmasq concurrently
-		dnsmaqArgs.push('--port=0');
+		dnsmasqArgs.push('--port=0');
 
 		return this.setupBridge(bridgeName, bridgeAddress).then(() => {
 			return new Promise((resolve, reject) => {
