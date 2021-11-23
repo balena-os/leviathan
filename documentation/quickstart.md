@@ -30,7 +30,7 @@ module.exports = {
 
 - Use the tests from [meta-balena](https://github.com/balena-os/meta-balena/tree/master/tests/suites) instead. OS test suite is recommended as it works with the least configuration. Either copy the OS test suite to the `suite` property path as mentioned in config.js or point the `suite` property to the path of the OS test suite.
 - Extract the image you want to test to `./leviathan/workspace` and rename it to `balena.img`. You can downloaded unmanaged image from [balena.io/os](balena.io/os).
-- Run the `run-tests.sh` script from the `workspace` directory and watch the logs. 
+- Run `make test` in the root of the project and watch the logs.
 - At the end of the run, reports and logs about the test will be stored in `workspace/reports` directory.
 - With that, you have successfully completed your first test run.
 

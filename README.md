@@ -27,7 +27,10 @@ Leviathan allows for running tests either on a device connected to and controlle
 Start building your standalone testbot by [following the guide](https://github.com/balena-io/testbot/blob/master/documentation/getting-started.md#quick-start-guide-for-testbot).
 
 #### QEMU
-Run `make local` to build the core and worker services and run the worker using docker-compose. Worker configuration variables can be specified in `compose/generic-x86.yml`, under `environment`. The default configuration should suffice in most cases.
+
+Run `make local` to build the core and worker services and run the worker using docker-compose.
+Worker configuration variables can be specified in `docker-compose.local.yml`, under `environment`.
+The default configuration should suffice in most cases.
 
 | Variable            | Description                                         |
 | -----------         | --------------------------------------------------- |
@@ -39,15 +42,17 @@ Run `make local` to build the core and worker services and run the worker using 
 | QEMU_DHCP_RANGE     | Range of DHCP addresses to hand out to workers      |
 
 #### Configuration
+
 - Create your test configuration, by creating a `config.json` file in the `workspace` directory, following instructions mentioned in the [leviathan docs](https://github.com/balena-os/leviathan/blob/master/documentation/quickstart.md). For QEMU workers, use localhost instead of the `*.local` address.
 - Extract the image you want to test to `./leviathan/workspace` and rename it to `balena.img`
+- Optionally provide a custom suites path by creating `client/.env` containing `SUITES=/my/custom/path/to/suites`. The default path is the suites dir in the root of the project.
 
 ### Running tests
 
-Run the tests by navigating to the workspace directory and running
+Run the tests by navigating to the project directory and running
 
 ```bash
-./run-tests.sh
+make test
 ```
 
 ## Instructions for rig-owners
