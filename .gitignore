@@ -9,3 +9,12 @@ coverage
 # Docker compose file is generated with make, as well as core/worker Dockerfile.
 core/Dockerfile
 worker/Dockerfile
+
+# docker-compose script is downloaded via 'make local' if binary is not installed
+docker-compose
+
+# emulated balena build will install qemu binaries here
+**/.balena
+
+# custom paths for docker-compose bind mounts
+.env
