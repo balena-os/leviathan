@@ -1,7 +1,7 @@
 import * as Bluebird from 'bluebird';
 import { spawn } from 'child_process';
 import * as config from 'config';
-import * as sdk from 'etcher-sdk';
+import * as sdk from '@acst11/etcher-sdk';
 import { forEach, isEmpty, isObject } from 'lodash';
 import * as mdns from 'multicast-dns';
 import { networkInterfaces } from 'os';

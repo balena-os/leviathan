@@ -27,7 +27,7 @@
 		"config": "^3.2.2",
 		"dbus-next": "^0.8.1",
 		"drivelist": "^8.0.6",
-		"etcher-sdk": "^2.0.16",
+		"@acst11/etcher-sdk": "^7.0.0",
 		"express": "^4.16.4",
 		"firmata": "^2.0.0",
 		"fs-extra": "^8.1.0",

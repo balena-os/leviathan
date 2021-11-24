@@ -1,7 +1,7 @@
 import * as Bluebird from 'bluebird';
 import * as retry from 'bluebird-retry';
 import { ChildProcess, spawn } from 'child_process';
-import * as sdk from 'etcher-sdk';
+import * as sdk from '@acst11/etcher-sdk';
 import { EventEmitter } from 'events';
 import { assignIn } from 'lodash';
 import { fs } from 'mz';

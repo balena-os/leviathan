@@ -1,6 +1,6 @@
 import * as bodyParser from 'body-parser';
 import { ChildProcess, spawn } from 'child_process';
-import { multiWrite } from 'etcher-sdk';
+import { multiWrite } from '@acst11/etcher-sdk';
 import * as express from 'express';
 import * as http from 'http';
 const { getSdk } = require('balena-sdk');

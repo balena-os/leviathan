@@ -10,7 +10,7 @@ import * as helpers from '../lib/helpers';
 import { ImportMock } from 'ts-mock-imports';
 import { ARDUINO, TransportStub, comparePinStates } from './testbot';
 import { Pins } from 'firmata';
-import { sourceDestination } from 'etcher-sdk';
+import { sourceDestination } from '@acst11/etcher-sdk';
 import { join } from 'path';
 import { fs } from 'mz';
 
