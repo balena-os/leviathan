@@ -67,7 +67,7 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 	public async setup(): Promise<void> {
 		let checkPortForwarding = await execProm(`cat /proc/sys/net/ipv4/ip_forward`);
 		if(checkPortForwarding.stdout.trim() !== '1'){
-			throw new Error(`Kernel IP forwarding required for virtualized device networking, enable with 'sysctl -w net.ipv4.ip_forward'`);
+			throw new Error(`Kernel IP forwarding required for virtualized device networking, enable with 'sysctl -w net.ipv4.ip_forward=1'`);
 		}
 
 		manageHandlers(this.signalHandler, {
@@ -106,7 +106,7 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 				this.dnsmasqProc.on('exit', resolve);
 				this.dnsmasqProc.kill();
 			} else {
-				resolve;
+				resolve();
 			}
 		});
 	}
@@ -135,16 +135,9 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 			);
 
 			// Image files must be resized using qemu-img to create space for the data partition
-			const qemuImgProc = spawn(
-				'qemu-img',
-				['resize', '-f', 'raw', this.image, '8G']
-			);
-
-			qemuImgProc.on(
-				'error', (err) => {
-					reject(err);
-				}
-			);
+			console.log(`Resizing qemu image...`)
+			await execProm(`qemu-img resize -f raw ${this.image} 8G`)
+			console.log(`qemu image resized!`)
 
 			resolve();
 		});
