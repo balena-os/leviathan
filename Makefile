@@ -12,18 +12,21 @@ COMPOSE=$(shell \
 Dockerfile:
 	find . -maxdepth 2 -type f -name 'Dockerfile.template' -exec bash -c 'npm_config_yes=true npx dockerfile-template -d BALENA_ARCH="amd64" -f {} > `dirname {}`/Dockerfile' \;
 
+.PHONY: local
 local: Dockerfile
 	@ln -sf ./compose/generic-x86.yml ./docker-compose.yml
 ifndef DRY
 	@${COMPOSE} up --build $(SERVICES)
 endif
 
+.PHONY: detached
 detached: Dockerfile
 	@ln -sf ./compose/generic-x86.yml ./docker-compose.yml
 ifndef DRY
 	@${COMPOSE} up --detach --build $(SERVICES)
 endif
 
+.PHONY: balena
 balena:
 	@ln -sf ./compose/balena.yml ./docker-compose.yml
 ifndef DRY
@@ -34,11 +37,10 @@ else
 endif
 endif
 
+.PHONY: clean
 clean:
-	@${COMPOSE} down
+	@${COMPOSE} down || true
 	@find . -maxdepth 2 -type f -name 'Dockerfile' -exec rm {} +
 	@rm docker-compose.yml
-
-.PHONY: build-docker-image test enter code-check clean
 
 .DEFAULT_GOAL = balena
