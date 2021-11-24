@@ -9,18 +9,20 @@ COMPOSE=$(shell \
 		echo "./docker-compose"; \
 	fi)
 
-Dockerfile:
-	find . -maxdepth 2 -type f -name 'Dockerfile.template' -exec bash -c 'npm_config_yes=true npx dockerfile-template -d BALENA_ARCH="amd64" -f {} > `dirname {}`/Dockerfile' \;
+TEMPLATES := $(shell find . -maxdepth 2 -type f -name 'Dockerfile.template')
+DOCKERFILES := $(TEMPLATES:%.template=%)
+$(DOCKERFILES): % : %.template
+	npm_config_yes=true npx dockerfile-template -d BALENA_ARCH="amd64" -f $^ > $@
 
 .PHONY: local
-local: Dockerfile
+local: $(DOCKERFILES)
 	@ln -sf ./compose/generic-x86.yml ./docker-compose.yml
 ifndef DRY
 	@${COMPOSE} up --build $(SERVICES)
 endif
 
 .PHONY: detached
-detached: Dockerfile
+detached: $(DOCKERFILES)
 	@ln -sf ./compose/generic-x86.yml ./docker-compose.yml
 ifndef DRY
 	@${COMPOSE} up --detach --build $(SERVICES)
@@ -40,7 +42,7 @@ endif
 .PHONY: clean
 clean:
 	@${COMPOSE} down || true
-	@find . -maxdepth 2 -type f -name 'Dockerfile' -exec rm {} +
+	@$(RM) $(DOCKERFILES)
 	@rm docker-compose.yml
 
 .DEFAULT_GOAL = balena
