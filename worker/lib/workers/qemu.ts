@@ -1,6 +1,6 @@
 import * as Bluebird from 'bluebird';
 import * as retry from 'bluebird-retry';
-import { ChildProcess, spawn } from 'child_process';
+import { ChildProcess, spawn, exec } from 'child_process';
 import * as sdk from 'etcher-sdk';
 import { EventEmitter } from 'events';
 import { assignIn } from 'lodash';
@@ -9,6 +9,8 @@ import { dirname, join } from 'path';
 import * as Stream from 'stream';
 import { manageHandlers } from '../helpers';
 import ScreenCapture from '../helpers/graphics';
+import { promisify } from 'util';
+const execProm = promisify(exec)
 
 Bluebird.config({
 	cancellation: true,
@@ -23,6 +25,7 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 	private internalState: Leviathan.WorkerState = { network: {wired: 'enp0s3'} };
 	private screenCapturer: ScreenCapture;
 	private qemuOptions: Leviathan.QemuOptions;
+	private iptablesComment: string
 
 	constructor(options: Leviathan.Options) {
 		super();
@@ -53,6 +56,7 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
       console.log(this.qemuOptions);
     }
 
+		this.iptablesComment = `teardown`
 		this.signalHandler = this.teardown.bind(this);
 	}
 
@@ -61,6 +65,11 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 	}
 
 	public async setup(): Promise<void> {
+		let checkPortForwarding = await execProm(`cat /proc/sys/net/ipv4/ip_forward`);
+		if(checkPortForwarding.stdout.trim() !== '1'){
+			throw new Error(`Kernel IP forwarding required for virtualized device networking, enable with 'sysctl -w net.ipv4.ip_forward=1'`);
+		}
+
 		manageHandlers(this.signalHandler, {
 			register: true,
 		});
@@ -76,6 +85,30 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 		if (this.screenCapturer != null) {
 			await this.screenCapturer.teardown();
 		}
+
+		// remove iptables rules set up from host
+		try{
+			await execProm(`iptables-legacy-save | grep -v 'comment ${this.iptablesComment}' | iptables-legacy-restore`)
+		} catch (e){
+			console.log(`error while removing iptables rules: ${e}`)
+		}
+
+		try{
+			await execProm(`ip link set dev ${this.qemuOptions.network.bridgeName} down`);
+			await execProm(`brctl delbr ${this.qemuOptions.network.bridgeName}`);
+		} catch(e){
+			console.log(`error while removing bridge: ${e}`)
+		}
+
+		await new Promise((resolve, reject) => {
+			if (this.dnsmasqProc && !this.dnsmasqProc.killed) {
+				// don't return until the process is dead
+				this.dnsmasqProc.on('exit', resolve);
+				this.dnsmasqProc.kill();
+			} else {
+				resolve();
+			}
+		});
 	}
 
 	public async flash(stream: Stream.Readable): Promise<void> {
@@ -102,16 +135,9 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 			);
 
 			// Image files must be resized using qemu-img to create space for the data partition
-			const qemuImgProc = spawn(
-				'qemu-img',
-				['resize', '-f', 'raw', this.image, '8G']
-			);
-
-			qemuImgProc.on(
-				'error', (err) => {
-					reject(err);
-				}
-			);
+			console.log(`Resizing qemu image...`)
+			await execProm(`qemu-img resize -f raw ${this.image} 8G`)
+			console.log(`qemu image resized!`)
 
 			resolve();
 		});
@@ -180,12 +206,16 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 		return new Promise((resolve, reject) => {
 			if (this.qemuProc && !this.qemuProc.killed) {
 				// don't return until the process is dead
-				!this.qemuProc.on('exit', resolve)
+				this.qemuProc.on('exit', resolve)
 				this.qemuProc.kill();
 			} else {
 				resolve();
 			}
 		});
+	}
+
+	private async iptablesRules(){
+		await execProm(`iptables-legacy -t nat -A POSTROUTING ! -o ${this.qemuOptions.network.bridgeName} --source ${this.qemuOptions.network.bridgeAddress}/24 -j MASQUERADE -m comment --comment ${this.iptablesComment}`);
 	}
 
 	private async createBridge(bridgeName: string, bridgeAddress: string): Promise<void> {
@@ -257,32 +287,26 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 		dnsmasqArgs.push('--port=0');
 
 		return this.setupBridge(bridgeName, bridgeAddress).then(() => {
-			return new Promise((resolve, reject) => {
-				if (this.dnsmasqProc && !this.dnsmasqProc.killed) {
-					// dnsmasq is already running
-					resolve();
-				} else {
+			return new Promise(async (resolve, reject) => {
+				await this.iptablesRules();
+				this.dnsmasqProc = spawn('dnsmasq', dnsmasqArgs, {stdio: 'inherit'});
 
-					this.dnsmasqProc = spawn('dnsmasq', dnsmasqArgs, {stdio: 'inherit'});
-
-					this.dnsmasqProc.on('exit',
-						(code, signal) => {
-							console.log(`dnsmasq exited with ${code}`)
-							if (code != 0) {
-								throw new Error(`dnsmasq exited with code ${code}`);
-							}
+				this.dnsmasqProc.on('exit',
+					(code, signal) => {
+						console.log(`dnsmasq exited with ${code}`)
+						if (code != 0) {
+							throw new Error(`dnsmasq exited with code ${code}`);
 						}
-					);
+					}
+				);
 
-					this.dnsmasqProc.on('error',
-						(err: Error) => {
-							console.log("error launching dnsmasq");
-							reject(err);
-						}
-					);
-
-					resolve();
-				}
+				this.dnsmasqProc.on('error',
+					(err: Error) => {
+						console.log("error launching dnsmasq");
+						reject(err);
+					}
+				);
+				resolve();
 			});
 		});
 	}
