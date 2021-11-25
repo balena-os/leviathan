@@ -31,3 +31,11 @@ services:
       - UDEV=0
       - WORKER_TYPE=qemu
       - SCREEN_CAPTURE=true
+  client:
+    build: ./client
+    network_mode: host
+    volumes:
+      - "${WORKSPACE}:/usr/src/app/workspace:ro"
+      - "${REPORTS}:/usr/src/app/reports:rw"
+      - "${SUITES}:/usr/src/app/suites:ro"
+    command: -n

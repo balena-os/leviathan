@@ -76,7 +76,7 @@
 				<a href="#getting-started" id="getting-started" style="color: inherit; text-decoration: none;">
 					<h2>Getting Started</h2>
 				</a>
-				<p>To set up Leviathan both hardware and software need to be configured. If you are setting up your standalone testbot, then please follow the instructions given below carefully before running tests on the Device Under Test (DUT).</p>
+				<p>Leviathan allows for running tests either on a device connected to and controlled by a testbot rig, or on a virtualized QEMU worker. The below instructions provide a quick reference to get started.</p>
 				<a href="#clone-the-repository" id="clone-the-repository" style="color: inherit; text-decoration: none;">
 					<h3>Clone the repository</h3>
 				</a>
@@ -91,19 +91,64 @@
 					<li>Install node and npm in your system. We recommend installing <a href="https://github.com/nvm-sh/nvm#install--update-script">LTS versions from NVM</a>.</li>
 					<li>Download the image you want to test on your DUT from <a href="https://balena.io/os#download">balena.io/os</a>.</li>
 				</ul>
-				<a href="#configuration-needed" id="configuration-needed" style="color: inherit; text-decoration: none;">
-					<h3>Configuration needed</h3>
+				<a href="#worker-setup" id="worker-setup" style="color: inherit; text-decoration: none;">
+					<h3>Worker setup</h3>
+				</a>
+				<a href="#testbot" id="testbot" style="color: inherit; text-decoration: none;">
+					<h4>Testbot</h4>
+				</a>
+				<p>Start building your standalone testbot by <a href="https://github.com/balena-io/testbot/blob/master/documentation/getting-started.md#quick-start-guide-for-testbot">following the guide</a>.</p>
+				<a href="#qemu" id="qemu" style="color: inherit; text-decoration: none;">
+					<h4>QEMU</h4>
+				</a>
+				<p>Run <code>make local</code> to build the core and worker services and run the worker using docker-compose.
+					Worker configuration variables can be specified in <code>docker-compose.local.yml</code>, under <code>environment</code>.
+				The default configuration should suffice in most cases.</p>
+				<table>
+					<thead>
+						<tr>
+							<th>Variable</th>
+							<th>Description</th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td>QEMU_ARCH</td>
+							<td>Architecture to virtualize (default: x86_64)</td>
+						</tr>
+						<tr>
+							<td>QEMU_CPUS</td>
+							<td>Number of CPUs to virtualize (default: 4)</td>
+						</tr>
+						<tr>
+							<td>QEMU_MEMORY</td>
+							<td>Amount of memory to virtualize (default: 2G)</td>
+						</tr>
+						<tr>
+							<td>QEMU_BRIDGE_NAME</td>
+							<td>Name of bridge to use for networking (default: br0)</td>
+						</tr>
+						<tr>
+							<td>QEMU_BRIDGE_ADDRESS</td>
+							<td>IP address to assign to bridge</td>
+						</tr>
+						<tr>
+							<td>QEMU_DHCP_RANGE</td>
+							<td>Range of DHCP addresses to hand out to workers</td>
+						</tr>
+				</tbody></table>
+				<a href="#configuration" id="configuration" style="color: inherit; text-decoration: none;">
+					<h4>Configuration</h4>
 				</a>
 				<ul>
-					<li>Start building your standalone testbot by <a href="https://github.com/balena-io/testbot/blob/master/documentation/getting-started.md#quick-start-guide-for-testbot">following the guide</a>.</li>
-					<li>Create your test configuration, by creating a <code>config.json</code> file in the <code>workspace</code> directory, following instructions mentioned in the <a href="https://github.com/balena-os/leviathan/blob/master/documentation/quickstart.md">leviathan docs</a>.</li>
+					<li>Create your test configuration, by creating a <code>config.json</code> file in the <code>workspace</code> directory, following instructions mentioned in the <a href="https://github.com/balena-os/leviathan/blob/master/documentation/quickstart.md">leviathan docs</a>. For QEMU workers, use localhost instead of the <code>*.local</code> address.</li>
 					<li>Extract the image you want to test to <code>./leviathan/workspace</code> and rename it to <code>balena.img</code></li>
+					<li>Optionally provide a custom suites path by creating <code>client/.env</code> containing <code>SUITES=/my/custom/path/to/suites</code>. The default path is the suites dir in the root of the project.</li>
 				</ul>
 				<a href="#running-tests" id="running-tests" style="color: inherit; text-decoration: none;">
 					<h3>Running tests</h3>
 				</a>
-				<p>Run the tests by navigating to the workspace directory and running</p>
-				<pre><code class="language-bash"><span style="color: #D4D4D4">./run-tests.sh</span>
+				<p>Run the tests by navigating to the project directory and running</p>
+				<pre><code class="language-bash"><span style="color: #D4D4D4">make </span><span style="color: #DCDCAA">test</span>
 </code></pre>
 				<a href="#instructions-for-rig-owners" id="instructions-for-rig-owners" style="color: inherit; text-decoration: none;">
 					<h2>Instructions for rig-owners</h2>

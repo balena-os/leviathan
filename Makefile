@@ -1,44 +1,111 @@
 SHELL = /bin/bash
-COMPOSE=$(shell \
-	if command -v docker-compose &> /dev/null; \
-	then \
-		echo "docker-compose"; \
-	else \
-		curl -fsSL https://github.com/docker/compose/releases/download/1.29.2/run.sh -o ./docker-compose &> /dev/null && \
-		chmod +x ./docker-compose && \
-		echo "./docker-compose"; \
-	fi)
+ROOTDIR := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 
-Dockerfile:
-	find . -maxdepth 2 -type f -name 'Dockerfile.template' -exec bash -c 'npm_config_yes=true npx dockerfile-template -d BALENA_ARCH="amd64" -f {} > `dirname {}`/Dockerfile' \;
+CLIENTDIR := $(ROOTDIR)/client
+COREDIR := $(ROOTDIR)/core
+WORKERDIR := $(ROOTDIR)/worker
 
-local: Dockerfile
-	@ln -sf ./compose/generic-x86.yml ./docker-compose.yml
-ifndef DRY
-	@${COMPOSE} up --build $(SERVICES)
-endif
+# override these in make command (eg. make local-test WORKSPACE=/path/to/workspace)
+WORKSPACE ?= $(ROOTDIR)/workspace
+REPORTS ?= $(ROOTDIR)/workspace/reports
+SUITES ?= $(ROOTDIR)/suites
 
-detached: Dockerfile
-	@ln -sf ./compose/generic-x86.yml ./docker-compose.yml
-ifndef DRY
-	@${COMPOSE} up --detach --build $(SERVICES)
-endif
+# override these in make command (eg. make release PUSH=192.168.1.100)
+PUSH ?= balena/testbot-personal
 
-balena:
-	@ln -sf ./compose/balena.yml ./docker-compose.yml
-ifndef DRY
-ifdef PUSH
-	@balena push $(PUSH)
+COMPOSEBIN := ./docker-compose
+
+BALENACOMPOSEFILE := ./docker-compose.yml
+LOCALCOMPOSEFILE := ./docker-compose.local.yml
+
+.DEFAULT_GOAL = local-test
+
+# create a docker-compose binary either as a link or a script
+$(COMPOSEBIN):
+ifneq ($(shell command -v docker-compose 2>/dev/null),)
+	ln -sf $(shell command -v docker-compose 2>/dev/null) $@
 else
-	$(error To push to balena one needs to set PUSH=applicationName)
-endif
+	curl -fsSL "https://github.com/docker/compose/releases/download/1.29.2/run.sh" -o $@
+	chmod +x $@
 endif
 
+# create the core dockerfile from the template
+$(COREDIR)/Dockerfile:
+	npm_config_yes=true npx dockerfile-template -d BALENA_ARCH="amd64" -f $@.template > $@
+
+# create the worker dockerfile from the template
+$(WORKERDIR)/Dockerfile:
+	npm_config_yes=true npx dockerfile-template -d BALENA_ARCH="amd64" -f $@.template > $@
+
+# populate local .env file if it doesn't exist
+.env:
+	@echo "WORKSPACE=$(WORKSPACE)" > $@
+	@echo "REPORTS=$(REPORTS)" >> $@
+	@echo "SUITES=$(SUITES)" >> $@
+
+######## BUILD TARGETS ########
+.PHONY: build core worker client clean
+######## BUILD TARGETS ########
+
+# build core, worker, and client images
+build: clean core worker client
+
+# build the core docker image
+core: $(COMPOSEBIN) $(COREDIR)/Dockerfile
+	$(COMPOSEBIN) -f $(LOCALCOMPOSEFILE) build $@ $(ARGS)
+
+# build the worker docker image
+worker: $(COMPOSEBIN) $(WORKERDIR)/Dockerfile
+	$(COMPOSEBIN) -f $(LOCALCOMPOSEFILE) build $@ $(ARGS)
+
+# build the client docker image
+client: $(COMPOSEBIN) .env
+	$(COMPOSEBIN) -f $(LOCALCOMPOSEFILE) build $@ $(ARGS)
+
+# clean locally generated files
 clean:
-	@${COMPOSE} down
-	@find . -maxdepth 2 -type f -name 'Dockerfile' -exec rm {} +
-	@rm docker-compose.yml
+	-@rm $(COREDIR)/Dockerfile
+	-@rm $(WORKERDIR)/Dockerfile
+	-@rm $(COMPOSEBIN)
 
-.PHONY: build-docker-image test enter code-check clean
+######## RUN TARGETS ########
+.PHONY: test local local-test detached stop down
+######## RUN TARGETS ########
 
-.DEFAULT_GOAL = balena
+# run the client image including test suites, assumes testbot or existing worker
+test: clean client
+	$(COMPOSEBIN) -f $(LOCALCOMPOSEFILE) up client $(ARGS)
+
+# run local core and worker for qemu device tests, streaming logs
+local: clean core worker
+	$(COMPOSEBIN) -f $(LOCALCOMPOSEFILE) up core worker $(ARGS)
+
+# run local core, worker, and client w/ tests in a single stream of logs
+local-test: clean core worker client
+	$(COMPOSEBIN) -f $(LOCALCOMPOSEFILE) up core worker client $(ARGS)
+
+# run local core and worker in detached mode, primarily for jenkins
+detached: clean core worker
+	$(COMPOSEBIN) -f $(LOCALCOMPOSEFILE) up core worker $(ARGS) --detach
+
+# stop any existing core, worker, or client containers
+stop: $(COMPOSEBIN)
+	$(COMPOSEBIN) -f $(LOCALCOMPOSEFILE) down
+
+# alias for stop
+down: stop
+
+######## PUSH TARGETS ########
+.PHONY: push release draft
+######## PUSH TARGETS ########
+
+# push a release to a fleet or local mode device
+push: clean
+	balena push $(PUSH) $(ARGS)
+
+# push a draft release to a fleet
+draft:
+	balena push $(PUSH) $(ARGS) --draft
+
+# alias for push
+release: push
