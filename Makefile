@@ -51,16 +51,16 @@ $(WORKERDIR)/Dockerfile:
 build: clean core worker client
 
 # build the core docker image
-core: $(COMPOSEBIN) $(COREDIR)/Dockerfile
-	$(COMPOSEBIN) -f $(LOCALCOMPOSEFILE) build $@ $(ARGS)
+core: $(COMPOSEBIN) $(COREDIR)/Dockerfile .env
+	$(COMPOSEBIN) -f $(LOCALCOMPOSEFILE) build $(ARGS) $@
 
 # build the worker docker image
-worker: $(COMPOSEBIN) $(WORKERDIR)/Dockerfile
-	$(COMPOSEBIN) -f $(LOCALCOMPOSEFILE) build $@ $(ARGS)
+worker: $(COMPOSEBIN) $(WORKERDIR)/Dockerfile .env
+	$(COMPOSEBIN) -f $(LOCALCOMPOSEFILE) build $(ARGS) $@
 
 # build the client docker image
 client: $(COMPOSEBIN) .env
-	$(COMPOSEBIN) -f $(LOCALCOMPOSEFILE) build $@ $(ARGS)
+	$(COMPOSEBIN) -f $(LOCALCOMPOSEFILE) build $(ARGS) $@
 
 # clean locally generated files
 clean:
@@ -74,19 +74,19 @@ clean:
 
 # run the client image including test suites, assumes testbot or existing worker
 test: clean client
-	$(COMPOSEBIN) -f $(LOCALCOMPOSEFILE) up client $(ARGS)
+	$(COMPOSEBIN) -f $(LOCALCOMPOSEFILE) up $(ARGS) client
 
 # run local core and worker for qemu device tests, streaming logs
 local: clean core worker
-	$(COMPOSEBIN) -f $(LOCALCOMPOSEFILE) up core worker $(ARGS)
+	$(COMPOSEBIN) -f $(LOCALCOMPOSEFILE) up $(ARGS) core worker
 
 # run local core, worker, and client w/ tests in a single stream of logs
 local-test: clean core worker client
-	$(COMPOSEBIN) -f $(LOCALCOMPOSEFILE) up core worker client $(ARGS)
+	$(COMPOSEBIN) -f $(LOCALCOMPOSEFILE) up $(ARGS) core worker client
 
 # run local core and worker in detached mode, primarily for jenkins
 detached: clean core worker
-	$(COMPOSEBIN) -f $(LOCALCOMPOSEFILE) up --detach core worker $(ARGS)
+	$(COMPOSEBIN) -f $(LOCALCOMPOSEFILE) up $(ARGS) --detach core worker
 
 # stop any existing core, worker, or client containers
 stop: $(COMPOSEBIN)
