@@ -86,7 +86,7 @@ local-test: clean core worker client
 
 # run local core and worker in detached mode, primarily for jenkins
 detached: clean core worker
-	$(COMPOSEBIN) -f $(LOCALCOMPOSEFILE) up core worker $(ARGS) --detach
+	$(COMPOSEBIN) -f $(LOCALCOMPOSEFILE) up --detach core worker $(ARGS)
 
 # stop any existing core, worker, or client containers
 stop: $(COMPOSEBIN)
