@@ -5,7 +5,8 @@ import {
 	TestBotHat,
 	BalenaFin,
 	BalenaFinV09,
-	BeagleBone
+	BeagleBone,
+	RevPiCore3
 } from '@balena/testbot';
 import { EventEmitter } from 'events';
 import { createWriteStream } from 'fs';
@@ -31,6 +32,9 @@ const resolveDeviceInteractor = (hat: TestBotHat): DeviceInteractor => {
 	}
 	if (process.env.TESTBOT_DUT_TYPE === 'intel-nuc') {
 		return new IntelNuc(hat);
+	}
+	if (process.env.TESTBOT_DUT_TYPE === 'revpi-core-3') {
+		return new RevPiCore3(hat);
 	}
 	return new RaspberryPi(hat);
 };
