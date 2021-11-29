@@ -11,87 +11,96 @@ REPORTS ?= $(ROOTDIR)/workspace/reports
 SUITES ?= $(ROOTDIR)/suites
 
 # override these in make command (eg. make release PUSH=192.168.1.100)
-PUSH ?= balena/testbot-personal
+PUSHTO ?= balena/testbot-personal
+PUSHARGS ?=
 
-COMPOSEBIN := ./docker-compose
+UPARGS ?= --force-recreate --remove-orphans
+BUILDARGS ?=
+DOCKERCOMPOSE ?= $(shell command -v docker-compose 2>/dev/null)
 
-BALENACOMPOSEFILE := ./docker-compose.yml
-LOCALCOMPOSEFILE := ./docker-compose.local.yml
+# docker-compose will automatically source this file
+ENVFILE := .env
 
 .DEFAULT_GOAL = local-test
 
-# create a docker-compose binary either as a link or a script
-$(COMPOSEBIN):
-ifneq ($(shell command -v docker-compose 2>/dev/null),)
-	ln -sf $(shell command -v docker-compose 2>/dev/null) $@
-else
-	curl -fsSL "https://github.com/docker/compose/releases/download/1.29.2/run.sh" -o $@
-	chmod +x $@
-endif
+export PATH := $(ROOTDIR)/bin:$(PATH)
+export COMPOSE_FILE := docker-compose.local.yml
+export DOCKER_BUILDKIT := 1
+export COMPOSE_DOCKER_CLI_BUILD := 1
 
-# create the core dockerfile from the template
-$(COREDIR)/Dockerfile:
-	npm_config_yes=true npx dockerfile-template -d BALENA_ARCH="amd64" -f $@.template > $@
+# install docker-compose as a run script if binary not in path
+$(DOCKERCOMPOSE):
+	mkdir -p bin
+	curl -fsSL "https://github.com/docker/compose/releases/download/1.29.2/run.sh" -o bin/docker-compose
+	chmod +x bin/docker-compose
 
-# create the worker dockerfile from the template
-$(WORKERDIR)/Dockerfile:
-	npm_config_yes=true npx dockerfile-template -d BALENA_ARCH="amd64" -f $@.template > $@
+# create a dockerfile from dockerfile.template
+%/Dockerfile:: %/Dockerfile.template .FORCE
+	npm_config_yes=true npx dockerfile-template -d BALENA_ARCH="amd64" -f $< > $@
 
-# populate local .env file if it doesn't exist
-.env:
+# populate local env file if it doesn't exist
+$(ENVFILE):
 	@echo "WORKSPACE=$(WORKSPACE)" > $@
 	@echo "REPORTS=$(REPORTS)" >> $@
 	@echo "SUITES=$(SUITES)" >> $@
 
+common: $(ENVFILE) $(DOCKERCOMPOSE)
+
+# force dockerfiles to be regenerated
+.PHONY: .FORCE
+.FORCE:
+
 ######## BUILD TARGETS ########
-.PHONY: build core worker client clean
+.PHONY: build common core worker client clean
 ######## BUILD TARGETS ########
 
-# build core, worker, and client images
-build: clean core worker client
+# build all images
+build: common $(COREDIR)/Dockerfile $(WORKERDIR)/Dockerfile
+	$(DOCKERCOMPOSE) build $(BUILDARGS)
 
 # build the core docker image
-core: $(COMPOSEBIN) $(COREDIR)/Dockerfile .env
-	$(COMPOSEBIN) -f $(LOCALCOMPOSEFILE) build $(ARGS) $@
+core: common $(COREDIR)/Dockerfile
+	$(DOCKERCOMPOSE) build $(BUILDARGS) $@
 
 # build the worker docker image
-worker: $(COMPOSEBIN) $(WORKERDIR)/Dockerfile .env
-	$(COMPOSEBIN) -f $(LOCALCOMPOSEFILE) build $(ARGS) $@
+worker: common $(WORKERDIR)/Dockerfile
+	$(DOCKERCOMPOSE) build $(BUILDARGS) $@
 
 # build the client docker image
-client: $(COMPOSEBIN) .env
-	$(COMPOSEBIN) -f $(LOCALCOMPOSEFILE) build $(ARGS) $@
+client: common
+	$(DOCKERCOMPOSE) build $(BUILDARGS) $@
 
 # clean locally generated files
-clean:
+clean: common
+	-$(DOCKERCOMPOSE) down --remove-orphans --rmi all --volumes
+	-@rm -rf bin
 	-@rm -f $(COREDIR)/Dockerfile
 	-@rm -f $(WORKERDIR)/Dockerfile
-	-@rm -f $(COMPOSEBIN)
 
 ######## RUN TARGETS ########
 .PHONY: test local local-test detached stop down
-.NOTPARALLEL: $(COMPOSEBIN)
+.NOTPARALLEL: $(DOCKERCOMPOSE)
 ######## RUN TARGETS ########
 
 # run the client image including test suites, assumes testbot or existing worker
-test: clean client
-	$(COMPOSEBIN) -f $(LOCALCOMPOSEFILE) up $(ARGS) client
+test: common
+	$(DOCKERCOMPOSE) up --build $(UPARGS) client
 
 # run local core and worker for qemu device tests, streaming logs
-local: clean core worker
-	$(COMPOSEBIN) -f $(LOCALCOMPOSEFILE) up $(ARGS) core worker
+local: common $(COREDIR)/Dockerfile $(WORKERDIR)/Dockerfile
+	$(DOCKERCOMPOSE) up --build $(UPARGS) core worker
 
 # run local core, worker, and client w/ tests in a single stream of logs
-local-test: clean core worker client
-	$(COMPOSEBIN) -f $(LOCALCOMPOSEFILE) up $(ARGS) core worker client
+local-test: common $(COREDIR)/Dockerfile $(WORKERDIR)/Dockerfile
+	$(DOCKERCOMPOSE) up --build $(UPARGS) core worker client
 
 # run local core and worker in detached mode, primarily for jenkins
-detached: clean core worker
-	$(COMPOSEBIN) -f $(LOCALCOMPOSEFILE) up $(ARGS) --detach core worker
+detached: common $(COREDIR)/Dockerfile $(WORKERDIR)/Dockerfile
+	$(DOCKERCOMPOSE) up --build $(UPARGS) --detach core worker
 
 # stop any existing core, worker, or client containers
-stop: $(COMPOSEBIN)
-	$(COMPOSEBIN) -f $(LOCALCOMPOSEFILE) down
+stop: common
+	$(DOCKERCOMPOSE) down
 
 # alias for stop
 down: stop
@@ -102,11 +111,11 @@ down: stop
 
 # push a release to a fleet or local mode device
 push: clean
-	balena push $(PUSH) $(ARGS)
+	balena push $(PUSHTO) $(PUSHARGS)
 
 # push a draft release to a fleet
 draft:
-	balena push $(PUSH) $(ARGS) --draft
+	balena push $(PUSHTO) $(PUSHARGS) --draft
 
 # alias for push
 release: push
