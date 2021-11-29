@@ -70,6 +70,7 @@ clean:
 
 ######## RUN TARGETS ########
 .PHONY: test local local-test detached stop down
+.NOTPARALLEL: $(COMPOSEBIN)
 ######## RUN TARGETS ########
 
 # run the client image including test suites, assumes testbot or existing worker
