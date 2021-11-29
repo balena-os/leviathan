@@ -52,8 +52,8 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 
     if (options.qemu) {
       this.qemuOptions = options.qemu;
-      console.log("QEMU options:");
-      console.log(this.qemuOptions);
+      console.debug("QEMU options:");
+      console.debug(this.qemuOptions);
     }
 
 		this.iptablesComment = `teardown`
@@ -69,6 +69,15 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 		if(checkPortForwarding.stdout.trim() !== '1'){
 			throw new Error(`Kernel IP forwarding required for virtualized device networking, enable with 'sysctl -w net.ipv4.ip_forward=1'`);
 		}
+
+		const interfaces = JSON.parse((await execProm(`ip -json a`)).stdout);
+		interfaces.forEach((elem: any) => {
+			elem.addr_info.forEach((addr: any) => {
+				if (addr.local === this.qemuOptions.network.bridgeAddress && elem.ifname !== this.qemuOptions.network.bridgeName) {
+					throw new Error(`Address ${this.qemuOptions.network.bridgeAddress} already in use by interface ${elem.ifname}`);
+				}
+			});
+		});
 
 		manageHandlers(this.signalHandler, {
 			register: true,
@@ -90,17 +99,17 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 		try{
 			await execProm(`iptables-legacy-save | grep -v 'comment ${this.iptablesComment}' | iptables-legacy-restore`)
 		} catch (e){
-			console.log(`error while removing iptables rules: ${e}`)
+			console.error(`error while removing iptables rules: ${e}`)
 		}
 
 		try{
 			await execProm(`ip link set dev ${this.qemuOptions.network.bridgeName} down`);
 			await execProm(`brctl delbr ${this.qemuOptions.network.bridgeName}`);
 		} catch(e){
-			console.log(`error while removing bridge: ${e}`)
+			console.error(`error while removing bridge: ${e}`)
 		}
 
-		await new Promise((resolve, reject) => {
+		await new Promise<void>((resolve, reject) => {
 			if (this.dnsmasqProc && !this.dnsmasqProc.killed) {
 				// don't return until the process is dead
 				this.dnsmasqProc.on('exit', resolve);
@@ -135,9 +144,9 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 			);
 
 			// Image files must be resized using qemu-img to create space for the data partition
-			console.log(`Resizing qemu image...`)
+			console.debug(`Resizing qemu image...`)
 			await execProm(`qemu-img resize -f raw ${this.image} 8G`)
-			console.log(`qemu image resized!`)
+			console.debug(`qemu image resized!`)
 
 			resolve();
 		});
@@ -147,6 +156,7 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 	}
 
 	public async powerOn(): Promise<void> {
+		console.log("QEMU: powerOn");
 		let deviceArch = this.qemuOptions.architecture;
 		let baseArgs = [
 			'-nographic',
@@ -212,7 +222,7 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 	}
 
 	public async powerOff(): Promise<void> {
-		console.log("Qemu: powerOff()");
+		console.log("QEMU: powerOff");
 		return new Promise((resolve, reject) => {
 			if (this.qemuProc && !this.qemuProc.killed) {
 				// don't return until the process is dead
@@ -229,22 +239,24 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 	}
 
 	private async createBridge(bridgeName: string, bridgeAddress: string): Promise<void> {
-		return new Promise((resolve, reject) => {
+		return new Promise<void>((resolve, reject) => {
 			spawn(
 				'brctl', ['addbr', bridgeName]
 			).on('exit', (code) => {
 				if (code == 0) {
+					console.debug(`added bridge ${bridgeName}...`);
 					resolve();
 				} else {
 					reject(new Error(`failed creating bridge ${bridgeName} with code ${code}`));
 				}
 			});
 		}).then(() => {
-			return new Promise((resolve, reject) => {
+			return new Promise<void>((resolve, reject) => {
 				spawn(
 					'ip', ['link', 'set', 'dev', bridgeName, 'up']
 				).on('exit', (code) => {
 					if (code == 0) {
+						console.debug(`set ${bridgeName} link to up...`);
 						resolve();
 					} else {
 						reject(new Error(`failed to bring interface ${bridgeName} up with code ${code}`));
@@ -257,6 +269,7 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 					'ip', ['addr', 'add', `${bridgeAddress}/24`, 'dev', bridgeName]
 				).on('exit', (code) => {
 					if (code == 0) {
+						console.debug(`added ${bridgeAddress}/24 to ${bridgeName}...`);
 						resolve();
 					} else {
 						reject(new Error(`failed assigning address to interface ${bridgeName} with code ${code}`));
@@ -303,7 +316,7 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 
 				this.dnsmasqProc.on('exit',
 					(code, signal) => {
-						console.log(`dnsmasq exited with ${code}`)
+						console.debug(`dnsmasq exited with ${code}`)
 						if (code != 0) {
 							throw new Error(`dnsmasq exited with code ${code}`);
 						}
@@ -312,7 +325,7 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 
 				this.dnsmasqProc.on('error',
 					(err: Error) => {
-						console.log("error launching dnsmasq");
+						console.error("error launching dnsmasq");
 						reject(err);
 					}
 				);
