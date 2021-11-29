@@ -64,12 +64,13 @@ client: $(COMPOSEBIN) .env
 
 # clean locally generated files
 clean:
-	-@rm $(COREDIR)/Dockerfile
-	-@rm $(WORKERDIR)/Dockerfile
-	-@rm $(COMPOSEBIN)
+	-@rm -f $(COREDIR)/Dockerfile
+	-@rm -f $(WORKERDIR)/Dockerfile
+	-@rm -f $(COMPOSEBIN)
 
 ######## RUN TARGETS ########
 .PHONY: test local local-test detached stop down
+.NOTPARALLEL: $(COMPOSEBIN)
 ######## RUN TARGETS ########
 
 # run the client image including test suites, assumes testbot or existing worker
