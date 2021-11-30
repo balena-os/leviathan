@@ -156,7 +156,7 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 		];
 		let archArgs: { [arch: string]: Array<string> } = {
 			'x86_64': [
-				'-M', 'pc',
+				'-M', 'q35',
 				'--enable-kvm',
 				'-cpu', 'max'
 			],
@@ -164,8 +164,18 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 		};
 		let networkArgs = ['-net', 'nic,model=e1000',
                        '-net', `bridge,br=${this.qemuOptions.network.bridgeName}`];
+		// Setup OVMF with emulated flash, UEFI variables, and secure boot support.
+		// https://github.com/tianocore/edk2/blob/e1e7306b54147e65cb7347b060e94f336d4a82d2/OvmfPkg/README#L60
+		//
+		// Disable S3 support to work around a Debian bug
+		// https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=973783
 		let firmwareArgs: { [arch: string]: Array<string> } = {
-			'x86_64': ['-bios', '/usr/share/OVMF/OVMF_CODE.fd'],
+			'x86_64': [
+				'-global', 'driver=cfi.pflash01,property=secure,value=on',
+				'-global', 'ICH9-LPC.disable_s3=1',
+				'-drive', 'if=pflash,format=raw,unit=0,file=/usr/share/OVMF/OVMF_CODE.fd,readonly=on',
+				'-drive', 'if=pflash,format=raw,unit=1,file=/usr/share/OVMF/OVMF_VARS.fd',
+			],
 			'aarch64': ['-bios', '/usr/share/qemu-efi-aarch64/QEMU_EFI.fd'],
 		};
 		let qmpArgs = ['-qmp', 'tcp:localhost:4444,server,nowait'];
