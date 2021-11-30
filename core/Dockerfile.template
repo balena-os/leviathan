@@ -14,24 +14,20 @@ FROM balenalib/%%BALENA_ARCH%%-node:12-bullseye-20211015
 ENV UDEV=1
 ENV DBUS_SYSTEM_BUS_ADDRESS=unix:path=/host/run/dbus/system_bus_socket
 
-ENV npm_config_unsafe_perm=true
-
-RUN install_packages jq git vim rsync unzip bluez skopeo
+RUN install_packages jq git vim rsync unzip bluez skopeo openssh-client
 
 WORKDIR /usr/app
 
 COPY --from=npm-install /tmp/node ./
 
-RUN install_packages python3 make build-essential openssh-client
-
-RUN npm install balena-cli@12.51.1 -g --production --unsafe-perm
+# Install balena binary in PATH
+RUN ln -sf /usr/app/node_modules/balena-cli/bin/balena /usr/bin/balena && \
+    balena version
 
 COPY contracts contracts
 
 COPY lib lib
 COPY config config
 COPY entry.sh ./
-
-EXPOSE 80
 
 CMD [ "./entry.sh" ]
