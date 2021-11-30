@@ -14,9 +14,11 @@ jobs:
     name: Check for broken links
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
-    - name: Run link check
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: Run link check
         uses: gaurav-nelson/github-action-markdown-link-check@v1
         with:
           use-quiet-mode: 'no'
           use-verbose-mode: 'yes'
+ 
