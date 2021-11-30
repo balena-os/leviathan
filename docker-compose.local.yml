@@ -12,6 +12,8 @@ services:
     environment:
       - UDEV=0
       - WORKER_TYPE=qemu
+      - WORKER_PORT=${WORKER_PORT}
+      - CORE_PORT=${CORE_PORT}
   worker:
     build: 
       context: ./worker
@@ -31,6 +33,7 @@ services:
       - UDEV=0
       - WORKER_TYPE=qemu
       - SCREEN_CAPTURE=true
+      - WORKER_PORT=${WORKER_PORT}
   client:
     build: ./client
     network_mode: host
