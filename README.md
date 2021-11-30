@@ -2,7 +2,7 @@
 
 [![GitHub Issues](https://img.shields.io/github/issues/balena-io/leviathan.svg)](https://github.com/balena-io/leviathan/issues)
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/balena-io/leviathan.svg)](https://github.com/balena-io/leviathan/pulls)
-[![node](https://img.shields.io/badge/node-v9.0.0-green.svg)](https://nodejs.org/download/release/v9.0.0/)
+[![node](https://img.shields.io/badge/node-v12.0.0-green.svg)](https://nodejs.org/download/release/v12.0.0/)
 [![License](https://img.shields.io/badge/license-APACHE%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 > A distributed testing framework for hardware
@@ -26,7 +26,7 @@ Leviathan allows for running tests either on a device connected to and controlle
 A worker is a component on which your tests actually runs. It can be both real hardware or virtualised environments. Leviathan is designed to work with multiple workers. Following are detailed instructions on how to setup each type of worker:
 #### Testbot setup
 
-Start with building your standalone testbot by [following the guide](https://github.com/balena-io/testbot/blob/master/documentation/getting-started.md#quick-start-guide-for-testbot).
+Start with building your standalone testbot by [following the guide](https://github.com/balena-io-hardware/testbot-hardware/blob/master/documentation/getting-started.md#quick-start-guide-for-testbot).
 
 #### QEMU
 
