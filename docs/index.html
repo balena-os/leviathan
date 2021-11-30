@@ -68,7 +68,7 @@
 				</a>
 				<p><a href="https://github.com/balena-io/leviathan/issues"><img src="https://img.shields.io/github/issues/balena-io/leviathan.svg" alt="GitHub Issues"></a>
 					<a href="https://github.com/balena-io/leviathan/pulls"><img src="https://img.shields.io/github/issues-pr/balena-io/leviathan.svg" alt="GitHub pull requests"></a>
-					<a href="https://nodejs.org/download/release/v9.0.0/"><img src="https://img.shields.io/badge/node-v9.0.0-green.svg" alt="node"></a>
+					<a href="https://nodejs.org/download/release/v12.0.0/"><img src="https://img.shields.io/badge/node-v12.0.0-green.svg" alt="node"></a>
 				<a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/badge/license-APACHE%202.0-blue.svg" alt="License"></a></p>
 				<blockquote>
 					<p>A distributed testing framework for hardware</p>
@@ -76,7 +76,7 @@
 				<a href="#getting-started" id="getting-started" style="color: inherit; text-decoration: none;">
 					<h2>Getting Started</h2>
 				</a>
-				<p>Leviathan allows for running tests either on a device connected to and controlled by a testbot rig, or on a virtualized QEMU worker. The below instructions provide a quick reference to get started.</p>
+				<p>Leviathan allows for running tests either on a device connected to and controlled by a testbot rig, or on a virtualized QEMU worker. The instructions provided will get you started.</p>
 				<a href="#clone-the-repository" id="clone-the-repository" style="color: inherit; text-decoration: none;">
 					<h3>Clone the repository</h3>
 				</a>
@@ -88,16 +88,17 @@
 					<h3>Prerequisites needed</h3>
 				</a>
 				<ul>
-					<li>Install node and npm in your system. We recommend installing <a href="https://github.com/nvm-sh/nvm#install--update-script">LTS versions from NVM</a>.</li>
-					<li>Download the image you want to test on your DUT from <a href="https://balena.io/os#download">balena.io/os</a>.</li>
+					<li>Install Docker, node and npm in your system. We recommend installing <a href="https://github.com/nvm-sh/nvm#install--update-script">LTS versions from NVM</a>.</li>
+					<li>Download the balenaOS image you want to test on your DUT from <a href="https://balena.io/os#download">balena.io/os</a>.</li>
 				</ul>
 				<a href="#worker-setup" id="worker-setup" style="color: inherit; text-decoration: none;">
 					<h3>Worker setup</h3>
 				</a>
-				<a href="#testbot" id="testbot" style="color: inherit; text-decoration: none;">
-					<h4>Testbot</h4>
+				<p>A worker is a component on which your tests actually runs. It can be both real hardware or virtualised environments. Leviathan is designed to work with multiple workers. Following are detailed instructions on how to setup each type of worker:</p>
+				<a href="#testbot-setup" id="testbot-setup" style="color: inherit; text-decoration: none;">
+					<h4>Testbot setup</h4>
 				</a>
-				<p>Start building your standalone testbot by <a href="https://github.com/balena-io/testbot/blob/master/documentation/getting-started.md#quick-start-guide-for-testbot">following the guide</a>.</p>
+				<p>Start with building your standalone testbot by <a href="https://github.com/balena-io-hardware/testbot-hardware/blob/master/documentation/getting-started.md#quick-start-guide-for-testbot">following the guide</a>.</p>
 				<a href="#qemu" id="qemu" style="color: inherit; text-decoration: none;">
 					<h4>QEMU</h4>
 				</a>
@@ -137,12 +138,17 @@
 						</tr>
 				</tbody></table>
 				<a href="#configuration" id="configuration" style="color: inherit; text-decoration: none;">
-					<h4>Configuration</h4>
+					<h3>Configuration</h3>
 				</a>
+				<p>To run the tests, you need to specify the configuration of the worker.</p>
 				<ul>
-					<li>Create your test configuration, by creating a <code>config.json</code> file in the <code>workspace</code> directory, following instructions mentioned in the <a href="https://github.com/balena-os/leviathan/blob/master/documentation/quickstart.md">leviathan docs</a>. For QEMU workers, use localhost instead of the <code>*.local</code> address.</li>
-					<li>Extract the image you want to test to <code>./leviathan/workspace</code> and rename it to <code>balena.img</code></li>
-					<li>Optionally provide a custom suites path by creating <code>client/.env</code> containing <code>SUITES=/my/custom/path/to/suites</code>. The default path is the suites dir in the root of the project.</li>
+					<li>Create your test configuration by creating a <code>config.json</code> file in the <code>workspace</code> directory.Follow the instructions mentioned in the <a href="https://github.com/balena-os/leviathan/blob/master/documentation/quickstart.md">leviathan docs</a> to build your <code>config.json</code> file. </li>
+				</ul>
+				<blockquote>
+					<p>For QEMU workers, use localhost (<code>http://localhost</code>) instead of the <code>*.local</code> address for the <code>workers</code> property in the config.json file.</p>
+				</blockquote>
+				<ul>
+					<li>Extract the image you want to test to <code>./leviathan/workspace</code> and rename it to <code>balena.img</code>.</li>
 				</ul>
 				<a href="#running-tests" id="running-tests" style="color: inherit; text-decoration: none;">
 					<h3>Running tests</h3>
@@ -150,6 +156,7 @@
 				<p>Run the tests by navigating to the project directory and running</p>
 				<pre><code class="language-bash"><span style="color: #D4D4D4">make </span><span style="color: #DCDCAA">test</span>
 </code></pre>
+				<p>On first run, it will build the client (one-time process) and start the tests. </p>
 				<a href="#instructions-for-rig-owners" id="instructions-for-rig-owners" style="color: inherit; text-decoration: none;">
 					<h2>Instructions for rig-owners</h2>
 				</a>
@@ -157,19 +164,16 @@
 				<pre><code class="language-bash"><span style="color: #D4D4D4">npm install</span>
 <span style="color: #D4D4D4">balena push &lt;appname&gt;</span>
 </code></pre>
-				<p>To monitior leviathan tests connected to its pipeline for the rigs, you would need to request Jenkins access.</p>
 				<a href="#documentation-for-leviathan-helpers" id="documentation-for-leviathan-helpers" style="color: inherit; text-decoration: none;">
 					<h2>Documentation for Leviathan Helpers</h2>
 				</a>
-				<p>Documentation for Leviathan helpers can be found on <a href="https://balena-os.github.io/leviathan">https://balena-os.github.io/leviathan</a>
-				To generate the documentation, run the following command from either the root of the repository or the <code>core</code> directory.</p>
+				<p>Documentation for Leviathan helpers can be found on <a href="https://balena-os.github.io/leviathan">https://balena-os.github.io/leviathan</a>. To generate the documentation, run the following command from either the root of the repository or the <code>core</code> directory.</p>
 				<pre><code class="language-bash"><span style="color: #D4D4D4">npm install</span>
 <span style="color: #D4D4D4">npm run docs</span>
 </code></pre>
 				<p>If the docs are generated successfully, you will be getting the success line as:</p>
 				<pre><code class="language-bash"><span style="color: #D4D4D4">Info: Documentation generated at /path/to/documentation</span>
 </code></pre>
-				<p>Head there to find the documentation by double clicking the index.html page</p>
 				<a href="#support" id="support" style="color: inherit; text-decoration: none;">
 					<h2>Support</h2>
 				</a>
@@ -231,9 +235,6 @@
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/state.html">State</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/sync_helper.html">Sync helper</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/teardown.html">Teardown</a>

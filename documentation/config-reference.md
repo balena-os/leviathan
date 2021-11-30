@@ -153,4 +153,47 @@ module.exports = [{
     }]
 ```
 
+## Running tests on the development rig
+
+In order to kick off tests on multiple workers in the fleet, extend the configuration present below to run your tests on all available workers. 
+
+```js
+module.exports = [{
+        deviceType: "DEVICETYPE-1",
+        suite: `${__dirname}/../suites/YOUR-TEST-SUITE`,
+        config: {
+            networkWired: false,
+            networkWireless: true,
+            interactiveTests: false,
+            balenaApiKey: process.env.BALENACLOUD_API_KEY,
+            balenaApiUrl: 'balena-cloud.com',
+            organization: process.env.BALENACLOUD_ORG,
+        },
+        image: `${__dirname}/balena-DEVICETYPE-1.img.gz`,
+        workers: {
+            balenaApplication: 'testbot-personal',
+            apiKey: "blah-blah-blah",
+        }
+    },
+    {
+        deviceType: "DEVICETYPE-2",
+        suite: `${__dirname}/../suites/YOUR-TEST-SUITE`,
+        config: {
+            networkWired: false,
+            networkWireless: true,
+            interactiveTests: false,
+            balenaApiKey: process.env.BALENACLOUD_API_KEY,
+            balenaApiUrl: 'balena-cloud.com',
+            organization: process.env.BALENACLOUD_ORG
+        },
+        image: `${__dirname}/balena-DEVICETYPE-2.img.gz`,
+        workers: {
+            balenaApplication: 'testbot-personal',
+            apiKey: "blah-blah-blah",
+        }
+    }]
+```
+
+Add more objects to the array for as many workers that you need to target in the development rig to run your tests. Do make sure to specify the balenaOS images or assets correctly needed for each test suite you run for each worker.
+
 `config.js` files are validated using this [schema](https://github.com/balena-os/leviathan/blob/master/client/lib/schemas/multi-client-config.js). Some properties are optional with the ability to add new properties as required. After adding data to config.js, the properties will be available throughout the execution of the test suite.

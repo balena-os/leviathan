@@ -72,19 +72,24 @@
 				<a href="#quick-start" id="quick-start" style="color: inherit; text-decoration: none;">
 					<h1>Quick start</h1>
 				</a>
-				<p>This is a quick start guide for using the leviathan remote testing framework, with a testbot. As a prerequisite for this guide, you will have to prepare your testbot, using the following <a href="https://github.com/balena-io/testbot-hardware/blob/master/documentation/getting-started.md">guide</a>.</p>
-				<a href="#run-your-first-test-suite" id="run-your-first-test-suite" style="color: inherit; text-decoration: none;">
-					<h2>Run your first test suite</h2>
+				<p>This is a quick start guide for using the leviathan remote testing framework with a testbot. As a prerequisite for this guide, you will have to prepare your testbot, using the following <a href="https://github.com/balena-io/testbot-hardware/blob/master/documentation/getting-started.md">guide</a>.</p>
+				<a href="#prerequisites" id="prerequisites" style="color: inherit; text-decoration: none;">
+					<h2>Prerequisites</h2>
 				</a>
-				<p>Once you have set up a testbot, you can run your first tests.</p>
 				<ul>
 					<li>Ensure you have <code>docker</code> and node installed on your machine.</li>
 					<li>Clone the <a href="https://github.com/balena-io/leviathan">leviathan</a> repository and then <code>git submodule update --init --recursive</code> to install submodules.</li>
+				</ul>
+				<a href="#build-your-configjson-file" id="build-your-configjson-file" style="color: inherit; text-decoration: none;">
+					<h2>Build your config.json file</h2>
+				</a>
+				<ul>
 					<li>Navigate to the <code>workspace</code> directory in the project using <code>cd workspace/</code></li>
-					<li>Create a <code>config.js</code> file in the <code>workspace</code> directory using the following template:</li>
+					<li>Create a <code>config.js</code> file in the <code>workspace</code> directory using the following template. To read more about the properties, check the <a href="config-reference.html">Config.js reference</a>.</li>
 				</ul>
 				<pre><code class="language-js"><span style="color: #4EC9B0">module</span><span style="color: #D4D4D4">.</span><span style="color: #4EC9B0">exports</span><span style="color: #D4D4D4"> = {</span>
 <span style="color: #D4D4D4">    </span><span style="color: #9CDCFE">deviceType:</span><span style="color: #D4D4D4"> </span><span style="color: #CE9178">&#039;&lt;DUT device type, for example &quot;raspberrypi3-64&quot;&gt;&#039;</span><span style="color: #D4D4D4">,</span>
+<span style="color: #D4D4D4">    </span><span style="color: #6A9955">// Multiple suites can be run on the same worker when specified as an array.</span>
 <span style="color: #D4D4D4">    </span><span style="color: #9CDCFE">suite:</span><span style="color: #D4D4D4"> </span><span style="color: #CE9178">`</span><span style="color: #569CD6">${</span><span style="color: #9CDCFE">__dirname</span><span style="color: #569CD6">}</span><span style="color: #CE9178">/../suites/os`</span><span style="color: #D4D4D4">,</span>
 <span style="color: #D4D4D4">    </span><span style="color: #9CDCFE">config:</span><span style="color: #D4D4D4"> {</span>
 <span style="color: #D4D4D4">        </span><span style="color: #9CDCFE">networkWired:</span><span style="color: #D4D4D4"> </span><span style="color: #569CD6">false</span><span style="color: #D4D4D4">,</span>
@@ -96,11 +101,18 @@
 <span style="color: #D4D4D4">        </span><span style="color: #9CDCFE">organization:</span><span style="color: #D4D4D4"> </span><span style="color: #9CDCFE">process</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">env</span><span style="color: #D4D4D4">.</span><span style="color: #4FC1FF">BALENACLOUD_ORG</span>
 <span style="color: #D4D4D4">    },</span>
 <span style="color: #D4D4D4">    </span><span style="color: #9CDCFE">image:</span><span style="color: #D4D4D4"> </span><span style="color: #CE9178">`</span><span style="color: #569CD6">${</span><span style="color: #9CDCFE">__dirname</span><span style="color: #569CD6">}</span><span style="color: #CE9178">/balena.img`</span><span style="color: #D4D4D4">,</span>
+<span style="color: #D4D4D4">    </span><span style="color: #6A9955">// Make sure the public device URL is activated for the device</span>
+<span style="color: #D4D4D4">    </span><span style="color: #6A9955">// Read the reference guide to understand the multiple ways workers can be specified. </span>
 <span style="color: #D4D4D4">    </span><span style="color: #9CDCFE">workers:</span><span style="color: #D4D4D4"> [</span><span style="color: #CE9178">&#039;http://&lt;short UUID of your testbot in balenaCloud&gt;.local&#039;</span><span style="color: #D4D4D4">],</span>
 <span style="color: #D4D4D4">};</span>
 </code></pre>
+				<p>For QEMU workers, use localhost (<code>http://localhost</code>) instead of the <code>*.local</code> address for the <code>workers</code> property in the config.json file.</p>
+				<p>Check the <a href="config-reference.html">Config.js reference</a> for more examples. </p>
+				<a href="#let39s-run-some-tests" id="let39s-run-some-tests" style="color: inherit; text-decoration: none;">
+					<h2>Let&#39;s run some tests</h2>
+				</a>
 				<ul>
-					<li>Use the tests from <a href="https://github.com/balena-os/meta-balena/tree/master/tests/suites">meta-balena</a> instead. OS test suite is recommended as it works with the least configuration. Either copy the OS test suite to the <code>suite</code> property path as mentioned in config.js or point the <code>suite</code> property to the path of the OS test suite.</li>
+					<li>Use the tests from <a href="https://github.com/balena-os/meta-balena/tree/master/tests/suites">meta-balena</a> instead. The OS test suite is recommended as it works with the least configuration. Either copy the OS test suite to the <code>suite</code> property path as mentioned in config.js or point the <code>suite</code> property to the path of the OS test suite.</li>
 					<li>Extract the image you want to test to <code>./leviathan/workspace</code> and rename it to <code>balena.img</code>. You can downloaded unmanaged image from <a href="balena.io/os">balena.io/os</a>.</li>
 					<li>Run <code>make test</code> in the root of the project and watch the logs.</li>
 					<li>At the end of the run, reports and logs about the test will be stored in <code>workspace/reports</code> directory.</li>
@@ -161,9 +173,6 @@
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="../../modules/state.html">State</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="../../modules/sync_helper.html">Sync helper</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="../../modules/teardown.html">Teardown</a>

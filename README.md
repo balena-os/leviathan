@@ -2,14 +2,14 @@
 
 [![GitHub Issues](https://img.shields.io/github/issues/balena-io/leviathan.svg)](https://github.com/balena-io/leviathan/issues)
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/balena-io/leviathan.svg)](https://github.com/balena-io/leviathan/pulls)
-[![node](https://img.shields.io/badge/node-v9.0.0-green.svg)](https://nodejs.org/download/release/v9.0.0/)
+[![node](https://img.shields.io/badge/node-v12.0.0-green.svg)](https://nodejs.org/download/release/v12.0.0/)
 [![License](https://img.shields.io/badge/license-APACHE%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 > A distributed testing framework for hardware
 
 ## Getting Started
 
-Leviathan allows for running tests either on a device connected to and controlled by a testbot rig, or on a virtualized QEMU worker. The below instructions provide a quick reference to get started.
+Leviathan allows for running tests either on a device connected to and controlled by a testbot rig, or on a virtualized QEMU worker. The instructions provided will get you started.
 
 ### Clone the repository
 
@@ -18,13 +18,15 @@ Leviathan allows for running tests either on a device connected to and controlle
 
 ### Prerequisites needed
 
-- Install node and npm in your system. We recommend installing [LTS versions from NVM](https://github.com/nvm-sh/nvm#install--update-script).
-- Download the image you want to test on your DUT from [balena.io/os](https://balena.io/os#download).
+- Install Docker, node and npm in your system. We recommend installing [LTS versions from NVM](https://github.com/nvm-sh/nvm#install--update-script).
+- Download the balenaOS image you want to test on your DUT from [balena.io/os](https://balena.io/os#download).
 
 ### Worker setup
-#### Testbot
 
-Start building your standalone testbot by [following the guide](https://github.com/balena-io/testbot/blob/master/documentation/getting-started.md#quick-start-guide-for-testbot).
+A worker is a component on which your tests actually runs. It can be both real hardware or virtualised environments. Leviathan is designed to work with multiple workers. Following are detailed instructions on how to setup each type of worker:
+#### Testbot setup
+
+Start with building your standalone testbot by [following the guide](https://github.com/balena-io-hardware/testbot-hardware/blob/master/documentation/getting-started.md#quick-start-guide-for-testbot).
 
 #### QEMU
 
@@ -41,11 +43,15 @@ The default configuration should suffice in most cases.
 | QEMU_BRIDGE_ADDRESS | IP address to assign to bridge                      |
 | QEMU_DHCP_RANGE     | Range of DHCP addresses to hand out to workers      |
 
-#### Configuration
+### Configuration
 
-- Create your test configuration, by creating a `config.json` file in the `workspace` directory, following instructions mentioned in the [leviathan docs](https://github.com/balena-os/leviathan/blob/master/documentation/quickstart.md). For QEMU workers, use localhost instead of the `*.local` address.
-- Extract the image you want to test to `./leviathan/workspace` and rename it to `balena.img`
-- Optionally provide a custom suites path by creating `client/.env` containing `SUITES=/my/custom/path/to/suites`. The default path is the suites dir in the root of the project.
+To run the tests, you need to specify the configuration of the worker.
+
+- Create your test configuration by creating a `config.json` file in the `workspace` directory.Follow the instructions mentioned in the [leviathan docs](https://github.com/balena-os/leviathan/blob/master/documentation/quickstart.md) to build your `config.json` file. 
+  
+> For QEMU workers, use localhost (`http://localhost`) instead of the `*.local` address for the `workers` property in the config.json file.
+  
+- Extract the image you want to test to `./leviathan/workspace` and rename it to `balena.img`.
 
 ### Running tests
 
@@ -55,6 +61,8 @@ Run the tests by navigating to the project directory and running
 make test
 ```
 
+On first run, it will build the client (one-time process) and start the tests. 
+
 ## Instructions for rig-owners
 
 To push a new release to balenaCloud, run `npm install` and then push to the balenaCloud application.
@@ -63,13 +71,9 @@ To push a new release to balenaCloud, run `npm install` and then push to the bal
 npm install
 balena push <appname>
 ```
-
-To monitior leviathan tests connected to its pipeline for the rigs, you would need to request Jenkins access.
-
 ## Documentation for Leviathan Helpers
 
-Documentation for Leviathan helpers can be found on https://balena-os.github.io/leviathan
-To generate the documentation, run the following command from either the root of the repository or the `core` directory.
+Documentation for Leviathan helpers can be found on [https://balena-os.github.io/leviathan](https://balena-os.github.io/leviathan). To generate the documentation, run the following command from either the root of the repository or the `core` directory.
 
 ```bash
 npm install
@@ -81,8 +85,6 @@ If the docs are generated successfully, you will be getting the success line as:
 ```bash
 Info: Documentation generated at /path/to/documentation
 ```
-
-Head there to find the documentation by double clicking the index.html page
 
 ## Support
 
