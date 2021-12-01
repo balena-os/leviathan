@@ -6,7 +6,8 @@ volumes:
 services:
   core:
     build: ./core
-    network_mode: 'host'
+    ports:
+      - "80:80"
     volumes:
       - 'core-storage:/data'
       - 'reports-storage:/reports'

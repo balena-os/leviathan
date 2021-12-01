@@ -8,7 +8,8 @@ services:
     privileged: true
     build:
       context: ./core
-    network_mode: host
+      ports:
+        - "80:80"
     volumes:
       - 'core-storage:/data'
       - 'reports-storage:/reports'
