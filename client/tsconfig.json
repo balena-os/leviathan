@@ -12,7 +12,8 @@
     "sourceMap": true,
     "strictNullChecks": true,
     "strictBindCallApply": true,
-    "allowJs": true
+    "allowJs": true,
+    "skipLibCheck": true
   },
   "include": [
     "bin/**/*.*",

@@ -1,8 +1,14 @@
 #!/usr/bin/env node
 import { BalenaCloudInteractor } from "../lib/balena";
+import { ContainerInteractor } from "../lib/docker";
+//const getPort = require('get-port');
 
 process.env.NODE_CONFIG_DIR = `${__dirname}/../config`;
 const config = require('config');
+
+//const tar = require('tar-fs')
+//const Docker = require('dockerode');
+//const docker = new Docker({socketPath: '/var/run/docker.sock'});
 
 const ajv = new (require('ajv'))({ allErrors: true });
 const balena = require('balena-sdk')({
@@ -439,9 +445,24 @@ class State {
 		state.info('Computing Run Queue');
 
 		const balenaCloud = new BalenaCloudInteractor(balena);
+		const containerInteractor = new ContainerInteractor();
 		// Iterates through test jobs and pushes jobs to available testbot workers
 		for (const runConfig of runConfigs) {
-			if (runConfig.workers instanceof Array) {
+			console.log(runConfig.workers)
+			if(runConfig.workers.includes(`http://localhost`)) {
+				// if its a qemu worker
+				let ports = await containerInteractor.createCoreWorker();
+				console.log(ports)
+				runQueue.push({
+					...runConfig,
+					matchingDevices: [`http://localhost:${ports.corePort}`],
+					workers: null,
+					workerPrefix: null,
+					array: true
+				});
+
+			} 
+			else if (runConfig.workers instanceof Array) {
 				runConfig.workers.forEach(worker => {
 					runQueue.push({
 						...runConfig,
@@ -471,7 +492,7 @@ class State {
 					workers: null,
 					workerPrefix: null,
 				});
-			}
+			} 
 		}
 
 		state.info(`[Running Queue] Suites currently in queue: ${runQueue.map((run) => path.parse(run.suite).base)}`);
