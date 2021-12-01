@@ -6,7 +6,6 @@
 import { existsSync, createWriteStream } from 'fs'
 import * as Docker from 'dockerode';
 import * as tar from 'tar-fs';
-import getPort from 'get-port';
 
 export class ContainerInteractor{
 	docker: Docker;
@@ -14,13 +13,9 @@ export class ContainerInteractor{
 		this.docker = new Docker({socketPath: '/var/run/docker.sock'});
 	}
 	
-	async createCoreWorker() {
-		let corePort = await getPort();
-		let workerPort = corePort;
-		// ensure we don't allocate the same port to both
-		while (workerPort === corePort){
-			workerPort = await getPort();
-		}
+	async createCoreWorker(ports: number[]) {
+		let corePort = ports[0];
+		let workerPort = ports[1];
 		
 		let coreOpts = {
 			Image: '',
@@ -107,12 +102,12 @@ export class ContainerInteractor{
 		workerOpts.Env = env;
 		await this.docker.createVolume(`core-storage`)
 		await this.docker.createVolume(`reports`)
-		await this.createContainer(`${__dirname}/../../../core`, `core`, corePort, coreOpts);
-		await this.createContainer(`${__dirname}/../../../worker`, `worker`, workerPort, workerOpts);
+		let core = await this.createContainer(`${__dirname}/../../../core`, `core`, corePort, coreOpts);
+		let worker = await this.createContainer(`${__dirname}/../../../worker`, `worker`, workerPort, workerOpts);
 
 		return {
-			corePort: corePort,
-			workerPort: workerPort
+			core: core,
+			worker: worker
 		}
 	}
 
@@ -154,16 +149,8 @@ export class ContainerInteractor{
 		);
 		await container.start()
 
-		/*const out = await container.attach({
-				stream: true,
-				stdout: true,
-				stderr: true,
-				stdin: true,
-			});
 
-		out.on(`data`, (data)=>{
-			console.log(data.toString())
-		})*/
+		return container;
 	}
 }
 

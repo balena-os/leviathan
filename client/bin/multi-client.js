@@ -1,14 +1,11 @@
 #!/usr/bin/env node
 import { BalenaCloudInteractor } from "../lib/balena";
 import { ContainerInteractor } from "../lib/docker";
-//const getPort = require('get-port');
+const fp = require("find-free-port");
+const Bluebird = require('bluebird');
 
 process.env.NODE_CONFIG_DIR = `${__dirname}/../config`;
 const config = require('config');
-
-//const tar = require('tar-fs')
-//const Docker = require('dockerode');
-//const docker = new Docker({socketPath: '/var/run/docker.sock'});
 
 const ajv = new (require('ajv'))({ allErrors: true });
 const balena = require('balena-sdk')({
@@ -330,6 +327,19 @@ class State {
 	}
 }
 
+async function teardownContainers(containers){
+	console.log(`Tearing down containers...`)
+	try{
+		for(let container of containers){
+			await container.core.stop();
+			await container.worker.stop();
+		}
+	} catch(e){
+		console.log(e)
+	}
+	console.log(`Containers torn down!`)
+}
+
 (async () => {
 	const state = yargs['non-interactive']
 		? new NonInteractiveState()
@@ -337,6 +347,13 @@ class State {
 	let runQueue = [];
 
 	const children = {};
+	// This is an array for holding any container objects spawned
+	const containerArray = [];
+
+	process.on('beforeExit', async(code) => {
+		await teardownContainers(containerArray);
+		process.exit(code)
+	})
 
 	// Exit handling
 	process.on('exit', code => {
@@ -448,19 +465,19 @@ class State {
 		const containerInteractor = new ContainerInteractor();
 		// Iterates through test jobs and pushes jobs to available testbot workers
 		for (const runConfig of runConfigs) {
-			console.log(runConfig.workers)
 			if(runConfig.workers.includes(`http://localhost`)) {
 				// if its a qemu worker
-				let ports = await containerInteractor.createCoreWorker();
-				console.log(ports)
+				let availablePorts = await fp(5000, 5100, '127.0.0.1', 2);
+				let containers = await containerInteractor.createCoreWorker(availablePorts);
+				containerArray.push(containers);
 				runQueue.push({
 					...runConfig,
-					matchingDevices: [`http://localhost:${ports.corePort}`],
+					matchingDevices: [`http://localhost:${availablePorts[0]}`],
 					workers: null,
 					workerPrefix: null,
 					array: true
 				});
-
+				await Bluebird.delay(15000) // give time for both containers to start and to listen on ports
 			} 
 			else if (runConfig.workers instanceof Array) {
 				runConfig.workers.forEach(worker => {
