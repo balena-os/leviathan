@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { BalenaCloudInteractor } from "../lib/balena";
 import { ContainerInteractor } from "../lib/docker";
+const containerInteractor = new ContainerInteractor();
 const fp = require("find-free-port");
 const Bluebird = require('bluebird');
 
@@ -327,17 +328,10 @@ class State {
 	}
 }
 
-async function teardownContainers(containers){
-	console.log(`Tearing down containers...`)
-	try{
-		for(let container of containers){
-			await container.core.stop();
-			await container.worker.stop();
-		}
-	} catch(e){
-		console.log(e)
-	}
-	console.log(`Containers torn down!`)
+async function teardownContainers(){
+	console.log(`Tearing down containers...`);
+	await containerInteractor.teardown();
+	console.log(`Containers torn down!`);
 }
 
 (async () => {
@@ -347,11 +341,12 @@ async function teardownContainers(containers){
 	let runQueue = [];
 
 	const children = {};
-	// This is an array for holding any container objects spawned
-	const containerArray = [];
 
+
+	// This performs actions before the process exits - you can do async operations in here, which isn't possible in the process.exit callbacks
 	process.on('beforeExit', async(code) => {
-		await teardownContainers(containerArray);
+		await teardownContainers();
+		// Have to then exit the process, or this will loop forever
 		process.exit(code)
 	})
 
@@ -462,14 +457,16 @@ async function teardownContainers(containers){
 		state.info('Computing Run Queue');
 
 		const balenaCloud = new BalenaCloudInteractor(balena);
-		const containerInteractor = new ContainerInteractor();
 		// Iterates through test jobs and pushes jobs to available testbot workers
 		for (const runConfig of runConfigs) {
+			// If its a qemu worker, the worker url will be localhost - so for each job targetted at qemu, we can create a core/worker pairing
 			if(runConfig.workers.includes(`http://localhost`)) {
-				// if its a qemu worker
+				// find 2 unused ports, and make the node processes inside the containers we generate listen on them
+				// This is to avoid port conflicts between the containers we generate
 				let availablePorts = await fp(5000, 5100, '127.0.0.1', 2);
-				let containers = await containerInteractor.createCoreWorker(availablePorts);
-				containerArray.push(containers);
+				await containerInteractor.createCoreWorker(availablePorts);
+				// Give time for both containers to start and to listen on ports
+				await Bluebird.delay(10000);
 				runQueue.push({
 					...runConfig,
 					matchingDevices: [`http://localhost:${availablePorts[0]}`],
@@ -477,7 +474,6 @@ async function teardownContainers(containers){
 					workerPrefix: null,
 					array: true
 				});
-				await Bluebird.delay(15000) // give time for both containers to start and to listen on ports
 			} 
 			else if (runConfig.workers instanceof Array) {
 				runConfig.workers.forEach(worker => {
