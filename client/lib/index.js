@@ -358,7 +358,7 @@ module.exports = class Client extends PassThrough {
 
 			const createWs = () =>
 				new Promise((resolve, reject) => {
-					const ws = new WebSocket(`ws://${this.uri.hostname}/start`);
+					const ws = new WebSocket(`ws://${this.uri.host}/start`);
 
 					const msgHandler = wsMessageHandler(ws);
 					ws.on('message', msgHandler);
