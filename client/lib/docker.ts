@@ -1,6 +1,6 @@
-import { existsSync, createWriteStream } from 'fs'
 import * as Docker from 'dockerode';
-import * as tar from 'tar-fs';
+import * as glob from 'glob';
+import * as Path from 'path';
 
 
 interface Containers{
@@ -146,12 +146,12 @@ export class ContainerInteractor{
 	}
 
 	private async createContainer(dir: string, name: string, port: number, opts: any) {
-		console.log(`Creating ${name} container, listening on port ${port}`);
+		console.log(`Creating ${name} container, to listen on port ${port}`);
 		let imgTag = `${name}_${port}`;
-		let archive = `${name}.tar`;
+		//let archive = `${name}.tar`;
 		
 		// we must create an archive of the core directory to be able to use it with dockerode build
-		if(!existsSync(archive)){
+		/*if(!existsSync(archive)){
 			console.log(`Creating archive of container files...`);
 			let pack = tar.pack(dir).pipe(createWriteStream(archive));
 			await new Promise((resolve, _reject) => {
@@ -162,13 +162,25 @@ export class ContainerInteractor{
 			});
 		} else{
 			console.log(`Archive of container files already exists - skipping...`)
-		}
+		}*/
+
+		// Get all files in the directory - this is needed as dockerode build requires all files to be listed
+		let src = glob.sync(`${dir}/**`,{nodir: true} );
+		let arr = src.map((path: string) => {
+			return path.replace(Path.resolve(dir), '');
+		})
 
 		console.log(`Building container ${imgTag}....`);
 		// build container - after the first time it will build from cache
 		let stream = await this.docker.buildImage(
-			archive,
-			{t: imgTag, buildargs: {SKIP_INSTALL_BINARY: "true"}}
+			{
+				context: dir,
+				src: arr
+			},
+			{
+				t: imgTag, 
+				buildargs: {SKIP_INSTALL_BINARY: "true"}
+			}
 		);
 
 		// this monitors the build progree, and waits until the build is finished before continuing
