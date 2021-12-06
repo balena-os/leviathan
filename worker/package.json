@@ -29,6 +29,7 @@
 		"drivelist": "^8.0.6",
 		"etcher-sdk": "^2.0.16",
 		"express": "^4.16.4",
+		"find-free-port": "^2.0.0",
 		"firmata": "^2.0.0",
 		"fs-extra": "^8.1.0",
 		"lodash": "^4.17.11",

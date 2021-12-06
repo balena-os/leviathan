@@ -15,6 +15,7 @@ module.exports = {
 					bridgeAddress: process.env.QEMU_BRIDGE_ADDRESS || '192.168.100.1',
 					dhcpRange: process.env.QEMU_DHCP_RANGE || '192.168.100.2,192.168.100.254',
 				},
+				multiple: process.env.QEMU_MULTIPLE || '0',
 				architecture: process.env.QEMU_ARCH || 'x86_64',
 				cpus: process.env.QEMU_CPUS || '4',
 				memory: process.env.QEMU_MEMORY || '2G',

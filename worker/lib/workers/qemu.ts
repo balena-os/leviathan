@@ -11,6 +11,7 @@ import { manageHandlers } from '../helpers';
 import ScreenCapture from '../helpers/graphics';
 import { promisify } from 'util';
 const execProm = promisify(exec)
+const fp = require("find-free-port");
 
 Bluebird.config({
 	cancellation: true,
@@ -56,7 +57,7 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
       console.log(this.qemuOptions);
     }
 
-		this.iptablesComment = `teardown`
+		this.iptablesComment = `teardown-${this.qemuOptions.network.bridgeName}`
 		this.signalHandler = this.teardown.bind(this);
 	}
 
@@ -168,7 +169,10 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 			'x86_64': ['-bios', '/usr/share/OVMF/OVMF_CODE.fd'],
 			'aarch64': ['-bios', '/usr/share/qemu-efi-aarch64/QEMU_EFI.fd'],
 		};
-		let qmpArgs = ['-qmp', 'tcp:localhost:4444,server,nowait'];
+		// find a free tcp port for the qemu device qmp arguement - if we try to use a port already assigned, the spawning of the device fails
+		let tcpPort = await fp(5700, 5800, '127.0.0.1', 1);
+
+		let qmpArgs = ['-qmp', `tcp:localhost:${tcpPort[0]},server,nowait`];
 		let args = baseArgs.concat(
 			archArgs[deviceArch]).concat(
 			networkArgs).concat(
@@ -177,7 +181,7 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 
 		if (this.screenCapturer != null) {
 			let gfxArgs = [
-				'-vnc', ':0',
+				'-vnc', `:${this.qemuOptions.multiple}`,
 			];
 
 			args = args.concat(gfxArgs);
@@ -214,11 +218,17 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 		});
 	}
 
-	private async iptablesRules(){
-		await execProm(`iptables-legacy -t nat -A POSTROUTING ! -o ${this.qemuOptions.network.bridgeName} --source ${this.qemuOptions.network.bridgeAddress}/24 -j MASQUERADE -m comment --comment ${this.iptablesComment}`);
+	private async iptablesRules(bridgeName: string, bridgeAddress: string){
+		await execProm(`iptables-legacy -t nat -A POSTROUTING ! -o ${bridgeName} --source ${bridgeAddress}/24 -j MASQUERADE -m comment --comment ${this.iptablesComment}`);
 	}
 
-	private async createBridge(bridgeName: string, bridgeAddress: string): Promise<void> {
+	// gets an unused ip address to assign the bridge interface we create - this is to avoid conflicts when multiple workers are running
+	private async getUnusedAddress(){
+		let nmap = await execProm(`nmap -v -sn -n 192.168.10${this.qemuOptions.multiple}.1-100 -oG - | awk '/Status: Down/{print $2}' | head -n 1`);
+		return nmap.stdout.trim();
+	}
+
+	private async createBridge(bridgeName: string): Promise<void> {
 		return new Promise((resolve, reject) => {
 			spawn(
 				'brctl', ['addbr', bridgeName]
@@ -242,7 +252,9 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 				});
 			});
 		}).then(() => {
-			return new Promise((resolve, reject) => {
+			return new Promise(async (resolve, reject) => {
+				let bridgeAddress = await this.getUnusedAddress();
+				await this.iptablesRules(bridgeName, bridgeAddress);
 				spawn(
 					'ip', ['addr', 'add', `${bridgeAddress}/24`, 'dev', bridgeName]
 				).on('exit', (code) => {
@@ -256,13 +268,13 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 		});
 	}
 
-	private async setupBridge(bridgeName: string, bridgeAddress: string): Promise<void> {
+	private async setupBridge(bridgeName: string): Promise<void> {
 		return new Promise((resolve, reject) => {
 			spawn('brctl', ['show', bridgeName]).on('exit', (code) => {
 				if (code == 0) {
 					resolve();
 				} else {
-					resolve(this.createBridge(bridgeName, bridgeAddress));
+					resolve(this.createBridge(bridgeName));
 				}
 			});
 		});
@@ -272,11 +284,11 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 		wired?: { nat: boolean };
 	}): Promise<void> {
     const bridgeName: string = this.qemuOptions.network.bridgeName;
-    const bridgeAddress: string = this.qemuOptions.network.bridgeAddress;
     const dnsmasqArgs = [
       `--interface=${bridgeName}`,
-      `--dhcp-range=${this.qemuOptions.network.dhcpRange}`,
+      `--dhcp-range=192.168.10${this.qemuOptions.multiple}.2,192.168.10${this.qemuOptions.multiple}.254`,
       '--conf-file',
+	  '--except-interface=lo', // may not be needed TEST
       '--bind-interfaces',
       '--no-daemon',
       `--dhcp-leasefile=/var/run/qemu-dnsmasq-${bridgeName}.leases`,
@@ -286,9 +298,8 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 		// with running multiple instances of dnsmasq concurrently
 		dnsmasqArgs.push('--port=0');
 
-		return this.setupBridge(bridgeName, bridgeAddress).then(() => {
-			return new Promise(async (resolve, reject) => {
-				await this.iptablesRules();
+		return this.setupBridge(bridgeName).then(() => {
+			return new Promise((resolve, reject) => {
 				this.dnsmasqProc = spawn('dnsmasq', dnsmasqArgs, {stdio: 'inherit'});
 
 				this.dnsmasqProc.on('exit',

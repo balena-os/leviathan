@@ -1,8 +1,3 @@
-//const tar = require('tar-fs')
-//const Docker = require('dockerode');
-//const docker = new Docker({socketPath: '/var/run/docker.sock'});
-//const getPort = require('get-port');
-
 import { existsSync, createWriteStream } from 'fs'
 import * as Docker from 'dockerode';
 import * as tar from 'tar-fs';
@@ -73,15 +68,14 @@ export class ContainerInteractor{
 		}
 		
 		// We actually need a way to generate a unique ip address to assign the virtual interface we create, to avoid conflicts when multiple jobs run on the same jenkins worker
-		let ip = (this.containerArray.length + 1).toString();
 		let env = [
 			`UDEV=0`,
 			`WORKER_TYPE=qemu`,
 			`WORKER_PORT=${workerPort}`,
 			`CORE_PORT=${corePort}`,
 			`SCREEN_CAPTURE=true`,
+			`QEMU_MULTIPLE=${this.containerArray.length}`, // this number is passed to the worker to it can determine a unique ip address, vnc port and dhcp range
 			`QEMU_BRIDGE_NAME=br${corePort}`,
-			`QEMU_BRIDGE_ADDRESS=192.168.100.${ip}`,
 		]
 
 		// volume names - we make them unique to each of the containers we spawn to avoid overlap
@@ -170,19 +164,19 @@ export class ContainerInteractor{
 			console.log(`Archive of container files already exists - skipping...`)
 		}
 
-		console.log(`Building container....`)
+		console.log(`Building container ${imgTag}....`);
 		// build container - after the first time it will build from cache
 		let stream = await this.docker.buildImage(
 			archive,
 			{t: imgTag, buildargs: {SKIP_INSTALL_BINARY: "true"}}
 		);
 
-		console.log(`Container ${imgTag} built! Starting container...`)
 		// this monitors the build progree, and waits until the build is finished before continuing
 		await new Promise((resolve, reject) => {
 			this.docker.modem.followProgress(stream, (err, res) => err ? reject(err) : resolve(res));
 		});
 
+		console.log(`Container ${imgTag} built! Starting container...`);
 		// create container, with ports env vars
 		opts.Image = imgTag;
 		const container = await this.docker.createContainer(

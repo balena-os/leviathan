@@ -25,6 +25,7 @@ declare global {
 				dhcpRange: string
 			};
 			architecture: string;
+			multiple: string;
 			cpus: string;
 			memory: string;
 			debug: boolean;
