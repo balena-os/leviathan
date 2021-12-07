@@ -6,45 +6,37 @@ COREDIR := $(ROOTDIR)/core
 WORKERDIR := $(ROOTDIR)/worker
 
 # override these in make command (eg. make local-test WORKSPACE=/path/to/workspace)
-WORKSPACE ?= $(ROOTDIR)/workspace
-REPORTS ?= $(ROOTDIR)/workspace/reports
-SUITES ?= $(ROOTDIR)/suites
+export WORKSPACE ?= $(ROOTDIR)/workspace
+export REPORTS ?= $(ROOTDIR)/workspace/reports
+export SUITES ?= $(ROOTDIR)/suites
 
 # override these in make command (eg. make release PUSH=192.168.1.100)
 PUSHTO ?= balena/testbot-personal
 PUSHARGS ?=
 
-UPARGS ?= --force-recreate --remove-orphans
-BUILDARGS ?=
-DOCKERCOMPOSE ?= $(shell command -v docker-compose 2>/dev/null)
-
-# docker-compose will automatically source this file
-ENVFILE := .env
+UPARGS ?= --force-recreate
+BUILDARGS ?= --build-arg SKIP_INSTALL_BINARY=true
+DOCKERCOMPOSE ?= $(shell command -v docker-compose 2>/dev/null || echo ./docker-compose)
 
 .DEFAULT_GOAL = local-test
 
-export PATH := $(ROOTDIR)/bin:$(PATH)
-export COMPOSE_FILE := docker-compose.local.yml
-export DOCKER_BUILDKIT := 1
-export COMPOSE_DOCKER_CLI_BUILD := 1
+# BUILD_TAG is set by Jenkins, unset for local
+export COMPOSE_PROJECT_NAME ?= $(BUILD_TAG)
+# export COMPOSE_FILE := docker-compose.yml
+export COMPOSE_DOCKER_CLI_BUILD ?= 1
+export DOCKER_BUILDKIT ?= 1
+export DOCKERD_EXTRA_ARGS ?=
 
 # install docker-compose as a run script if binary not in path
 $(DOCKERCOMPOSE):
-	mkdir -p bin
-	curl -fsSL "https://github.com/docker/compose/releases/download/1.29.2/run.sh" -o bin/docker-compose
-	chmod +x bin/docker-compose
+	curl -fsSL "https://github.com/docker/compose/releases/download/1.29.2/run.sh" -o $@
+	chmod +x $@
 
 # create a dockerfile from dockerfile.template
 %/Dockerfile:: %/Dockerfile.template .FORCE
 	npm_config_yes=true npx dockerfile-template -d BALENA_ARCH="amd64" -f $< > $@
 
-# populate local env file if it doesn't exist
-$(ENVFILE):
-	@echo "WORKSPACE=$(WORKSPACE)" > $@
-	@echo "REPORTS=$(REPORTS)" >> $@
-	@echo "SUITES=$(SUITES)" >> $@
-
-common: $(ENVFILE) $(DOCKERCOMPOSE)
+common: $(DOCKERCOMPOSE)
 
 # force dockerfiles to be regenerated
 .PHONY: .FORCE

@@ -11,7 +11,7 @@ core/Dockerfile
 worker/Dockerfile
 
 # docker-compose script is downloaded if binary is not installed
-bin/docker-compose
+docker-compose
 
 # emulated balena build will install qemu binaries here
 **/.balena
