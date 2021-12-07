@@ -24,7 +24,6 @@ services:
       - "/dev/kvm:/dev/kvm"
     cap_add:
       - NET_ADMIN # allow network setup
-    build: ./worker
     network_mode: 'host'
     volumes:
       - 'core-storage:/data'
