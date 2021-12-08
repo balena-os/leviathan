@@ -21,15 +21,28 @@ YQ := $(shell command -v yq 2>/dev/null || echo ./bin/yq)
 # BUILD_TAG ?= leviathan
 # LOWERPORT ?= 5000
 # UPPERPORT ?= 6000
-# INSTANCES ?= 3
+INSTANCES ?= 3
 # PREFIX ?=
 
 # PORTS ?= $(shell ./getports.sh $(LOWERPORT) $(UPPERPORT) $$(( $(INSTANCES) * 2)))
 
+CORE_PORT ?= 80
+WORKER_PORT ?= 2000
+# PREFIX ?= KEY_
+
 # YQEXPRESSION := '\
-# 	.services.core.environment += ["CORE_PORT=$(CORE_PORT)"] | \
-# 	.services.core.environment += ["WORKER_PORT=$(WORKER_PORT)"] | \
-# 	.services.worker.environment += ["WORKER_PORT=$(WORKER_PORT)"]'
+# 	(.services, .volumes) |= with_entries(.key |= "$(PREFIX)" + .) | \
+# 	.services[].volumes[] |= sub("(.+)","$(PREFIX)$${1}") | \
+# 	.services[].environment.CORE_PORT = "$(CORE_PORT)" | \
+# 	.services[].environment.WORKER_PORT = "$(WORKER_PORT)" \
+# 	'
+
+YQEXPRESSION := '\
+	(.services, .volumes) |= with_entries(.key |= . + "$(SUFFIX)") | \
+	.services[].volumes[] |= sub("(^[^:]+):","$${1}$(SUFFIX):") | \
+	.services[].environment.CORE_PORT = "$(CORE_PORT)" | \
+	.services[].environment.WORKER_PORT = "$(WORKER_PORT)" \
+	'
 
 CORES := core core_2 core_3
 WORKERS := worker worker_2 worker_3
@@ -61,13 +74,21 @@ $(YQ):
 %/Dockerfile:: %/Dockerfile.template .FORCE
 	npm_config_yes=true npx dockerfile-template -d BALENA_ARCH="amd64" -f $< > $@
 
-# docker-compose.%.yml:: .FORCE
-# 	$(YQ) e -n $(YQEXPRESSION) > $@
+docker-compose.%.yml:: $(DOCKERCOMPOSE) .FORCE
+	@$(DOCKERCOMPOSE) config | $(YQ) e $(YQEXPRESSION) - > $@
 
 common: $(DOCKERCOMPOSE)
 
 config: $(DOCKERCOMPOSE)
 	$(DOCKERCOMPOSE) config
+
+stack:
+	for i in $(shell seq 1 $(INSTANCES)) ; \
+	do \
+		make docker-compose.$${i}.yml SUFFIX="-$${i}" CORE_PORT=$$(( $(CORE_PORT) + $${i} )) WORKER_PORT=$$(( $(WORKER_PORT) + $${i} )) ; \
+	done
+	COMPOSE_FILE=$$(ls -1 docker-compose.?.yml | xargs -d '\n' | tr ' ' ':') $(DOCKERCOMPOSE) config > docker-compose.$@.yml
+	rm docker-compose.?.yml
 
 # force dockerfiles to be regenerated
 .PHONY: .FORCE
