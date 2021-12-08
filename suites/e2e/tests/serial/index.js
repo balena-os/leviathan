@@ -16,31 +16,21 @@
 
 const { delay } = require('bluebird');
 const util = require('util');
-const exec = util.promisify(require('child_process').exec);
+const fs = require('fs').promises;
 
 module.exports = {
 	title: 'Serial Test',
 	tests: [
 		{
 			title: 'Recording DUT serial output',
-			run: async function(test) {
+			run: async function (test) {
 				await this.context.get().worker.on();
-				await delay(20 * 1000);
-				await exec(
-					'head -n 20 /reports/dut-serial.txt',
-					(error, stdout, stderr) => {
-						if (error || stderr || stdout === '') {
-							throw new Error(
-								`Error with DUT serial output: ${error + stderr + stdout}`,
-							);
-						}
-						// console.log(stdout)
-						test.true(
-							stdout,
-							'Should be able to record serial output from DUT.',
-						);
-						console.log(done);
-					},
+				await delay(10 * 1000);
+
+				test.not(
+					(await fs.stat('/reports/dut-serial.txt')).size,
+					0,
+					`Should be able to retrieve serial output from DUT`,
 				);
 			},
 		},
