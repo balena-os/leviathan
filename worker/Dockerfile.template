@@ -27,8 +27,10 @@ RUN apk add --no-cache \
   nodejs=~12.22.6 \
   libusb-dev dbus-dev \
   gstreamer-tools gst-plugins-base gst-plugins-bad gst-plugins-good \
-  bridge bridge-utils iproute2 dnsmasq iptables qemu-img qemu-system-x86_64 qemu-modules && \
-  (apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.12/community ovmf || true)
+  bridge bridge-utils iproute2 dnsmasq iptables \
+  qemu-img qemu-system-x86_64 \
+    && rm /usr/share/qemu/edk2* `# remove huge edk2 firmware` \
+  && (apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.12/community ovmf || true)
 
 # create qemu-bridge-helper ACL file
 # https://wiki.qemu.org/Features/HelperNetworking
