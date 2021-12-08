@@ -1,22 +1,21 @@
 import { BalenaSDK, DeviceTag } from 'balena-sdk';
 
 /**
- * Contains information about the workers with tags that they have 
+ * Contains information about the workers with tags that they have
  */
 export class DeviceInfo {
 	constructor(
 		public readonly deviceId: number,
 		public readonly tags: { [key: string]: string },
-	) { }
-	
+	) {}
 
 	/**
-	 * @returns unique worker prefix by joining values of DUT and model tag. Example: `raspberrypi3-64-RPi3_A`	
+	 * @returns unique worker prefix by joining values of DUT and model tag. Example: `raspberrypi3-64-RPi3_A`
 	 */
 	fileNamePrefix() {
 		return ['DUT', 'model']
-			.filter(tagName => this.tags.hasOwnProperty(tagName))
-			.map(tagName => this.tags[tagName].replace(/\s*[,;]?\s+/, '_'))
+			.filter((tagName) => this.tags.hasOwnProperty(tagName))
+			.map((tagName) => this.tags[tagName].replace(/\s*[,;]?\s+/, '_'))
 			.join('-');
 	}
 }
@@ -28,7 +27,7 @@ export function groupTagsData(allAppTags: DeviceTag[]): DeviceInfo[] {
 	const value: DeviceInfo[] = [];
 	return allAppTags.reduce((res, tagData) => {
 		const deviceId = (tagData.device as any).__id;
-		let data = res.find(info => info.deviceId === deviceId);
+		let data = res.find((info) => info.deviceId === deviceId);
 		if (data == null) {
 			data = new DeviceInfo(deviceId, {});
 			value.push(data);
@@ -42,7 +41,7 @@ export function groupTagsData(allAppTags: DeviceTag[]): DeviceInfo[] {
  * Interacts with balenaCloud for the client
  */
 export class BalenaCloudInteractor {
-	constructor(private sdk: BalenaSDK) { }
+	constructor(private sdk: BalenaSDK) {}
 	/**
 	 * Authenticate balenaSDK with API key
 	 */
@@ -57,16 +56,18 @@ export class BalenaCloudInteractor {
 		appName: string,
 		dutType: string,
 	): Promise<DeviceInfo[]> {
-		let selectedDevices = []
+		const selectedDevices = [];
 		const tags = await this.sdk.models.device.tags.getAllByApplication(appName);
 		const taggedDevices = groupTagsData(tags).filter(
-			device => device.tags['DUT'] === dutType,
+			(device) => device.tags['DUT'] === dutType,
 		);
 		for (const taggedDevice of taggedDevices) {
 			const online = await this.sdk.models.device.isOnline(
 				taggedDevice.deviceId,
 			);
-			if (online) selectedDevices.push(taggedDevice);
+			if (online) {
+				selectedDevices.push(taggedDevice);
+			}
 		}
 		return selectedDevices;
 	}

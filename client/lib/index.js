@@ -80,8 +80,10 @@ module.exports = class Client extends PassThrough {
 	}
 
 	async handleArtifact(artifact, token, attempt) {
-		if (attempt > 1){
-			this.log(`Previously failed to upload artifact ${artifact.name} - retrying...`);
+		if (attempt > 1) {
+			this.log(
+				`Previously failed to upload artifact ${artifact.name} - retrying...`,
+			);
 		}
 		const ignore = ['node_modules'];
 
@@ -89,37 +91,36 @@ module.exports = class Client extends PassThrough {
 		if (artifact.path != null) {
 			try {
 				const stat = await fs.stat(artifact.path);
+				if (!stat[artifact.type]()) {
+					throw new Error(`${artifact.path} does not satisfy ${artifact.type}`);
+				}
+
+				if (artifact.name === 'os.img' && !(await isGzip(artifact.path))) {
+					const str = progStream({
+						length: stat.size,
+						time: 100,
+					});
+					str.on('progress', (progress) => {
+						this.status({
+							message: 'Gzipping Image',
+							percentage: progress.percentage,
+							eta: progress.eta,
+						});
+					});
+
+					const gzippedPath = join(this.workdir, artifact.name);
+
+					await pipeline(
+						fs.createReadStream(artifact.path),
+						str,
+						zlib.createGzip({ level: 6 }),
+						fs.createWriteStream(gzippedPath),
+					);
+
+					artifact.path = gzippedPath;
+				}
 			} catch (err) {
 				console.log(err);
-			}
-
-			if (!stat[artifact.type]()) {
-				throw new Error(`${artifact.path} does not satisfy ${artifact.type}`);
-			}
-
-			if (artifact.name === 'os.img' && !(await isGzip(artifact.path))) {
-				const str = progStream({
-					length: stat.size,
-					time: 100,
-				});
-				str.on('progress', progress => {
-					this.status({
-						message: 'Gzipping Image',
-						percentage: progress.percentage,
-						eta: progress.eta,
-					});
-				});
-
-				const gzippedPath = join(this.workdir, artifact.name);
-
-				await pipeline(
-					fs.createReadStream(artifact.path),
-					str,
-					zlib.createGzip({ level: 6 }),
-					fs.createWriteStream(gzippedPath),
-				);
-
-				artifact.path = gzippedPath;
 			}
 		}
 
@@ -132,7 +133,7 @@ module.exports = class Client extends PassThrough {
 			const struct = await getFilesFromDirectory(artifact.path, ignore);
 
 			const expand = await Promise.all(
-				struct.map(async entry => {
+				struct.map(async (entry) => {
 					return {
 						path: entry.replace(
 							join(artifact.path, '/'),
@@ -179,13 +180,13 @@ module.exports = class Client extends PassThrough {
 
 				if (artifact.type === 'isDirectory' || artifact.type === 'isFile') {
 					metadata.stream = tar.pack(dirname(artifact.path), {
-						ignore: function(name) {
-							return ignore.some(value => {
+						ignore: function (name) {
+							return ignore.some((value) => {
 								const re = new RegExp(`.*${value}.*`);
 								return re.test(name);
 							});
 						},
-						map: function(header) {
+						map: function (header) {
 							header.name = header.name.replace(
 								basename(artifact.path),
 								artifact.name,
@@ -216,23 +217,27 @@ module.exports = class Client extends PassThrough {
 					},
 				});
 
-				req.on('end', resolve).on('error', reject)
+				req.on('end', resolve).on('error', reject);
 
 				// We need to record the end of our pipe, so we can unpipe in case cache will be used
 				const pipeEnd = zlib.createGzip({ level: 6 });
 				const line = pipeline(metadata.stream, str, pipeEnd)
 					.delay(1000)
-					.catch(error => {throw error});
+					.catch((error) => {
+						throw error;
+					});
 				pipeEnd.pipe(req);
 
 				req.on('response', function (response) {
-					if (Math.floor(response.statusCode / 100) != 2) {
-						reject(new Error('request failed with status: ' + response.statusCode));
+					if (Math.floor(response.statusCode / 100) !== 2) {
+						reject(
+							new Error('request failed with status: ' + response.statusCode),
+						);
 						req.abort();
 					}
 				});
 
-				req.on('data', async data => {
+				req.on('data', async (data) => {
 					const computedLine = RegExp('^([a-z]*): (.*)').exec(data.toString());
 
 					if (computedLine != null && computedLine[1] === 'error') {
@@ -247,7 +252,7 @@ module.exports = class Client extends PassThrough {
 									percentage: 0,
 								});
 
-								str.on('progress', progress => {
+								str.on('progress', (progress) => {
 									this.status({
 										message: 'Uploading',
 										percentage: progress.percentage,
@@ -274,7 +279,7 @@ module.exports = class Client extends PassThrough {
 					}
 				});
 			});
-		await uploadOperation()
+		await uploadOperation();
 	}
 
 	run() {
@@ -289,13 +294,13 @@ module.exports = class Client extends PassThrough {
 			});
 
 			let capturedError = null;
-			const wsMessageHandler = ws => async pkg => {
+			const wsMessageHandler = (wsConnection) => async (pkg) => {
 				try {
 					const { type, data } = JSON.parse(pkg);
 
 					switch (type) {
 						case 'upload':
-							const { name, id, token, attempt} = data;
+							const { name, id, token, attempt } = data;
 
 							const artifact = {
 								name,
@@ -332,14 +337,13 @@ module.exports = class Client extends PassThrough {
 							process.send({ type, data });
 							break;
 						case 'status':
-							if (data.message === `Flashing`){
-								this.log(`Flashing: ${data.percentage}%`)
-							}
-							else if (!data.success) {
-								this.log(`Test suite has exited with: FAIL`)
+							if (data.message === `Flashing`) {
+								this.log(`Flashing: ${data.percentage}%`);
+							} else if (!data.success) {
+								this.log(`Test suite has exited with: FAIL`);
 								process.exitCode = 2;
 							} else {
-								this.log(`Test suite has exited with: PASS`)
+								this.log(`Test suite has exited with: PASS`);
 							}
 							break;
 						case 'error':
@@ -352,29 +356,29 @@ module.exports = class Client extends PassThrough {
 					}
 				} catch (e) {
 					capturedError = e;
-					ws.close();
+					wsConnection.close();
 				}
 			};
 
 			const createWs = () =>
 				new Promise((resolve, reject) => {
-					const ws = new WebSocket(`ws://${this.uri.host}/start`);
+					const wsConnection = new WebSocket(`ws://${this.uri.host}/start`);
 
-					const msgHandler = wsMessageHandler(ws);
-					ws.on('message', msgHandler);
+					const msgHandler = wsMessageHandler(wsConnection);
+					wsConnection.on('message', msgHandler);
 
-					const initialErrorHandler = e => {
-						ws.off('ping', initialPingHandler);
+					const initialErrorHandler = (e) => {
+						wsConnection.off('ping', initialPingHandler);
 						reject(e);
 					};
 					const initialPingHandler = () => {
-						ws.pong('heartbeat');
-						ws.off('error', reject);
-						resolve(ws);
+						wsConnection.pong('heartbeat');
+						wsConnection.off('error', reject);
+						resolve(wsConnection);
 					};
 
-					ws.once('error', initialErrorHandler);
-					ws.once('ping', initialPingHandler);
+					wsConnection.once('error', initialErrorHandler);
+					wsConnection.once('ping', initialPingHandler);
 				});
 
 			// Try establishing the WS multiple times.
@@ -383,7 +387,7 @@ module.exports = class Client extends PassThrough {
 			// Keep the websocket alive
 			ws.on('ping', () => ws.pong('heartbeat'));
 
-			process.stdin.on('data', data => {
+			process.stdin.on('data', (data) => {
 				ws.send(
 					JSON.stringify({
 						type: 'input',
@@ -398,7 +402,7 @@ module.exports = class Client extends PassThrough {
 					reject(capturedError);
 				}
 
-				ws.on('error', e => {
+				ws.on('error', (e) => {
 					this.log(`WS connection error: ${e.name} ${e.message}`);
 					reject(e);
 				});
@@ -415,7 +419,7 @@ module.exports = class Client extends PassThrough {
 		};
 
 		return main(...arguments)
-			.catch(async error => {
+			.catch(async (error) => {
 				process.exitCode = 1;
 				this.log(`Child ${process.pid} got an error:`);
 				this.log(error.stack);
