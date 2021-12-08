@@ -20,16 +20,13 @@ export class TransportStub extends Emitter {
 		this.emit('write', buffer);
 	}
 
-	public record(): Array<number> {
+	public record(): number[] {
 		return Array.from(Buffer.concat(this.recorded));
 	}
 }
 
-export function comparePinStates(
-	a: Array<Pins> | undefined,
-	b: Array<Pins> | undefined,
-) {
-	let difference: Array<{ index: number; pin: Pins }> = [];
+export function comparePinStates(a: Pins[] | undefined, b: Pins[] | undefined) {
+	const difference: Array<{ index: number; pin: Pins }> = [];
 
 	if (a != null && b != null) {
 		if (a.length !== b.length) {

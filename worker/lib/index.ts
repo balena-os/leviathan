@@ -3,7 +3,7 @@ import { ChildProcess, spawn } from 'child_process';
 import { multiWrite } from 'etcher-sdk';
 import * as express from 'express';
 import * as http from 'http';
-const { getSdk } = require('balena-sdk');
+import { getSdk } from 'balena-sdk';
 import { Readable } from 'stream';
 
 import {
@@ -16,7 +16,7 @@ import QemuWorker from './workers/qemu';
 
 const workersDict: Dictionary<typeof TestBotWorker | typeof QemuWorker> = {
 	testbot_hat: TestBotWorker,
-  qemu: QemuWorker,
+	qemu: QemuWorker,
 };
 
 async function setup(): Promise<express.Application> {
@@ -48,35 +48,36 @@ async function setup(): Promise<express.Application> {
 		},
 	};
 
-
-	const supportedTags = [
-		`dut`,
-		`screencapture`,
-		`modem`,
-	]
+	const supportedTags = [`dut`, `screencapture`, `modem`];
 	// parse labels and create 'contract'
-	let contract: any = {
+	const contract: any = {
 		uuid: process.env.BALENA_DEVICE_UUID,
-		workerType: process.env.WORKER_TYPE
-	}
+		workerType: process.env.WORKER_TYPE,
+	};
 	const balena = getSdk({
-		apiUrl: "https://api.balena-cloud.com/"
-	});	
-	if(typeof process.env.BALENA_API_KEY === 'string' && typeof process.env.BALENA_DEVICE_UUID === 'string'){
+		apiUrl: 'https://api.balena-cloud.com/',
+	});
+	if (
+		typeof process.env.BALENA_API_KEY === 'string' &&
+		typeof process.env.BALENA_DEVICE_UUID === 'string'
+	) {
 		await balena.auth.loginWithToken(process.env.BALENA_API_KEY);
-		const tags = await balena.models.device.tags.getAllByDevice(process.env.BALENA_DEVICE_UUID);
-		for(let tag of tags){
-			if(supportedTags.includes(tag.tag_key)){
-				if(tag.value === "true")
-					contract[tag.tag_key] = true
-				else
-					contract[tag.tag_key] = tag.value
+		const tags = await balena.models.device.tags.getAllByDevice(
+			process.env.BALENA_DEVICE_UUID,
+		);
+		for (const tag of tags) {
+			if (supportedTags.includes(tag.tag_key)) {
+				if (tag.value === 'true') {
+					contract[tag.tag_key] = true;
+				} else {
+					contract[tag.tag_key] = tag.value;
+				}
 			}
 		}
 	} else {
-		console.log(`API key not available...`)
+		console.log(`API key not available...`);
 	}
-	
+
 	await worker.setup();
 
 	/**
@@ -194,7 +195,7 @@ async function setup(): Promise<express.Application> {
 		) => {
 			try {
 				await worker.captureScreen('stop');
-				res.send('OK')
+				res.send('OK');
 			} catch (err) {
 				next(err);
 			}
@@ -213,7 +214,7 @@ async function setup(): Promise<express.Application> {
 			// Glider has been removed from the worker, since the old proxy tests were always
 			// passing even without a working proxy, they were invalid.
 			// New proxy tests install glider in a container on the DUT and don't use this endpoint.
-			console.warn(`proxy endpoint has been deprecated, returning localhost`)
+			console.warn(`proxy endpoint has been deprecated, returning localhost`);
 			try {
 				if (req.body.port != null) {
 					res.send('127.0.0.1');
@@ -241,7 +242,7 @@ async function setup(): Promise<express.Application> {
 			}
 		},
 	);
-	app.use(function(
+	app.use(function (
 		err: Error,
 		_req: express.Request,
 		res: express.Response,

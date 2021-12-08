@@ -104,7 +104,7 @@ describe('API', async () => {
 			});
 
 		expect(res).to.have.status(200);
-		spies.forEach(spy => {
+		spies.forEach((spy) => {
 			expect(spy.callCount).to.be.equal(1);
 		});
 	});
@@ -115,13 +115,10 @@ describe('API', async () => {
 			mockWorker.network.mock('removeWirelessConnection'),
 		];
 
-		const res = await chai
-			.request(app)
-			.post('/dut/network')
-			.send({});
+		const res = await chai.request(app).post('/dut/network').send({});
 
 		expect(res).to.have.status(200);
-		spies.forEach(spy => {
+		spies.forEach((spy) => {
 			expect(spy.callCount).to.be.equal(1);
 		});
 	});
@@ -141,7 +138,7 @@ describe('API', async () => {
 
 		expect(res.text).to.be.equal('Wireless configuration incomplete');
 		expect(res).to.have.status(500);
-		spies.forEach(spy => {
+		spies.forEach((spy) => {
 			expect(spy.callCount).to.be.equal(0);
 		});
 	});

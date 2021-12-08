@@ -106,7 +106,7 @@ describe('Testbot', () => {
 	});
 
 	it('should show correct FLASH pin state', async () => {
-		await withFile(async file => {
+		await withFile(async (file) => {
 			ImportMock.mockFunction(
 				helpers,
 				'getDrive',
