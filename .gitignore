@@ -10,8 +10,8 @@ coverage
 core/Dockerfile
 worker/Dockerfile
 
-# docker-compose script is downloaded if binary is not installed
-docker-compose
+# binaries may be download by the makefile if missing
+bin/
 
 # emulated balena build will install qemu binaries here
 **/.balena
