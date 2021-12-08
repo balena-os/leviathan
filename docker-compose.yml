@@ -8,8 +8,8 @@ services:
     privileged: true
     build:
       context: ./core
-      ports:
-        - "80:80"
+    ports:
+      - "80:80"
     volumes:
       - 'core-storage:/data'
       - 'reports-storage:/reports'
