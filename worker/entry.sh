@@ -1,3 +1,2 @@
-#!/bin/bash
-
-npm start
+#!/bin/sh
+node ./build/bin
