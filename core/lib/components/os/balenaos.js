@@ -129,9 +129,7 @@ async function isGzip(filePath) {
 }
 
 function id() {
-	return `${Math.random()
-		.toString(36)
-		.substring(2, 10)}`;
+	return `${Math.random().toString(36).substring(2, 10)}`;
 }
 
 module.exports = class BalenaOS {
@@ -147,7 +145,7 @@ module.exports = class BalenaOS {
 		};
 		this.configJson = options.configJson || {};
 		this.contract = {
-			network: mapValues(this.network, value => {
+			network: mapValues(this.network, (value) => {
 				return typeof value === 'boolean' ? value : true;
 			}),
 		};
@@ -163,7 +161,7 @@ module.exports = class BalenaOS {
 	 * @category helper
 	 */
 	async fetch() {
-		if(process.env.DEBUG_KEEP_IMG){
+		if (process.env.DEBUG_KEEP_IMG) {
 			this.logger.log('[DEBUG] Skip unpacking image');
 		} else {
 			this.logger.log(`Unpacking the file: ${this.image.input}`);
@@ -243,7 +241,7 @@ module.exports = class BalenaOS {
 	 * @category helper
 	 */
 	async configure() {
-		if(process.env.DEBUG_KEEP_IMG){
+		if (process.env.DEBUG_KEEP_IMG) {
 			this.logger.log('[DEBUG] Skip configuring image');
 		} else {
 			await this.readOsRelease();

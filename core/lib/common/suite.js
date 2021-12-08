@@ -51,7 +51,6 @@ const Context = require('./context');
 const State = require('./state');
 const Teardown = require('./teardown');
 const Test = require('./test');
-const utils = require('./utils');
 
 function cleanObject(object) {
 	if (!isObject(object)) {
@@ -125,8 +124,8 @@ class Suite {
 			this.rootTree = this.resolveTestTree(
 				path.join(config.get('leviathan.uploads.suite'), 'suite'),
 			);
-			this.testSummary.suite = this.rootTree.title
-		}).catch(async error => {
+			this.testSummary.suite = this.rootTree.title;
+		}).catch(async (error) => {
 			await this.removeDependencies();
 			await this.removeDownloads();
 			throw error;
@@ -149,9 +148,9 @@ class Suite {
 				(deviceType != null && !ajv.compile(deviceType)(this.deviceType)) ||
 				(os != null &&
 					this.context.get().os != null &&
-					!ajv.compile(os)(this.context.get().os.contract) ||
+					!ajv.compile(os)(this.context.get().os.contract)) ||
 				(workerContract != null &&
-					this.context.get().workerContract != null) &&
+					this.context.get().workerContract != null &&
 					!ajv.compile(workerContract)(this.context.get().workerContract))
 			) {
 				return;
@@ -167,7 +166,7 @@ class Suite {
 					buffered: false,
 					bail: true,
 				},
-				async t => {
+				async (t) => {
 					if (run != null) {
 						try {
 							await Reflect.apply(Bluebird.method(run), test, [t]);
@@ -206,7 +205,7 @@ class Suite {
 			await this.createJsonSummary();
 			await this.removeDependencies();
 			// This env variable can be used to keep a configured, unpacked image for use when developing tests
-			if(process.env.DEBUG_KEEP_IMG !== true){
+			if (process.env.DEBUG_KEEP_IMG !== true) {
 				await this.removeDownloads();
 			}
 			this.state.log(`Teardown complete.`);
@@ -317,7 +316,7 @@ class Suite {
 		process.exit(128);
 	});
 
-	const messageHandler = message => {
+	const messageHandler = (message) => {
 		const { action } = message;
 
 		if (action === 'reconnect') {

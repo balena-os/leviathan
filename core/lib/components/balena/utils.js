@@ -49,7 +49,7 @@ const waitProgressCompletion = async (
 	_times = 20,
 	_delay = 30000,
 ) => {
-	const _waitProgressCompletion = async timesR => {
+	const _waitProgressCompletion = async (timesR) => {
 		if (timesR === 0) {
 			throw new Error(`Progress for ${stepper} has timed out`);
 		}
@@ -65,10 +65,10 @@ const waitProgressCompletion = async (
 		if (
 			flow([
 				zip,
-				filter(pair => {
+				filter((pair) => {
 					return !isEqual(pair, [null, null]);
 				}),
-				every(pair => {
+				every((pair) => {
 					return (
 						isNumber(pair[1]) && isNumber(pair[0]) && pair[1] - pair[0] === 0
 					);
@@ -93,12 +93,7 @@ module.exports = class DeviceApplicationActionable {
 	async init({ url, sdk, path }) {
 		this.sdk = sdk;
 		this.url = url;
-		this.path = join(
-			path,
-			Math.random()
-				.toString(36)
-				.substring(2, 10),
-		);
+		this.path = join(path, Math.random().toString(36).substring(2, 10));
 
 		return this.setChain({ clone: this.clone.bind(this) });
 	}
@@ -140,7 +135,7 @@ module.exports = class DeviceApplicationActionable {
 	async push(branch, remote) {
 		if (remote != null) {
 			if (
-				(await git(this.path).getRemotes()).some(r => {
+				(await git(this.path).getRemotes()).some((r) => {
 					return r.name === remote.name;
 				})
 			) {

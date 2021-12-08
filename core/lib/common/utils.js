@@ -50,13 +50,13 @@ const printInstructionsSet = (title, instructions) => {
 
 	console.log(`==== ${title}`);
 
-	forEach(instructions, instruction => {
+	forEach(instructions, (instruction) => {
 		console.log(`- ${instruction}`);
 	});
 };
 
-const getSSHClientDisposer = config => {
-	const createSSHClient = conf => {
+const getSSHClientDisposer = (config) => {
+	const createSSHClient = (conf) => {
 		return Bluebird.resolve(
 			new SSH().connect(
 				assignIn(
@@ -70,7 +70,7 @@ const getSSHClientDisposer = config => {
 		);
 	};
 
-	return createSSHClient(config).disposer(client => {
+	return createSSHClient(config).disposer((client) => {
 		client.dispose();
 	});
 };
@@ -86,9 +86,9 @@ module.exports = {
 	 * @category helper
 	 */
 	executeCommandOverSSH: async (command, config) => {
-		return Bluebird.using(getSSHClientDisposer(config), client => {
+		return Bluebird.using(getSSHClientDisposer(config), (client) => {
 			return new Bluebird(async (resolve, reject) => {
-				client.connection.on('error', err => {
+				client.connection.on('error', (err) => {
 					reject(err);
 				});
 				resolve(
@@ -115,7 +115,7 @@ module.exports = {
 		_times = 20,
 		_delay = 30000,
 	) => {
-		const _waitUntil = async timesR => {
+		const _waitUntil = async (timesR) => {
 			if (timesR === 0) {
 				throw new Error(`Condition ${promise} timed out`);
 			}
@@ -137,7 +137,7 @@ module.exports = {
 
 		await _waitUntil(_times);
 	},
-	runManualTestCase: async testCase => {
+	runManualTestCase: async (testCase) => {
 		// Some padding space to make it easier to the eye
 		await Bluebird.delay(50);
 		printInstructionsSet('PREPARE', testCase.prepare);
@@ -156,14 +156,14 @@ module.exports = {
 			])
 		).result;
 	},
-	getDeviceUptime: async connection => {
+	getDeviceUptime: async (connection) => {
 		const start = process.hrtime()[0];
 		const uptime = await connection("cut -d ' ' -f 1 /proc/uptime");
 
 		return Number(uptime) - (start - process.hrtime()[0]);
 	},
-	clearHandlers: events => {
-		forEach(events, event => {
+	clearHandlers: (events) => {
+		forEach(events, (event) => {
 			process.on(event, noop);
 		});
 	},
@@ -186,7 +186,7 @@ module.exports = {
 		const content = await fs.readFile(filePath, 'utf-8');
 		return fs.writeFile(filePath, replace(content, regex, replacer), 'utf-8');
 	},
-	createSSHKey: keyPath => {
+	createSSHKey: (keyPath) => {
 		return fs
 			.access(path.dirname(keyPath))
 			.then(async () => {

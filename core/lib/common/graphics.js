@@ -42,7 +42,7 @@
 
 function median(data) {
 	const mdarr = data.slice(0);
-	mdarr.sort(function(a, b) {
+	mdarr.sort(function (a, b) {
 		return a - b;
 	});
 	if (mdarr.length % 2 === 0) {
@@ -119,7 +119,7 @@ function bmvbHashEven(data, bits) {
 const oneBits = [0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4];
 
 module.exports = {
-	hammingDistance: function(hashA, hashB) {
+	hammingDistance: function (hashA, hashB) {
 		let d = 0;
 
 		if (hashA.length !== hashB.length) {
@@ -135,7 +135,7 @@ module.exports = {
 	},
 	// This is a perceptual image hash calculation tool based on algorithm descibed
 	// in Block Mean Value Based Image Perceptual Hashing by Bian Yang, Fan Gu and Xiamu Niu.
-	blockhash: function(data, bits = 8) {
+	blockhash: function (data, bits = 8) {
 		const result = [];
 
 		let weightTop, weightBottom, weightLeft, weightRight;
