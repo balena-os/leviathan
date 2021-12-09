@@ -7,3 +7,4 @@
 
 reports/
 saved-images/
+!config.example.js
