@@ -64,7 +64,7 @@ module.exports = [
 				organization: process.env.BALENACLOUD_ORG
 		},
 		image: `${__dirname}/balena.img.gz`,
-		// To run on a Qemu worker
+		// Worker configuration to run the QEMU worker
 		workers: ['http://localhost/']
 	}
 ];
