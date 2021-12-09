@@ -22,6 +22,7 @@ module.exports = {
 		{
 			title: 'Power cycling the DUT',
 			run: async function(test) {
+			if (await this.context.get().worker.diagnostics().worker === 'testbot') {
 				await this.context.get().worker.on();
 				await delay(4 * 1000); // Wait 4s before measuring Vout.
 				const maxDeviation = 0.15; // 8%
@@ -56,6 +57,23 @@ module.exports = {
 
 				await this.context.get().worker.off();
 				test.true(true, 'Device should be able to power cycle properly.');
+				} 
+						else if (await this.context.get().worker.diagnostics().worker === 'qemu') {
+							await this.context.get().worker.on();
+							this.log('Waiting for device to be reachable');
+							test.equal(
+								await this.context
+									.get()
+									.worker.executeCommandInHostOS(
+										'cat /etc/hostname',
+										this.context.get().link,
+									),
+								this.context.get().link.split('.')[0],
+								'Device should be reachable',
+							);
+							await this.context.get().worker.off();
+				test.true(true, 'Device should be able to power cycle properly.');
+						}
 			},
 		},
 	],
