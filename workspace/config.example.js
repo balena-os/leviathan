@@ -34,6 +34,7 @@ module.exports = [
 			apiKey: process.env.BALENA_CLOUD_API_KEY
 		}
 	},
+	// 
 	// {
 	// 	deviceType: "raspberrypi3",
 	// 	suite: `${__dirname}/../suites/os`,
@@ -52,6 +53,8 @@ module.exports = [
 	// 		apiKey: process.env.BALENA_CLOUD_API_KEY
 	// 	}
 	// },
+	// 
+	// 	
 	// {
 	// 	deviceType: "raspberrypi3",
 	// 	suite: `${__dirname}/../suites/hup`,
@@ -68,6 +71,8 @@ module.exports = [
 	// 	// https://balena-os.github.io/leviathan/pages/Getting-Started/config-reference.html#different-workers-configurations-available
 	// 	workers: ['https://123213bda32048sgd5dfw223423723324.balena-devices.com/']
 	// },
+	// 
+	// 
 	// {
 	// 	deviceType: "genericx86-64-ext",
 	// 	suite: `${__dirname}/../suites/os`,

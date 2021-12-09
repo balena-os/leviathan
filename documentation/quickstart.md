@@ -16,13 +16,13 @@ Check the {@page Config.js Reference | Config.js reference} for more examples.
 
 ## Start your first test run
 
-- For the first test run, we will be running the e2e test suite. Make sure the the `suite` property in your config.js is pointing to the e2e suites directory like:
+- For the first test run, we will be running the [e2e test suite](https://github.com/balena-os/leviathan/tree/master/suites/e2e). Make sure the the `suite` property in your config.js is pointing to the e2e suites directory like:
 
 ```JS
 suite: `${__dirname}/../suites/e2e`,
 ```
 
-- [Optional] Set the image property to the `false` in the config.json file. The e2e test won't be needing a image upload to testbot. 
+- [Optional] Set the image property to the `false` in the config.json file if you don't wish to provide a balenaOS image. The e2e test won't explicitly be needing a balenaOS image to run the test. 
 
 - To start a test run, run the following command:
 
@@ -30,13 +30,14 @@ suite: `${__dirname}/../suites/e2e`,
 make test
 ```
 
-- If the test ran successfully, then your testbot is set up correctly and ready to run more tests.
+- The logs will start streaming on the terminal for the test run. Wait for the test scenario to run and check the device logs on the dashboard in the meantime. If the test finished successfully without any errors, then your testbot is set up correctly and ready to run more tests.
 
-## Let's run some more tests
+## Let's run some "real" tests
 
-Use the tests now from [meta-balena](https://github.com/balena-os/meta-balena/tree/master/tests/suites) instead. The OS test suite is recommended as it works with the least configuration.
+We will start with a test run of the [balenaOS unmanaged testing suite](https://github.com/balena-os/meta-balena/tree/master/tests/suites). To get the tests clone the meta-balena repository and:
 
-- Either copy the OS test suite to the `workspace` directory or point the `suite` property to the path of the OS test suite in meta-balena.
+- Either copy the OS test suite from meta-balena to the `workspace` directory 
+- or point the `suite` property to the path of the OS test suite in the meta-balena directory.
 - Extract the image you want to test to `./leviathan/workspace` and rename it to `balena.img`. You can downloaded unmanaged image from [balena.io/os](balena.io/os).
 
 ```js

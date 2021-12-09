@@ -92,27 +92,28 @@
 					<h2>Start your first test run</h2>
 				</a>
 				<ul>
-					<li>For the first test run, we will be running the e2e test suite. Make sure the the <code>suite</code> property in your config.js is pointing to the e2e suites directory like:</li>
+					<li>For the first test run, we will be running the <a href="https://github.com/balena-os/leviathan/tree/master/suites/e2e">e2e test suite</a>. Make sure the the <code>suite</code> property in your config.js is pointing to the e2e suites directory like:</li>
 				</ul>
-				<pre><code class="language-JS"><span style="color: #C8C8C8">suite</span><span style="color: #D4D4D4">: </span><span style="color: #CE9178">`</span><span style="color: #569CD6">${</span><span style="color: #9CDCFE">__dirname</span><span style="color: #569CD6">}</span><span style="color: #CE9178">/../suites/e2e`</span><span style="color: #D4D4D4">,</span>
+				<pre><code class="language-JS"><span style="color: #002339">suite: </span><span style="color: #A44185">`${</span><span style="color: #2F86D2">__dirname</span><span style="color: #A44185">}/../suites/e2e`</span><span style="color: #002339">,</span>
 </code></pre>
 				<ul>
-					<li><p>[Optional] Set the image property to the <code>false</code> in the config.json file. The e2e test won&#39;t be needing a image upload to testbot. </p>
+					<li><p>[Optional] Set the image property to the <code>false</code> in the config.json file if you don&#39;t wish to provide a balenaOS image. The e2e test won&#39;t explicitly be needing a balenaOS image to run the test. </p>
 					</li>
 					<li><p>To start a test run, run the following command:</p>
 					</li>
 				</ul>
-				<pre><code><span style="color: #9CDCFE">make</span><span style="color: #D4D4D4"> </span><span style="color: #9CDCFE">test</span>
+				<pre><code><span style="color: #2F86D2">make</span><span style="color: #002339"> </span><span style="color: #2F86D2">test</span>
 </code></pre>
 				<ul>
-					<li>If the test ran successfully, then your testbot is set up correctly and ready to run more tests.</li>
+					<li>The logs will start streaming on the terminal for the test run. Wait for the test scenario to run and check the device logs on the dashboard in the meantime. If the test finished successfully without any errors, then your testbot is set up correctly and ready to run more tests.</li>
 				</ul>
-				<a href="#let39s-run-some-more-tests" id="let39s-run-some-more-tests" style="color: inherit; text-decoration: none;">
-					<h2>Let&#39;s run some more tests</h2>
+				<a href="#let39s-run-some-quotrealquot-tests" id="let39s-run-some-quotrealquot-tests" style="color: inherit; text-decoration: none;">
+					<h2>Let&#39;s run some &quot;real&quot; tests</h2>
 				</a>
-				<p>Use the tests now from <a href="https://github.com/balena-os/meta-balena/tree/master/tests/suites">meta-balena</a> instead. The OS test suite is recommended as it works with the least configuration.</p>
+				<p>We will start with a test run of the <a href="https://github.com/balena-os/meta-balena/tree/master/tests/suites">balenaOS unmanaged testing suite</a>. To get the tests clone the meta-balena repository and:</p>
 				<ul>
-					<li>Either copy the OS test suite to the <code>workspace</code> directory or point the <code>suite</code> property to the path of the OS test suite in meta-balena.</li>
+					<li>Either copy the OS test suite from meta-balena to the <code>workspace</code> directory </li>
+					<li>or point the <code>suite</code> property to the path of the OS test suite in the meta-balena directory.</li>
 					<li>Extract the image you want to test to <code>./leviathan/workspace</code> and rename it to <code>balena.img</code>. You can downloaded unmanaged image from <a href="balena.io/os">balena.io/os</a>.</li>
 				</ul>
 				<pre><code class="language-js"><span style="color: #DC3EB7">module</span><span style="color: #002339">.</span><span style="color: #DC3EB7">exports</span><span style="color: #002339"> </span><span style="color: #7B30D0">=</span><span style="color: #002339"> {</span>
@@ -180,40 +181,40 @@
 						<a href="../../modules.html">Modules</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../../modules/archiver.html">Archiver</a>
+						<a href="../../modules/Archiver.html">Archiver</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../../modules/context.html">Context</a>
+						<a href="../../modules/Context.html">Context</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../../modules/graphics.html">Graphics</a>
+						<a href="../../modules/Graphics.html">Graphics</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../../modules/leviathan_utility_helpers.html">Leviathan <wbr>Utility helpers</a>
+						<a href="../../modules/Leviathan_Utility_helpers.html">Leviathan <wbr>Utility helpers</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../../modules/leviathan_worker_helpers.html">Leviathan <wbr>Worker helpers</a>
+						<a href="../../modules/Leviathan_Worker_helpers.html">Leviathan <wbr>Worker helpers</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../../modules/state.html">State</a>
+						<a href="../../modules/State.html">State</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../../modules/teardown.html">Teardown</a>
+						<a href="../../modules/Teardown.html">Teardown</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../../modules/test.html">Test</a>
+						<a href="../../modules/Test.html">Test</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="../../modules/balena_git_helpers.html">balena git helpers</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../../modules/balenacli_helpers.html">balenaCLI helpers</a>
+						<a href="../../modules/balenaCLI_helpers.html">balenaCLI helpers</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../../modules/balenaos_helpers.html">balenaOS helpers</a>
+						<a href="../../modules/balenaOS_helpers.html">balenaOS helpers</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../../modules/balenasdk_helpers.html">balenaSDK helpers</a>
+						<a href="../../modules/balenaSDK_helpers.html">balenaSDK helpers</a>
 					</li>
 				</ul>
 			</nav>

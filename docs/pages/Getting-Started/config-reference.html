@@ -72,24 +72,7 @@
 				<a href="#configjs-reference" id="configjs-reference" style="color: inherit; text-decoration: none;">
 					<h1>Config.js Reference</h1>
 				</a>
-<<<<<<< HEAD
 				<p>Create the <code>config.js</code> file in the <code>workspace</code> directory using the <a href="https://github.com/balena-os/leviathan/blob/master/workspace/config.example.js">config.example.js</a> file. </p>
-				<pre><code class="language-js"><span style="color: #4EC9B0">module</span><span style="color: #D4D4D4">.</span><span style="color: #4EC9B0">exports</span><span style="color: #D4D4D4"> = {</span>
-<span style="color: #D4D4D4">    </span><span style="color: #9CDCFE">deviceType:</span><span style="color: #D4D4D4"> </span><span style="color: #CE9178">&#039;&lt;DUT device type, for example &quot;raspberrypi3-64&quot;&gt;&#039;</span><span style="color: #D4D4D4">,</span>
-<span style="color: #D4D4D4">    </span><span style="color: #9CDCFE">suite:</span><span style="color: #D4D4D4"> </span><span style="color: #CE9178">`</span><span style="color: #569CD6">${</span><span style="color: #9CDCFE">__dirname</span><span style="color: #569CD6">}</span><span style="color: #CE9178">/../suites/os`</span><span style="color: #D4D4D4">,</span>
-<span style="color: #D4D4D4">    </span><span style="color: #9CDCFE">config:</span><span style="color: #D4D4D4"> {</span>
-<span style="color: #D4D4D4">        </span><span style="color: #9CDCFE">networkWired:</span><span style="color: #D4D4D4"> </span><span style="color: #569CD6">false</span><span style="color: #D4D4D4">,</span>
-<span style="color: #D4D4D4">        </span><span style="color: #9CDCFE">networkWireless:</span><span style="color: #D4D4D4"> </span><span style="color: #569CD6">true</span><span style="color: #D4D4D4">,</span>
-<span style="color: #D4D4D4">        </span><span style="color: #9CDCFE">interactiveTests:</span><span style="color: #D4D4D4"> </span><span style="color: #569CD6">false</span><span style="color: #D4D4D4">,</span>
-<span style="color: #D4D4D4">        </span><span style="color: #9CDCFE">downloadVersion:</span><span style="color: #D4D4D4"> </span><span style="color: #CE9178">&#039;latest&#039;</span><span style="color: #D4D4D4">,</span>
-<span style="color: #D4D4D4">        </span><span style="color: #9CDCFE">balenaApiKey:</span><span style="color: #D4D4D4"> </span><span style="color: #9CDCFE">process</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">env</span><span style="color: #D4D4D4">.</span><span style="color: #4FC1FF">BALENACLOUD_API_KEY</span><span style="color: #D4D4D4">,</span>
-<span style="color: #D4D4D4">        </span><span style="color: #9CDCFE">balenaApiUrl:</span><span style="color: #D4D4D4"> </span><span style="color: #CE9178">&#039;balena-cloud.com&#039;</span><span style="color: #D4D4D4">,</span>
-<span style="color: #D4D4D4">        </span><span style="color: #9CDCFE">organization:</span><span style="color: #D4D4D4"> </span><span style="color: #9CDCFE">process</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">env</span><span style="color: #D4D4D4">.</span><span style="color: #4FC1FF">BALENACLOUD_ORG</span>
-<span style="color: #D4D4D4">    },</span>
-<span style="color: #D4D4D4">    </span><span style="color: #9CDCFE">image:</span><span style="color: #D4D4D4"> </span><span style="color: #CE9178">`</span><span style="color: #569CD6">${</span><span style="color: #9CDCFE">__dirname</span><span style="color: #569CD6">}</span><span style="color: #CE9178">/balena.img.gz`</span><span style="color: #D4D4D4">,</span>
-<span style="color: #D4D4D4">    </span><span style="color: #9CDCFE">workers:</span><span style="color: #D4D4D4"> [</span><span style="color: #CE9178">&#039;http://&lt;short UUID of your testbot in balenaCloud&gt;.local&#039;</span><span style="color: #D4D4D4">],</span>
-<span style="color: #D4D4D4">};</span>
-=======
 				<pre><code class="language-js"><span style="color: #DC3EB7">module</span><span style="color: #002339">.</span><span style="color: #DC3EB7">exports</span><span style="color: #002339"> </span><span style="color: #7B30D0">=</span><span style="color: #002339"> {</span>
 <span style="color: #002339">    deviceType: </span><span style="color: #A44185">&#039;&lt;DUT device type, for example &quot;raspberrypi3-64&quot;&gt;&#039;</span><span style="color: #002339">,</span>
 <span style="color: #002339">    suite: </span><span style="color: #A44185">`${</span><span style="color: #2F86D2">__dirname</span><span style="color: #A44185">}/../suites/os`</span><span style="color: #002339">,</span>
@@ -105,7 +88,6 @@
 <span style="color: #002339">    image: </span><span style="color: #A44185">`${</span><span style="color: #2F86D2">__dirname</span><span style="color: #A44185">}/balena.img.gz`</span><span style="color: #002339">,</span>
 <span style="color: #002339">    workers: [</span><span style="color: #A44185">&#039;http://&lt;short UUID of your testbot in balenaCloud&gt;.local&#039;</span><span style="color: #002339">],</span>
 <span style="color: #002339">};</span>
->>>>>>> patch: Change code theme in docs
 </code></pre>
 				<p>Information on properties in <code>config.js</code>:</p>
 				<ul>
@@ -115,17 +97,17 @@
 					<li><strong><code>balenaApiKey</code></strong> is the balenaCloud API key used when running the release suite. Ideally, you can add it as an environment variable and reference it with <code>process.env.BALENACLOUD_API_KEY</code>.</li>
 					<li><strong><code>balenaApiUrl</code></strong> is the balenaCloud environment you are targetting for your test suite. Production is <code>&#39;balena-cloud.com&#39;</code> and staging is <code>&#39;balena-staging.com&#39;</code>.</li>
 					<li><strong><code>organization</code></strong> is the balenaCloud organizations where test applications are created. Ideally, you can add it as an environment variable and reference it with <code>process.env.BALENACLOUD_ORG</code>.</li>
-					<li><strong><code>image</code></strong> is the absolute path to the balenaOS image that is flashed onto the Device Under Test (DUT). The image should be kept under the <code>workspace</code> directory. The path after <code>__dirname</code> in the config is a path relative to the workspace directory. Make sure to rename the image to balena.img. If you provide <code>balena.img</code> as your balenaOS image, then Leviathan will compress it for you in <code>gz</code> format. We recommend compressing beforehand, as it saves time. </li>
+					<li><strong><code>image</code></strong> is the absolute path to the balenaOS image that is flashed onto the Device Under Test (DUT). The image should be kept under the <code>workspace</code> directory. The path after <code>__dirname</code> in the config is a path relative to the workspace directory. Make sure to rename the image to balena.img. If you provide <code>balena.img</code> as your balenaOS image, then Leviathan will compress it for you in <code>gz</code> format. We recommend compressing beforehand, as it saves time.</li>
 				</ul>
 				<p><em>If you don&#39;t want to upload an image, set the image property to <code>false</code>. For example: To run the e2e test suite, you don&#39;t need to upload an image.</em></p>
 				<ul>
 					<li><strong><code>workers</code></strong> is the property where we specify precisely on which testbots the test suites will be executed on. You can specify this in multiple ways as per the requirement. </li>
-					<li><strong><code>downloadVersion</code></strong>: If you intend to download a balenaOS version for your tests, then you can use this property to specify the balenaOS version semver. The <code>fetchOS</code> helper will find and download the balenaOS image. To find the implementation, check <a href="https://github.com/balena-os/leviathan/blob/556ae5b52aacc28e72c42ca20413ed0e742126b3/core/lib/components/balena/sdk.js#L557">https://github.com/balena-os/leviathan/blob/556ae5b52aacc28e72c42ca20413ed0e742126b3/core/lib/components/balena/sdk.js#L557</a> </li>
+					<li><strong><code>downloadVersion</code></strong>: If you intend to download a balenaOS version for your tests, then you can use this property to specify the balenaOS version semver. The <code>fetchOS</code> helper will find and download the balenaOS image. To find the implementation, check <a href="https://github.com/balena-os/leviathan/blob/556ae5b52aacc28e72c42ca20413ed0e742126b3/core/lib/components/balena/sdk.js#L557">https://github.com/balena-os/leviathan/blob/556ae5b52aacc28e72c42ca20413ed0e742126b3/core/lib/components/balena/sdk.js#L557</a></li>
 				</ul>
 				<p><em>Deprecated Properties</em></p>
 				<ul>
 					<li><code>downloadType</code> configures where the OS will be staged for upload to testbot. <code>local</code> is the only available value for it at the moment</li>
-					<li><code>interactiveTests</code> If it&#39;s a semi-auto test or not. </li>
+					<li><code>interactiveTests</code> If it&#39;s a semi-auto test or not.</li>
 				</ul>
 				<a href="#different-workers-configurations-available" id="different-workers-configurations-available" style="color: inherit; text-decoration: none;">
 					<h3>Different <code>workers</code> configurations available</h3>
@@ -151,7 +133,7 @@
 				<ol start="4">
 					<li><strong>Specify Localhost for QEMU worker</strong> - When intending to test using a QEMU worker, then use the follow configuration.</li>
 				</ol>
-				<pre><code class="language-js"><span style="color: #C8C8C8">workers</span><span style="color: #D4D4D4">: [</span><span style="color: #CE9178">&#039;http://localhost&#039;</span><span style="color: #D4D4D4">],</span>
+				<pre><code class="language-js"><span style="color: #002339">workers: [</span><span style="color: #A44185">&#039;http://localhost&#039;</span><span style="color: #002339">],</span>
 </code></pre>
 				<a href="#configjs-examples" id="configjs-examples" style="color: inherit; text-decoration: none;">
 					<h3><code>config.js</code> Examples</h3>
@@ -317,40 +299,40 @@
 						<a href="../../modules.html">Modules</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../../modules/archiver.html">Archiver</a>
+						<a href="../../modules/Archiver.html">Archiver</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../../modules/context.html">Context</a>
+						<a href="../../modules/Context.html">Context</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../../modules/graphics.html">Graphics</a>
+						<a href="../../modules/Graphics.html">Graphics</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../../modules/leviathan_utility_helpers.html">Leviathan <wbr>Utility helpers</a>
+						<a href="../../modules/Leviathan_Utility_helpers.html">Leviathan <wbr>Utility helpers</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../../modules/leviathan_worker_helpers.html">Leviathan <wbr>Worker helpers</a>
+						<a href="../../modules/Leviathan_Worker_helpers.html">Leviathan <wbr>Worker helpers</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../../modules/state.html">State</a>
+						<a href="../../modules/State.html">State</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../../modules/teardown.html">Teardown</a>
+						<a href="../../modules/Teardown.html">Teardown</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../../modules/test.html">Test</a>
+						<a href="../../modules/Test.html">Test</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="../../modules/balena_git_helpers.html">balena git helpers</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../../modules/balenacli_helpers.html">balenaCLI helpers</a>
+						<a href="../../modules/balenaCLI_helpers.html">balenaCLI helpers</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../../modules/balenaos_helpers.html">balenaOS helpers</a>
+						<a href="../../modules/balenaOS_helpers.html">balenaOS helpers</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../../modules/balenasdk_helpers.html">balenaSDK helpers</a>
+						<a href="../../modules/balenaSDK_helpers.html">balenaSDK helpers</a>
 					</li>
 				</ul>
 			</nav>

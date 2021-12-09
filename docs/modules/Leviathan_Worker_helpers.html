@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>balenaCLI helpers | Leviathan Helpers</title>
+	<title>Leviathan Worker helpers | Leviathan Helpers</title>
 	<meta name="description" content="Documentation for Leviathan Helpers">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,10 +55,10 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="balenacli_helpers.html">balenaCLI helpers</a>
+					<a href="Leviathan_Worker_helpers.html">Leviathan Worker helpers</a>
 				</li>
 			</ul>
-			<h1>Module balenaCLI helpers</h1>
+			<h1>Module Leviathan Worker helpers</h1>
 		</div>
 	</div>
 </header>
@@ -68,28 +68,21 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<a href="#balenacli-helpers" id="balenacli-helpers" style="color: inherit; text-decoration: none;">
-							<h1>balenaCLI helpers</h1>
+						<a href="#worker-helpers" id="worker-helpers" style="color: inherit; text-decoration: none;">
+							<h1>Worker helpers</h1>
 						</a>
 					</div>
-					<p>balenaCLI helpers performs frequently executed tasks in order to keep things DRY.
-						For one-off commands, it&#39;s recommended to not use the helpers and instead directly use the
-					balenaCLI with the example explained below.</p>
+					<p>The worker class can be used to control the testbot hardware. In the <code>suite.js</code> file, you can
+						create an instance of it, and then use its methods to flash the DUT, power it on/off, and set up a
+					network AP for the DUT to connect to.</p>
 					<dl class="tsd-comment-tags">
 						<dt>example</dt>
-						<dd><p>The core service where the test suites run already has balenaCLI installed. There is no need to
-							initalise the <code>CLI</code> class to run/execute any CLI command inside the tests. Instead use</p>
-							<pre><code class="language-js"><span style="color: #0991B6">const</span><span style="color: #002339"> { </span><span style="color: #2F86D2">exec</span><span style="color: #002339"> } </span><span style="color: #7B30D0">=</span><span style="color: #002339"> </span><span style="color: #1AB394">require</span><span style="color: #002339">(</span><span style="color: #A44185">&quot;child_process&quot;</span><span style="color: #002339">);</span>
-<span style="color: #7B30D0">await</span><span style="color: #002339"> </span><span style="color: #7EB233">exec</span><span style="color: #002339">(</span><span style="color: #A44185">`balena push joystart --source .`</span><span style="color: #002339">)</span>
-</code></pre>
-							<p>To get output from the commands being exectued, use the callback</p>
-							<pre><code class="language-js"><span style="color: #0991B6">const</span><span style="color: #002339"> { </span><span style="color: #2F86D2">exec</span><span style="color: #002339"> } </span><span style="color: #7B30D0">=</span><span style="color: #002339"> </span><span style="color: #1AB394">require</span><span style="color: #002339">(</span><span style="color: #A44185">&quot;child_process&quot;</span><span style="color: #002339">);</span>
-<span style="color: #7B30D0">await</span><span style="color: #002339"> </span><span style="color: #7EB233">exec</span><span style="color: #002339">(</span><span style="color: #A44185">`balena logs alliance-fleet --service &quot;normandy-sr0&quot;`</span><span style="color: #002339">, (</span><span style="color: #B1108E">error</span><span style="color: #002339">, </span><span style="color: #B1108E">stdout</span><span style="color: #002339">, </span><span style="color: #B1108E">stderr</span><span style="color: #002339">) </span><span style="color: #0991B6">=&gt;</span><span style="color: #002339"> {</span>
-<span style="color: #002339">  </span><span style="color: #7B30D0">if</span><span style="color: #002339"> (</span><span style="color: #2F86D2">error</span><span style="color: #002339">) {</span>
-<span style="color: #002339">    </span><span style="color: #7B30D0">throw</span><span style="color: #002339"> </span><span style="color: #7B30D0">new</span><span style="color: #002339"> </span><span style="color: #2F86D2">error</span>
-<span style="color: #002339">  }</span>
-<span style="color: #002339">  </span><span style="color: #2F86D2">console</span><span style="color: #002339">.</span><span style="color: #7EB233">log</span><span style="color: #002339">(</span><span style="color: #2F86D2">stdout</span><span style="color: #002339">)</span>
-<span style="color: #002339">})</span>
+						<dd><pre><code class="language-js"><span style="color: #002339"> </span><span style="color: #0991B6">const</span><span style="color: #002339"> </span><span style="color: #2F86D2">Worker</span><span style="color: #002339"> </span><span style="color: #7B30D0">=</span><span style="color: #002339"> </span><span style="color: #000000">this</span><span style="color: #002339">.</span><span style="color: #7EB233">require</span><span style="color: #002339">(</span><span style="color: #A44185">&#039;common/worker&#039;</span><span style="color: #002339">);</span>
+<span style="color: #002339"> </span><span style="color: #000000">this</span><span style="color: #002339">.</span><span style="color: #2F86D2">suite</span><span style="color: #002339">.</span><span style="color: #2F86D2">context</span><span style="color: #002339">.</span><span style="color: #7EB233">set</span><span style="color: #002339">({</span>
+<span style="color: #002339">     worker: </span><span style="color: #7B30D0">new</span><span style="color: #002339"> </span><span style="color: #7EB233">Worker</span><span style="color: #002339">(</span><span style="color: #2F86D2">DEVICE_TYPE_SLUG</span><span style="color: #002339">, </span><span style="color: #000000">this</span><span style="color: #002339">.</span><span style="color: #7EB233">getLogger</span><span style="color: #002339">()), </span><span style="color: #357B42">// Add an instance of worker to the context</span>
+<span style="color: #002339"> });</span>
+<span style="color: #002339"> </span><span style="color: #0991B6">const</span><span style="color: #002339"> </span><span style="color: #2F86D2">Worker</span><span style="color: #002339"> </span><span style="color: #7B30D0">=</span><span style="color: #002339"> </span><span style="color: #000000">this</span><span style="color: #002339">.</span><span style="color: #7EB233">require</span><span style="color: #002339">(</span><span style="color: #A44185">&#039;common/worker&#039;</span><span style="color: #002339">);</span>
+<span style="color: #002339"> </span><span style="color: #0991B6">const</span><span style="color: #002339"> </span><span style="color: #2F86D2">worker</span><span style="color: #002339"> </span><span style="color: #7B30D0">=</span><span style="color: #002339"> </span><span style="color: #7B30D0">new</span><span style="color: #002339"> </span><span style="color: #7EB233">Worker</span><span style="color: #002339">(</span><span style="color: #2F86D2">DEVICE_TYPE_SLUG</span><span style="color: #002339">, </span><span style="color: #000000">this</span><span style="color: #002339">.</span><span style="color: #7EB233">getLogger</span><span style="color: #002339">())</span>
 </code></pre>
 						</dd>
 					</dl>
@@ -102,7 +95,7 @@
 						<section class="tsd-index-section ">
 							<h3>Classes</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/balenacli_helpers.export_.html" class="tsd-kind-icon">export&#61;</a></li>
+								<li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/Leviathan_Worker_helpers.export_.html" class="tsd-kind-icon">export&#61;</a></li>
 							</ul>
 						</section>
 					</div>
@@ -137,47 +130,47 @@
 						<a href="../modules.html">Modules</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="archiver.html">Archiver</a>
+						<a href="Archiver.html">Archiver</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="context.html">Context</a>
+						<a href="Context.html">Context</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="graphics.html">Graphics</a>
+						<a href="Graphics.html">Graphics</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="leviathan_utility_helpers.html">Leviathan <wbr>Utility helpers</a>
+						<a href="Leviathan_Utility_helpers.html">Leviathan <wbr>Utility helpers</a>
+					</li>
+					<li class="current tsd-kind-module">
+						<a href="Leviathan_Worker_helpers.html">Leviathan <wbr>Worker helpers</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="leviathan_worker_helpers.html">Leviathan <wbr>Worker helpers</a>
+						<a href="State.html">State</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="state.html">State</a>
+						<a href="Teardown.html">Teardown</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="teardown.html">Teardown</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="test.html">Test</a>
+						<a href="Test.html">Test</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="balena_git_helpers.html">balena git helpers</a>
 					</li>
-					<li class="current tsd-kind-module">
-						<a href="balenacli_helpers.html">balenaCLI helpers</a>
+					<li class=" tsd-kind-module">
+						<a href="balenaCLI_helpers.html">balenaCLI helpers</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="balenaos_helpers.html">balenaOS helpers</a>
+						<a href="balenaOS_helpers.html">balenaOS helpers</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="balenasdk_helpers.html">balenaSDK helpers</a>
+						<a href="balenaSDK_helpers.html">balenaSDK helpers</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-class tsd-parent-kind-module">
-						<a href="../classes/balenacli_helpers.export_.html" class="tsd-kind-icon">export&#61;</a>
+						<a href="../classes/Leviathan_Worker_helpers.export_.html" class="tsd-kind-icon">export&#61;</a>
 					</li>
 				</ul>
 			</nav>
