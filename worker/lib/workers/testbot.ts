@@ -102,6 +102,7 @@ class TestBotWorker extends EventEmitter implements Leviathan.Worker {
 
 	public async diagnostics() {
 		return {
+			worker: "testbot",
 			vout: await this.hatBoard.readVout(),
 			amperage: await this.hatBoard.readVoutAmperage(),
 			deviceVoltage: this.deviceInteractor.powerVoltage,

@@ -15,7 +15,6 @@
 'use strict';
 
 const { delay } = require('bluebird');
-const util = require('util');
 const fs = require('fs').promises;
 
 module.exports = {
