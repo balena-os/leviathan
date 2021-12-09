@@ -24,8 +24,9 @@ module.exports = [
 			organization: process.env.BALENA_CLOUD_ORG,
 		},
     
-		// balenaOS image that is uploaded to the testbot
-		image: `${__dirname}/balena.img`,
+		// If you don't want to upload an image, set the image property to
+		// image: `false`,
+		image: `false`,
 		
     // Worker configuration
     // Different ways to configure the worker:
@@ -46,6 +47,7 @@ module.exports = [
 				balenaApiUrl: 'balena-cloud.com',
 				organization: process.env.BALENACLOUD_ORG
 		},
+		// balenaOS image that is uploaded to the testbot
 		image: `${__dirname}/balena.img.gz`,
 		// Worker configuration
     // Different ways to configure the worker:
@@ -63,6 +65,7 @@ module.exports = [
 				balenaApiUrl: 'balena-cloud.com',
 				organization: process.env.BALENACLOUD_ORG
 		},
+		// balenaOS image that is uploaded to the testbot
 		image: `${__dirname}/balena.img.gz`,
 		// Worker configuration to run the QEMU worker
 		workers: ['http://localhost/']

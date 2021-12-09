@@ -54,7 +54,11 @@ async function getFilesFromDirectory(basePath, ignore = []) {
 }
 
 function makePath(p) {
-	return isAbsolute(p) ? p : join(process.cwd(), p);
+	try {
+		return isAbsolute(p) ? p : join(process.cwd(), p);
+	} catch (e) {
+		throw new Error(`Invalid path for file ${p}: ${e}`);
+	}
 }
 
 module.exports = class Client extends PassThrough {
@@ -81,9 +85,7 @@ module.exports = class Client extends PassThrough {
 
 	async handleArtifact(artifact, token, attempt) {
 		if (attempt > 1) {
-			this.log(
-				`Previously failed to upload artifact ${artifact.name} - retrying...`,
-			);
+			this.log(`Previously failed to upload artifact ${artifact.name} - retrying...`);
 		}
 		const ignore = ['node_modules'];
 
@@ -304,7 +306,7 @@ module.exports = class Client extends PassThrough {
 
 							const artifact = {
 								name,
-								id,
+								id
 							};
 
 							switch (id) {
@@ -313,6 +315,17 @@ module.exports = class Client extends PassThrough {
 									artifact.type = 'isDirectory';
 									break;
 								case 'image':
+									// [Hack] Upload a fake image if image is false
+									// Remove when https://github.com/balena-os/leviathan/issues/567 is resolved
+									if (image === "false") {
+										// Had to create fake image in home directory otherwise
+										// facing a permission issue since client root is read-only
+										const fakeImagePath = '/home/test-balena.img.gz'
+										await fs.writeFile(fakeImagePath, '');
+										artifact.path = makePath(fakeImagePath);
+										artifact.type = 'isFile';
+										break;
+									}
 									artifact.path = makePath(image);
 									artifact.type = 'isFile';
 									break;
@@ -357,7 +370,11 @@ module.exports = class Client extends PassThrough {
 					}
 				} catch (e) {
 					capturedError = e;
-					wsConnection.close();
+					// If you catch an here, then uncomment the following to debug:
+					console.log(`[WSHandlerError] ${e}`);
+					// The reason to not throw error is to let the WebSocket connection close gracefully
+					// throw new Error(`[WSHandlerError] ${e}`)
+					ws.close();
 				}
 			};
 
