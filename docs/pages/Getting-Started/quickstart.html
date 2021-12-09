@@ -115,24 +115,24 @@
 					<li>Either copy the OS test suite to the <code>workspace</code> directory or point the <code>suite</code> property to the path of the OS test suite in meta-balena.</li>
 					<li>Extract the image you want to test to <code>./leviathan/workspace</code> and rename it to <code>balena.img</code>. You can downloaded unmanaged image from <a href="balena.io/os">balena.io/os</a>.</li>
 				</ul>
-				<pre><code class="language-js"><span style="color: #4EC9B0">module</span><span style="color: #D4D4D4">.</span><span style="color: #4EC9B0">exports</span><span style="color: #D4D4D4"> = {</span>
-<span style="color: #D4D4D4">    </span><span style="color: #9CDCFE">deviceType:</span><span style="color: #D4D4D4"> </span><span style="color: #CE9178">&#039;&lt;DUT device type, for example &quot;raspberrypi3-64&quot;&gt;&#039;</span><span style="color: #D4D4D4">,</span>
-<span style="color: #D4D4D4">    </span><span style="color: #6A9955">// Multiple suites can be run on the same worker when specified as an array.</span>
-<span style="color: #D4D4D4">    </span><span style="color: #9CDCFE">suite:</span><span style="color: #D4D4D4"> </span><span style="color: #CE9178">`</span><span style="color: #569CD6">${</span><span style="color: #9CDCFE">__dirname</span><span style="color: #569CD6">}</span><span style="color: #CE9178">/../suites/os`</span><span style="color: #D4D4D4">,</span>
-<span style="color: #D4D4D4">    </span><span style="color: #9CDCFE">config:</span><span style="color: #D4D4D4"> {</span>
-<span style="color: #D4D4D4">        </span><span style="color: #9CDCFE">networkWired:</span><span style="color: #D4D4D4"> </span><span style="color: #569CD6">false</span><span style="color: #D4D4D4">,</span>
-<span style="color: #D4D4D4">        </span><span style="color: #9CDCFE">networkWireless:</span><span style="color: #D4D4D4"> </span><span style="color: #569CD6">true</span><span style="color: #D4D4D4">,</span>
-<span style="color: #D4D4D4">        </span><span style="color: #9CDCFE">downloadVersion:</span><span style="color: #D4D4D4"> </span><span style="color: #CE9178">&#039;latest&#039;</span><span style="color: #D4D4D4">,</span>
-<span style="color: #D4D4D4">        </span><span style="color: #9CDCFE">interactiveTests:</span><span style="color: #D4D4D4"> </span><span style="color: #569CD6">false</span><span style="color: #D4D4D4">,</span>
-<span style="color: #D4D4D4">        </span><span style="color: #9CDCFE">balenaApiKey:</span><span style="color: #D4D4D4"> </span><span style="color: #9CDCFE">process</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">env</span><span style="color: #D4D4D4">.</span><span style="color: #4FC1FF">BALENACLOUD_API_KEY</span><span style="color: #D4D4D4">,</span>
-<span style="color: #D4D4D4">        </span><span style="color: #9CDCFE">balenaApiUrl:</span><span style="color: #D4D4D4"> </span><span style="color: #CE9178">&#039;balena-cloud.com&#039;</span><span style="color: #D4D4D4">,</span>
-<span style="color: #D4D4D4">        </span><span style="color: #9CDCFE">organization:</span><span style="color: #D4D4D4"> </span><span style="color: #9CDCFE">process</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">env</span><span style="color: #D4D4D4">.</span><span style="color: #4FC1FF">BALENACLOUD_ORG</span>
-<span style="color: #D4D4D4">    },</span>
-<span style="color: #D4D4D4">    </span><span style="color: #9CDCFE">image:</span><span style="color: #D4D4D4"> </span><span style="color: #CE9178">`</span><span style="color: #569CD6">${</span><span style="color: #9CDCFE">__dirname</span><span style="color: #569CD6">}</span><span style="color: #CE9178">/balena.img`</span><span style="color: #D4D4D4">,</span>
-<span style="color: #D4D4D4">    </span><span style="color: #6A9955">// Make sure the public device URL is activated for the device</span>
-<span style="color: #D4D4D4">    </span><span style="color: #6A9955">// Read the reference guide to understand the multiple ways workers can be specified. </span>
-<span style="color: #D4D4D4">    </span><span style="color: #9CDCFE">workers:</span><span style="color: #D4D4D4"> [</span><span style="color: #CE9178">&#039;http://&lt;short UUID of your testbot in balenaCloud&gt;.local&#039;</span><span style="color: #D4D4D4">],</span>
-<span style="color: #D4D4D4">};</span>
+				<pre><code class="language-js"><span style="color: #DC3EB7">module</span><span style="color: #002339">.</span><span style="color: #DC3EB7">exports</span><span style="color: #002339"> </span><span style="color: #7B30D0">=</span><span style="color: #002339"> {</span>
+<span style="color: #002339">    deviceType: </span><span style="color: #A44185">&#039;&lt;DUT device type, for example &quot;raspberrypi3-64&quot;&gt;&#039;</span><span style="color: #002339">,</span>
+<span style="color: #002339">    </span><span style="color: #357B42">// Multiple suites can be run on the same worker when specified as an array.</span>
+<span style="color: #002339">    suite: </span><span style="color: #A44185">`${</span><span style="color: #2F86D2">__dirname</span><span style="color: #A44185">}/../suites/os`</span><span style="color: #002339">,</span>
+<span style="color: #002339">    config: {</span>
+<span style="color: #002339">        networkWired: </span><span style="color: #174781">false</span><span style="color: #002339">,</span>
+<span style="color: #002339">        networkWireless: </span><span style="color: #174781">true</span><span style="color: #002339">,</span>
+<span style="color: #002339">        downloadVersion: </span><span style="color: #A44185">&#039;latest&#039;</span><span style="color: #002339">,</span>
+<span style="color: #002339">        interactiveTests: </span><span style="color: #174781">false</span><span style="color: #002339">,</span>
+<span style="color: #002339">        balenaApiKey: </span><span style="color: #2F86D2">process</span><span style="color: #002339">.</span><span style="color: #2F86D2">env</span><span style="color: #002339">.</span><span style="color: #2F86D2">BALENACLOUD_API_KEY</span><span style="color: #002339">,</span>
+<span style="color: #002339">        balenaApiUrl: </span><span style="color: #A44185">&#039;balena-cloud.com&#039;</span><span style="color: #002339">,</span>
+<span style="color: #002339">        organization: </span><span style="color: #2F86D2">process</span><span style="color: #002339">.</span><span style="color: #2F86D2">env</span><span style="color: #002339">.</span><span style="color: #2F86D2">BALENACLOUD_ORG</span>
+<span style="color: #002339">    },</span>
+<span style="color: #002339">    image: </span><span style="color: #A44185">`${</span><span style="color: #2F86D2">__dirname</span><span style="color: #A44185">}/balena.img`</span><span style="color: #002339">,</span>
+<span style="color: #002339">    </span><span style="color: #357B42">// Make sure the public device URL is activated for the device</span>
+<span style="color: #002339">    </span><span style="color: #357B42">// Read the reference guide to understand the multiple ways workers can be specified. </span>
+<span style="color: #002339">    workers: [</span><span style="color: #A44185">&#039;http://&lt;short UUID of your testbot in balenaCloud&gt;.local&#039;</span><span style="color: #002339">],</span>
+<span style="color: #002339">};</span>
 </code></pre>
 				<blockquote>
 					<p>For QEMU workers, use localhost (<code>http://localhost</code>) instead of the <code>*.local</code> address for the <code>workers</code> property in the config.json file.</p>

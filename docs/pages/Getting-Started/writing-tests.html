@@ -82,16 +82,16 @@
 					<li><code>suite.js</code> - File where you can select what tests are run as part of the suite, and define your setup code to run before the tests start.</li>
 				</ul>
 				<p>Inside the tests folder, you can add the actual test logic. The recommended approach is to add a folder for each test (with an appropriate name), and inside, keep any assets associated with the test. The test can be written within a file called <code>index.js</code>. The tests folder will look something like:</p>
-				<pre><code class="language-bash"><span style="color: #D4D4D4">- tests</span>
-<span style="color: #D4D4D4">    - test-1</span>
-<span style="color: #D4D4D4">        - assets</span>
-<span style="color: #D4D4D4">        - index.js - the </span><span style="color: #DCDCAA">test</span><span style="color: #D4D4D4"> is written </span><span style="color: #C586C0">in</span><span style="color: #D4D4D4"> this file</span>
-<span style="color: #D4D4D4">    - test-2</span>
-<span style="color: #D4D4D4">        - assets</span>
-<span style="color: #D4D4D4">        - index.js</span>
-<span style="color: #D4D4D4">    - </span><span style="color: #DCDCAA">.</span>
-<span style="color: #D4D4D4">    - </span><span style="color: #DCDCAA">.</span>
-<span style="color: #D4D4D4">    - etc </span>
+				<pre><code class="language-bash"><span style="color: #002339">- tests</span>
+<span style="color: #002339">    - test-1</span>
+<span style="color: #002339">        - assets</span>
+<span style="color: #002339">        - index.js - the </span><span style="color: #1AB394">test</span><span style="color: #002339"> is written </span><span style="color: #7B30D0">in</span><span style="color: #002339"> this file</span>
+<span style="color: #002339">    - test-2</span>
+<span style="color: #002339">        - assets</span>
+<span style="color: #002339">        - index.js</span>
+<span style="color: #002339">    - </span><span style="color: #1AB394">.</span>
+<span style="color: #002339">    - </span><span style="color: #1AB394">.</span>
+<span style="color: #002339">    - etc </span>
 </code></pre>
 				<a href="#how-do-i-add-a-new-test" id="how-do-i-add-a-new-test" style="color: inherit; text-decoration: none;">
 					<h2>How do I add a new test?</h2>
@@ -108,13 +108,13 @@
 					<li>Inside this new directory, create an <code>index.js</code> file</li>
 					<li>Inside <code>index.js</code>, test logic lives (details about writing the test logic are explained in the next section)</li>
 					<li>Going back to the suite directory, navigate to <code>suite.js</code></li>
-					<li>Inside <code>suite.js</code>, towards the botton of the file, there will be an array named <code>tests</code>, add your new test to it like this:<pre><code class="language-js"><span style="color: #C8C8C8">tests</span><span style="color: #D4D4D4">: [</span>
-<span style="color: #D4D4D4"> </span><span style="color: #CE9178">&#039;./tests/fingerprint&#039;</span><span style="color: #D4D4D4">,</span>
-<span style="color: #D4D4D4"> </span><span style="color: #CE9178">&#039;./tests/led&#039;</span><span style="color: #D4D4D4">,</span>
-<span style="color: #D4D4D4"> </span><span style="color: #CE9178">&#039;./tests/config-json&#039;</span><span style="color: #D4D4D4">,</span>
-<span style="color: #D4D4D4"> </span><span style="color: #CE9178">&#039;./tests/connectivity&#039;</span><span style="color: #D4D4D4">,</span>
-<span style="color: #D4D4D4"> </span><span style="color: #CE9178">&#039;./tests/&lt;MY_NEw_TEST&gt;&#039;</span><span style="color: #D4D4D4">,</span>
-<span style="color: #D4D4D4"> ],</span>
+					<li>Inside <code>suite.js</code>, towards the botton of the file, there will be an array named <code>tests</code>, add your new test to it like this:<pre><code class="language-js"><span style="color: #002339">tests: [</span>
+<span style="color: #002339"> </span><span style="color: #A44185">&#039;./tests/fingerprint&#039;</span><span style="color: #002339">,</span>
+<span style="color: #002339"> </span><span style="color: #A44185">&#039;./tests/led&#039;</span><span style="color: #002339">,</span>
+<span style="color: #002339"> </span><span style="color: #A44185">&#039;./tests/config-json&#039;</span><span style="color: #002339">,</span>
+<span style="color: #002339"> </span><span style="color: #A44185">&#039;./tests/connectivity&#039;</span><span style="color: #002339">,</span>
+<span style="color: #002339"> </span><span style="color: #A44185">&#039;./tests/&lt;MY_NEw_TEST&gt;&#039;</span><span style="color: #002339">,</span>
+<span style="color: #002339"> ],</span>
 </code></pre>
 					</li>
 					<li>Ensure that any new dependencies used in your test are added to the <code>package.json</code></li>
@@ -125,28 +125,28 @@
 				<p>Tests must be written in node, and are ingested by a framework called <a href="https://node-tap.org/docs/api/asserts/">node-tap</a>.
 				To write a new test, inside <code>tests/&lt;MY_NEw_TEST&gt;/index.js</code> , we can use the following template (note that this file can contain a set of tests - you just have to have multiple objects in the <code>tests</code> array!)</p>
 				<p>Each test is an asychnronous function, assigned to the <code>run</code> attribute of a test.</p>
-				<pre><code class="language-js"><span style="color: #CE9178">&#039;use strict&#039;</span><span style="color: #D4D4D4">;</span>
+				<pre><code class="language-js"><span style="color: #A44185">&#039;use strict&#039;</span><span style="color: #002339">;</span>
 
-<span style="color: #4EC9B0">module</span><span style="color: #D4D4D4">.</span><span style="color: #4EC9B0">exports</span><span style="color: #D4D4D4"> = {</span>
-<span style="color: #D4D4D4">    </span><span style="color: #9CDCFE">title:</span><span style="color: #D4D4D4"> </span><span style="color: #CE9178">&#039;Your name for the collection of tests in this file goes here&#039;</span><span style="color: #D4D4D4">,</span>
-<span style="color: #D4D4D4">    </span><span style="color: #9CDCFE">tests:</span><span style="color: #D4D4D4"> [</span>
-<span style="color: #D4D4D4">        {</span>
-<span style="color: #D4D4D4">            </span><span style="color: #9CDCFE">title:</span><span style="color: #D4D4D4"> </span><span style="color: #CE9178">&#039;The test name goes here&#039;</span><span style="color: #D4D4D4">,</span>
-<span style="color: #D4D4D4">            </span><span style="color: #DCDCAA">run</span><span style="color: #9CDCFE">:</span><span style="color: #D4D4D4"> </span><span style="color: #569CD6">async</span><span style="color: #D4D4D4"> </span><span style="color: #569CD6">function</span><span style="color: #D4D4D4">(</span><span style="color: #9CDCFE">test</span><span style="color: #D4D4D4">) { </span>
-<span style="color: #D4D4D4">                </span><span style="color: #6A9955">// put your test within an async function</span>
-<span style="color: #D4D4D4">                </span><span style="color: #6A9955">// For example, we want to test this addition function</span>
-<span style="color: #D4D4D4">                </span><span style="color: #6A9955">// let addition = (a,b) =&gt;  a + b</span>
+<span style="color: #DC3EB7">module</span><span style="color: #002339">.</span><span style="color: #DC3EB7">exports</span><span style="color: #002339"> </span><span style="color: #7B30D0">=</span><span style="color: #002339"> {</span>
+<span style="color: #002339">    title: </span><span style="color: #A44185">&#039;Your name for the collection of tests in this file goes here&#039;</span><span style="color: #002339">,</span>
+<span style="color: #002339">    tests: [</span>
+<span style="color: #002339">        {</span>
+<span style="color: #002339">            title: </span><span style="color: #A44185">&#039;The test name goes here&#039;</span><span style="color: #002339">,</span>
+<span style="color: #002339">            </span><span style="color: #7EB233">run</span><span style="color: #002339">: </span><span style="color: #DA5221">async</span><span style="color: #002339"> </span><span style="color: #0991B6">function</span><span style="color: #002339">(</span><span style="color: #B1108E">test</span><span style="color: #002339">) { </span>
+<span style="color: #002339">                </span><span style="color: #357B42">// put your test within an async function</span>
+<span style="color: #002339">                </span><span style="color: #357B42">// For example, we want to test this addition function</span>
+<span style="color: #002339">                </span><span style="color: #357B42">// let addition = (a,b) =&gt;  a + b</span>
 
-<span style="color: #D4D4D4">                </span><span style="color: #6A9955">// Here you can use an assertion to determine the result of the test for example:</span>
-<span style="color: #D4D4D4">                </span><span style="color: #6A9955">// the `.is` assertion checks if result is === 42</span>
-<span style="color: #D4D4D4">                </span><span style="color: #6A9955">// test.is(addition(4,5), 42, &#039;Message&#039;);  The test fails with Message!</span>
-<span style="color: #D4D4D4">                </span>
-<span style="color: #D4D4D4">                </span><span style="color: #6A9955">// the `.is` assertion checks that result === 8</span>
-<span style="color: #D4D4D4">                </span><span style="color: #6A9955">// test.is(addition(4,4), 8, &#039;Message&#039;);  The test passes!</span>
-<span style="color: #D4D4D4">            },</span>
-<span style="color: #D4D4D4">        },</span>
-<span style="color: #D4D4D4">    ],</span>
-<span style="color: #D4D4D4">};</span>
+<span style="color: #002339">                </span><span style="color: #357B42">// Here you can use an assertion to determine the result of the test for example:</span>
+<span style="color: #002339">                </span><span style="color: #357B42">// the `.is` assertion checks if result is === 42</span>
+<span style="color: #002339">                </span><span style="color: #357B42">// test.is(addition(4,5), 42, &#039;Message&#039;);  The test fails with Message!</span>
+<span style="color: #002339">                </span>
+<span style="color: #002339">                </span><span style="color: #357B42">// the `.is` assertion checks that result === 8</span>
+<span style="color: #002339">                </span><span style="color: #357B42">// test.is(addition(4,4), 8, &#039;Message&#039;);  The test passes!</span>
+<span style="color: #002339">            },</span>
+<span style="color: #002339">        },</span>
+<span style="color: #002339">    ],</span>
+<span style="color: #002339">};</span>
 </code></pre>
 				<p>The supported assertions can be found here: <a href="https://node-tap.org/docs/api/asserts/">https://node-tap.org/docs/api/asserts/</a></p>
 				<p>More examples of test logic can be seen here: <a href="https://github.com/balena-os/meta-balena/blob/master/tests/suites/os/tests/fingerprint/index.js">https://github.com/balena-os/meta-balena/blob/master/tests/suites/os/tests/fingerprint/index.js</a> for a very simple test, and here: <a href="https://github.com/balena-os/meta-balena/blob/master/tests/suites/os/tests/connectivity/index.js">https://github.com/balena-os/meta-balena/blob/master/tests/suites/os/tests/connectivity/index.js</a> for more complex tests. </p>

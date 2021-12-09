@@ -80,12 +80,12 @@
 					<code>test.js</code> to check the imports. To archive a file:</p>
 					<dl class="tsd-comment-tags">
 						<dt>example</dt>
-						<dd><pre><code class="language-js"><span style="color: #D4D4D4">    </span><span style="color: #C586C0">await</span><span style="color: #D4D4D4"> </span><span style="color: #569CD6">this</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">Archiver</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">add</span><span style="color: #D4D4D4">(</span><span style="color: #569CD6">this</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">id</span><span style="color: #D4D4D4">, </span><span style="color: #CE9178">&quot;Path/to/file/needs/to/be/archived&quot;</span><span style="color: #D4D4D4">);</span>
+						<dd><pre><code class="language-js"><span style="color: #002339">    </span><span style="color: #7B30D0">await</span><span style="color: #002339"> </span><span style="color: #000000">this</span><span style="color: #002339">.</span><span style="color: #2F86D2">Archiver</span><span style="color: #002339">.</span><span style="color: #7EB233">add</span><span style="color: #002339">(</span><span style="color: #000000">this</span><span style="color: #002339">.</span><span style="color: #2F86D2">id</span><span style="color: #002339">, </span><span style="color: #A44185">&quot;Path/to/file/needs/to/be/archived&quot;</span><span style="color: #002339">);</span>
 </code></pre>
 							<p>To directly archive the output of a command, example: <code>journalctl</code> or <code>dmesg</code> commands. Use the
 							<code>archiveLogs</code> helper accessible through <code>worker</code> context.</p>
 							<ul>
-								<li>@example<pre><code class="language-js"><span style="color: #D4D4D4">  </span><span style="color: #C586C0">await</span><span style="color: #D4D4D4"> </span><span style="color: #569CD6">this</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">context</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">get</span><span style="color: #D4D4D4">().</span><span style="color: #9CDCFE">worker</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">archiveLogs</span><span style="color: #D4D4D4">(</span><span style="color: #9CDCFE">title</span><span style="color: #D4D4D4">, </span><span style="color: #9CDCFE">target</span><span style="color: #D4D4D4">, </span><span style="color: #9CDCFE">command</span><span style="color: #D4D4D4">);</span>
+								<li>@example<pre><code class="language-js"><span style="color: #002339">  </span><span style="color: #7B30D0">await</span><span style="color: #002339"> </span><span style="color: #000000">this</span><span style="color: #002339">.</span><span style="color: #2F86D2">context</span><span style="color: #002339">.</span><span style="color: #7EB233">get</span><span style="color: #002339">().</span><span style="color: #2F86D2">worker</span><span style="color: #002339">.</span><span style="color: #7EB233">archiveLogs</span><span style="color: #002339">(</span><span style="color: #2F86D2">title</span><span style="color: #002339">, </span><span style="color: #2F86D2">target</span><span style="color: #002339">, </span><span style="color: #2F86D2">command</span><span style="color: #002339">);</span>
 </code></pre>
 								</li>
 							</ul>
@@ -123,7 +123,11 @@
 					<div class="tsd-signature tsd-kind-icon">export&#61;<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>add<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, artifactPath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>getStream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, artifactPath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">WriteStream</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
+<<<<<<< HEAD
 							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/8b60a8f/core/lib/common/archiver.js#L53">lib/common/archiver.js:53</a></li>
+=======
+							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/f029b3f/core/lib/common/archiver.js#L53">lib/common/archiver.js:53</a></li>
+>>>>>>> patch: Change code theme in docs
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">

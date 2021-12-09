@@ -79,17 +79,17 @@
 						<dt>example</dt>
 						<dd><p>The core service where the test suites run already has balenaCLI installed. There is no need to
 							initalise the <code>CLI</code> class to run/execute any CLI command inside the tests. Instead use</p>
-							<pre><code class="language-js"><span style="color: #569CD6">const</span><span style="color: #D4D4D4"> { </span><span style="color: #4FC1FF">exec</span><span style="color: #D4D4D4"> } = </span><span style="color: #DCDCAA">require</span><span style="color: #D4D4D4">(</span><span style="color: #CE9178">&quot;child_process&quot;</span><span style="color: #D4D4D4">);</span>
-<span style="color: #C586C0">await</span><span style="color: #D4D4D4"> </span><span style="color: #DCDCAA">exec</span><span style="color: #D4D4D4">(</span><span style="color: #CE9178">`balena push joystart --source .`</span><span style="color: #D4D4D4">)</span>
+							<pre><code class="language-js"><span style="color: #0991B6">const</span><span style="color: #002339"> { </span><span style="color: #2F86D2">exec</span><span style="color: #002339"> } </span><span style="color: #7B30D0">=</span><span style="color: #002339"> </span><span style="color: #1AB394">require</span><span style="color: #002339">(</span><span style="color: #A44185">&quot;child_process&quot;</span><span style="color: #002339">);</span>
+<span style="color: #7B30D0">await</span><span style="color: #002339"> </span><span style="color: #7EB233">exec</span><span style="color: #002339">(</span><span style="color: #A44185">`balena push joystart --source .`</span><span style="color: #002339">)</span>
 </code></pre>
 							<p>To get output from the commands being exectued, use the callback</p>
-							<pre><code class="language-js"><span style="color: #569CD6">const</span><span style="color: #D4D4D4"> { </span><span style="color: #4FC1FF">exec</span><span style="color: #D4D4D4"> } = </span><span style="color: #DCDCAA">require</span><span style="color: #D4D4D4">(</span><span style="color: #CE9178">&quot;child_process&quot;</span><span style="color: #D4D4D4">);</span>
-<span style="color: #C586C0">await</span><span style="color: #D4D4D4"> </span><span style="color: #DCDCAA">exec</span><span style="color: #D4D4D4">(</span><span style="color: #CE9178">`balena logs alliance-fleet --service &quot;normandy-sr0&quot;`</span><span style="color: #D4D4D4">, (</span><span style="color: #9CDCFE">error</span><span style="color: #D4D4D4">, </span><span style="color: #9CDCFE">stdout</span><span style="color: #D4D4D4">, </span><span style="color: #9CDCFE">stderr</span><span style="color: #D4D4D4">) </span><span style="color: #569CD6">=&gt;</span><span style="color: #D4D4D4"> {</span>
-<span style="color: #D4D4D4">  </span><span style="color: #C586C0">if</span><span style="color: #D4D4D4"> (</span><span style="color: #9CDCFE">error</span><span style="color: #D4D4D4">) {</span>
-<span style="color: #D4D4D4">    </span><span style="color: #C586C0">throw</span><span style="color: #D4D4D4"> </span><span style="color: #569CD6">new</span><span style="color: #D4D4D4"> </span><span style="color: #9CDCFE">error</span>
-<span style="color: #D4D4D4">  }</span>
-<span style="color: #D4D4D4">  </span><span style="color: #9CDCFE">console</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">log</span><span style="color: #D4D4D4">(</span><span style="color: #9CDCFE">stdout</span><span style="color: #D4D4D4">)</span>
-<span style="color: #D4D4D4">})</span>
+							<pre><code class="language-js"><span style="color: #0991B6">const</span><span style="color: #002339"> { </span><span style="color: #2F86D2">exec</span><span style="color: #002339"> } </span><span style="color: #7B30D0">=</span><span style="color: #002339"> </span><span style="color: #1AB394">require</span><span style="color: #002339">(</span><span style="color: #A44185">&quot;child_process&quot;</span><span style="color: #002339">);</span>
+<span style="color: #7B30D0">await</span><span style="color: #002339"> </span><span style="color: #7EB233">exec</span><span style="color: #002339">(</span><span style="color: #A44185">`balena logs alliance-fleet --service &quot;normandy-sr0&quot;`</span><span style="color: #002339">, (</span><span style="color: #B1108E">error</span><span style="color: #002339">, </span><span style="color: #B1108E">stdout</span><span style="color: #002339">, </span><span style="color: #B1108E">stderr</span><span style="color: #002339">) </span><span style="color: #0991B6">=&gt;</span><span style="color: #002339"> {</span>
+<span style="color: #002339">  </span><span style="color: #7B30D0">if</span><span style="color: #002339"> (</span><span style="color: #2F86D2">error</span><span style="color: #002339">) {</span>
+<span style="color: #002339">    </span><span style="color: #7B30D0">throw</span><span style="color: #002339"> </span><span style="color: #7B30D0">new</span><span style="color: #002339"> </span><span style="color: #2F86D2">error</span>
+<span style="color: #002339">  }</span>
+<span style="color: #002339">  </span><span style="color: #2F86D2">console</span><span style="color: #002339">.</span><span style="color: #7EB233">log</span><span style="color: #002339">(</span><span style="color: #2F86D2">stdout</span><span style="color: #002339">)</span>
+<span style="color: #002339">})</span>
 </code></pre>
 						</dd>
 					</dl>

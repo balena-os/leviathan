@@ -73,30 +73,30 @@
 						</a>
 					</div>
 					<p>The <code>BalenaOS</code> helper class can be used to configure and unpack the OS image that you will use in the test. This allows you to inject config options and network credentials into your image.</p>
-					<pre><code class="language-js"><span style="color: #569CD6">const</span><span style="color: #D4D4D4"> </span><span style="color: #4FC1FF">network_conf</span><span style="color: #D4D4D4"> = {</span>
-<span style="color: #D4D4D4">   </span><span style="color: #9CDCFE">ssid:</span><span style="color: #D4D4D4"> </span><span style="color: #4FC1FF">SSID</span><span style="color: #D4D4D4">,</span>
-<span style="color: #D4D4D4">   </span><span style="color: #9CDCFE">psk:</span><span style="color: #D4D4D4"> </span><span style="color: #4FC1FF">PASSWORD</span><span style="color: #D4D4D4">,</span>
-<span style="color: #D4D4D4">   </span><span style="color: #9CDCFE">nat:</span><span style="color: #D4D4D4"> </span><span style="color: #569CD6">true</span><span style="color: #D4D4D4">,</span>
-<span style="color: #D4D4D4">}</span>
+					<pre><code class="language-js"><span style="color: #0991B6">const</span><span style="color: #002339"> </span><span style="color: #2F86D2">network_conf</span><span style="color: #002339"> </span><span style="color: #7B30D0">=</span><span style="color: #002339"> {</span>
+<span style="color: #002339">   ssid: </span><span style="color: #2F86D2">SSID</span><span style="color: #002339">,</span>
+<span style="color: #002339">   psk: </span><span style="color: #2F86D2">PASSWORD</span><span style="color: #002339">,</span>
+<span style="color: #002339">   nat: </span><span style="color: #174781">true</span><span style="color: #002339">,</span>
+<span style="color: #002339">}</span>
 
-<span style="color: #569CD6">const</span><span style="color: #D4D4D4"> </span><span style="color: #4FC1FF">os</span><span style="color: #D4D4D4"> = </span><span style="color: #569CD6">new</span><span style="color: #D4D4D4"> </span><span style="color: #DCDCAA">BalenaOS</span><span style="color: #D4D4D4">(</span>
-<span style="color: #D4D4D4">  {</span>
-<span style="color: #D4D4D4">     </span><span style="color: #9CDCFE">deviceType:</span><span style="color: #D4D4D4"> </span><span style="color: #4FC1FF">DEVICE_TYPE_SLUG</span><span style="color: #D4D4D4">,</span>
-<span style="color: #D4D4D4">     </span><span style="color: #9CDCFE">network:</span><span style="color: #D4D4D4"> </span><span style="color: #9CDCFE">network_conf</span><span style="color: #D4D4D4">,</span>
-<span style="color: #D4D4D4">     </span><span style="color: #9CDCFE">configJson:</span><span style="color: #D4D4D4"> {</span>
-<span style="color: #D4D4D4">         </span><span style="color: #9CDCFE">uuid:</span><span style="color: #D4D4D4"> </span><span style="color: #4FC1FF">UUID</span><span style="color: #D4D4D4">,</span>
-<span style="color: #D4D4D4">         </span><span style="color: #9CDCFE">persistentLogging:</span><span style="color: #D4D4D4"> </span><span style="color: #569CD6">true</span>
-<span style="color: #D4D4D4">     }</span>
-<span style="color: #D4D4D4">  },</span>
-<span style="color: #D4D4D4">  </span><span style="color: #569CD6">this</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">getLogger</span><span style="color: #D4D4D4">()</span>
-<span style="color: #D4D4D4">);</span>
-<span style="color: #C586C0">await</span><span style="color: #D4D4D4"> </span><span style="color: #9CDCFE">os</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">fetch</span><span style="color: #D4D4D4">()</span>
-<span style="color: #C586C0">await</span><span style="color: #D4D4D4"> </span><span style="color: #9CDCFE">os</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">configure</span><span style="color: #D4D4D4">()</span>
+<span style="color: #0991B6">const</span><span style="color: #002339"> </span><span style="color: #2F86D2">os</span><span style="color: #002339"> </span><span style="color: #7B30D0">=</span><span style="color: #002339"> </span><span style="color: #7B30D0">new</span><span style="color: #002339"> </span><span style="color: #7EB233">BalenaOS</span><span style="color: #002339">(</span>
+<span style="color: #002339">  {</span>
+<span style="color: #002339">     deviceType: </span><span style="color: #2F86D2">DEVICE_TYPE_SLUG</span><span style="color: #002339">,</span>
+<span style="color: #002339">     network: </span><span style="color: #2F86D2">network_conf</span><span style="color: #002339">,</span>
+<span style="color: #002339">     configJson: {</span>
+<span style="color: #002339">         uuid: </span><span style="color: #2F86D2">UUID</span><span style="color: #002339">,</span>
+<span style="color: #002339">         persistentLogging: </span><span style="color: #174781">true</span>
+<span style="color: #002339">     }</span>
+<span style="color: #002339">  },</span>
+<span style="color: #002339">  </span><span style="color: #000000">this</span><span style="color: #002339">.</span><span style="color: #7EB233">getLogger</span><span style="color: #002339">()</span>
+<span style="color: #002339">);</span>
+<span style="color: #7B30D0">await</span><span style="color: #002339"> </span><span style="color: #2F86D2">os</span><span style="color: #002339">.</span><span style="color: #7EB233">fetch</span><span style="color: #002339">()</span>
+<span style="color: #7B30D0">await</span><span style="color: #002339"> </span><span style="color: #2F86D2">os</span><span style="color: #002339">.</span><span style="color: #7EB233">configure</span><span style="color: #002339">()</span>
 </code></pre>
 					<p>Alternatively, you can use the CLI to perform these functions - the CLI is imported in the testing environment:</p>
-					<pre><code class="language-js"><span style="color: #C586C0">await</span><span style="color: #D4D4D4"> </span><span style="color: #DCDCAA">exec</span><span style="color: #D4D4D4">(</span><span style="color: #CE9178">`balena login --token </span><span style="color: #569CD6">${</span><span style="color: #4FC1FF">API_KEY</span><span style="color: #569CD6">}</span><span style="color: #CE9178">`</span><span style="color: #D4D4D4">)</span>
-<span style="color: #C586C0">await</span><span style="color: #D4D4D4"> </span><span style="color: #DCDCAA">exec</span><span style="color: #D4D4D4">(</span><span style="color: #CE9178">`balena os configure </span><span style="color: #569CD6">${</span><span style="color: #4FC1FF">PATH_TO_IMAGE</span><span style="color: #569CD6">}</span><span style="color: #CE9178"> --config-network wifi --config-wifi-key </span><span style="color: #569CD6">${</span><span style="color: #4FC1FF">PASSWORD</span><span style="color: #569CD6">}</span>
-<span style="color: #CE9178">--config-wifi-ssid </span><span style="color: #569CD6">${</span><span style="color: #4FC1FF">SSID</span><span style="color: #569CD6">}</span><span style="color: #CE9178">`</span><span style="color: #D4D4D4">);</span>
+					<pre><code class="language-js"><span style="color: #7B30D0">await</span><span style="color: #002339"> </span><span style="color: #7EB233">exec</span><span style="color: #002339">(</span><span style="color: #A44185">`balena login --token ${</span><span style="color: #2F86D2">API_KEY</span><span style="color: #A44185">}`</span><span style="color: #002339">)</span>
+<span style="color: #7B30D0">await</span><span style="color: #002339"> </span><span style="color: #7EB233">exec</span><span style="color: #002339">(</span><span style="color: #A44185">`balena os configure ${</span><span style="color: #2F86D2">PATH_TO_IMAGE</span><span style="color: #A44185">} --config-network wifi --config-wifi-key ${</span><span style="color: #2F86D2">PASSWORD</span><span style="color: #A44185">}</span>
+<span style="color: #A44185">--config-wifi-ssid ${</span><span style="color: #2F86D2">SSID</span><span style="color: #A44185">}`</span><span style="color: #002339">);</span>
 </code></pre>
 				</div>
 			</section>
