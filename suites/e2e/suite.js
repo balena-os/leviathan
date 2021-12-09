@@ -101,12 +101,14 @@ const path = await this.context
 		// Configure OS image
 		await this.context.get().os.configure();
 
-		// Retrieving journalctl logs: register teardown after device is reachable
-		this.suite.teardown.register(async () => {
-			await this.context
-				.get()
-				.worker.archiveLogs(this.id, this.context.get().link);
-		});
+		// Retrieving journalctl logs
+		// Overkill quite frankly, since we aren't testing the OS and if testbot fails e2e 
+		// suite due to h/w issues then archiveLogs will block suite teardown frequently
+		// this.suite.teardown.register(async () => {
+		// 	await this.context
+		// 		.get()
+		// 		.worker.archiveLogs(this.id, this.context.get().link);
+		// });
 	},
 	tests: ['./tests/flash', './tests/power-cycle', './tests/serial'],
 };

@@ -76,7 +76,7 @@
 				<a href="#getting-started" id="getting-started" style="color: inherit; text-decoration: none;">
 					<h2>Getting Started</h2>
 				</a>
-				<p>Leviathan allows for running tests either on a device connected to and controlled by a testbot rig, or on a virtualized QEMU worker. The instructions provided will get you started.</p>
+				<p>Leviathan allows for running tests either on a device connected to and controlled by a testbot rig, or on a virtualized QEMU worker. Follow the <a href="https://balena-os.github.io/leviathan/pages/Getting-Started/quickstart.html">quickstart</a> guide to start your first test. </p>
 				<a href="#clone-the-repository" id="clone-the-repository" style="color: inherit; text-decoration: none;">
 					<h3>Clone the repository</h3>
 				</a>
@@ -103,8 +103,7 @@
 					<h4>QEMU</h4>
 				</a>
 				<p>Run <code>make local</code> to build the core and worker services and run the worker using docker-compose.
-					Worker configuration variables can be specified in <code>docker-compose.local.yml</code>, under <code>environment</code>.
-				The default configuration should suffice in most cases.</p>
+				Worker configuration variables can be specified in <code>docker-compose.local.yml</code>, under <code>environment</code>. The default configuration should suffice in most cases.</p>
 				<table>
 					<thead>
 						<tr>
@@ -142,18 +141,12 @@
 				</a>
 				<p>To run the tests, you need to specify the configuration of the worker.</p>
 				<ul>
-					<li>Create your test configuration by creating a <code>config.json</code> file in the <code>workspace</code> directory.Follow the instructions mentioned in the <a href="https://github.com/balena-os/leviathan/blob/master/documentation/quickstart.md">leviathan docs</a> to build your <code>config.json</code> file. </li>
-				</ul>
-				<blockquote>
-					<p>For QEMU workers, use localhost (<code>http://localhost</code>) instead of the <code>*.local</code> address for the <code>workers</code> property in the config.json file.</p>
-				</blockquote>
-				<ul>
-					<li>Extract the image you want to test to <code>./leviathan/workspace</code> and rename it to <code>balena.img</code>.</li>
+					<li>Create your test configuration by creating a <code>config.json</code> file using the <code>config.example.js</code> file in the workspace directory. Read the <a href="https://balena-os.github.io/leviathan/pages/Getting-Started/config-reference.html">config.js reference</a> to learn more about config.js properteries  </li>
 				</ul>
 				<a href="#running-tests" id="running-tests" style="color: inherit; text-decoration: none;">
 					<h3>Running tests</h3>
 				</a>
-				<p>Run the tests by navigating to the project directory and running</p>
+				<p>Run the tests by navigating to the project directory and running:</p>
 				<pre><code class="language-bash"><span style="color: #D4D4D4">make </span><span style="color: #DCDCAA">test</span>
 </code></pre>
 				<p>On first run, it will build the client (one-time process) and start the tests. </p>
@@ -161,8 +154,7 @@
 					<h2>Instructions for rig-owners</h2>
 				</a>
 				<p>To push a new release to balenaCloud, run <code>npm install</code> and then push to the balenaCloud application.</p>
-				<pre><code class="language-bash"><span style="color: #D4D4D4">npm install</span>
-<span style="color: #D4D4D4">balena push &lt;appname&gt;</span>
+				<pre><code class="language-bash"><span style="color: #D4D4D4">balena push &lt;appname&gt;</span>
 </code></pre>
 				<a href="#documentation-for-leviathan-helpers" id="documentation-for-leviathan-helpers" style="color: inherit; text-decoration: none;">
 					<h2>Documentation for Leviathan Helpers</h2>
