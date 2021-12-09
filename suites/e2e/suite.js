@@ -17,12 +17,14 @@ module.exports = {
 		const Worker = this.require('common/worker');
 		// The balenaOS class contains information on the OS image to be flashed, and methods to configure it
 		const BalenaOS = this.require('components/os/balenaos');
+		const Balena = this.require('components/balena/sdk');
 		await fse.ensureDir(this.suite.options.tmpdir);
 
 		// The suite contex is an object that is shared across all tests. Setting something into the context makes it accessible by every test
 		this.suite.context.set({
 			utils: this.require('common/utils'),
 			sshKeyPath: join(homedir(), 'id'),
+			sdk: new Balena(this.suite.options.balena.apiUrl, this.getLogger()),
 			link: `${this.suite.options.balenaOS.config.uuid.slice(0, 7)}.local`,
 			worker: new Worker(this.suite.deviceType.slug, this.getLogger()),
 		});
@@ -44,12 +46,23 @@ module.exports = {
 		} else {
 			delete this.suite.options.balenaOS.network.wireless;
 		}
+
+// Downloads the balenaOS image that will be flashed to the DUT 
+// This is optional, you can provide your own balenaOS images as well. 
+const path = await this.context
+.get()
+.sdk.fetchOS(
+	this.suite.options.balenaOS.download.version,
+	this.suite.deviceType.slug,
+);
+
 		// Create an instance of the balenOS object, containing information such as device type, and config.json options
 		this.suite.context.set({
 			os: new BalenaOS(
 				{
 					deviceType: this.suite.deviceType.slug,
 					network: this.suite.options.balenaOS.network,
+					image: `${path}`,
 					configJson: {
 						uuid: this.suite.options.balenaOS.config.uuid,
 						os: {
