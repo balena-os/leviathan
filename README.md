@@ -9,7 +9,7 @@
 
 ## Getting Started
 
-Leviathan allows for running tests either on a device connected to and controlled by a testbot rig, or on a virtualized QEMU worker. The instructions provided will get you started.
+Leviathan allows for running tests either on a device connected to and controlled by a testbot rig, or on a virtualized QEMU worker. Follow the [quickstart](https://balena-os.github.io/leviathan/pages/Getting-Started/quickstart.html) guide to start your first test. 
 
 ### Clone the repository
 
@@ -24,6 +24,7 @@ Leviathan allows for running tests either on a device connected to and controlle
 ### Worker setup
 
 A worker is a component on which your tests actually runs. It can be both real hardware or virtualised environments. Leviathan is designed to work with multiple workers. Following are detailed instructions on how to setup each type of worker:
+
 #### Testbot setup
 
 Start with building your standalone testbot by [following the guide](https://github.com/balena-io-hardware/testbot-hardware/blob/master/documentation/getting-started.md#quick-start-guide-for-testbot).
@@ -31,8 +32,7 @@ Start with building your standalone testbot by [following the guide](https://git
 #### QEMU
 
 Run `make local` to build the core and worker services and run the worker using docker-compose.
-Worker configuration variables can be specified in `docker-compose.local.yml`, under `environment`.
-The default configuration should suffice in most cases.
+Worker configuration variables can be specified in `docker-compose.local.yml`, under `environment`. The default configuration should suffice in most cases.
 
 | Variable            | Description                                         |
 | -----------         | --------------------------------------------------- |
@@ -47,15 +47,11 @@ The default configuration should suffice in most cases.
 
 To run the tests, you need to specify the configuration of the worker.
 
-- Create your test configuration by creating a `config.json` file in the `workspace` directory.Follow the instructions mentioned in the [leviathan docs](https://github.com/balena-os/leviathan/blob/master/documentation/quickstart.md) to build your `config.json` file. 
-  
-> For QEMU workers, use localhost (`http://localhost`) instead of the `*.local` address for the `workers` property in the config.json file.
-  
-- Extract the image you want to test to `./leviathan/workspace` and rename it to `balena.img`.
+- Create your test configuration by creating a `config.json` file using the `config.example.js` file in the workspace directory. Read the [config.js reference](https://balena-os.github.io/leviathan/pages/Getting-Started/config-reference.html) to learn more about config.js properteries  
 
 ### Running tests
 
-Run the tests by navigating to the project directory and running
+Run the tests by navigating to the project directory and running:
 
 ```bash
 make test
@@ -68,7 +64,6 @@ On first run, it will build the client (one-time process) and start the tests.
 To push a new release to balenaCloud, run `npm install` and then push to the balenaCloud application.
 
 ```bash
-npm install
 balena push <appname>
 ```
 ## Documentation for Leviathan Helpers

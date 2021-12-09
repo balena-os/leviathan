@@ -10,7 +10,34 @@ This is a quick start guide for using the leviathan remote testing framework wit
 ## Build your config.json file
 
 - Navigate to the `workspace` directory in the project using `cd workspace/`
-- Create a `config.js` file in the `workspace` directory using the following template. To read more about the properties, check the {@page Config.js Reference | Config.js reference}.
+- Create a `config.js` file in the `workspace` directory using the `config.example.js` file. To know more about the properties, check the {@page Config.js Reference | Config.js reference}.
+
+Check the {@page Config.js Reference | Config.js reference} for more examples. 
+
+## Start your first test run
+
+- For the first test run, we will be running the e2e test suite. Make sure the the `suite` property in your config.js is pointing to the e2e suites directory like:
+
+```JS
+suite: `${__dirname}/../suites/e2e`,
+```
+
+- [Optional] Set the image property to the `false` in the config.json file. The e2e test won't be needing a image upload to testbot. 
+
+- To start a test run, run the following command:
+
+```
+make test
+```
+
+- If the test ran successfully, then your testbot is set up correctly and ready to run more tests.
+
+## Let's run some more tests
+
+Use the tests now from [meta-balena](https://github.com/balena-os/meta-balena/tree/master/tests/suites) instead. The OS test suite is recommended as it works with the least configuration.
+
+- Either copy the OS test suite to the `workspace` directory or point the `suite` property to the path of the OS test suite in meta-balena.
+- Extract the image you want to test to `./leviathan/workspace` and rename it to `balena.img`. You can downloaded unmanaged image from [balena.io/os](balena.io/os).
 
 ```js
 module.exports = {
@@ -33,17 +60,10 @@ module.exports = {
 };
 ```
 
-For QEMU workers, use localhost (`http://localhost`) instead of the `*.local` address for the `workers` property in the config.json file.
+> For QEMU workers, use localhost (`http://localhost`) instead of the `*.local` address for the `workers` property in the config.json file.
 
-Check the {@page Config.js Reference | Config.js reference} for more examples. 
-
-## Let's run some tests
-
-- Use the tests from [meta-balena](https://github.com/balena-os/meta-balena/tree/master/tests/suites) instead. The OS test suite is recommended as it works with the least configuration. Either copy the OS test suite to the `suite` property path as mentioned in config.js or point the `suite` property to the path of the OS test suite.
-- Extract the image you want to test to `./leviathan/workspace` and rename it to `balena.img`. You can downloaded unmanaged image from [balena.io/os](balena.io/os).
 - Run `make test` in the root of the project and watch the logs.
-- At the end of the run, reports and logs about the test will be stored in `workspace/reports` directory.
-- With that, you have successfully completed your first test run.
+- At the end of the run, reports and logs for the test run will be stored in `workspace/reports` directory.
 
 ## Where do you go from here?
 

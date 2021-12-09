@@ -18,7 +18,7 @@ const innerSchema = {
 			],
 		},
 		image: {
-			type: 'string',
+			type: ['string', "boolean"],
 		},
 		workers: {
 			oneOf: [
