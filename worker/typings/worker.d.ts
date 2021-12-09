@@ -51,8 +51,7 @@ declare global {
 			network(configuration): Promise<void>;
 			/** Control HDMI capture process. */
 			captureScreen(action: 'start' | 'stop'): Promise<void | Readable>;
-			/** Returns testbot diagnostics */
-			// diagnostics(): Promise<{ vout: number; amperage: number; deviceVoltage: number}>;
+			/** Returns relevant information about the worker to be used in tests */
 			diagnostics(): any;
 		}
 
