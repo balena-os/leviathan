@@ -8,4 +8,3 @@
 reports/
 saved-images/
 !config.example.js
-!test-balena.img.gz
