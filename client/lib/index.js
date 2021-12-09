@@ -317,7 +317,7 @@ module.exports = class Client extends PassThrough {
 								case 'image':
 									// [Hack] Upload a fake image if image is false
 									// Remove when https://github.com/balena-os/leviathan/issues/567 is resolved
-									if (image === "false") {
+									if (image === 'false') {
 										// Had to create fake image in home directory otherwise
 										// facing a permission issue since client root is read-only
 										const fakeImagePath = '/home/test-balena.img.gz'
