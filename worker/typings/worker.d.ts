@@ -19,15 +19,21 @@ declare global {
 		}
 
 		interface QemuOptions {
-			network: {
-				bridgeName: string;
-				bridgeAddress: string;
-				dhcpRange: string
-			};
 			architecture: string;
 			cpus: string;
 			memory: string;
 			debug: boolean;
+			network: {
+				bridgeName: string;
+				bridgeAddress: string;
+				dhcpRange: string;
+				vncPort: number;
+				qmpPort: number;
+				vncMinPort: number;
+				vncMaxPort: number;
+				qmpMinPort: number;
+				qmpMaxPort: number;
+			}
 		}
 
 		interface Worker extends EventEmitter {

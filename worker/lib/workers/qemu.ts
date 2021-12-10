@@ -10,7 +10,8 @@ import * as Stream from 'stream';
 import { manageHandlers } from '../helpers';
 import ScreenCapture from '../helpers/graphics';
 import { promisify } from 'util';
-const execProm = promisify(exec)
+const execProm = promisify(exec);
+const fp = require("find-free-port");
 
 Bluebird.config({
 	cancellation: true,
@@ -25,7 +26,10 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 	private internalState: Leviathan.WorkerState = { network: {wired: 'enp0s3'} };
 	private screenCapturer: ScreenCapture;
 	private qemuOptions: Leviathan.QemuOptions;
-	private iptablesComment: string
+	private iptablesComment: string;
+	private bridgeAddress: string;
+	private bridgeName: string;
+	private dhcpRange: string;
 
 	constructor(options: Leviathan.Options) {
 		super();
@@ -56,6 +60,9 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
       console.debug(this.qemuOptions);
     }
 
+		this.bridgeAddress = '';
+		this.bridgeName = '';
+		this.dhcpRange = '';
 		this.iptablesComment = `teardown`
 		this.signalHandler = this.teardown.bind(this);
 	}
@@ -69,15 +76,6 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 		if(checkPortForwarding.stdout.trim() !== '1'){
 			throw new Error(`Kernel IP forwarding required for virtualized device networking, enable with 'sysctl -w net.ipv4.ip_forward=1'`);
 		}
-
-		const interfaces = JSON.parse((await execProm(`ip -json a`)).stdout);
-		interfaces.forEach((elem: any) => {
-			elem.addr_info.forEach((addr: any) => {
-				if (addr.local === this.qemuOptions.network.bridgeAddress && elem.ifname !== this.qemuOptions.network.bridgeName) {
-					throw new Error(`Address ${this.qemuOptions.network.bridgeAddress} already in use by interface ${elem.ifname}`);
-				}
-			});
-		});
 
 		manageHandlers(this.signalHandler, {
 			register: true,
@@ -103,8 +101,8 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 		}
 
 		try{
-			await execProm(`ip link set dev ${this.qemuOptions.network.bridgeName} down`);
-			await execProm(`brctl delbr ${this.qemuOptions.network.bridgeName}`);
+			await execProm(`ip link set dev ${this.bridgeName} down`);
+			await execProm(`brctl delbr ${this.bridgeName}`);
 		} catch(e){
 			console.error(`error while removing bridge: ${e}`)
 		}
@@ -157,6 +155,27 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 
 	public async powerOn(): Promise<void> {
 		console.log("QEMU: powerOn");
+
+		let vncport = null;
+		let qmpPort = null;
+
+		if(this.qemuOptions.network.vncPort === null){
+			let port = await fp(this.qemuOptions.network.vncMinPort, this.qemuOptions.network.vncMaxPort, '127.0.0.1', 1);
+			vncport = port[0];
+		} else {
+			vncport = this.qemuOptions.network.vncPort;
+		}
+
+		if(this.qemuOptions.network.qmpPort === null){
+			let port = await fp(this.qemuOptions.network.qmpMinPort, this.qemuOptions.network.qmpMaxPort, '127.0.0.1', 1);
+			qmpPort = port[0];
+		} else {
+			qmpPort = this.qemuOptions.network.qmpPort;
+		}
+
+		// The VNC arguement for qemu-system requires a port to be specified relative to 5900
+		let vncDisplay = vncport-5900;
+
 		let deviceArch = this.qemuOptions.architecture;
 		let baseArgs = [
 			'-nographic',
@@ -173,7 +192,7 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 			'aarch64': [],
 		};
 		let networkArgs = ['-net', 'nic,model=e1000',
-                       '-net', `bridge,br=${this.qemuOptions.network.bridgeName}`];
+                       '-net', `bridge,br=${this.bridgeName}`];
 		// Setup OVMF with emulated flash, UEFI variables, and secure boot support.
 		// https://github.com/tianocore/edk2/blob/e1e7306b54147e65cb7347b060e94f336d4a82d2/OvmfPkg/README#L60
 		//
@@ -188,7 +207,7 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 			],
 			'aarch64': ['-bios', '/usr/share/qemu-efi-aarch64/QEMU_EFI.fd'],
 		};
-		let qmpArgs = ['-qmp', 'tcp:localhost:4444,server,nowait'];
+		let qmpArgs = ['-qmp', `tcp:localhost:${qmpPort},server,nowait`];
 		let args = baseArgs.concat(
 			archArgs[deviceArch]).concat(
 			networkArgs).concat(
@@ -197,7 +216,7 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 
 		if (this.screenCapturer != null) {
 			let gfxArgs = [
-				'-vnc', ':0',
+				'-vnc', `:${vncDisplay}`,
 			];
 
 			args = args.concat(gfxArgs);
@@ -234,8 +253,37 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 		});
 	}
 
-	private async iptablesRules(){
-		await execProm(`iptables-legacy -t nat -A POSTROUTING ! -o ${this.qemuOptions.network.bridgeName} --source ${this.qemuOptions.network.bridgeAddress}/24 -j MASQUERADE -m comment --comment ${this.iptablesComment}`);
+	private async iptablesRules(bridgeName: string, bridgeAddress: string){
+		this.iptablesComment = `teardown_${bridgeName}`
+		await execProm(`iptables-legacy -t nat -A POSTROUTING ! -o ${bridgeName} --source ${bridgeAddress}/24 -j MASQUERADE -m comment --comment ${this.iptablesComment}`);
+	}
+
+	private async getBridgeIpAddress(){
+		const interfaces = JSON.parse((await execProm(`ip -json a`)).stdout);
+		let subnet = 10;
+		while(subnet < 255){
+			let subenetAddr = `10.10.${subnet}.1`;
+			let addrUsed = false;
+			interfaces.forEach((iface: any) => {
+				iface.addr_info.forEach((addr: any) => {
+					if(subenetAddr === addr.local){
+						addrUsed = true;
+					}
+				});
+			});
+			if(!addrUsed){
+				console.log(`Found unused IP subnet address ${subenetAddr}`);
+				break
+			} else{
+				subnet++
+			}
+		}
+
+		if(subnet > 254){
+			throw new Error(`Could not find unused IP address!`)
+		}
+
+		return `10.10.${subnet}`
 	}
 
 	private async createBridge(bridgeName: string, bridgeAddress: string): Promise<void> {
@@ -294,24 +342,54 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 	public async network(configuration: {
 		wired?: { nat: boolean };
 	}): Promise<void> {
-    const bridgeName: string = this.qemuOptions.network.bridgeName;
-    const bridgeAddress: string = this.qemuOptions.network.bridgeAddress;
+	
+	if(this.qemuOptions.network.bridgeName === null){
+		// generate random bridge name 
+		const id = `${Math.random()
+			.toString(36)
+			.substring(2, 10)}`;
+		this.bridgeName =  `br${id}`;
+	} else {
+		this.bridgeName = this.qemuOptions.network.bridgeName;
+	}
+
+	if(this.qemuOptions.network.bridgeAddress === null){
+		// generate bridge subnet
+		// e.g '10.10.10.X'
+		let ip = await this.getBridgeIpAddress();
+
+		// Assign ip address to bridge
+		// e.g '10.10.10.1'
+		this.bridgeAddress = `${ip}.1`;
+		// generate dhcpRange for dnsmasq
+		// e.g '10.10.10.2,10.10.10.254'
+		this.dhcpRange = `${ip}.2,${ip}.254`;
+	} else {
+		this.bridgeAddress = this.qemuOptions.network.bridgeAddress;
+		if(this.qemuOptions.network.dhcpRange === null){
+			throw new Error('If manually providing a bridge address, must also specify a DHCP range!');
+		} else {
+			this.dhcpRange = this.qemuOptions.network.dhcpRange;
+		}
+	}
+
     const dnsmasqArgs = [
-      `--interface=${bridgeName}`,
-      `--dhcp-range=${this.qemuOptions.network.dhcpRange}`,
+      `--interface=${this.bridgeName}`,
+      `--dhcp-range=${this.dhcpRange}`,
       '--conf-file',
+      '--except-interface=lo',
       '--bind-interfaces',
       '--no-daemon',
-      `--dhcp-leasefile=/var/run/qemu-dnsmasq-${bridgeName}.leases`,
+      `--dhcp-leasefile=/var/run/qemu-dnsmasq-${this.bridgeName}.leases`,
     ];
 
 		// Disable DNS entirely, as we only require DHCP and this avoids problems
 		// with running multiple instances of dnsmasq concurrently
 		dnsmasqArgs.push('--port=0');
 
-		return this.setupBridge(bridgeName, bridgeAddress).then(() => {
+		return this.setupBridge(this.bridgeName, this.bridgeAddress).then(() => {
 			return new Promise(async (resolve, reject) => {
-				await this.iptablesRules();
+				await this.iptablesRules(this.bridgeName, this.bridgeAddress);
 				this.dnsmasqProc = spawn('dnsmasq', dnsmasqArgs, {stdio: 'inherit'});
 
 				this.dnsmasqProc.on('exit',
