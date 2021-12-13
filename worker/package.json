@@ -39,9 +39,6 @@
 		"tar-stream": "^2.1.0",
 		"xml-js": "^1.6.11"
 	},
-	"optionalDependencies": {
-		"libvirt": "^1.2.1"
-	},
 	"devDependencies": {
 		"@types/bluebird-retry": "^0.11.2",
 		"@types/chai": "^4.1.7",
