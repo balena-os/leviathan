@@ -6,7 +6,8 @@ import {
 	BalenaFin,
 	BalenaFinV09,
 	BeagleBone,
-	RevPiCore3
+	RevPiCore3,
+	CM4IOBoard,
 } from '@balena/testbot';
 import { EventEmitter } from 'events';
 import { createWriteStream } from 'fs';
@@ -35,6 +36,9 @@ const resolveDeviceInteractor = (hat: TestBotHat): DeviceInteractor => {
 	}
 	if (process.env.TESTBOT_DUT_TYPE === 'revpi-core-3') {
 		return new RevPiCore3(hat);
+	}
+	if (process.env.TESTBOT_DUT_TYPE === 'raspberrypicm4-ioboard') {
+		return new CM4IOBoard(hat);
 	}
 	return new RaspberryPi(hat);
 };
