@@ -82,6 +82,7 @@ module.exports = {
 						apiEndpoint: 'https://api.balena-cloud.com',
 						// persistentLogging is managed by the supervisor and only read at first boot
 						persistentLogging: true,
+						// Create a development image, to get serial logging from the DUT
 						developmentMode: true,
 						// Set local mode so we can perform local pushes of containers to the DUT
 						localMode: true,
