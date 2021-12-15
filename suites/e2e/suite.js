@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 balena
+ * Copyright 2021 balena
  *
  * @license Apache-2.0
  */
@@ -10,13 +10,19 @@ const fse = require('fs-extra');
 const { join } = require('path');
 const { homedir } = require('os');
 
+// required for unwrapping images
+const imagefs = require('balena-image-fs');
+const stream = require('stream')
+const pipeline = require('bluebird').promisify(stream.pipeline);
+
 module.exports = {
 	title: 'Testbot Diagnositcs',
-	run: async function() {
+	run: async function () {
 		// The worker class contains methods to interact with the DUT, such as flashing, or executing a command on the device
 		const Worker = this.require('common/worker');
 		// The balenaOS class contains information on the OS image to be flashed, and methods to configure it
 		const BalenaOS = this.require('components/os/balenaos');
+		// The `BalenaSDK` class contains an instance of the balena sdk, as well as some helper methods to interact with a device via the cloud.
 		const Balena = this.require('components/balena/sdk');
 		await fse.ensureDir(this.suite.options.tmpdir);
 
@@ -47,14 +53,14 @@ module.exports = {
 			delete this.suite.options.balenaOS.network.wireless;
 		}
 
-// Downloads the balenaOS image that will be flashed to the DUT 
-// This is optional, you can provide your own balenaOS images as well. 
-const path = await this.context
-.get()
-.sdk.fetchOS(
-	this.suite.options.balenaOS.download.version,
-	this.suite.deviceType.slug,
-);
+		// Downloads the balenaOS image that will be flashed to the DUT
+		// This is optional, you can provide your own balenaOS images as well.
+		const path = await this.context
+			.get()
+			.sdk.fetchOS(
+				this.suite.options.balenaOS.download.version,
+				this.suite.deviceType.slug,
+			);
 
 		// Create an instance of the balenOS object, containing information such as device type, and config.json options
 		this.suite.context.set({
@@ -72,8 +78,11 @@ const path = await this.context
 									.utils.createSSHKey(this.context.get().sshKeyPath),
 							],
 						},
+						// Set an API endpoint for the HTTPS time sync service.
+						apiEndpoint: 'https://api.balena-cloud.com',
 						// persistentLogging is managed by the supervisor and only read at first boot
 						persistentLogging: true,
+						developmentMode: true,
 						// Set local mode so we can perform local pushes of containers to the DUT
 						localMode: true,
 					},
@@ -98,11 +107,37 @@ const path = await this.context
 		// Unpack OS image .gz
 		await this.context.get().os.fetch();
 
+		// If this is a flasher image, and we are using qemu, unwrap
+		if (this.suite.deviceType.data.storage.internal && (process.env.WORKER_TYPE === `qemu`)) {
+			const RAW_IMAGE_PATH = `/opt/balena-image-${this.suite.deviceType.slug}.balenaos-img`
+			const OUTPUT_IMG_PATH = '/data/downloads/unwrapped.img'
+			console.log(`Unwrapping file ${this.context.get().os.image.path}`)
+			console.log(`Looking for ${RAW_IMAGE_PATH}`)
+			try {
+				await imagefs.interact(this.context.get().os.image.path, 2, async (fsImg) => {
+					await pipeline(
+						fsImg.createReadStream(RAW_IMAGE_PATH),
+						fse.createWriteStream(OUTPUT_IMG_PATH)
+					)
+				})
+
+				this.context.get().os.image.path = OUTPUT_IMG_PATH;
+				console.log(`Unwrapped flasher image!`);
+			} catch (e) {
+				// If the outer image doesn't contain an image for installation, ignore the error
+				if (e.code == 'ENOENT') {
+					console.log("Not a flasher image, skipping unwrap");
+				} else {
+					throw e;
+				}
+			}
+		}
+
 		// Configure OS image
 		await this.context.get().os.configure();
 
-		// Retrieving journalctl logs
-		// Overkill quite frankly, since we aren't testing the OS and if testbot fails e2e 
+		// Retrieving journalctl logs - Uncomment if needed for debugging
+		// Overkill quite frankly, since we aren't testing the OS and if testbot fails e2e
 		// suite due to h/w issues then archiveLogs will block suite teardown frequently
 		// this.suite.teardown.register(async () => {
 		// 	await this.context
