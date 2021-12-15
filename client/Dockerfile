@@ -1,5 +1,8 @@
-FROM node:12.22.7
+FROM node:12.22.7-alpine3.14
 WORKDIR /usr/src/app
+
+# hadolint ignore=DL3018
+RUN apk add --no-cache bash git
 
 COPY package* ./
 RUN npm ci
