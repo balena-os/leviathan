@@ -18,3 +18,5 @@ VOLUME /usr/src/app/workspace
 VOLUME /usr/src/app/reports
 
 ENTRYPOINT ["/usr/src/app/entry.sh"]
+
+CMD [ "-c", "/usr/src/app/workspace/config", "-n" ]
