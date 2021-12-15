@@ -57,6 +57,8 @@ const retry = require('bluebird-retry');
 const utils = require('../../common/utils');
 const exec = Bluebird.promisify(require('child_process').exec);
 const config = require('config');
+const { toInteger } = require('lodash');
+
 module.exports = class BalenaSDK {
 	constructor(
 		apiUrl,
@@ -634,7 +636,6 @@ module.exports = class BalenaSDK {
 		//			// Create an object of the os helpers class and use the readOsRelease() method to extract balenaOS version
 		// 			let versionAvailable = await this.context.get().os.readOsRelease(file)
 		// 			console.log(`verion found in the file is ${versionAvailable}`)
-
 		// 			/**
 		//			 * Using balena-semver, we compare versions and figure out if we need to download a new image or we already have one available in cache.
 		// 			 * The if condition returns 0 if versionA == versionB, or
@@ -674,17 +675,21 @@ module.exports = class BalenaSDK {
 							reject(`Image download failed: ${error}`);
 						}
 						// Shows progress of image download for debugging purposes
-						// Commented, because too noisy for normal use
-						// stream.on('progress', data => {
-						//   console.log(`Downloading Image: ${data.percentage}`);
-						// });
+						reject(`Image download failed: ${error}`);
+						// Shows progress of image download 
+						let progress = 0
+						stream.on('progress', data => {
+							if (data.percentage >= progress + 10) {
+								console.log(`Downloading balenaOS image: ${toInteger(data.percentage) + '%'}`);
+								progress = data.percentage
+							}
+						})
 						stream.pipe(fs.createWriteStream(path));
 						stream.on('finish', () => {
 							console.log(`Download Successful: ${path}`);
 							resolve(path);
 						});
-					},
-				);
+					});
 			});
 		};
 		return retry(downloadLatestOS, { max_tries: 3, interval: 500 });
