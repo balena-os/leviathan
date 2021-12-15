@@ -15,10 +15,10 @@
 'use strict';
 
 module.exports = {
-	title: 'Testbot Flash Test',
+	title: 'Worker flashing tests',
 	tests: [
 		{
-			title: 'Flashing a image',
+			title: 'Flashing an image',
 			run: async function(test) {
 				try {
 					await this.context.get().worker.off(); // Ensure DUT is off before starting tests

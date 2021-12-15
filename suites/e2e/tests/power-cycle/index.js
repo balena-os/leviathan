@@ -17,7 +17,7 @@
 const { delay } = require('bluebird');
 
 module.exports = {
-	title: 'Testbot Power Test',
+	title: 'Worker Power Cycle Tests',
 	tests: [
 		{
 			title: 'Power cycling the DUT',
@@ -27,6 +27,8 @@ module.exports = {
 				if ((await this.context.get().worker.diagnostics()).worker === 'testbot') {
 					this.log("Running tests for testbot worker")
 					const maxDeviation = 0.15; // 8%
+
+					// Poll worker diagnostics only after the device has fully powered on.
 					const testbot = await this.context.get().worker.diagnostics();
 					test.true(
 						testbot.vout >= testbot.deviceVoltage * maxDeviation,

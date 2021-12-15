@@ -18,7 +18,7 @@ const { delay } = require('bluebird');
 const fs = require('fs').promises;
 
 module.exports = {
-	title: 'Serial Test',
+	title: 'Worker Serial Test',
 	tests: [
 		{
 			title: 'Recording DUT serial output',
@@ -26,11 +26,14 @@ module.exports = {
 				await this.context.get().worker.on();
 				await delay(10 * 1000);
 
-				test.not(
-					(await fs.stat('/reports/dut-serial.txt')).size,
-					0,
-					`Should be able to retrieve serial output from DUT`,
-				);
+				// TODO: Finish QEMU serial recording feature in order to test QEMU worker's serial output capablities as well.
+				if ((await this.context.get().worker.diagnostics()).worker === 'testbot') {
+					test.not(
+						(await fs.stat('/reports/dut-serial.txt')).size,
+						0,
+						`Should be able to retrieve serial output from DUT`,
+					);
+				}
 			},
 		},
 	],
