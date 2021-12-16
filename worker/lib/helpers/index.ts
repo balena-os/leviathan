@@ -179,9 +179,7 @@ export function resolveLocalTarget(target: string): PromiseLike<string> {
 export async function getRuntimeConfiguration(
 	possibleWorkers: string[],
 ): Promise<Leviathan.RuntimeConfiguration> {
-	const runtimeConfiguration: any = cleanObject(
-		config.get('worker.runtimeConfiguration'),
-	);
+	const runtimeConfiguration: any = config.get('worker.runtimeConfiguration');
 
 	if (!possibleWorkers.includes(runtimeConfiguration.workerType)) {
 		throw new Error(
