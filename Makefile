@@ -48,7 +48,11 @@ $(YQ):
 
 # create a dockerfile from dockerfile.template
 %/Dockerfile:: %/Dockerfile.template .FORCE
+ifneq ($(shell command -v npx 2>/dev/null),)
 	npm_config_yes=true npx dockerfile-template -d BALENA_ARCH="amd64" -f $< > $@
+else
+	sed 's/%%BALENA_ARCH%%/amd64/g' $< > $@
+endif
 
 help: ## Print help message
 	@echo -e "$$(grep -hE '^\S+:.*##' $(MAKEFILE_LIST) | sed -e 's/:.*##\s*/:/' -e 's/^\(.\+\):\(.*\)/\\x1b[36m\1\\x1b[m:\2/' | column -c2 -t -s :)"
