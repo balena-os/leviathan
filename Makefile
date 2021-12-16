@@ -11,7 +11,7 @@ PUSHARGS ?=
 
 # optional docker-compose args
 BUILDARGS ?=
-UPARGS ?= --force-recreate
+UPARGS ?= --force-recreate --remove-orphans
 
 LOCALCOMPOSEFILE := docker-compose.local.yml
 CLIENTCOMPOSEFILE := docker-compose.client.yml
