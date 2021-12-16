@@ -1,35 +1,101 @@
-version: '2'
+version: '2.1'
+
 volumes:
-  core-storage:
-  reports-storage:
+  core-storage-a: {}
+  reports-storage-a: {}
+  core-storage-b: {}
+  reports-storage-b: {}
+  core-storage-c: {}
+  reports-storage-c: {}
+
+x-volumes-trait-a: &volumes-trait-a
+  volumes:
+    - core-storage-a:/data:rw
+    - reports-storage-a:/reports:rw
+
+x-volumes-trait-b: &volumes-trait-b
+  volumes:
+    - core-storage-b:/data:rw
+    - reports-storage-b:/reports:rw
+
+x-volumes-trait-c: &volumes-trait-c
+  volumes:
+    - core-storage-c:/data:rw
+    - reports-storage-c:/reports:rw
+
+x-environment-a: &environment-a
+  CORE_PORT: 80
+  WORKER_PORT: 2000
+
+x-environment-b: &environment-b
+  CORE_PORT: 81
+  WORKER_PORT: 2001
+
+x-environment-c: &environment-c
+  CORE_PORT: 82
+  WORKER_PORT: 2002
+
+x-common-environment: &common-environment
+  UDEV: 0
+  WORKER_TYPE: qemu
+
+x-core-environment: &core-environment
+  <<: *common-environment
+
+x-worker-environment: &worker-environment
+  <<: *common-environment
+  SCREEN_CAPTURE: 'true'
+
+x-core-build-trait: &core-build-trait
+  image: leviathan/core:latest
+  build:
+    context: ./core
+
+x-worker-build-trait: &worker-build-trait
+  image: leviathan/worker:latest
+  build:
+    args:
+      SKIP_INSTALL_BINARY: 'true'
+    context: ./worker
+
+x-core-privileges-trait: &core-privileges-trait
+  network_mode: host
+
+x-worker-privileges-trait: &worker-privileges-trait
+  network_mode: host
+  cap_add:
+    - NET_ADMIN
+  devices:
+    - /dev/kvm:/dev/kvm
+    - /dev/net/tun:/dev/net/tun
+
 services:
-  core:
-    build: ./core
-    network_mode: 'host'
-    volumes:
-      - 'core-storage:/data'
-      - 'reports-storage:/reports'
+  core-a:
+    <<: [*core-build-trait, *core-privileges-trait, *volumes-trait-a]
     environment:
-      - UDEV=0
-      - WORKER_TYPE=qemu
-      - WORKER_PORT=${WORKER_PORT}
-      - CORE_PORT=${CORE_PORT}
-  worker:
-    build: 
-      context: ./worker
-      args:
-        - SKIP_INSTALL_BINARY=true
-    devices:
-      - "/dev/net/tun:/dev/net/tun"
-      - "/dev/kvm:/dev/kvm"
-    cap_add:
-      - NET_ADMIN # allow network setup
-    network_mode: 'host'
-    volumes:
-      - 'core-storage:/data'
-      - 'reports-storage:/reports'
+      <<: [*core-environment, *environment-a]
+
+  worker-a:
+    <<: [*worker-build-trait, *worker-privileges-trait, *volumes-trait-a]
     environment:
-      - UDEV=0
-      - WORKER_TYPE=qemu
-      - SCREEN_CAPTURE=true
-      - WORKER_PORT=${WORKER_PORT}
+      <<: [*worker-environment, *environment-a]
+
+  core-b:
+    <<: [*core-build-trait, *core-privileges-trait, *volumes-trait-b]
+    environment:
+      <<: [*core-environment, *environment-b]
+
+  worker-b:
+    <<: [*worker-build-trait, *worker-privileges-trait, *volumes-trait-b]
+    environment:
+      <<: [*worker-environment, *environment-b]
+
+  core-c:
+    <<: [*core-build-trait, *core-privileges-trait, *volumes-trait-c]
+    environment:
+      <<: [*core-environment, *environment-c]
+
+  worker-c:
+    <<: [*worker-build-trait, *worker-privileges-trait, *volumes-trait-c]
+    environment:
+      <<: [*worker-environment, *environment-c]
