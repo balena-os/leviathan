@@ -76,7 +76,7 @@ test: $(DOCKERCOMPOSE) client ## Run the client only and connect to an existing 
 	$(DOCKERCOMPOSE) up $(UPARGS) client
 
 local-test: $(DOCKERCOMPOSE) core worker client ## Run local (QEMU) worker and client (streaming logs)
-	$(DOCKERCOMPOSE) up $(UPARGS)
+	$(DOCKERCOMPOSE) up $(UPARGS) --abort-on-container-exit
 
 local: $(DOCKERCOMPOSE) core worker ## Run local (QEMU) worker in attached mode (streaming logs)
 	$(DOCKERCOMPOSE) up $(UPARGS) --scale client=0
