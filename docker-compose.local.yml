@@ -40,4 +40,3 @@ services:
       - "${WORKSPACE}:/usr/src/app/workspace:ro"
       - "${REPORTS}:/usr/src/app/reports:rw"
       - "${SUITES}:/usr/src/app/suites:ro"
-    command: -n
