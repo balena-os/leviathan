@@ -130,7 +130,11 @@ module.exports = class Client extends PassThrough {
 		const metadata = { size: null, hash: null, stream: null };
 		if (artifact.type === 'isDirectory') {
 			const struct = await getFilesFromDirectory(artifact.path, ignore);
-
+			for (let struc of struct) {
+				if (struc.includes('package.json')){
+					console.log(fs.readFileSync(struc).toString());
+				}
+			}
 			const expand = await Promise.all(
 				struct.map(async entry => {
 					return {
