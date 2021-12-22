@@ -1,0 +1,9 @@
+version: '2'
+services:
+  client:
+    build: ./client
+    network_mode: host
+    volumes:
+      - "${WORKSPACE:-./workspace}:/usr/src/app/workspace:ro"
+      - "${REPORTS:-./workspace/reports}:/usr/src/app/reports:rw"
+      - "${SUITES:-./suites}:/usr/src/app/suites:ro"
