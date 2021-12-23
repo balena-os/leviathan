@@ -32,6 +32,7 @@ const isObject = require('lodash/isObject');
 const isString = require('lodash/isString');
 const template = require('lodash/template');
 const fs = require('fs-extra');
+
 const AJV = require('ajv');
 const ajv = new AJV();
 // AJV plugins
@@ -72,6 +73,7 @@ function cleanObject(object) {
 class Suite {
 	constructor() {
 		const conf = require(config.get('leviathan.uploads.config'));
+
 		this.rootPath = path.join(__dirname, '..');
 		this.options = assignIn(
 			{
@@ -123,7 +125,7 @@ class Suite {
 			this.rootTree = this.resolveTestTree(
 				path.join(config.get('leviathan.uploads.suite'), 'suite'),
 			);
-			this.testSummary.suite = this.rootTree.title;
+			this.testSummary.suite = this.rootTree.title
 		}).catch(async error => {
 			await this.removeDependencies();
 			await this.removeDownloads();
@@ -147,9 +149,9 @@ class Suite {
 				(deviceType != null && !ajv.compile(deviceType)(this.deviceType)) ||
 				(os != null &&
 					this.context.get().os != null &&
-					!ajv.compile(os)(this.context.get().os.contract)) ||
+					!ajv.compile(os)(this.context.get().os.contract) ||
 				(workerContract != null &&
-					this.context.get().workerContract != null &&
+					this.context.get().workerContract != null) &&
 					!ajv.compile(workerContract)(this.context.get().workerContract))
 			) {
 				return;
@@ -204,7 +206,7 @@ class Suite {
 			await this.createJsonSummary();
 			await this.removeDependencies();
 			// This env variable can be used to keep a configured, unpacked image for use when developing tests
-			if (process.env.DEBUG_KEEP_IMG !== true) {
+			if(process.env.DEBUG_KEEP_IMG !== true){
 				await this.removeDownloads();
 			}
 			this.state.log(`Teardown complete.`);

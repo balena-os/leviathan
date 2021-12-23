@@ -66,7 +66,7 @@ async function setup() {
 				path: config.get('leviathan.uploads')[req.headers['x-artifact-id']],
 				hash: req.headers['x-artifact-hash'],
 			};
-			const ignore = ['node_modules', 'package-lock.json'];
+			const ignore = ['node_modules'];
 
 			let hash = null;
 			if (await pathExists(artifact.path)) {
