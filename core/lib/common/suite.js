@@ -43,6 +43,8 @@ const Bluebird = require('bluebird');
 const fse = require('fs-extra');
 const npm = require('npm');
 const { tmpdir } = require('os');
+const util = require('util');
+const exec = util.promisify(require('child_process').exec);
 const path = require('path');
 
 const Context = require('./context');
@@ -113,6 +115,7 @@ class Suite {
 
 	async init() {
 		await Bluebird.try(async () => {
+			await exec('npm cache clear --silent --force');
 			await this.installDependencies();
 			await fs.ensureDir(config.get('leviathan.downloads'));
 			if (fs.existsSync(config.get('leviathan.artifacts'))) {

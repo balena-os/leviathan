@@ -83,7 +83,7 @@ module.exports = class Client extends PassThrough {
 		if (attempt > 1){
 			this.log(`Previously failed to upload artifact ${artifact.name} - retrying...`);
 		}
-		const ignore = ['node_modules', 'package-lock.json'];
+		const ignore = ['node_modules'];
 
 		// Sanity checks + sanity checks
 		if (artifact.path != null) {

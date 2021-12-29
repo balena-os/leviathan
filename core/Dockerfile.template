@@ -31,9 +31,11 @@ WORKDIR /usr/app
 
 COPY --from=npm-install /tmp/node ./
 
-# Install balena binary in PATH
+# Install balena binary & npm in PATH
 RUN ln -sf /usr/app/node_modules/balena-cli/bin/balena /usr/bin/balena && \
-    balena version
+    balena version && \
+    ln -sf /usr/app/node_modules/npm/bin/npm-cli.js /usr/bin/npm && \
+    npm --version
 
 COPY contracts contracts
 COPY lib lib
