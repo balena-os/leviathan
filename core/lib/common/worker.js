@@ -73,6 +73,7 @@ module.exports = class Worker {
 	async flash(imagePath) {
 		if (process.env.DEBUG_KEEP_IMG) {
 			this.logger.log('[DEBUG] Skip flashing');
+			return "Skipping flashing"
 		} else {
 			this.logger.log('Preparing to flash');
 

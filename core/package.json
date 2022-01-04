@@ -1,7 +1,7 @@
 {
 	"scripts": {
-		"prettify": "balena-lint -e js --fix --typescript lib/**/*",
-		"lint": "eslint -c ../.eslintrc.* lib",
+		"lint:fix": "balena-lint -e js -e ts --fix lib/**/*",
+		"lint": "balena-lint -e js -e ts --tests lib/**/*",
 		"start": "node lib/main.js",
 		"docs": "rimraf ../docs/ && npx typedoc --tsconfig tsconfig.json"
 	},
@@ -38,17 +38,7 @@
 		"ws": "^7.1.2"
 	},
 	"devDependencies": {
-		"@balena/lint": "^5.4.2",
-		"eslint": "^4.19.1",
-		"eslint-config-prettier": "^4.0.0",
-		"eslint-config-standard": "^11.0.0",
-		"eslint-plugin-import": "^2.25.2",
-		"eslint-plugin-jsdoc": "^3.9.1",
-		"eslint-plugin-lodash": "^2.6.1",
-		"eslint-plugin-node": "^6.0.0",
-		"eslint-plugin-prettier": "^3.0.1",
-		"eslint-plugin-promise": "^3.6.0",
-		"eslint-plugin-standard": "^3.0.1",
+		"@balena/lint": "^6.2.0",
 		"rimraf": "^3.0.2",
 		"typedoc": "^0.21.2",
 		"typedoc-plugin-pages-fork": "0.0.1",
