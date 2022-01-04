@@ -5,6 +5,8 @@
 [![node](https://img.shields.io/badge/node-v12.0.0-green.svg)](https://nodejs.org/download/release/v12.0.0/)
 [![License](https://img.shields.io/badge/license-APACHE%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
+[![balena deploy button](https://www.balena.io/deploy.svg)](https://dashboard.balena-cloud.com/deploy?repoUrl=https://github.com/balena-os/leviathan)
+
 > A distributed testing framework for hardware
 
 ## Getting Started
