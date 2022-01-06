@@ -344,6 +344,30 @@ module.exports = class Worker {
 	}
 
 	/**
+	 * Wait for a service to be active/inactive
+	 *
+	 * @param {string} serviceName
+	 * @param {string} state
+	 * @param {string} target
+	 * @category helper
+	 */
+	async waitForServiceState(serviceName, state, target) {
+		return utils.waitUntil(async () => {
+			console.log(`waiting for ${serviceName} to be ${state}`);
+			return this.executeCommandInHostOS(
+				`systemctl is-active ${serviceName}`,
+				target,
+			).then((serviceStatus) => {
+				console.log(`serviceStatus: ${serviceStatus}`);
+				return Promise.resolve(serviceStatus === state);
+			}).catch((err) => {
+				Promise.reject(err);
+			});
+		}, false, 120, 250);
+	}
+
+
+	/**
 	 * Fetches OS version available on the DUT's `/etc/os-release` file
 	 *
 	 * @remark This method works entirely on the device though.
