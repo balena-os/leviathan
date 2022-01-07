@@ -32,7 +32,7 @@
 		"find-free-port": "^2.0.0",
 		"firmata": "^2.0.0",
 		"fs-extra": "^8.1.0",
-		"lodash": "^4.17.11",
+		"lodash": "^4.17.21",
 		"multicast-dns": "git+https://github.com/balena-io-modules/multicast-dns#listen-on-all-interfaces",
 		"mz": "^2.7.0",
 		"tar-fs": "^2.0.0",
