@@ -16,9 +16,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@master
-      - name: Run link check
-        uses: gaurav-nelson/github-action-markdown-link-check@v1
+      - name: Link Checker
+        id: lychee
+        uses: lycheeverse/lychee-action@v1.1.1
         with:
-          use-quiet-mode: 'no'
-          use-verbose-mode: 'yes'
- 
+          args: >
+            --config ./lychee.toml
+            --github-token ${{ secrets.GITHUB_TOKEN }}
+            **/*.md
