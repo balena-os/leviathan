@@ -289,6 +289,7 @@ module.exports = class Client extends PassThrough {
 			});
 
 			let capturedError = null;
+			let testDone = false;
 			const wsMessageHandler = ws => async pkg => {
 				try {
 					const { type, data } = JSON.parse(pkg);
@@ -341,6 +342,7 @@ module.exports = class Client extends PassThrough {
 							} else {
 								this.log(`Test suite has exited with: PASS`)
 							}
+							testDone = true;
 							break;
 						case 'error':
 							process.exitCode = 3;
@@ -405,6 +407,11 @@ module.exports = class Client extends PassThrough {
 				ws.on('close', () => {
 					this.log('WS connection is closed');
 					process.stdin.destroy();
+					// give exit code of 4 when WS is closed before tests report as finished
+					if(!testDone){
+						process.exitCode = 4
+					}
+
 					if (capturedError) {
 						reject(capturedError);
 					} else {

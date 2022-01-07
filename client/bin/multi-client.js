@@ -370,6 +370,7 @@ class State {
             case 1: return "1 (error)";         // client/lib/index.js#L401
             case 2: return "2 (test failure)";  // client/lib/index.js#L323
             case 3: return "3 (test error)";    // client/lib/index.js#L328
+			case 4: return "4 (testbot disconnect)";    // client/lib/index.js#L394
             default: return `${c.code} (exception)`; // For all other outcomes
           }
         },
