@@ -50,9 +50,7 @@ const rp = require('request-promise');
 const exec = Bluebird.promisify(require('child_process').exec);
 
 function id() {
-	return `${Math.random()
-		.toString(36)
-		.substring(2, 10)}`;
+	return `${Math.random().toString(36).substring(2, 10)}`;
 }
 
 module.exports = class Worker {
@@ -73,16 +71,16 @@ module.exports = class Worker {
 	 * @category helper
 	 */
 	async flash(imagePath) {
-		if(process.env.DEBUG_KEEP_IMG){
+		if (process.env.DEBUG_KEEP_IMG) {
 			this.logger.log('[DEBUG] Skip flashing');
-			return
+			return "Skipping flashing"
 		} else {
 			this.logger.log('Preparing to flash');
 
 			await new Promise(async (resolve, reject) => {
 				const req = rp.post({ uri: `${this.url}/dut/flash` });
 
-				req.catch(error => {
+				req.catch((error) => {
 					reject(error);
 				});
 				req.finally(() => {
@@ -94,7 +92,7 @@ module.exports = class Worker {
 				});
 
 				let lastStatus;
-				req.on('data', data => {
+				req.on('data', (data) => {
 					const computedLine = RegExp('(.+?): (.*)').exec(data.toString());
 
 					if (computedLine) {
@@ -191,7 +189,7 @@ module.exports = class Worker {
 		await rp.post({ uri: `${this.url}/teardown`, json: true });
 	}
 
-	async getContract(){
+	async getContract() {
 		return rp.get({ uri: `${this.url}/contract`, json: true });
 	}
 
@@ -358,7 +356,7 @@ module.exports = class Worker {
 			target,
 		);
 		let match;
-		output.split('\n').every(x => {
+		output.split('\n').every((x) => {
 			if (x.startsWith('VERSION=')) {
 				match = x.split('=')[1];
 				return false;

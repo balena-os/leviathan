@@ -84,7 +84,7 @@ module.exports = class CLI {
 			)[0],
 		);
 		const Inspect = await Container.inspect();
-		const Mount = Inspect.Mounts.find(mount => {
+		const Mount = Inspect.Mounts.find((mount) => {
 			return mount.Name != null
 				? mount.Name.slice(
 						mount.Name.length - Inspect.Config.Labels.share.length,
@@ -118,7 +118,7 @@ module.exports = class CLI {
 			);
 
 			for (const io of ['stdout', 'stderr']) {
-				child[io].on('data', data => {
+				child[io].on('data', (data) => {
 					output.push(data.toString());
 				});
 			}
@@ -129,7 +129,7 @@ module.exports = class CLI {
 
 			process.on('SIGINT', handleSignal);
 			process.on('SIGTERM', handleSignal);
-			child.on('exit', code => {
+			child.on('exit', (code) => {
 				process.off('SIGINT', handleSignal);
 				process.off('SIGTERM', handleSignal);
 				if (code === 0) {
@@ -138,7 +138,7 @@ module.exports = class CLI {
 					reject(output.join('\n'));
 				}
 			});
-			child.on('error', err => {
+			child.on('error', (err) => {
 				process.off('SIGINT', handleSignal);
 				process.off('SIGTERM', handleSignal);
 				reject(err);

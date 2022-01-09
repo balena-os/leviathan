@@ -136,7 +136,7 @@ module.exports = class BalenaSDK {
 	async getDownloadStream(deviceType, version) {
 		const stream = await this.balena.models.os.download(deviceType, version);
 
-		stream.on('progress', data => {
+		stream.on('progress', (data) => {
 			this.logger.status({
 				message: 'Download',
 				percentage: data.percentage,
@@ -333,8 +333,8 @@ module.exports = class BalenaSDK {
 			await this.balena.models.device
 				.getWithServiceDetails(device)
 				.get('current_services'),
-			services => {
-				return map(services, service => {
+			(services) => {
+				return map(services, (service) => {
 					if (properties.length === 1) {
 						return service[properties[0]];
 					}
@@ -484,7 +484,7 @@ module.exports = class BalenaSDK {
 	 */
 	async pushReleaseToApp(application, directory) {
 		await exec(`balena push ${application} --source ${directory}`);
-		//check new commit of app
+		// check new commit of app
 		let commit = await this.balena.models.application
 			.get(application)
 			.get('commit');
@@ -505,11 +505,10 @@ module.exports = class BalenaSDK {
 	async waitUntilServicesRunning(uuid, services, commit, __times = 50) {
 		await utils.waitUntil(
 			async () => {
-				let deviceServices = await this.balena.models.device.getWithServiceDetails(
-					uuid,
-				);
+				let deviceServices =
+					await this.balena.models.device.getWithServiceDetails(uuid);
 				let running = false;
-				running = services.every(service => {
+				running = services.every((service) => {
 					return (
 						deviceServices.current_services[service][0].status === 'Running' &&
 						deviceServices.current_services[service][0].commit === commit
@@ -556,7 +555,7 @@ module.exports = class BalenaSDK {
 	 * @category helper
 	 */
 	async checkLogsContain(uuid, contains, _start = null, _end = null) {
-		let logs = await this.balena.logs.history(uuid).map(log => {
+		let logs = await this.balena.logs.history(uuid).map((log) => {
 			return log.message;
 		});
 
@@ -565,7 +564,7 @@ module.exports = class BalenaSDK {
 		let slicedLogs = logs.slice(startIndex, endIndex);
 
 		let pass = false;
-		slicedLogs.forEach(element => {
+		slicedLogs.forEach((element) => {
 			if (element.includes(contains)) {
 				pass = true;
 			}
@@ -583,9 +582,10 @@ module.exports = class BalenaSDK {
 	async getSupervisorVersion(uuid) {
 		let checkName = await this.executeCommandInHostOS(
 			`balena ps | grep balena_supervisor`,
-			uuid
-		  );
-		let supervisorName = (checkName !== "") ? `balena_supervisor` : `resin_supervisor`
+			uuid,
+		);
+		let supervisorName =
+			checkName !== '' ? `balena_supervisor` : `resin_supervisor`;
 		let supervisor = await this.executeCommandInHostOS(
 			`balena exec ${supervisorName} cat package.json | grep version`,
 			uuid,
@@ -636,7 +636,7 @@ module.exports = class BalenaSDK {
 		// 			console.log(`verion found in the file is ${versionAvailable}`)
 
 		// 			/**
-		//			 * Using balena-semver, we compare versions and figure out if we need to download a new image or we already have one available in cache. 
+		//			 * Using balena-semver, we compare versions and figure out if we need to download a new image or we already have one available in cache.
 		// 			 * The if condition returns 0 if versionA == versionB, or
 		// 			 * 1 if versionA is greater, or
 		// 			 * -1 if versionB is greater.
@@ -663,27 +663,28 @@ module.exports = class BalenaSDK {
 				`Fetching balenaOS version ${version}, attempt ${attempt}...`,
 			);
 			return await new Promise(async (resolve, reject) => {
-				await this.balena.models.os.download(deviceType, version, function(
-					error,
-					stream,
-				) {
-					if (error) {
-						fs.unlink(path, () => {
-							// Ignore.
+				await this.balena.models.os.download(
+					deviceType,
+					version,
+					function (error, stream) {
+						if (error) {
+							fs.unlink(path, () => {
+								// Ignore.
+							});
+							reject(`Image download failed: ${error}`);
+						}
+						// Shows progress of image download for debugging purposes
+						// Commented, because too noisy for normal use
+						// stream.on('progress', data => {
+						//   console.log(`Downloading Image: ${data.percentage}`);
+						// });
+						stream.pipe(fs.createWriteStream(path));
+						stream.on('finish', () => {
+							console.log(`Download Successful: ${path}`);
+							resolve(path);
 						});
-						reject(`Image download failed: ${error}`);
-					}
-					// Shows progress of image download for debugging purposes
-					// Commented, because too noisy for normal use
-					// stream.on('progress', data => {
-					//   console.log(`Downloading Image: ${data.percentage}`);
-					// });
-					stream.pipe(fs.createWriteStream(path));
-					stream.on('finish', () => {
-						console.log(`Download Successful: ${path}`);
-						resolve(path);
-					});
-				});
+					},
+				);
 			});
 		};
 		return retry(downloadLatestOS, { max_tries: 3, interval: 500 });

@@ -26,7 +26,7 @@ const indentString = require('indent-string');
 
 const LF = require('os').EOL;
 
-const wrapParser = tap => {
+const wrapParser = (tap) => {
 	const dup = Duplex();
 
 	// eslint-disable-next-line no-underscore-dangle
@@ -44,11 +44,11 @@ const wrapParser = tap => {
 		tap.end();
 	});
 
-	tap.on('assert', test => {
+	tap.on('assert', (test) => {
 		dup.emit('test', test);
 	});
 
-	tap.on('complete', results => {
+	tap.on('complete', (results) => {
 		dup.emit('complete', results);
 	});
 
@@ -60,11 +60,11 @@ class Formatter {
 		this.output = output;
 		this.output.push(`# Tests ${LF}`);
 
-		this.output.on('test', test => {
+		this.output.on('test', (test) => {
 			this.test(test);
 		});
 
-		this.output.on('complete', results => {
+		this.output.on('complete', (results) => {
 			this.summary(results);
 
 			if (results.failures) {
@@ -109,7 +109,7 @@ class MarkdownFormatter extends Formatter {
 		const output = [LF];
 		output.push('# Fails');
 
-		fail.forEach(entry => {
+		fail.forEach((entry) => {
 			output.push(`## ${entry.name}`);
 			output.push(indentString(`${symbols.cross} ${entry.name}`, indent));
 			output.push(
@@ -121,22 +121,22 @@ class MarkdownFormatter extends Formatter {
 	}
 }
 
-exports.markDownFormat = results => {
+exports.markDownFormat = (results) => {
 	return new Bluebird((resolve, reject) => {
 		let output = '';
 		const stream = stringStream(results).pipe(
 			new MarkdownFormatter(wrapParser(new Parser())),
 		);
 
-		stream.on('data', data => {
+		stream.on('data', (data) => {
 			output += data.toString('utf8');
 		});
 
-		stream.on('error', error => {
+		stream.on('error', (error) => {
 			reject(error);
 		});
 
-		stream.on('finish', data => {
+		stream.on('finish', (data) => {
 			resolve(output);
 		});
 	});

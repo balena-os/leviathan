@@ -10,7 +10,7 @@ chai.use(chaiAsPromised);
 const { expect } = chai;
 
 describe('getDrive', () => {
-	beforeEach(function() {
+	beforeEach(function () {
 		this.stub = ImportMock.mockFunction(drivelist, 'list', [
 			{
 				device: '/dev/sda',
@@ -45,7 +45,7 @@ describe('getDrive', () => {
 		);
 	});
 
-	afterEach(function() {
+	afterEach(function () {
 		this.stub.restore();
 	});
 });

@@ -93,7 +93,7 @@ module.exports = class Teardown {
 
 		if (this.store.has(bucket)) {
 			for (const teardown of this.store.get(bucket).reverse()) {
-				await teardown().catch(error => {
+				await teardown().catch((error) => {
 					console.log(error);
 				});
 			}

@@ -5,10 +5,10 @@
 		"test": "test"
 	},
 	"scripts": {
-		"prettify": "prettier --config ../node_modules/resin-lint/config/.prettierrc --write \"{bin,lib,test}/**/*.ts\"",
-		"lint": "resin-lint --typescript lib/ bin/ && tsc --noEmit",
+		"lint:fix": "balena-lint -e js -e ts --fix bin/ lib/ test/",
+		"lint": "balena-lint -e js -e ts --tests lib/ bin/ test/ && tsc --noEmit",
 		"clean": "rm -rf build",
-		"test": "npm run prettify && npm run lint && npm run test:cov",
+		"test": "npm run lint:fix && npm run lint && npm run test:cov",
 		"build": "npm run clean && tsc",
 		"build:test": "npm run clean && tsc --project . && cp -r test/assets/image.zip build/test",
 		"start": "node ./build/bin",
@@ -19,7 +19,6 @@
 		"@balena/testbot": "^1.9.4",
 		"@types/bluebird": "^3.5.25",
 		"@types/config": "0.0.34",
-		"async-mutex": "^0.1.3",
 		"balena-sdk": "^15.54.2",
 		"bluebird": "^3.5.3",
 		"bluebird-retry": "^0.11.0",
@@ -35,11 +34,10 @@
 		"lodash": "^4.17.11",
 		"multicast-dns": "git+https://github.com/balena-io-modules/multicast-dns#listen-on-all-interfaces",
 		"mz": "^2.7.0",
-		"tar-fs": "^2.0.0",
-		"tar-stream": "^2.1.0",
-		"xml-js": "^1.6.11"
+		"tar-fs": "^2.0.0"
 	},
 	"devDependencies": {
+		"@balena/lint": "^6.2.0",
 		"@types/bluebird-retry": "^0.11.2",
 		"@types/chai": "^4.1.7",
 		"@types/chai-as-promised": "^7.1.0",
@@ -62,10 +60,8 @@
 		"chai-http": "^4.2.1",
 		"mocha": "^5.2.0",
 		"nyc": "^13.2.0",
-		"prettier": "^1.19.1",
 		"request": "^2.88.0",
 		"request-promise": "^4.2.4",
-		"resin-lint": "^3.1.1",
 		"sinon": "^7.2.3",
 		"tmp-promise": "^1.0.5",
 		"ts-mock-imports": "^1.2.2",

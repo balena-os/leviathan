@@ -1,7 +1,7 @@
 import * as config from 'config';
 import setup from '../lib/index';
 
-(async function(): Promise<void> {
+(async function (): Promise<void> {
 	const port: number = config.get('worker.port');
 
 	const app = await setup();

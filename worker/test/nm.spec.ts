@@ -16,7 +16,9 @@ describe('NetworkManager', () => {
 
 	beforeEach(() => {
 		box.stub(dbus, 'getBus').returns({
-			disconnect: () => {},
+			disconnect: () => {
+				//
+			},
 		});
 
 		network = new NetworkManager({
@@ -26,10 +28,10 @@ describe('NetworkManager', () => {
 	});
 
 	it('generateId should generate a 8 character long id', () => {
-		//Accesing private memeber for tesing
+		// Accesing private memeber for tesing
 		const id = NetworkManager['generateId']();
 
-		//check that each charter is in the right range
+		// check that each charter is in the right range
 		expect(id).to.match(/^[\x00-\x7F]*$/);
 		expect(id).to.have.length(8);
 	});
@@ -45,7 +47,7 @@ describe('NetworkManager', () => {
 
 		expect(removeStub.callCount).to.be.equal(0);
 
-		[addStub, activateStub, deviceStub].forEach(stub => {
+		[addStub, activateStub, deviceStub].forEach((stub) => {
 			expect(stub.callCount).to.be.equal(1);
 		});
 
@@ -63,7 +65,7 @@ describe('NetworkManager', () => {
 
 		expect(removeStub.callCount).to.be.equal(0);
 
-		[addStub, activateStub, deviceStub].forEach(stub => {
+		[addStub, activateStub, deviceStub].forEach((stub) => {
 			expect(stub.callCount).to.be.equal(1);
 		});
 
@@ -83,7 +85,7 @@ describe('NetworkManager', () => {
 
 		await network.addWiredConnection({ nat: false });
 
-		spies.forEach(spy => {
+		spies.forEach((spy) => {
 			expect(spy.callCount).to.be.equal(1);
 		});
 	});
@@ -103,7 +105,7 @@ describe('NetworkManager', () => {
 			Error,
 			'Wired AP unconfigured',
 		);
-		spies.forEach(spy => {
+		spies.forEach((spy) => {
 			expect(spy.callCount).to.be.equal(0);
 		});
 	});
@@ -123,7 +125,7 @@ describe('NetworkManager', () => {
 
 		expect(removeStub.callCount).to.be.equal(0);
 
-		[addStub, activateStub, deviceStub].forEach(stub => {
+		[addStub, activateStub, deviceStub].forEach((stub) => {
 			expect(stub.callCount).to.be.equal(1);
 		});
 
@@ -145,7 +147,7 @@ describe('NetworkManager', () => {
 
 		expect(removeStub.callCount).to.be.equal(0);
 
-		[addStub, activateStub, deviceStub].forEach(stub => {
+		[addStub, activateStub, deviceStub].forEach((stub) => {
 			expect(stub.callCount).to.be.equal(1);
 		});
 
@@ -171,7 +173,7 @@ describe('NetworkManager', () => {
 			}),
 		).to.rejectedWith(Error, 'Wireless AP unconfigured');
 
-		spies.forEach(spy => {
+		spies.forEach((spy) => {
 			expect(spy.callCount).to.be.equal(0);
 		});
 	});
@@ -193,7 +195,7 @@ describe('NetworkManager', () => {
 			nat: false,
 		});
 
-		spies.forEach(spy => {
+		spies.forEach((spy) => {
 			expect(spy.callCount).to.be.equal(1);
 		});
 	});
@@ -209,7 +211,7 @@ describe('NetworkManager', () => {
 
 		await network.removeWiredConnection();
 
-		spies.forEach(spy => {
+		spies.forEach((spy) => {
 			expect(spy.callCount).to.be.equal(1);
 		});
 		expect(network['wiredReference']).to.be.undefined;
@@ -226,7 +228,7 @@ describe('NetworkManager', () => {
 
 		await network.removeWirelessConnection();
 
-		spies.forEach(spy => {
+		spies.forEach((spy) => {
 			expect(spy.callCount).to.be.equal(1);
 		});
 		expect(network['wirelessReference']).to.be.undefined;
