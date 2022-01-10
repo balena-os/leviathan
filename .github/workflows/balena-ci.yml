@@ -10,15 +10,17 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        fleets: [testbot-rig, testbot-rig-beta, testbot-personal]
+        fleets: [balena/testbot-rig, balena/testbot-rig-beta, balena/testbot-personal]
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: true
       - uses: balena-io/deploy-to-balena-action@master
         id: build
         with:
           balena_token: ${{ secrets.BALENA_TOKEN }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          fleet: balena/${{ matrix.fleets }}
+          fleet: ${{ matrix.fleets }}
           versionbot: false
           environment: balena-cloud.com
           create_ref: true
