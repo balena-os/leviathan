@@ -15,7 +15,7 @@
 'use strict';
 
 module.exports = {
-	title: 'Worker flashing tests',
+	title: 'Flashing tests',
 	tests: [
 		{
 			title: 'Flashing an image',

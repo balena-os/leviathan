@@ -17,67 +17,64 @@
 const { delay } = require('bluebird');
 
 module.exports = {
-	title: 'Worker Power Cycle Tests',
+	title: 'Power Cycle Tests',
 	tests: [
 		{
 			title: 'Power cycling the DUT',
+			workerContract: {
+				type: 'object',
+				required: ['workerType'],
+				properties: {
+					workerType: {
+						type: 'string',
+						const: 'testbot'
+					},
+				},
+			},
 			run: async function (test) {
 				await this.context.get().worker.on();
 				await delay(4 * 1000); // Wait 4s before measuring Vout.
-				if ((await this.context.get().worker.diagnostics()).worker === 'testbot') {
-					this.log("Running tests for testbot worker")
-					const maxDeviation = 0.15; // 8%
+				this.log("Running tests for testbot worker")
+				const maxDeviation = 0.15; // 8%
 
-					// Poll worker diagnostics only after the device has fully powered on.
-					const testbot = await this.context.get().worker.diagnostics();
-					test.true(
-						testbot.vout >= testbot.deviceVoltage * maxDeviation,
-						'Output voltage should be more than the expected minimum voltage',
-					);
+				// Poll worker diagnostics only after the device has fully powered on.
+				const testbot = await this.context.get().worker.diagnostics();
+				test.true(
+					testbot.vout >= testbot.deviceVoltage * maxDeviation,
+					'Output voltage should be more than the expected minimum voltage',
+				);
 
-					test.true(
-						testbot.vout < testbot.deviceVoltage * (1 + maxDeviation),
-						'Output Voltage should be less than the expected maximum voltage.',
-					);
+				test.true(
+					testbot.vout < testbot.deviceVoltage * (1 + maxDeviation),
+					'Output Voltage should be less than the expected maximum voltage.',
+				);
 
-					// The lowest power device we currently have drew 0.03A when tested
-					test.true(
-						testbot.amperage > 0.03,
-						'Output current should be above the 0.03 limit',
-					);
+				// The lowest power device we currently have drew 0.03A when tested
+				test.true(
+					testbot.amperage > 0.03,
+					'Output current should be above the 0.03 limit',
+				);
 
-					this.log('Waiting for device to be reachable');
-					test.equal(
-						await this.context
-							.get()
-							.worker.executeCommandInHostOS(
-								'cat /etc/hostname',
-								this.context.get().link,
-							),
-						this.context.get().link.split('.')[0],
-						'Device should be reachable',
-					);
-
-					await this.context.get().worker.off();
-					test.true(true, 'Device should be able to power cycle properly.');
-				}
-				else if ((await this.context.get().worker.diagnostics()).worker === 'qemu') {
-					this.log("Running tests for QEMU worker")
-					this.log('Waiting for device to be reachable');
-					test.equal(
-						await this.context
-							.get()
-							.worker.executeCommandInHostOS(
-								'cat /etc/hostname',
-								this.context.get().link,
-							),
-						this.context.get().link.split('.')[0],
-						'Device should be reachable',
-					);
-					await this.context.get().worker.off();
-					test.true(true, 'Device should be able to power cycle properly.');
-				}
+				await this.context.get().worker.off();
+				test.true(true, 'Device should be able to power cycle properly.');
 			},
 		},
+		{
+			title: 'Is the DUT reachable?',
+			run: async function (test) {
+				await this.context.get().worker.on();
+				this.log('Waiting for device to be reachable');
+				test.equal(
+					await this.context
+						.get()
+						.worker.executeCommandInHostOS(
+							'cat /etc/hostname',
+							this.context.get().link,
+						),
+					this.context.get().link.split('.')[0],
+					'Device should be reachable',
+				);
+			}
+		}
 	],
 };

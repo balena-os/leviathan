@@ -17,6 +17,8 @@ Bluebird.config({
 	cancellation: true,
 });
 
+const dutSerialPath = '/reports/dut-serial.txt';
+
 class QemuWorker extends EventEmitter implements Leviathan.Worker {
 	private image: string;
 	private activeFlash?: Bluebird<void>;
@@ -211,6 +213,7 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 			this.qemuOptions.cpus,
 			'-drive',
 			'format=raw,file=/data/os.img,if=virtio',
+			'-serial', `file:${dutSerialPath}`,
 		];
 		const archArgs: { [arch: string]: string[] } = {
 			x86_64: ['-M', 'q35', '--enable-kvm', '-cpu', 'max'],
