@@ -4,8 +4,7 @@ import { multiWrite } from 'etcher-sdk';
 import * as express from 'express';
 import * as http from 'http';
 import { getSdk } from 'balena-sdk';
-import { Readable } from 'stream';
-
+import config = require("config");
 import {
 	getIpFromIface,
 	getRuntimeConfiguration,
@@ -52,7 +51,7 @@ async function setup(): Promise<express.Application> {
 	// parse labels and create 'contract'
 	const contract: any = {
 		uuid: process.env.BALENA_DEVICE_UUID,
-		workerType: process.env.WORKER_TYPE,
+		workerType: config.get('worker.runtimeConfiguration.workerType'),
 	};
 	const balena = getSdk({
 		apiUrl: 'https://api.balena-cloud.com/',

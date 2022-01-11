@@ -55,6 +55,7 @@ module.exports = {
 
 		// Downloads the balenaOS image that will be flashed to the DUT
 		// This is optional, you can provide your own balenaOS images as well.
+		// Make this optional when https://github.com/balena-os/leviathan/issues/600 is resolved
 		const path = await this.context
 			.get()
 			.sdk.fetchOS(
@@ -62,7 +63,7 @@ module.exports = {
 				this.suite.deviceType.slug,
 			);
 
-		// Create an instance of the balenOS object, containing information such as device type, and config.json options
+		// Create an instance of the balenaOS object, containing information such as device type, and config.json options
 		this.suite.context.set({
 			os: new BalenaOS(
 				{
@@ -99,6 +100,11 @@ module.exports = {
 		});
 
 		this.log('Setting up worker');
+
+		 // Get worker setup info
+		 this.suite.context.set({
+			workerContract: await this.context.get().worker.getContract()
+		})
 
 		// Create network AP on testbot
 		await this.context
