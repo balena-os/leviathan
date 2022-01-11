@@ -40,14 +40,6 @@ async function setup(): Promise<express.Application> {
 	const app = express();
 	const httpServer = http.createServer(app);
 
-	const proxy: { proc?: ChildProcess; kill: () => void } = {
-		kill: () => {
-			if (proxy.proc != null) {
-				proxy.proc.kill();
-			}
-		},
-	};
-
 	const supportedTags = [`dut`, `screencapture`, `modem`];
 	// parse labels and create 'contract'
 	const contract: any = {
@@ -210,17 +202,30 @@ async function setup(): Promise<express.Application> {
 			res: express.Response,
 			next: express.NextFunction,
 		) => {
-			// This function is effectively stubbed and does nothing except return 127.0.0.1.
-			// Glider has been removed from the worker, since the old proxy tests were always
-			// passing even without a working proxy, they were invalid.
-			// New proxy tests install glider in a container on the DUT and don't use this endpoint.
-			console.warn(`proxy endpoint has been deprecated, returning localhost`);
 			try {
 				if (req.body.port != null) {
-					res.send('127.0.0.1');
-				} else {
-					res.send('OK');
+					console.warn(`Specifying a proxy port has been deprecated, using 8123...`)
 				}
+
+				let ip;
+
+				if (worker.state.network.wired != null) {
+					ip = {
+						ip: getIpFromIface(worker.state.network.wired),
+					};
+				}
+
+				if (worker.state.network.wireless != null) {
+					ip = {
+						ip: getIpFromIface(worker.state.network.wireless),
+					};
+				}
+
+				if (ip == null) {
+					throw new Error('DUT network could not be found');
+				}
+
+				res.send(ip);
 			} catch (err) {
 				next(err);
 			}
@@ -235,7 +240,6 @@ async function setup(): Promise<express.Application> {
 		) => {
 			try {
 				await worker.teardown();
-				proxy.kill();
 				res.send('OK');
 			} catch (e) {
 				next(e);
