@@ -33,3 +33,19 @@ services:
       - WORKER_TYPE=qemu
       - SCREEN_CAPTURE=true
       - WORKER_PORT=${WORKER_PORT}
+  registry:
+    image: registry:2.7.1
+    environment:
+      REGISTRY_HTTP_ADDR: 0.0.0.0:5000
+    ports:
+      - 5000:5000
+    tmpfs:
+      - /var/lib/registry
+    healthcheck: # restart if less than 300mb free
+      test: test "$(df /var/lib/registry | tail -n1 | awk '{print $4}')" -gt 307200
+  proxy:
+    image: nadoo/glider:v0.14.0
+    command: -verbose -listen :8123
+    ports:
+      - 8123:8123/tcp
+      - 8123:8123/udp
