@@ -5,19 +5,24 @@ on:
       - master
 
 jobs:
-  build:
+  balena-cloud-build:
     runs-on: ubuntu-20.04
     strategy:
+      fail-fast: true
       matrix:
-        fail-fast: true
-        fleets: [testbot-rig, testbot-rig-beta, testbot-personal]
+        fleets: [balena/testbot-rig, balena/testbot-rig-beta, balena/testbot-personal]
     steps:
       - uses: actions/checkout@v2
-      - uses: balena-io/balena-ci@v0.3.2
+        with:
+          submodules: true
+      - uses: balena-io/deploy-to-balena-action@master
+        id: build
         with:
           balena_token: ${{ secrets.BALENA_TOKEN }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          fleet: balena/${{ matrix.fleets }}
+          fleet: ${{ matrix.fleets }}
           versionbot: false
           environment: balena-cloud.com
           create_ref: true
+      - name: Log release ID built
+        run: echo "Built release ID ${{ steps.build.outputs.release_id }}"
