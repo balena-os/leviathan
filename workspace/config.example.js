@@ -16,7 +16,6 @@ module.exports = [
 
 			// balenaOS version that is downloaded using fetchOS helper. Default: latest
 			downloadVersion: 'latest',
-			interactiveTests: false, // redundant
 
 			// Needed the provision the DUT to a balenaCloud fleet
 			balenaApiKey: process.env.BALENA_CLOUD_API_KEY,
@@ -41,7 +40,6 @@ module.exports = [
 	// 	config: {
 	// 		networkWired: false,
 	// 		networkWireless: true,
-	// 		interactiveTests: false,
 	// 		balenaApiKey: process.env.BALENACLOUD_API_KEY,
 	// 		balenaApiUrl: 'balena-cloud.com',
 	// 		organization: process.env.BALENACLOUD_ORG
@@ -60,7 +58,6 @@ module.exports = [
 	// 	config: {
 	// 		networkWired: false,
 	// 		networkWireless: true,
-	// 		interactiveTests: false,
 	// 		balenaApiKey: process.env.BALENACLOUD_API_KEY,
 	// 		balenaApiUrl: 'balena-cloud.com',
 	// 		organization: process.env.BALENACLOUD_ORG
@@ -77,7 +74,6 @@ module.exports = [
 	// 	config: {
 	// 		networkWired: false,
 	// 		networkWireless: true,
-	// 		interactiveTests: false,
 	// 		balenaApiKey: process.env.BALENACLOUD_API_KEY,
 	// 		balenaApiUrl: 'balena-cloud.com',
 	// 		organization: process.env.BALENACLOUD_ORG
