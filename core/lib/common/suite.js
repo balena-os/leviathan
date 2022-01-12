@@ -80,7 +80,7 @@ function cleanObject(object) {
 	}
 }
 
-class Suite {
+module.exports = class Suite {
 	constructor() {
 		const suiteConfig = require(config.get('leviathan.uploads.config'));
 		this.rootPath = path.join(__dirname, '..');
@@ -345,40 +345,3 @@ class Suite {
 		}
 	}
 }
-
-(async () => {
-	const suite = new Suite();
-
-	process.on('SIGINT', async () => {
-		suite.state.log(`Suite recieved SIGINT`);
-		await suite.teardown.runAll();
-		await suite.createJsonSummary();
-		await suite.removeDependencies();
-		await suite.removeDownloads();
-		process.exit(128);
-	});
-
-	const messageHandler = (message) => {
-		const { action } = message;
-
-		if (action === 'reconnect') {
-			for (const item of ['info', 'log', 'status']) {
-				suite.state[item]();
-			}
-		}
-	};
-	process.on('message', messageHandler);
-
-	await suite.init();
-	suite.printRunQueueSummary();
-	await suite.run();
-
-	suite.state.log(`Suite run complete`);
-	process.off('message', messageHandler);
-	suite.state.log(`Exiting suite child process...`);
-	if (suite.passing) {
-		process.exit();
-	} else {
-		process.exit(1);
-	}
-})();
