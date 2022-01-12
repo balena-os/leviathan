@@ -7,3 +7,12 @@ services:
       - "${WORKSPACE:-./workspace}:/usr/src/app/workspace:ro"
       - "${REPORTS:-./workspace/reports}:/usr/src/app/reports:rw"
       - "${SUITES:-./suites}:/usr/src/app/suites:ro"
+  core:
+    build: ./core
+    network_mode: 'host'
+    volumes:
+      - 'core-storage:/data'
+      - 'reports-storage:/reports'
+    environment:
+      - UDEV=0
+      - CORE_PORT=${CORE_PORT}

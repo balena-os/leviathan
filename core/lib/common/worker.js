@@ -57,9 +57,10 @@ module.exports = class Worker {
 	constructor(
 		deviceType,
 		logger = { log: console.log, status: console.log, info: console.log },
+		url
 	) {
 		this.deviceType = deviceType;
-		this.url = `${config.get('worker.url')}:${config.get('worker.port')}`;
+		this.url = url;
 		this.logger = logger;
 	}
 

@@ -1,10 +1,17 @@
 import * as bodyParser from 'body-parser';
-import { ChildProcess, spawn } from 'child_process';
+import { ChildProcess, exec } from 'child_process';
 import { multiWrite } from 'etcher-sdk';
 import * as express from 'express';
 import * as http from 'http';
 import { getSdk } from 'balena-sdk';
 import { Readable } from 'stream';
+import { join } from 'path';
+import { homedir } from 'os';
+
+import * as util from 'util';
+const execSync = util.promisify(exec)
+
+import { executeCommandOverSSH } from './helpers/ssh';
 
 import {
 	getIpFromIface,
@@ -13,11 +20,14 @@ import {
 } from './helpers';
 import { TestBotWorker } from './workers/testbot';
 import QemuWorker from './workers/qemu';
+import { writeFileSync } from 'fs-extra';
 
 const workersDict: Dictionary<typeof TestBotWorker | typeof QemuWorker> = {
 	testbot_hat: TestBotWorker,
 	qemu: QemuWorker,
 };
+
+var state = 'IDLE';
 
 async function setup(): Promise<express.Application> {
 	const runtimeConfiguration = await getRuntimeConfiguration(
@@ -236,6 +246,7 @@ async function setup(): Promise<express.Application> {
 			try {
 				await worker.teardown();
 				proxy.kill();
+				state = 'IDLE';
 				res.send('OK');
 			} catch (e) {
 				next(e);
@@ -279,6 +290,119 @@ async function setup(): Promise<express.Application> {
 			}
 		},
 	);
+
+	// give SSH keys to access DUT (is this the best way of doing this???)
+	app.post(
+		'/ssh/setup',
+		jsonParser,
+		async (
+			req: express.Request,
+			res: express.Response,
+			next: express.NextFunction,
+		) => {
+			try {
+				const keyPath = join(homedir(), 'id');
+				const keyPathPub = join(homedir(), 'id.pub');;
+				// need to write these strings to files
+				writeFileSync(keyPath, req.body.id);
+				writeFileSync(keyPath, req.body.id_pub);
+				await execSync('ssh-add -D');
+				await execSync(`ssh-add ${keyPath}`);
+				res.send('OK');
+			} catch (err) {
+				console.error(err);
+				next(err);
+			}
+		},
+	);
+
+	app.post(
+		'/dut/exec',
+		jsonParser,
+		async (
+			req: express.Request,
+			res: express.Response,
+			next: express.NextFunction,
+		) => {
+			try {
+				if (req.body.cmd != null){
+					if(req.body.target != null){
+						let cmd = req.body.cmd;
+						let target = await resolveLocalTarget(`${req.body.target}.local`);
+						// execute command over ssh here - TODO - do we keep the retries?
+						const result = await executeCommandOverSSH(
+							`source /etc/profile ; ${cmd}`,
+							{
+								host: target,
+								port: '22222',
+								username: 'root',
+							},
+						);
+		
+						if (typeof result.code === 'number' && result.code !== 0) {
+							throw new Error(
+								`"${cmd}" failed. stderr: ${result.stderr}, stdout: ${result.stdout}, code: ${result.code}`,
+							);
+						}
+		
+						res.send(result.stdout);
+					}
+						
+					} else {
+						throw new Error('Invalid request');
+					}
+			} catch (err) {
+				console.error(err);
+				next(err);
+			}
+		},
+	);
+
+	app.post(
+		`/exec`,
+		jsonParser,
+		async (
+			req: express.Request,
+			res: express.Response,
+			next: express.NextFunction,
+		) => {
+			try {
+				if (req.body.cmd != null){
+					let cmd = req.body.cmd
+					const { stdout, stderr } = await execSync(`${cmd}`);
+					res.send(stdout);
+				}
+			} catch (err) {
+				next(err);
+			}
+		},
+	)
+	
+	app.get('/state', async (				
+		req: express.Request,
+		res: express.Response,) => {
+		try {
+			res.status(200).send(state);
+		} catch (e) {
+			res.status(500).send(e.stack);
+		}
+	});
+
+	app.get('/start', async (				
+		req: express.Request,
+		res: express.Response,) => {
+		try {
+			if(state !== 'BUSY'){
+				state = 'BUSY'
+				res.status(200).send('OK')
+			} else{
+				res.status(200).send('BUSY');
+			}
+		} catch (e) {
+			res.status(500).send(e.stack);
+		}
+	});
+
 
 	return app;
 }
