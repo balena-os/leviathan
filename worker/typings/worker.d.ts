@@ -2,6 +2,12 @@ import { EventEmitter } from 'events';
 import { StatusCodeError } from 'request-promise/errors';
 import { Readable } from 'stream';
 
+interface Contract {
+	uuid: string | undefined;
+	workerType: string | undefined;
+	supportedFeatures: { [key: string]: boolean | string };
+}
+
 declare global {
 	interface Dictionary<T> {
 		[key: string]: T;

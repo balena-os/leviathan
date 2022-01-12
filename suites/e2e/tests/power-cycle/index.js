@@ -74,6 +74,7 @@ module.exports = {
 					this.context.get().link.split('.')[0],
 					'Device should be reachable',
 				);
+				await this.context.get().worker.off();
 			}
 		}
 	],

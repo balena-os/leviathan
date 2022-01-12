@@ -19,7 +19,7 @@ module.exports = {
 	tests: [
 		{
 			title: 'Flashing an image',
-			run: async function(test) {
+			run: async function (test) {
 				try {
 					await this.context.get().worker.off(); // Ensure DUT is off before starting tests
 					await this.context
