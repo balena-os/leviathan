@@ -14,6 +14,7 @@
 
 'use strict';
 
+const { delay } = require('bluebird');
 const fs = require('fs').promises;
 
 module.exports = {
@@ -23,16 +24,7 @@ module.exports = {
 			title: 'Recording DUT serial output',
 			run: async function (test) {
 				await this.context.get().worker.on();
-				test.equal(
-					await this.context
-						.get()
-						.worker.executeCommandInHostOS(
-							'cat /etc/hostname',
-							this.context.get().link,
-						),
-					this.context.get().link.split('.')[0],
-					'Device should be reachable',
-				);
+				await delay(20 * 1000);
 				test.not(
 					(await fs.stat('/reports/dut-serial.txt')).size,
 					0,

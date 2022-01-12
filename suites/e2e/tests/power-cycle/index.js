@@ -27,32 +27,31 @@ module.exports = {
 				properties: {
 					workerType: {
 						type: 'string',
-						const: 'testbot'
+						const: 'testbot_hat'
 					},
 				},
 			},
 			run: async function (test) {
 				await this.context.get().worker.on();
 				await delay(4 * 1000); // Wait 4s before measuring Vout.
-				this.log("Running tests for testbot worker")
 				const maxDeviation = 0.15; // 8%
-
 				// Poll worker diagnostics only after the device has fully powered on.
 				const testbot = await this.context.get().worker.diagnostics();
+
 				test.true(
 					testbot.vout >= testbot.deviceVoltage * maxDeviation,
-					'Output voltage should be more than the expected minimum voltage',
+					`Output voltage (${testbot.vout}) should be >= expected minimum voltage (${testbot.deviceVoltage * maxDeviation})`,
 				);
 
 				test.true(
 					testbot.vout < testbot.deviceVoltage * (1 + maxDeviation),
-					'Output Voltage should be less than the expected maximum voltage.',
+					`Output Voltage ${testbot.vout} should be < expected maximum voltage (${testbot.deviceVoltage * (1 + maxDeviation)})`,
 				);
 
 				// The lowest power device we currently have drew 0.03A when tested
 				test.true(
 					testbot.amperage > 0.03,
-					'Output current should be above the 0.03 limit',
+					`Output current ${testbot.amperage} should be above the 0.03 limit`,
 				);
 
 				await this.context.get().worker.off();
