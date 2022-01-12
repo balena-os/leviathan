@@ -14,7 +14,6 @@
 
 'use strict';
 
-const { delay } = require('bluebird');
 const fs = require('fs').promises;
 
 module.exports = {
@@ -24,15 +23,22 @@ module.exports = {
 			title: 'Recording DUT serial output',
 			run: async function (test) {
 				await this.context.get().worker.on();
-				await delay(10 * 1000);
-
-				// TODO: Finish QEMU serial recording feature in order to test QEMU worker's serial output capablities as well.
-					test.not(
-						(await fs.stat('/reports/dut-serial.txt')).size,
-						0,
-						`Should be able to retrieve serial output from DUT`,
-					);
-				}
-			},
+				test.equal(
+					await this.context
+						.get()
+						.worker.executeCommandInHostOS(
+							'cat /etc/hostname',
+							this.context.get().link,
+						),
+					this.context.get().link.split('.')[0],
+					'Device should be reachable',
+				);
+				test.not(
+					(await fs.stat('/reports/dut-serial.txt')).size,
+					0,
+					`Should be able to retrieve serial output from DUT`,
+				);
+			}
+		},
 	],
 };

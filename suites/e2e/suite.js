@@ -5,7 +5,6 @@
  */
 
 'use strict';
-
 const fse = require('fs-extra');
 const { join } = require('path');
 const { homedir } = require('os');
@@ -17,7 +16,7 @@ const pipeline = require('bluebird').promisify(stream.pipeline);
 
 module.exports = {
 	title: 'Testbot Diagnositcs',
-	run: async function () {
+	run: async function (test) {
 		// The worker class contains methods to interact with the DUT, such as flashing, or executing a command on the device
 		const Worker = this.require('common/worker');
 		// The balenaOS class contains information on the OS image to be flashed, and methods to configure it
@@ -101,8 +100,8 @@ module.exports = {
 
 		this.log('Setting up worker');
 
-		 // Get worker setup info
-		 this.suite.context.set({
+		// Get worker setup info
+		this.suite.context.set({
 			workerContract: await this.context.get().worker.getContract()
 		})
 
@@ -132,7 +131,7 @@ module.exports = {
 				console.log(`Unwrapped flasher image!`);
 			} catch (e) {
 				// If the outer image doesn't contain an image for installation, ignore the error
-				if (e.code == 'ENOENT') {
+				if (e.code === 'ENOENT') {
 					console.log("Not a flasher image, skipping unwrap");
 				} else {
 					throw e;
@@ -152,5 +151,8 @@ module.exports = {
 		// 		.worker.archiveLogs(this.id, this.context.get().link);
 		// });
 	},
-	tests: ['./tests/flash', './tests/power-cycle', './tests/serial'],
+	tests: ['./tests/flash',
+		'./tests/power-cycle',
+		'./tests/serial'
+	],
 };

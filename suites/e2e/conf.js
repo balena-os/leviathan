@@ -49,7 +49,6 @@ module.exports = options => {
 			},
 			releaseInfo: {
 				version: options.osReleaseVersion,
-				variant: options.osReleaseVariant,
 			},
 		},
 	};
