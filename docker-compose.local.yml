@@ -1,4 +1,4 @@
-version: '2'
+version: "2.4"
 volumes:
   core-storage:
   reports-storage:
@@ -19,9 +19,10 @@ services:
       context: ./worker
       args:
         - SKIP_INSTALL_BINARY=true
-    devices:
-      - "/dev/net/tun:/dev/net/tun"
-      - "/dev/kvm:/dev/kvm"
+    device_cgroup_rules:
+        # allow dynamic creation and access of qemu required misc chardev nodes
+        # this includes /dev/kvm, and /dev/net/tun
+      - 'c 10:* rmw'
     cap_add:
       - NET_ADMIN # allow network setup
     network_mode: 'host'

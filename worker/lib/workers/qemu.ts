@@ -205,10 +205,30 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 			this.qemuOptions.cpus,
 			'-drive',
 			'format=raw,file=/data/os.img,if=virtio',
-			'-serial', `file:${dutSerialPath}`,
+			'-serial',
+			`file:${dutSerialPath}`,
 		];
+
+		// Basic mapping of node process.arch to matching qemu target architecture
+		// This ensures we only enable KVM on compatible architectures
+		function kvmTargetCompatible(arch: string) {
+			const archMap: { [index: string]: string[] } = {
+				x64: ['x86_64'],
+				arm64: ['aarch64'],
+			};
+
+			return archMap[process.arch].includes(arch);
+		}
+
+		if (fs.existsSync('/dev/kvm') && kvmTargetCompatible(deviceArch)) {
+			baseArgs.push('--enable-kvm');
+			console.log('Enabling KVM hardware accelerated virtualization');
+		} else {
+			console.log('KVM is unavailable, falling back on software emulation');
+		}
+
 		const archArgs: { [arch: string]: string[] } = {
-			x86_64: ['-M', 'q35', '--enable-kvm', '-cpu', 'max'],
+			x86_64: ['-M', 'q35', '-cpu', 'max'],
 			aarch64: [],
 		};
 		const networkArgs = [
