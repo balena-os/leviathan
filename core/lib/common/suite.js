@@ -70,19 +70,21 @@ function cleanObject(object) {
 }
 
 module.exports = class Suite {
-	constructor() {
-		const conf = require(config.get('leviathan.uploads.config'));
-
+	constructor(suitePath, deviceTypeSlug, extraSuiteConf={}) {
+		this.path = suitePath;
+		this.deviceTypeSlug = deviceTypeSlug;
+		// This seems to be deprecated?
+		this.interactive = false;
 		this.rootPath = path.join(__dirname, '..');
+
+		const suiteConf = require(path.join(this.path, 'conf'));
 		this.options = assignIn(
 			{
-				packdir: config.get('leviathan.workdir'),
-				tmpdir: conf.tmpdir || tmpdir(),
-				interactiveTests: conf.interactive,
-				replOnFailure: conf.repl,
+				tmpdir: tmpdir(),
 			},
-			require(path.join(config.get('leviathan.uploads.suite'), 'conf'))(conf),
+			suiteConf(extraSuiteConf),
 		);
+
 		cleanObject(this.options);
 
 		// State
@@ -103,10 +105,12 @@ module.exports = class Suite {
 		};
 
 		try {
-			this.deviceType = require(`../../contracts/contracts/hw.device-type/${conf.deviceType}/contract.json`);
+			this.deviceType = require(
+				`../../contracts/contracts/hw.device-type/${this.deviceTypeSlug}/contract.json`
+			);
 		} catch (e) {
 			if (e.code === 'MODULE_NOT_FOUND') {
-				throw new Error(`Invalid/Unsupported device type: ${conf.deviceType}`);
+				throw new Error(`Invalid/Unsupported device type: ${this.deviceTypeSlug}`);
 			} else {
 				throw e;
 			}
@@ -119,7 +123,7 @@ module.exports = class Suite {
 			await this.installDependencies();
 			await this.setup.runAll();
 			this.rootTree = this.resolveTestTree(
-				path.join(config.get('leviathan.uploads.suite'), 'suite'),
+				path.join(this.path, 'suite'),
 			);
 			this.testSummary.suite = this.rootTree.title;
 		}).catch(async (error) => {
@@ -140,7 +144,7 @@ module.exports = class Suite {
 			// Check our contracts
 			if (
 				skip ||
-				(interactive && !this.options.interactiveTests) ||
+				(interactive && !this.interactive) ||
 				(deviceType != null && !ajv.compile(deviceType)(this.deviceType)) ||
 				(os != null &&
 					this.context.get().os != null &&
@@ -220,10 +224,12 @@ module.exports = class Suite {
 				tests.forEach((test, i) => {
 					if (isString(test)) {
 						try {
-							test = tests[i] = require(path.join(
-								config.get('leviathan.uploads.suite'),
-								test,
-							));
+							test = tests[i] = require(
+								path.join(
+									this.path,
+									test,
+								)
+							);
 						} catch (error) {
 							this.state.log(error.message);
 							if (error.code === 'MODULE_NOT_FOUND') {
@@ -266,18 +272,18 @@ module.exports = class Suite {
 		await Bluebird.promisify(npm.load)({
 			loglevel: 'silent',
 			progress: false,
-			prefix: config.get('leviathan.uploads.suite'),
+			prefix: this.path,
 			'package-lock': false,
 		});
 		await Bluebird.promisify(npm.install)(
-			config.get('leviathan.uploads.suite'),
+			this.path,
 		);
 	}
 
 	async removeDependencies() {
 		this.state.log(`Removing npm dependencies for suite:`);
 		await Bluebird.promisify(fse.remove)(
-			path.join(config.get('leviathan.uploads.suite'), 'node_modules'),
+			path.join(this.path, 'node_modules'),
 		);
 	}
 }

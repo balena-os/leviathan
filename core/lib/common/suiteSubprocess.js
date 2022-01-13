@@ -29,6 +29,8 @@ const Suite = require('./suite');
 const config = require('config');
 const fs = require('fs-extra');
 
+const conf = require(config.get('leviathan.uploads.config'));
+
 async function removeArtifacts() {
 	const artifactsPath = config.get('leviathan.artifacts');
 	if (fs.existsSync(artifactsPath)) {
@@ -52,7 +54,22 @@ async function createJsonSummary(suite) {
 }
 
 (async () => {
-	const suite = new Suite();
+	const suitePath = config.get('leviathan.uploads.suite');
+	const deviceTypeSlug = conf.deviceType;
+	const extraSuiteConf = {
+		deviceType: conf.deviceType,
+		networkWired: conf.networkWired,
+		networkWireless: conf.networkWireless,
+		osPubKey: conf.osPubKey,
+		downloadType: conf.downloadType,
+		balenaApiKey: conf.balenaApiKey,
+		balenaApiUrl: conf.balenaApiUrl,
+	}
+	const suite = new Suite(
+		suitePath,
+		deviceTypeSlug,
+		extraSuiteConf,
+	);
 
 	suite.setup.register(removeArtifacts);
 	suite.setup.register(async () => {
