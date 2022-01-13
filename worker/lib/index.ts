@@ -212,6 +212,14 @@ async function setup(): Promise<express.Application> {
 		) => {
 			try {
 				await worker.captureScreen('stop');
+				/// send the captured images to the core, instead of relying on volume
+				const CAPTURE_PATH = join(runtimeConfiguration.workdir, 'capture');
+				const line = pipeline(
+					tar.pack(CAPTURE_PATH),
+					createGzip({ level: 6 }),
+					res
+				).catch(error => {throw error});
+				await line;
 				res.send('OK');
 			} catch (err) {
 				next(err);

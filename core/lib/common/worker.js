@@ -195,12 +195,19 @@ module.exports = class Worker {
 		return rp.get({ uri: `${this.url}/contract`, json: true });
 	}
 
-	capture(action) {
+	async capture(action) {
 		switch (action) {
 			case 'start':
 				return rp.post({ uri: `${this.url}/dut/capture`, json: true });
 			case 'stop':
-				return request.get({ uri: `${this.url}/dut/capture` });
+				// have to receive tar.gz and unpack them? then return path to directory for the test to consume
+				let capture = request.get({ uri: `${this.url}/dut/capture` });
+				const line = pipeline(
+					capture,
+					createGunzip(),
+					tar.extract('/data/capture')
+				).catch(error => {throw error});
+				await line;
 		}
 	}
 
