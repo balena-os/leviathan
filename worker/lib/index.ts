@@ -20,7 +20,7 @@ import {
 } from './helpers';
 import { TestBotWorker } from './workers/testbot';
 import QemuWorker from './workers/qemu';
-import { writeFileSync } from 'fs-extra';
+import { writeFileSync, readFile } from 'fs-extra';
 
 const workersDict: Dictionary<typeof TestBotWorker | typeof QemuWorker> = {
 	testbot_hat: TestBotWorker,
@@ -352,7 +352,27 @@ async function setup(): Promise<express.Application> {
 						throw new Error('Invalid request');
 					}
 			} catch (err) {
-				console.error(err);
+				res.status(500).send(err.stack);
+				next(err);
+			}
+		},
+	);
+
+	app.post(
+		'/dut/push',
+		jsonParser,
+		async (
+			req: express.Request,
+			res: express.Response,
+			next: express.NextFunction,
+		) => {
+			try {
+				// receive files put to specific directory
+
+
+				// do a balena push
+			} catch (err) {
+				res.status(500).send(err.stack);
 				next(err);
 			}
 		},
@@ -401,6 +421,25 @@ async function setup(): Promise<express.Application> {
 		} catch (e) {
 			res.status(500).send(e.stack);
 		}
+	});
+
+	app.get('/dut/serial', (
+		req: express.Request, 
+		res: express.Response,) => {
+		
+		const reportPath = '/reports/dut-serial.txt';
+		readFile(reportPath, (err, data) => {
+			if (err) {
+				console.error(`Unable to read ${reportPath}`, reportPath);
+				res.status(500);
+				res.send({ message: 'Cannot read the requested report' });
+				return;
+			}
+
+			res.setHeader('content-type', 'text/plain');
+			res.status(200);
+			res.send(data);
+		});
 	});
 
 
