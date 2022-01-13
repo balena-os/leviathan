@@ -1,5 +1,9 @@
 #!/bin/sh
 
+if [ "${WORKER_TYPE}" != "qemu" ]; then
+	exec node ./build/bin
+fi
+
 tun_minor=$(grep tun /proc/misc | cut -d ' ' -f1)
 if [ -n "${tun_minor}" ]; then
 	mkdir -p /dev/net
