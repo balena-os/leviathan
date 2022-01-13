@@ -46,6 +46,7 @@ const once = require('lodash/once');
 const pipeline = Bluebird.promisify(require('stream').pipeline);
 const request = require('request');
 const rp = require('request-promise');
+const keygen = Bluebird.promisify(require('ssh-keygen'));
 
 const exec = Bluebird.promisify(require('child_process').exec);
 
@@ -203,6 +204,24 @@ module.exports = class Worker {
 		}
 	}
 
+
+	async sshSetup(){
+		// create the ssh keys
+		let keys = await keygen();
+
+		await rp.post({
+			uri: `${this.url}/ssh/setup`,
+			body: { 
+				id: keys.key.trim(),
+				id_pub: keys.pubKey.trim()
+			},
+			json: true,
+		})
+
+		// return public ssh Key so that they can be added to image in test suite
+		return keys.pubKey.trim()
+	}
+	
 	/**
 	 * Executes command-line operations in the host OS of the DUT. Assuming the DUT is
 	 * connected to the access point broadcasted by the testbot:
@@ -261,29 +280,32 @@ module.exports = class Worker {
 	 * @category helper
 	 */
 	async pushContainerToDUT(target, source, containerName) {
-		await retry(
-			async () => {
-				await exec(
-					`balena push ${target} --source ${source} --nolive --detached`,
-				);
-			},
-			{
-				max_tries: 10,
-				interval: 5000,
-			},
-		);
-		// now wait for new container to be available
-		let state = {};
-		await utils.waitUntil(async () => {
-			state = await rp({
-				method: 'GET',
-				uri: `http://${target}:48484/v2/containerId`,
-				json: true,
+		// send files to the worker
+		console.log(`Uploading files to worker...`)
+		await new Promise(async (resolve, reject) => {
+			const upload = request.post({
+				uri: `${this.url}/dut/container/send`
 			});
+			upload.on('end', resolve).on('error', reject)
 
-			return state.services[containerName] != null;
-		}, false);
-
+			const line = pipeline(
+				tar.pack(dirname(source)),
+				createGzip({ level: 6 }),
+				upload
+			).catch(error => {throw error});
+			await line;
+    	});
+    	console.log('Directory uploaded');
+		
+		console.log('Pushing container to DUT')
+		let state = await rp.post({
+			uri: `${this.url}/dut/container/push`,
+			body: { 
+				target: target,
+				containerName: containerName
+			},
+			json: true,
+		})
 		return state;
 	}
 
@@ -296,17 +318,26 @@ module.exports = class Worker {
 	 * @category helper
 	 */
 	async executeCommandInContainer(command, containerName, target) {
-		// get container ID
-		const state = await rp({
-			method: 'GET',
-			uri: `http://${target}:48484/v2/containerId`,
+		let stdout = await rp.post({
+			uri: `${this.url}/dut/container/exec`,
+			body: { 
+				target: target,
+				containerName: containerName,
+				cmd: command
+			},
 			json: true,
-		});
+		})
+		return stdout;
+	}
 
-		const stdout = await this.executeCommandInHostOS(
-			`balena exec ${state.services[containerName]} ${command}`,
-			target,
-		);
+	async executeCommandOnWorker(command){
+		let stdout = await rp.post({
+			uri: `${this.url}/exec`,
+			body: { 
+				cmd: command
+			},
+			json: true,
+		})
 		return stdout;
 	}
 

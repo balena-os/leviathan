@@ -34,7 +34,8 @@
 		"lodash": "^4.17.11",
 		"multicast-dns": "git+https://github.com/balena-io-modules/multicast-dns#listen-on-all-interfaces",
 		"mz": "^2.7.0",
-		"tar-fs": "^2.0.0"
+		"tar-fs": "^2.0.0",
+		"ts-retry": "^2.3.9"
 	},
 	"devDependencies": {
 		"@balena/lint": "^6.2.0",

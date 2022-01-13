@@ -4,14 +4,16 @@ import { multiWrite } from 'etcher-sdk';
 import * as express from 'express';
 import * as http from 'http';
 import { getSdk } from 'balena-sdk';
-import { Readable } from 'stream';
+import { Readable, Stream } from 'stream';
 import { join } from 'path';
 import { homedir } from 'os';
-
+import * as tar from 'tar-fs';
 import * as util from 'util';
 const execSync = util.promisify(exec)
+const pipeline = util.promisify(Stream.pipeline);
 
-import { executeCommandOverSSH } from './helpers/ssh';
+
+import { executeCommandOverSSH, executeCommandInHostOS } from './helpers/ssh';
 
 import {
 	getIpFromIface,
@@ -20,7 +22,11 @@ import {
 } from './helpers';
 import { TestBotWorker } from './workers/testbot';
 import QemuWorker from './workers/qemu';
-import { writeFileSync, readFile } from 'fs-extra';
+import { writeFileSync, readFile, remove } from 'fs-extra';
+import { createGzip, createGunzip } from 'zlib';
+import { retryAsync } from 'ts-retry';
+import * as rp from 'request-promise';
+
 
 const workersDict: Dictionary<typeof TestBotWorker | typeof QemuWorker> = {
 	testbot_hat: TestBotWorker,
@@ -88,6 +94,7 @@ async function setup(): Promise<express.Application> {
 		console.log(`API key not available...`);
 	}
 
+	const CONTAINERPATH = `/tmp/container`
 	await worker.setup();
 
 	/**
@@ -311,6 +318,7 @@ async function setup(): Promise<express.Application> {
 				res.send('OK');
 			} catch (err) {
 				console.error(err);
+				res.status(500).send(err.stack);
 				next(err);
 			}
 		},
@@ -330,27 +338,12 @@ async function setup(): Promise<express.Application> {
 						let cmd = req.body.cmd;
 						let target = await resolveLocalTarget(`${req.body.target}.local`);
 						// execute command over ssh here - TODO - do we keep the retries?
-						const result = await executeCommandOverSSH(
-							`source /etc/profile ; ${cmd}`,
-							{
-								host: target,
-								port: '22222',
-								username: 'root',
-							},
-						);
-		
-						if (typeof result.code === 'number' && result.code !== 0) {
-							throw new Error(
-								`"${cmd}" failed. stderr: ${result.stderr}, stdout: ${result.stdout}, code: ${result.code}`,
-							);
-						}
-		
-						res.send(result.stdout);
+						const result = await executeCommandInHostOS(cmd, target);
+						res.send(result);
 					}
-						
-					} else {
+				} else {
 						throw new Error('Invalid request');
-					}
+				}
 			} catch (err) {
 				res.status(500).send(err.stack);
 				next(err);
@@ -359,7 +352,7 @@ async function setup(): Promise<express.Application> {
 	);
 
 	app.post(
-		'/dut/push',
+		'/dut/container/send',
 		jsonParser,
 		async (
 			req: express.Request,
@@ -367,10 +360,94 @@ async function setup(): Promise<express.Application> {
 			next: express.NextFunction,
 		) => {
 			try {
+				
 				// receive files put to specific directory
+				res.writeHead(202, {
+					'Content-Type': 'text/event-stream',
+					Connection: 'keep-alive',
+				});
+	
+				const timer = setInterval(() => {
+					res.write('pending');
+				}, httpServer.keepAliveTimeout);
+	
 
+				// Make sure we start clean
+				await remove(CONTAINERPATH);				
+				const line = pipeline(
+					req,
+					createGunzip(),
+					tar.extract(CONTAINERPATH)
+				).catch((err) =>{ 
+					throw err 
+				})
 
-				// do a balena push
+				await line;
+				res.send('OK')
+			} catch (err) {
+				res.status(500).send(err.stack);
+				next(err);
+			}
+		},
+	);
+
+	app.post(
+		'/dut/container/push',
+		jsonParser,
+		async (
+			req: express.Request,
+			res: express.Response,
+			next: express.NextFunction,
+		) => {
+			try {
+				await execSync(
+					`balena push ${req.body.target} --source ${CONTAINERPATH} --nolive --detached`,
+				);
+				let state:any = {}
+				await retryAsync(async() => {
+					state = await rp({
+						method: 'GET',
+						uri: `http://${req.body.target}:48484/v2/containerId`,
+						json: true,
+					});
+
+					return state;
+				}, 
+				{
+					delay: 5000, 
+					maxTry:30, 
+					until: lastResult => lastResult.services[req.body.containerName] != null
+				});
+				res.send(state);
+			} catch (err) {
+				res.status(500).send(err.stack);
+				next(err);
+			}
+		},
+	);
+
+	app.post(
+		'/dut/container/exec',
+		jsonParser,
+		async (
+			req: express.Request,
+			res: express.Response,
+			next: express.NextFunction,
+		) => {
+			try {
+				let state = await rp({
+					method: 'GET',
+					uri: `http://${req.body.target}:48484/v2/containerId`,
+					json: true,
+				});
+
+				let target = await resolveLocalTarget(`${req.body.target}.local`);
+				const result = await executeCommandInHostOS(
+					`balena exec ${state.services[req.body.containerName]} ${req.body.cmd}`,
+					target,
+				);
+				
+				res.send(result);
 			} catch (err) {
 				res.status(500).send(err.stack);
 				next(err);
