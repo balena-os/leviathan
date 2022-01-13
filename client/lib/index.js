@@ -325,6 +325,7 @@ module.exports = class Client extends PassThrough {
 										artifact.data = JSON.parse(conf);
 									}
 									artifact.data.deviceType = deviceType;
+									artifact.data.image = image;
 									break;
 								default:
 									throw new Error('Unexpected upload request. Panicking...');
