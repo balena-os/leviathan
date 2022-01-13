@@ -1,9 +1,11 @@
+import e = require("express");
+
 const Bluebird = require('bluebird');
 const SSH = require('node-ssh');
 const assignIn = require('lodash/assignIn');
 
-const getSSHClientDisposer = (config) => {
-	const createSSHClient = (conf) => {
+const getSSHClientDisposer = (config: any) => {
+	const createSSHClient = (conf: any) => {
 		return Bluebird.resolve(
 			new SSH().connect(
 				assignIn(
@@ -17,7 +19,7 @@ const getSSHClientDisposer = (config) => {
 		);
 	};
 
-	return createSSHClient(config).disposer((client) => {
+	return createSSHClient(config).disposer((client: any) => {
 		client.dispose();
 	});
 };
@@ -32,10 +34,10 @@ const getSSHClientDisposer = (config) => {
  *
  * @category helper
  */
-export async function executeCommandOverSSH (command, config) {
-	return Bluebird.using(getSSHClientDisposer(config), (client) => {
-		return new Bluebird(async (resolve, reject) => {
-			client.connection.on('error', (err) => {
+export async function executeCommandOverSSH (command: string, config: any) {
+	return Bluebird.using(getSSHClientDisposer(config), (client: any) => {
+		return new Bluebird(async (resolve:any, reject:any) => {
+			client.connection.on('error', (err:Error) => {
 				reject(err);
 			});
 			resolve(
@@ -45,4 +47,24 @@ export async function executeCommandOverSSH (command, config) {
 			);
 		});
 	});
+}
+
+export async function executeCommandInHostOS(command:string, target:string) {
+	// execute command over ssh here - TODO - do we keep the retries?
+	const result = await executeCommandOverSSH(
+		`source /etc/profile ; ${command}`,
+		{
+			host: target,
+			port: '22222',
+			username: 'root',
+		},
+	);
+
+	if (typeof result.code === 'number' && result.code !== 0) {
+		throw new Error(
+			`"${command}" failed. stderr: ${result.stderr}, stdout: ${result.stdout}, code: ${result.code}`,
+		);
+	}
+
+	return result.stdout;
 }
