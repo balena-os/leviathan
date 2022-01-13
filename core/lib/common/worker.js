@@ -230,26 +230,17 @@ module.exports = class Worker {
 			tries: 10,
 		},
 	) {
-		const ip = /.*\.local/.test(target) ? await this.ip(target) : target;
-
 		return retry(
 			async () => {
-				const result = await utils.executeCommandOverSSH(
-					`source /etc/profile ; ${command}`,
-					{
-						host: ip,
-						port: '22222',
-						username: 'root',
+				let stdout = await rp.post({
+					uri: `${this.url}/dut/exec`,
+					body: { 
+						target: target,
+						cmd: command
 					},
-				);
-
-				if (typeof result.code === 'number' && result.code !== 0) {
-					throw new Error(
-						`"${command}" failed. stderr: ${result.stderr}, stdout: ${result.stdout}, code: ${result.code}`,
-					);
-				}
-
-				return result.stdout;
+					json: true,
+				})
+				return stdout
 			},
 			{
 				max_tries: timeout.tries,
