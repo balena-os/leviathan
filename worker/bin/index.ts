@@ -15,7 +15,7 @@ import setup from '../lib/index';
 		if (typeof address !== 'string') {
 			console.log(`Worker http listening on port ${address.port}`);
 		} else {
-			throw new Error('Failed to allocate server address.');
+			console.log(`Worker listening at path ${address}`);
 		}
 	});
 })();
