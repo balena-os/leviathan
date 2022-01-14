@@ -52,23 +52,18 @@ module.exports = {
 			delete this.suite.options.balenaOS.network.wireless;
 		}
 
-		// Downloads the balenaOS image that will be flashed to the DUT
-		// This is optional, you can provide your own balenaOS images as well.
-		// Make this optional when https://github.com/balena-os/leviathan/issues/600 is resolved
-		const path = await this.context
-			.get()
-			.sdk.fetchOS(
-				this.suite.options.balenaOS.download.version,
-				this.suite.deviceType.slug,
-			);
-
 		// Create an instance of the balenaOS object, containing information such as device type, and config.json options
 		this.suite.context.set({
 			os: new BalenaOS(
 				{
 					deviceType: this.suite.deviceType.slug,
 					network: this.suite.options.balenaOS.network,
-					image: `${path}`,
+					image: this.suite.options.image === 'false' ? `${await this.context
+						.get()
+						.sdk.fetchOS(
+							this.suite.options.balenaOS.download.version,
+							this.suite.deviceType.slug,
+						)}` : undefined,
 					configJson: {
 						uuid: this.suite.options.balenaOS.config.uuid,
 						os: {
