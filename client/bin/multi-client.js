@@ -567,6 +567,11 @@ class State {
 
 				// after creating child process, add the worker to the busy workers array
 				busyWorkers.push(job.workers);
+				
+				// make the worker change state to busy to stop other jobs from trying to use it
+				let status = await rp.get(
+					new url.URL('/start', deviceUrl).toString(),
+				);
 
 				// child state
 				children[child.pid] = {

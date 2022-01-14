@@ -208,7 +208,7 @@ module.exports = class Client extends PassThrough {
 					time: 100,
 				});
 				const req = request.post({
-					uri: `${this.uri.href}upload`,
+					uri: `http://localhost:80/upload`,
 					headers: {
 						'x-token': token,
 						'x-artifact': artifact.name,
@@ -285,11 +285,11 @@ module.exports = class Client extends PassThrough {
 	run() {
 		const main = async (deviceType, suite, conf, image) => {
 			process.on('SIGINT', async () => {
-				await rp.post(`${this.uri.href}stop`).catch(this.log.bind(this));
+				await rp.post(`http://localhost:80/stop`).catch(this.log.bind(this));
 				process.exit(128 + constants.signals.SIGINT);
 			});
 			process.on('SIGTERM', async () => {
-				await rp.post(`${this.uri.href}stop`).catch(this.log.bind(this));
+				await rp.post(`http://localhost:80/stop`).catch(this.log.bind(this));
 				process.exit(128 + constants.signals.SIGTERM);
 			});
 
@@ -325,6 +325,9 @@ module.exports = class Client extends PassThrough {
 										artifact.data = JSON.parse(conf);
 									}
 									artifact.data.deviceType = deviceType;
+									artifact.data.workerUrl = this.uri.href;
+									console.log(`CONFIG:`)
+									console.log(artifact.data);
 									break;
 								default:
 									throw new Error('Unexpected upload request. Panicking...');
@@ -362,7 +365,7 @@ module.exports = class Client extends PassThrough {
 
 			const createWs = () =>
 				new Promise((resolve, reject) => {
-					const wsConnection = new WebSocket(`ws://${this.uri.host}/start`);
+					const wsConnection = new WebSocket(`ws://localhost:80/start`);
 
 					const msgHandler = wsMessageHandler(wsConnection);
 					wsConnection.on('message', msgHandler);
@@ -425,19 +428,7 @@ module.exports = class Client extends PassThrough {
 				this.log(error.stack);
 			})
 			.finally(async () => {
-				await new Promise((resolve, reject) => {
-					request
-						.get(`${this.uri.href}artifacts`)
-						.pipe(zlib.createGunzip())
-						.pipe(
-							fs.createWriteStream(
-								join(this.workdir, `${config.get('leviathan.artifacts')}.tar`),
-							),
-						)
-						.on('end', resolve)
-						.on('error', reject);
-				});
-				await rp.post(`${this.uri.href}stop`).catch(this.log);
+				await rp.post(`localhost:80/stop`).catch(this.log);
 			});
 	}
 };
