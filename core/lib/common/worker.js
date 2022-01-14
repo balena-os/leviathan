@@ -214,7 +214,7 @@ module.exports = class Worker {
 
 	async sshSetup(){
 		// create the ssh keys
-		let keys = await keygen();
+		let keys = await keygen({location: '/tmp/testKeys'});
 
 		await rp.post({
 			uri: `${this.url}/ssh/setup`,
