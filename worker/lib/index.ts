@@ -324,6 +324,7 @@ async function setup(): Promise<express.Application> {
 				writeFileSync(keyPath, req.body.id);
 				writeFileSync(keyPath, req.body.id_pub);
 				await execSync('ssh-add -D');
+				await execSync(`chmod 600 ${keyPath}`);
 				await execSync(`ssh-add ${keyPath}`);
 				res.send('OK');
 			} catch (err) {
