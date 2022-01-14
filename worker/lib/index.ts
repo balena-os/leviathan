@@ -322,7 +322,7 @@ async function setup(): Promise<express.Application> {
 				const keyPathPub = join(homedir(), 'id.pub');;
 				// need to write these strings to files
 				writeFileSync(keyPath, req.body.id);
-				writeFileSync(keyPath, req.body.id_pub);
+				writeFileSync(keyPathPub, req.body.id_pub);
 				await execSync('ssh-add -D');
 				await execSync(`chmod 600 ${keyPath}`);
 				await execSync(`ssh-add ${keyPath}`);
