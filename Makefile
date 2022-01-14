@@ -30,7 +30,7 @@ export SUITES
 .PHONY: .FORCE
 .FORCE:
 
-DOCKERCOMPOSE := $(shell command -v docker-compose 2>/dev/null || echo ./bin/docker-compose)
+DOCKERCOMPOSE := ./bin/docker-compose
 YQ := $(shell command -v yq 2>/dev/null || echo ./bin/yq)
 
 # install docker-compose as a run script if binary not in path

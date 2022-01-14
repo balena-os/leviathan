@@ -48,4 +48,4 @@ COPY --from=node-build /tmp/node/package.json .
 COPY --from=node-build /tmp/node/node_modules node_modules
 COPY --from=node-build /tmp/node/build build
 
-CMD [ "./entry.sh" ]
+CMD ./entry.sh
