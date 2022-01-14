@@ -123,7 +123,7 @@ module.exports = class Worker {
 					}
 				});
 
-				pipeline(fs.createReadStream(imagePath), req);
+				pipeline(fs.createReadStream(imagePath), createGzip({ level: 6 }), req);
 			});
 			this.logger.log('Flash completed');
 		}
