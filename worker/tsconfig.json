@@ -14,7 +14,9 @@
 		"resolveJsonModule": true,
 		"strictNullChecks": true,
 		"noImplicitAny": true,
-		"allowJs": true
+		"allowJs": true,
+		"moduleResolution": "node",
+		"allowSyntheticDefaultImports": true
 	},
 	"include": [
 		"./typings/*.d.ts",

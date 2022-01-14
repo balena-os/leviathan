@@ -34,6 +34,7 @@
 		"lodash": "^4.17.11",
 		"multicast-dns": "git+https://github.com/balena-io-modules/multicast-dns#listen-on-all-interfaces",
 		"mz": "^2.7.0",
+		"node-ssh": "^12.0.2",
 		"tar-fs": "^2.0.0",
 		"ts-retry": "^2.3.9"
 	},
@@ -52,6 +53,7 @@
 		"@types/node": "^10.12.18",
 		"@types/request-promise": "^4.1.42",
 		"@types/sinon": "^7.0.11",
+		"@types/ssh2": "^0.5.50",
 		"@types/tar-fs": "^1.16.1",
 		"@types/tar-stream": "^1.6.1",
 		"@types/uuid": "^3.4.4",

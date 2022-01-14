@@ -1,13 +1,12 @@
-import e = require("express");
+import * as Bluebird from 'bluebird'
 
-const Bluebird = require('bluebird');
-const SSH = require('node-ssh');
-const assignIn = require('lodash/assignIn');
+import { NodeSSH } from 'node-ssh';
+import { assignIn } from 'lodash';
 
 const getSSHClientDisposer = (config: any) => {
 	const createSSHClient = (conf: any) => {
 		return Bluebird.resolve(
-			new SSH().connect(
+			new NodeSSH().connect(
 				assignIn(
 					{
 						agent: process.env.SSH_AUTH_SOCK,
