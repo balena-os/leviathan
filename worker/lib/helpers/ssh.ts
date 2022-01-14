@@ -50,7 +50,7 @@ export async function executeCommandOverSSH (command: string, config: any) {
 
 export async function executeCommandInHostOS(command:string, target:string) {
 	// execute command over ssh here - TODO - do we keep the retries?
-	const result = await executeCommandOverSSH(
+	const result: any = await executeCommandOverSSH(
 		`source /etc/profile ; ${command}`,
 		{
 			host: target,
