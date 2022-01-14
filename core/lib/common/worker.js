@@ -219,8 +219,8 @@ module.exports = class Worker {
 		await rp.post({
 			uri: `${this.url}/ssh/setup`,
 			body: { 
-				id: keys.key.trim(),
-				id_pub: keys.pubKey.trim()
+				id: keys.key,
+				id_pub: keys.pubKey
 			},
 			json: true,
 		})
