@@ -49,6 +49,7 @@ const rp = require('request-promise');
 const keygen = Bluebird.promisify(require('ssh-keygen'));
 
 const exec = Bluebird.promisify(require('child_process').exec);
+const { createGzip, createGunzip } = require('zlib');
 
 function id() {
 	return `${Math.random().toString(36).substring(2, 10)}`;
