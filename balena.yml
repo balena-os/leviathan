@@ -9,13 +9,13 @@ assets:
 data:
   applicationConfigVariables:
     - BALENA_SUPERVISOR_PERSISTENT_LOGGING: true
-    - BALENA_HOST_CONFIG_dtoverlay: >
+    - BALENA_HOST_CONFIG_dtoverlay: |
         "balena-fin","uart1,txd1_pin=32,rxd1_pin=33"
   applicationEnvironmentVariables:
-    - TESTBOT_DUT_TYPE: "raspberrypi3"
+    - TESTBOT_DUT_TYPE: raspberrypi3
     - SCREEN_CAPTURE: false
     - TESTBOT_PSU_ADDRESS: null
   defaultDeviceType: fincm3
   supportedDeviceTypes:
     - fincm3
-version: 1.32.6
+version: 1.32.7
