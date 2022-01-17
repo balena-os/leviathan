@@ -50,6 +50,7 @@ const keygen = Bluebird.promisify(require('ssh-keygen'));
 
 const exec = Bluebird.promisify(require('child_process').exec);
 const { createGzip, createGunzip } = require('zlib');
+const tar = require('tar-fs');
 
 function id() {
 	return `${Math.random().toString(36).substring(2, 10)}`;
@@ -297,7 +298,7 @@ module.exports = class Worker {
 			upload.on('end', resolve).on('error', reject)
 
 			const line = pipeline(
-				tar.pack(dirname(source)),
+				tar.pack(source),
 				createGzip({ level: 6 }),
 				upload
 			).catch(error => {throw error});
@@ -427,5 +428,22 @@ module.exports = class Worker {
 		} catch (e) {
 			this.logger.log(`Couldn't retrieve logs with error: ${e}`);
 		}
+	}
+
+	async httpFromWorker(method, uri, data={}){
+		const result = await rp({
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			json: true,
+			body: {
+				method: method,
+				data: data,
+				uri: uri,
+			},
+			uri: this.url,
+		});
+		return result;
 	}
 };

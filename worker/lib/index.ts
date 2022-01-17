@@ -394,10 +394,11 @@ async function setup(): Promise<express.Application> {
 				})
 
 				await line;
-				res.send('OK')
 			} catch (err) {
-				res.status(500).send(err.stack);
+				res.write(err)
 				next(err);
+			} finally {
+				res.end();
 			}
 		},
 	);
@@ -529,6 +530,32 @@ async function setup(): Promise<express.Application> {
 			res.send(data);
 		});
 	});
+
+	app.post(
+		'/dut/http-proxy',
+		jsonParser,
+		async (
+			req: express.Request,
+			res: express.Response,
+			next: express.NextFunction,
+		) => {
+			try {
+				let result = await rp({
+					method: req.body.method,
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					json: true,
+					body: req.body.data,
+					uri: req.body.uri
+				});
+				
+				res.send(result);
+			} catch (err) {
+				next(err);
+			}
+		},
+	);
 
 
 	return app;
