@@ -25,7 +25,6 @@
 
 'use strict';
 
-const assignIn = require('lodash/assignIn');
 const config = require('config');
 const isEmpty = require('lodash/isEmpty');
 const isObject = require('lodash/isObject');
@@ -52,6 +51,18 @@ const State = require('./state');
 const Teardown = require('./teardown');
 const Test = require('./test');
 
+// Device identification
+function uid(a) {
+	return a
+		? (a ^ (Math.random() * 16)).toString(16)
+		: ([1e15] + 1e15).replace(/[01]/g, uid);
+}
+
+// Test identification
+const id = `${Math.random()
+	.toString(36)
+	.substring(2, 10)}`;
+
 function cleanObject(object) {
 	if (!isObject(object)) {
 		return;
@@ -72,17 +83,43 @@ function cleanObject(object) {
 class Suite {
 	constructor() {
 		const conf = require(config.get('leviathan.uploads.config'));
-
 		this.rootPath = path.join(__dirname, '..');
-		this.options = assignIn(
-			{
-				packdir: config.get('leviathan.workdir'),
-				tmpdir: conf.tmpdir || tmpdir(),
-				interactiveTests: conf.interactive,
-				replOnFailure: conf.repl,
+		const options = {
+			id,
+			packdir: config.get('leviathan.workdir'),
+			tmpdir: conf.tmpdir || tmpdir(),
+			interactiveTests: conf.interactive,
+			replOnFailure: conf.repl,
+			balena: {
+				application: {
+					env: {
+						delta: conf.supervisorDelta || false,
+					},
+				},
+				apiKey: conf.balenaApiKey,
+				apiUrl: conf.balenaApiUrl,
+				organization: conf.organization
 			},
-			require(path.join(config.get('leviathan.uploads.suite'), 'conf'))(conf),
-		);
+			balenaOS: {
+				config: {
+					uuid: uid(),
+				},
+				download: {
+					version: conf.downloadVersion,
+				},
+				network: {
+					wired: conf.networkWired,
+					wireless: conf.networkWireless,
+				}
+			}
+		}
+
+		// In the future, deprecate the options object completely to create a mega-conf
+		// Breaking changes will need to be done to both test suites + helpers
+		this.options = {
+			...options,
+			...conf
+		}
 		cleanObject(this.options);
 
 		// State

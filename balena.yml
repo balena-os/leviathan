@@ -7,14 +7,15 @@ assets:
     data:
       url: 'https://github.com/balena-os/leviathan'
 data:
+  applicationConfigVariables:
+    - BALENA_SUPERVISOR_PERSISTENT_LOGGING: true
+    - BALENA_HOST_CONFIG_dtoverlay: |
+        "balena-fin","uart1,txd1_pin=32,rxd1_pin=33"
   applicationEnvironmentVariables:
     - TESTBOT_DUT_TYPE: raspberrypi3
     - SCREEN_CAPTURE: false
     - TESTBOT_PSU_ADDRESS: null
-    - BALENA_SUPERVISOR_PERSISTENT_LOGGING: true
-    - BALENA_HOST_CONFIG_dtoverlay: |
-        "balena-fin","uart1,txd1_pin=32,rxd1_pin=33"
   defaultDeviceType: fincm3
   supportedDeviceTypes:
     - fincm3
-version: 1.32.6
+version: 1.33.0

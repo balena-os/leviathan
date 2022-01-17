@@ -326,8 +326,7 @@ module.exports = class Client extends PassThrough {
 									}
 									artifact.data.deviceType = deviceType;
 									artifact.data.workerUrl = this.uri.href;
-									console.log(`CONFIG:`)
-									console.log(artifact.data);
+									artifact.data.image = image;
 									break;
 								default:
 									throw new Error('Unexpected upload request. Panicking...');
