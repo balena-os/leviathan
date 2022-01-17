@@ -88,7 +88,6 @@ class Suite {
 			id,
 			packdir: config.get('leviathan.workdir'),
 			tmpdir: conf.tmpdir || tmpdir(),
-			interactiveTests: conf.interactive,
 			replOnFailure: conf.repl,
 			balena: {
 				application: {
@@ -181,7 +180,6 @@ class Suite {
 			// Check our contracts
 			if (
 				skip ||
-				(interactive && !this.options.interactiveTests) ||
 				(deviceType != null && !ajv.compile(deviceType)(this.deviceType)) ||
 				(os != null &&
 					this.context.get().os != null &&
