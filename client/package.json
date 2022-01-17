@@ -9,7 +9,7 @@
 	},
 	"scripts": {
 		"lint:fix": "balena-lint -e js -e ts --fix bin/ lib/ test/ *.js",
-		"lint": "balena-lint -e js -e ts --tests bin/ lib/ test/ *.js",
+		"lint": "balena-lint -u -e js -e ts --tests bin/ lib/ test/ *.js",
 		"test": "jest",
 		"build": "tsc && cp -r ./config ./build/config",
 		"single-start": "npm run build && cd build && node bin/single-client.js",
@@ -19,8 +19,7 @@
 	},
 	"dependencies": {
 		"ajv": "^6.10.2",
-		"balena-sdk": "^16.12.1",
-		"blessed": "^0.1.81",
+		"balena-sdk": "^16.3.0",
 		"bluebird": "^3.5.3",
 		"bluebird-retry": "^0.11.0",
 		"config": "^3.2.2",
@@ -38,9 +37,6 @@
 		"yargs": "^13.2.4"
 	},
 	"devDependencies": {
-		"@babel/core": "^7.6.0",
-		"@babel/node": "^7.6.1",
-		"@babel/preset-env": "^7.6.0",
 		"@balena/lint": "^6.2.0",
 		"@types/jest": "^26.0.7",
 		"jest": "^26.1.0",
