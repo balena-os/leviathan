@@ -347,7 +347,7 @@ async function setup(): Promise<express.Application> {
 				if (req.body.cmd != null){
 					if(req.body.target != null){
 						let cmd = req.body.cmd;
-						let target = await resolveLocalTarget(`${req.body.target}.local`);
+						let target = await resolveLocalTarget(`${req.body.target}`);
 						// execute command over ssh here - TODO - do we keep the retries?
 						const result = await executeCommandInHostOS(cmd, target);
 						res.send(result);
@@ -452,7 +452,7 @@ async function setup(): Promise<express.Application> {
 					json: true,
 				});
 
-				let target = await resolveLocalTarget(`${req.body.target}.local`);
+				let target = await resolveLocalTarget(`${req.body.target}`);
 				const result = await executeCommandInHostOS(
 					`balena exec ${state.services[req.body.containerName]} ${req.body.cmd}`,
 					target,
