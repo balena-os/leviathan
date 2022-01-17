@@ -49,7 +49,6 @@ module.exports = {
         networkWired: false,
         networkWireless: true,
         downloadVersion: 'latest',
-        interactiveTests: false,
         balenaApiKey: process.env.BALENACLOUD_API_KEY,
         balenaApiUrl: 'balena-cloud.com',
         organization: process.env.BALENACLOUD_ORG

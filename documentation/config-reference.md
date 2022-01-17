@@ -9,7 +9,6 @@ module.exports = {
     config: {
         networkWired: false,
         networkWireless: true,
-        interactiveTests: false,
         downloadVersion: 'latest',
         balenaApiKey: process.env.BALENACLOUD_API_KEY,
         balenaApiUrl: 'balena-cloud.com',
@@ -38,7 +37,6 @@ _If you don't want to upload an image, set the image property to `false`. For ex
 *Deprecated Properties*
 
 - `downloadType` configures where the OS will be staged for upload to testbot. `local` is the only available value for it at the moment
-- `interactiveTests` If it's a semi-auto test or not. 
 
 ### Different `workers` configurations available
 
@@ -81,7 +79,7 @@ module.exports = [{
         config: {
             networkWired: false,
             networkWireless: true,
-            interactiveTests: false,
+            downloadVersion: 'latest',
             balenaApiKey: process.env.BALENACLOUD_API_KEY,
             balenaApiUrl: 'balena-cloud.com',
             organization: process.env.BALENACLOUD_ORG,
@@ -99,7 +97,6 @@ module.exports = [{
             networkWired: false,
             networkWireless: true,
             downloadVersion: 'latest',
-            interactiveTests: false,
             balenaApiKey: process.env.BALENACLOUD_API_KEY,
             balenaApiUrl: 'balena-cloud.com',
             organization: process.env.BALENACLOUD_ORG
@@ -116,7 +113,7 @@ module.exports = [{
         config: {
             networkWired: false,
             networkWireless: true,
-            interactiveTests: false,
+            downloadVersion: 'latest',
             balenaApiKey: process.env.BALENACLOUD_API_KEY,
             balenaApiUrl: 'balena-cloud.com',
             organization: process.env.BALENACLOUD_ORG
@@ -139,7 +136,7 @@ module.exports = [{
         config: {
             networkWired: false,
             networkWireless: true,
-            interactiveTests: false,
+            downloadVersion: 'latest',
             balenaApiKey: process.env.BALENACLOUD_API_KEY,
             balenaApiUrl: 'balena-cloud.com',
             organization: process.env.BALENACLOUD_ORG,
@@ -153,7 +150,7 @@ module.exports = [{
         config: {
             networkWired: false,
             networkWireless: true,
-            interactiveTests: false,
+            downloadVersion: 'latest',
             balenaApiKey: process.env.BALENACLOUD_API_KEY,
             balenaApiUrl: 'balena-cloud.com',
             organization: process.env.BALENACLOUD_ORG
@@ -174,7 +171,7 @@ module.exports = [{
         config: {
             networkWired: false,
             networkWireless: true,
-            interactiveTests: false,
+            downloadVersion: 'latest',
             balenaApiKey: process.env.BALENACLOUD_API_KEY,
             balenaApiUrl: 'balena-cloud.com',
             organization: process.env.BALENACLOUD_ORG,
@@ -191,7 +188,7 @@ module.exports = [{
         config: {
             networkWired: false,
             networkWireless: true,
-            interactiveTests: false,
+            downloadVersion: 'latest',
             balenaApiKey: process.env.BALENACLOUD_API_KEY,
             balenaApiUrl: 'balena-cloud.com',
             organization: process.env.BALENACLOUD_ORG
