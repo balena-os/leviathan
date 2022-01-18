@@ -9,6 +9,7 @@ services:
     volumes:
       - 'core-storage:/data'
       - 'reports-storage:/reports'
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - UDEV=0
       - WORKER_TYPE=qemu
