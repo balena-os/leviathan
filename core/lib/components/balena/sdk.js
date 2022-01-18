@@ -131,7 +131,7 @@ module.exports = class BalenaSDK {
 	 * @category helper
 	 */
 	getAllSupportedOSVersions(deviceType) {
-		return this.balena.models.os.getSupportedVersions(deviceType);
+		return this.balena.models.os.getAvailableOsVersions(deviceType);
 	}
 
 	// Deprecated - Use fetchOS method instead
@@ -602,28 +602,31 @@ module.exports = class BalenaSDK {
 	/**
 	 * Downloads provided version of balenaOS for the provided deviceType using balenaSDK
 	 *
-	 * @param version The semver compatible balenaOS version that will be downloaded, example: `2.80.3+rev1.dev`. Default value: `latest` where latest development variant of balenaOS will be downloaded.
+	 * @param versionOrRange The semver compatible balenaOS version that will be downloaded, example: `2.80.3+rev1`. Default value: `latest` where latest development variant of balenaOS will be downloaded.
 	 * @param deviceType The device type for which balenaOS needs to be downloaded
+	 * @param osType Can be one of 'default', 'esr' or null to include all types
 	 * @remark Stores the downloaded image in `leviathan.downloads` directory,
 	 * @throws Rejects promise if download fails. Retries thrice to download an image before giving up.
 	 *
 	 * @category helper
 	 */
-	async fetchOS(version = 'latest', deviceType) {
-		if (version === 'latest') {
-			const versions = await this.balena.models.os.getSupportedVersions(
-				deviceType,
-			);
-			// make sure we always flash the development variant
-			version = versions.latest.replace('prod', 'dev');
-		}
+	async fetchOS(versionOrRange = 'latest', deviceType, osType = 'default') {
+
+		// normalize the version string/range, supports 'latest', 'recommended', etc
+		let version = await this.balena.models.os.getMaxSatisfyingVersion(
+			deviceType, versionOrRange, osType
+		);
+
+		// variant is deprecated in recent balenaOS releases but
+		// if prod variant is still present after being normalized, replace it with dev
+		version = version.replace('.prod', '.dev');
 
 		const path = join(
 			config.get('leviathan.downloads'),
 			`balenaOs-${version}.img`,
 		);
 
-		// Caching implmentation if needed - Check https://github.com/balena-os/leviathan/issues/441
+		// Caching implementation if needed - Check https://github.com/balena-os/leviathan/issues/441
 
 		let attempt = 0;
 		const downloadLatestOS = async () => {
