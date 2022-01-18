@@ -131,7 +131,7 @@ module.exports = class BalenaSDK {
 	 * @category helper
 	 */
 	getAllSupportedOSVersions(deviceType) {
-		return this.balena.models.os.getSupportedVersions(deviceType);
+		return this.balena.models.os.getAvailableOsVersions(deviceType);
 	}
 
 	// Deprecated - Use fetchOS method instead
@@ -602,7 +602,7 @@ module.exports = class BalenaSDK {
 	/**
 	 * Downloads provided version of balenaOS for the provided deviceType using balenaSDK
 	 *
-	 * @param version The semver compatible balenaOS version that will be downloaded, example: `2.80.3+rev1.dev`. Default value: `latest` where latest development variant of balenaOS will be downloaded.
+	 * @param version The semver compatible balenaOS version that will be downloaded, example: `2.80.3+rev1`.
 	 * @param deviceType The device type for which balenaOS needs to be downloaded
 	 * @remark Stores the downloaded image in `leviathan.downloads` directory,
 	 * @throws Rejects promise if download fails. Retries thrice to download an image before giving up.
@@ -611,11 +611,9 @@ module.exports = class BalenaSDK {
 	 */
 	async fetchOS(version = 'latest', deviceType) {
 		if (version === 'latest') {
-			const versions = await this.balena.models.os.getSupportedVersions(
-				deviceType,
+			version = await this.balena.models.os.getMaxSatisfyingVersion(
+				deviceType, 'latest',
 			);
-			// make sure we always flash the development variant
-			version = versions.latest.replace('prod', 'dev');
 		}
 
 		const path = join(
@@ -623,7 +621,7 @@ module.exports = class BalenaSDK {
 			`balenaOs-${version}.img`,
 		);
 
-		// Caching implmentation if needed - Check https://github.com/balena-os/leviathan/issues/441
+		// Caching implementation if needed - Check https://github.com/balena-os/leviathan/issues/441
 
 		let attempt = 0;
 		const downloadLatestOS = async () => {
