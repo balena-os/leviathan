@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Context | Leviathan Helpers</title>
+	<title>balenaCLI helpers | Leviathan Helpers</title>
 	<meta name="description" content="Documentation for Leviathan Helpers">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,10 +55,10 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="context.html">Context</a>
+					<a href="balenaCLI_helpers.html">balenaCLI helpers</a>
 				</li>
 			</ul>
-			<h1>Module Context</h1>
+			<h1>Module balenaCLI helpers</h1>
 		</div>
 	</div>
 </header>
@@ -68,23 +68,29 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<a href="#context" id="context" style="color: inherit; text-decoration: none;">
-							<h1>Context</h1>
+						<a href="#balenacli-helpers" id="balenacli-helpers" style="color: inherit; text-decoration: none;">
+							<h1>balenaCLI helpers</h1>
 						</a>
 					</div>
-					<p>The context class lets you share instances of objects across different tests. For example, if we
-						made an instance of the worker class in a suite, as above, other tests would not be able to see
-						it. An instance of the context class has a <code>set()</code> and a <code>get()</code> method, to both add or fetch
-					objects from the context. An example can be seen below:</p>
+					<p>balenaCLI helpers performs frequently executed tasks in order to keep things DRY.
+						For one-off commands, it&#39;s recommended to not use the helpers and instead directly use the
+					balenaCLI with the example explained below.</p>
 					<dl class="tsd-comment-tags">
 						<dt>example</dt>
-						<dd><pre><code class="language-js"><span style="color: #569CD6">const</span><span style="color: #D4D4D4"> </span><span style="color: #4FC1FF">Worker</span><span style="color: #D4D4D4"> = </span><span style="color: #569CD6">this</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">require</span><span style="color: #D4D4D4">(</span><span style="color: #CE9178">&#039;common/worker&#039;</span><span style="color: #D4D4D4">);</span>
-<span style="color: #569CD6">this</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">suite</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">context</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">set</span><span style="color: #D4D4D4">({</span>
-<span style="color: #D4D4D4">    </span><span style="color: #9CDCFE">worker:</span><span style="color: #D4D4D4"> </span><span style="color: #569CD6">new</span><span style="color: #D4D4D4"> </span><span style="color: #DCDCAA">Worker</span><span style="color: #D4D4D4">(</span><span style="color: #4FC1FF">DEVICE_TYPE_SLUG</span><span style="color: #D4D4D4">, </span><span style="color: #569CD6">this</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">getLogger</span><span style="color: #D4D4D4">()), </span><span style="color: #6A9955">// Add an instance of worker to context</span>
-<span style="color: #D4D4D4">});</span>
-<span style="color: #C586C0">await</span><span style="color: #D4D4D4"> </span><span style="color: #569CD6">this</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">context</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">get</span><span style="color: #D4D4D4">().</span><span style="color: #9CDCFE">worker</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">flash</span><span style="color: #D4D4D4">() </span><span style="color: #6A9955">// Flash the DUT with the worker instance from context</span>
+						<dd><p>The core service where the test suites run already has balenaCLI installed. There is no need to
+							initalise the <code>CLI</code> class to run/execute any CLI command inside the tests. Instead use</p>
+							<pre><code class="language-js"><span style="color: #0991B6">const</span><span style="color: #002339"> { </span><span style="color: #2F86D2">exec</span><span style="color: #002339"> } </span><span style="color: #7B30D0">=</span><span style="color: #002339"> </span><span style="color: #1AB394">require</span><span style="color: #002339">(</span><span style="color: #A44185">&quot;child_process&quot;</span><span style="color: #002339">);</span>
+<span style="color: #7B30D0">await</span><span style="color: #002339"> </span><span style="color: #7EB233">exec</span><span style="color: #002339">(</span><span style="color: #A44185">`balena push joystart --source .`</span><span style="color: #002339">)</span>
 </code></pre>
-							<p>The context can be used to share anything between tests - device uuids, app names and so on.</p>
+							<p>To get output from the commands being exectued, use the callback</p>
+							<pre><code class="language-js"><span style="color: #0991B6">const</span><span style="color: #002339"> { </span><span style="color: #2F86D2">exec</span><span style="color: #002339"> } </span><span style="color: #7B30D0">=</span><span style="color: #002339"> </span><span style="color: #1AB394">require</span><span style="color: #002339">(</span><span style="color: #A44185">&quot;child_process&quot;</span><span style="color: #002339">);</span>
+<span style="color: #7B30D0">await</span><span style="color: #002339"> </span><span style="color: #7EB233">exec</span><span style="color: #002339">(</span><span style="color: #A44185">`balena logs alliance-fleet --service &quot;normandy-sr0&quot;`</span><span style="color: #002339">, (</span><span style="color: #B1108E">error</span><span style="color: #002339">, </span><span style="color: #B1108E">stdout</span><span style="color: #002339">, </span><span style="color: #B1108E">stderr</span><span style="color: #002339">) </span><span style="color: #0991B6">=&gt;</span><span style="color: #002339"> {</span>
+<span style="color: #002339">  </span><span style="color: #7B30D0">if</span><span style="color: #002339"> (</span><span style="color: #2F86D2">error</span><span style="color: #002339">) {</span>
+<span style="color: #002339">    </span><span style="color: #7B30D0">throw</span><span style="color: #002339"> </span><span style="color: #7B30D0">new</span><span style="color: #002339"> </span><span style="color: #2F86D2">error</span>
+<span style="color: #002339">  }</span>
+<span style="color: #002339">  </span><span style="color: #2F86D2">console</span><span style="color: #002339">.</span><span style="color: #7EB233">log</span><span style="color: #002339">(</span><span style="color: #2F86D2">stdout</span><span style="color: #002339">)</span>
+<span style="color: #002339">})</span>
+</code></pre>
 						</dd>
 					</dl>
 				</div>
@@ -96,7 +102,7 @@
 						<section class="tsd-index-section ">
 							<h3>Classes</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/context.export_.html" class="tsd-kind-icon">export&#61;</a></li>
+								<li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/balenaCLI_helpers.export_.html" class="tsd-kind-icon">export&#61;</a></li>
 							</ul>
 						</section>
 					</div>
@@ -131,47 +137,47 @@
 						<a href="../modules.html">Modules</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="archiver.html">Archiver</a>
-					</li>
-					<li class="current tsd-kind-module">
-						<a href="context.html">Context</a>
+						<a href="Archiver.html">Archiver</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="graphics.html">Graphics</a>
+						<a href="Context.html">Context</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="leviathan_utility_helpers.html">Leviathan <wbr>Utility helpers</a>
+						<a href="Graphics.html">Graphics</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="leviathan_worker_helpers.html">Leviathan <wbr>Worker helpers</a>
+						<a href="Leviathan_Utility_helpers.html">Leviathan <wbr>Utility helpers</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="state.html">State</a>
+						<a href="Leviathan_Worker_helpers.html">Leviathan <wbr>Worker helpers</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="teardown.html">Teardown</a>
+						<a href="State.html">State</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="test.html">Test</a>
+						<a href="Teardown.html">Teardown</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="Test.html">Test</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="balena_git_helpers.html">balena git helpers</a>
 					</li>
-					<li class=" tsd-kind-module">
-						<a href="balenacli_helpers.html">balenaCLI helpers</a>
+					<li class="current tsd-kind-module">
+						<a href="balenaCLI_helpers.html">balenaCLI helpers</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="balenaos_helpers.html">balenaOS helpers</a>
+						<a href="balenaOS_helpers.html">balenaOS helpers</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="balenasdk_helpers.html">balenaSDK helpers</a>
+						<a href="balenaSDK_helpers.html">balenaSDK helpers</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-class tsd-parent-kind-module">
-						<a href="../classes/context.export_.html" class="tsd-kind-icon">export&#61;</a>
+						<a href="../classes/balenaCLI_helpers.export_.html" class="tsd-kind-icon">export&#61;</a>
 					</li>
 				</ul>
 			</nav>

@@ -55,7 +55,7 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="graphics.html">Graphics</a>
+					<a href="Graphics.html">Graphics</a>
 				</li>
 			</ul>
 			<h1>Module Graphics</h1>
@@ -78,12 +78,12 @@
 					capture can be started using the <code>Worker</code> class <code>capture()</code> method, for example:</p>
 					<dl class="tsd-comment-tags">
 						<dt>example</dt>
-						<dd><pre><code class="language-js"><span style="color: #569CD6">const</span><span style="color: #D4D4D4"> </span><span style="color: #4FC1FF">Worker</span><span style="color: #D4D4D4"> = </span><span style="color: #569CD6">this</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">require</span><span style="color: #D4D4D4">(</span><span style="color: #CE9178">&#039;common/worker&#039;</span><span style="color: #D4D4D4">);</span>
-<span style="color: #569CD6">const</span><span style="color: #D4D4D4"> </span><span style="color: #4FC1FF">worker</span><span style="color: #D4D4D4"> = </span><span style="color: #569CD6">new</span><span style="color: #D4D4D4"> </span><span style="color: #DCDCAA">Worker</span><span style="color: #D4D4D4">(</span><span style="color: #CE9178">&#039;DEVICE_TYPE_SLUG&#039;</span><span style="color: #D4D4D4">, </span><span style="color: #569CD6">this</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">getLogger</span><span style="color: #D4D4D4">())</span>
-<span style="color: #C586C0">await</span><span style="color: #D4D4D4"> </span><span style="color: #9CDCFE">worker</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">capture</span><span style="color: #D4D4D4">(</span><span style="color: #CE9178">&#039;start&#039;</span><span style="color: #D4D4D4">);</span>
+						<dd><pre><code class="language-js"><span style="color: #0991B6">const</span><span style="color: #002339"> </span><span style="color: #2F86D2">Worker</span><span style="color: #002339"> </span><span style="color: #7B30D0">=</span><span style="color: #002339"> </span><span style="color: #000000">this</span><span style="color: #002339">.</span><span style="color: #7EB233">require</span><span style="color: #002339">(</span><span style="color: #A44185">&#039;common/worker&#039;</span><span style="color: #002339">);</span>
+<span style="color: #0991B6">const</span><span style="color: #002339"> </span><span style="color: #2F86D2">worker</span><span style="color: #002339"> </span><span style="color: #7B30D0">=</span><span style="color: #002339"> </span><span style="color: #7B30D0">new</span><span style="color: #002339"> </span><span style="color: #7EB233">Worker</span><span style="color: #002339">(</span><span style="color: #A44185">&#039;DEVICE_TYPE_SLUG&#039;</span><span style="color: #002339">, </span><span style="color: #000000">this</span><span style="color: #002339">.</span><span style="color: #7EB233">getLogger</span><span style="color: #002339">())</span>
+<span style="color: #7B30D0">await</span><span style="color: #002339"> </span><span style="color: #2F86D2">worker</span><span style="color: #002339">.</span><span style="color: #7EB233">capture</span><span style="color: #002339">(</span><span style="color: #A44185">&#039;start&#039;</span><span style="color: #002339">);</span>
 </code></pre>
 							<p>This will trigger video capture to start, and frames will be saved as <code>jpg</code> files in the <code>/data/capture</code> directory (which is a shared volume). Capture will continue until stopped with:</p>
-							<pre><code class="language-js"><span style="color: #C586C0">await</span><span style="color: #D4D4D4"> </span><span style="color: #9CDCFE">worker</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">capture</span><span style="color: #D4D4D4">(</span><span style="color: #CE9178">&#039;stop&#039;</span><span style="color: #D4D4D4">);</span>
+							<pre><code class="language-js"><span style="color: #7B30D0">await</span><span style="color: #002339"> </span><span style="color: #2F86D2">worker</span><span style="color: #002339">.</span><span style="color: #7EB233">capture</span><span style="color: #002339">(</span><span style="color: #A44185">&#039;stop&#039;</span><span style="color: #002339">);</span>
 </code></pre>
 						</dd>
 					</dl>
@@ -96,13 +96,13 @@
 						<section class="tsd-index-section ">
 							<h3>Namespaces</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="graphics.export_.html" class="tsd-kind-icon">export&#61;</a></li>
+								<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="Graphics.export_.html" class="tsd-kind-icon">export&#61;</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-module"><a href="graphics.html#export_-1" class="tsd-kind-icon">export&#61;</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-module"><a href="Graphics.html#export_-1" class="tsd-kind-icon">export&#61;</a></li>
 							</ul>
 						</section>
 					</div>
@@ -116,7 +116,7 @@
 					<div class="tsd-signature tsd-kind-icon">export&#61;<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>blockhash<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, bits<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>hammingDistance<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>hashA<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, hashB<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/8b60a8f/core/lib/common/graphics.js#L119">lib/common/graphics.js:119</a></li>
+							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/41840f8/core/lib/common/graphics.js#L121">lib/common/graphics.js:121</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -203,52 +203,52 @@
 						<a href="../modules.html">Modules</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="archiver.html">Archiver</a>
+						<a href="Archiver.html">Archiver</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="context.html">Context</a>
+						<a href="Context.html">Context</a>
 					</li>
 					<li class="current tsd-kind-module">
-						<a href="graphics.html">Graphics</a>
+						<a href="Graphics.html">Graphics</a>
 						<ul>
 							<li class=" tsd-kind-namespace tsd-parent-kind-module">
-								<a href="graphics.export_.html">export&#61;</a>
+								<a href="Graphics.export_.html">export&#61;</a>
 							</li>
 						</ul>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="leviathan_utility_helpers.html">Leviathan <wbr>Utility helpers</a>
+						<a href="Leviathan_Utility_helpers.html">Leviathan <wbr>Utility helpers</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="leviathan_worker_helpers.html">Leviathan <wbr>Worker helpers</a>
+						<a href="Leviathan_Worker_helpers.html">Leviathan <wbr>Worker helpers</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="state.html">State</a>
+						<a href="State.html">State</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="teardown.html">Teardown</a>
+						<a href="Teardown.html">Teardown</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="test.html">Test</a>
+						<a href="Test.html">Test</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="balena_git_helpers.html">balena git helpers</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="balenacli_helpers.html">balenaCLI helpers</a>
+						<a href="balenaCLI_helpers.html">balenaCLI helpers</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="balenaos_helpers.html">balenaOS helpers</a>
+						<a href="balenaOS_helpers.html">balenaOS helpers</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="balenasdk_helpers.html">balenaSDK helpers</a>
+						<a href="balenaSDK_helpers.html">balenaSDK helpers</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-property tsd-parent-kind-module">
-						<a href="graphics.html#export_-1" class="tsd-kind-icon">export&#61;</a>
+						<a href="Graphics.html#export_-1" class="tsd-kind-icon">export&#61;</a>
 					</li>
 				</ul>
 			</nav>

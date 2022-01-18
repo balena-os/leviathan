@@ -55,7 +55,7 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="archiver.html">Archiver</a>
+					<a href="Archiver.html">Archiver</a>
 				</li>
 			</ul>
 			<h1>Module Archiver</h1>
@@ -80,12 +80,12 @@
 					<code>test.js</code> to check the imports. To archive a file:</p>
 					<dl class="tsd-comment-tags">
 						<dt>example</dt>
-						<dd><pre><code class="language-js"><span style="color: #D4D4D4">    </span><span style="color: #C586C0">await</span><span style="color: #D4D4D4"> </span><span style="color: #569CD6">this</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">Archiver</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">add</span><span style="color: #D4D4D4">(</span><span style="color: #569CD6">this</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">id</span><span style="color: #D4D4D4">, </span><span style="color: #CE9178">&quot;Path/to/file/needs/to/be/archived&quot;</span><span style="color: #D4D4D4">);</span>
+						<dd><pre><code class="language-js"><span style="color: #002339">    </span><span style="color: #7B30D0">await</span><span style="color: #002339"> </span><span style="color: #000000">this</span><span style="color: #002339">.</span><span style="color: #2F86D2">Archiver</span><span style="color: #002339">.</span><span style="color: #7EB233">add</span><span style="color: #002339">(</span><span style="color: #000000">this</span><span style="color: #002339">.</span><span style="color: #2F86D2">id</span><span style="color: #002339">, </span><span style="color: #A44185">&quot;Path/to/file/needs/to/be/archived&quot;</span><span style="color: #002339">);</span>
 </code></pre>
 							<p>To directly archive the output of a command, example: <code>journalctl</code> or <code>dmesg</code> commands. Use the
 							<code>archiveLogs</code> helper accessible through <code>worker</code> context.</p>
 							<ul>
-								<li>@example<pre><code class="language-js"><span style="color: #D4D4D4">  </span><span style="color: #C586C0">await</span><span style="color: #D4D4D4"> </span><span style="color: #569CD6">this</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">context</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">get</span><span style="color: #D4D4D4">().</span><span style="color: #9CDCFE">worker</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">archiveLogs</span><span style="color: #D4D4D4">(</span><span style="color: #9CDCFE">title</span><span style="color: #D4D4D4">, </span><span style="color: #9CDCFE">target</span><span style="color: #D4D4D4">, </span><span style="color: #9CDCFE">command</span><span style="color: #D4D4D4">);</span>
+								<li>@example<pre><code class="language-js"><span style="color: #002339">  </span><span style="color: #7B30D0">await</span><span style="color: #002339"> </span><span style="color: #000000">this</span><span style="color: #002339">.</span><span style="color: #2F86D2">context</span><span style="color: #002339">.</span><span style="color: #7EB233">get</span><span style="color: #002339">().</span><span style="color: #2F86D2">worker</span><span style="color: #002339">.</span><span style="color: #7EB233">archiveLogs</span><span style="color: #002339">(</span><span style="color: #2F86D2">title</span><span style="color: #002339">, </span><span style="color: #2F86D2">target</span><span style="color: #002339">, </span><span style="color: #2F86D2">command</span><span style="color: #002339">);</span>
 </code></pre>
 								</li>
 							</ul>
@@ -103,13 +103,13 @@
 						<section class="tsd-index-section ">
 							<h3>Namespaces</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="archiver.export_.html" class="tsd-kind-icon">export&#61;</a></li>
+								<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="Archiver.export_.html" class="tsd-kind-icon">export&#61;</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-module"><a href="archiver.html#export_-1" class="tsd-kind-icon">export&#61;</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-module"><a href="Archiver.html#export_-1" class="tsd-kind-icon">export&#61;</a></li>
 							</ul>
 						</section>
 					</div>
@@ -123,7 +123,7 @@
 					<div class="tsd-signature tsd-kind-icon">export&#61;<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>add<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, artifactPath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>getStream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, artifactPath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">WriteStream</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/8b60a8f/core/lib/common/archiver.js#L53">lib/common/archiver.js:53</a></li>
+							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/41840f8/core/lib/common/archiver.js#L55">lib/common/archiver.js:55</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -235,52 +235,52 @@
 						<a href="../modules.html">Modules</a>
 					</li>
 					<li class="current tsd-kind-module">
-						<a href="archiver.html">Archiver</a>
+						<a href="Archiver.html">Archiver</a>
 						<ul>
 							<li class=" tsd-kind-namespace tsd-parent-kind-module">
-								<a href="archiver.export_.html">export&#61;</a>
+								<a href="Archiver.export_.html">export&#61;</a>
 							</li>
 						</ul>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="context.html">Context</a>
+						<a href="Context.html">Context</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="graphics.html">Graphics</a>
+						<a href="Graphics.html">Graphics</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="leviathan_utility_helpers.html">Leviathan <wbr>Utility helpers</a>
+						<a href="Leviathan_Utility_helpers.html">Leviathan <wbr>Utility helpers</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="leviathan_worker_helpers.html">Leviathan <wbr>Worker helpers</a>
+						<a href="Leviathan_Worker_helpers.html">Leviathan <wbr>Worker helpers</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="state.html">State</a>
+						<a href="State.html">State</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="teardown.html">Teardown</a>
+						<a href="Teardown.html">Teardown</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="test.html">Test</a>
+						<a href="Test.html">Test</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="balena_git_helpers.html">balena git helpers</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="balenacli_helpers.html">balenaCLI helpers</a>
+						<a href="balenaCLI_helpers.html">balenaCLI helpers</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="balenaos_helpers.html">balenaOS helpers</a>
+						<a href="balenaOS_helpers.html">balenaOS helpers</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="balenasdk_helpers.html">balenaSDK helpers</a>
+						<a href="balenaSDK_helpers.html">balenaSDK helpers</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-property tsd-parent-kind-module">
-						<a href="archiver.html#export_-1" class="tsd-kind-icon">export&#61;</a>
+						<a href="Archiver.html#export_-1" class="tsd-kind-icon">export&#61;</a>
 					</li>
 				</ul>
 			</nav>

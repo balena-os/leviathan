@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>State | Leviathan Helpers</title>
+	<title>balenaSDK helpers | Leviathan Helpers</title>
 	<meta name="description" content="Documentation for Leviathan Helpers">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,10 +55,10 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="state.html">State</a>
+					<a href="balenaSDK_helpers.html">balenaSDK helpers</a>
 				</li>
 			</ul>
-			<h1>Module State</h1>
+			<h1>Module balenaSDK helpers</h1>
 		</div>
 	</div>
 </header>
@@ -68,12 +68,34 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<a href="#test-state-logging" id="test-state-logging" style="color: inherit; text-decoration: none;">
-							<h1>Test State Logging</h1>
+						<a href="#balenasdk-helpers" id="balenasdk-helpers" style="color: inherit; text-decoration: none;">
+							<h1>balenaSDK helpers</h1>
 						</a>
 					</div>
-					<p>Includes methods to capture different types of message and send them back to the client.
-					3 types of messages, log, status, info.</p>
+					<p>The <code>BalenaSDK</code> class contains an instance of the balena sdk, as well as some helper methods to interact with a device via the cloud.
+					The <code>balena</code> attribute of the class contains the sdk,and can be used as follows in a test suite:</p>
+					<dl class="tsd-comment-tags">
+						<dt>example</dt>
+						<dd><pre><code class="language-js"><span style="color: #0991B6">const</span><span style="color: #002339"> </span><span style="color: #2F86D2">Cloud</span><span style="color: #002339"> </span><span style="color: #7B30D0">=</span><span style="color: #002339"> </span><span style="color: #000000">this</span><span style="color: #002339">.</span><span style="color: #7EB233">require</span><span style="color: #002339">(</span><span style="color: #A44185">&quot;components/balena/sdk&quot;</span><span style="color: #002339">);</span>
+
+<span style="color: #000000">this</span><span style="color: #002339">.</span><span style="color: #2F86D2">suite</span><span style="color: #002339">.</span><span style="color: #2F86D2">context</span><span style="color: #002339">.</span><span style="color: #7EB233">set</span><span style="color: #002339">({</span>
+<span style="color: #002339">    cloud: </span><span style="color: #7B30D0">new</span><span style="color: #002339"> </span><span style="color: #7EB233">Balena</span><span style="color: #002339">(</span><span style="color: #A44185">`https://api.balena-cloud.com/`</span><span style="color: #002339">, </span><span style="color: #000000">this</span><span style="color: #002339">.</span><span style="color: #7EB233">getLogger</span><span style="color: #002339">())</span>
+<span style="color: #002339">});</span>
+
+<span style="color: #357B42">// login</span>
+<span style="color: #7B30D0">await</span><span style="color: #002339"> </span><span style="color: #000000">this</span><span style="color: #002339">.</span><span style="color: #2F86D2">context</span>
+<span style="color: #002339">    .</span><span style="color: #7EB233">get</span><span style="color: #002339">()</span>
+<span style="color: #002339">    .</span><span style="color: #2F86D2">cloud</span><span style="color: #002339">.</span><span style="color: #2F86D2">balena</span><span style="color: #002339">.</span><span style="color: #2F86D2">auth</span><span style="color: #002339">.</span><span style="color: #7EB233">loginWithToken</span><span style="color: #002339">(</span><span style="color: #000000">this</span><span style="color: #002339">.</span><span style="color: #2F86D2">suite</span><span style="color: #002339">.</span><span style="color: #2F86D2">options</span><span style="color: #002339">.</span><span style="color: #2F86D2">balena</span><span style="color: #002339">.</span><span style="color: #2F86D2">apiKey</span><span style="color: #002339">);</span>
+
+<span style="color: #357B42">// create a balena application</span>
+<span style="color: #7B30D0">await</span><span style="color: #002339"> </span><span style="color: #000000">this</span><span style="color: #002339">.</span><span style="color: #2F86D2">context</span><span style="color: #002339">.</span><span style="color: #7EB233">get</span><span style="color: #002339">().</span><span style="color: #2F86D2">cloud</span><span style="color: #002339">.</span><span style="color: #2F86D2">balena</span><span style="color: #002339">.</span><span style="color: #2F86D2">models</span><span style="color: #002339">.</span><span style="color: #2F86D2">application</span><span style="color: #002339">.</span><span style="color: #7EB233">create</span><span style="color: #002339">({</span>
+<span style="color: #002339">    name: </span><span style="color: #A44185">`NAME`</span><span style="color: #002339">,</span>
+<span style="color: #002339">    deviceType: </span><span style="color: #A44185">`DEVICE_TYPE`</span><span style="color: #002339">,</span>
+<span style="color: #002339"> organization: </span><span style="color: #A44185">`ORG`</span><span style="color: #002339">,</span>
+<span style="color: #002339">});</span>
+</code></pre>
+						</dd>
+					</dl>
 				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -83,7 +105,7 @@
 						<section class="tsd-index-section ">
 							<h3>Classes</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/state.export_.html" class="tsd-kind-icon">export&#61;</a></li>
+								<li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/balenaSDK_helpers.export_.html" class="tsd-kind-icon">export&#61;</a></li>
 							</ul>
 						</section>
 					</div>
@@ -118,47 +140,47 @@
 						<a href="../modules.html">Modules</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="archiver.html">Archiver</a>
+						<a href="Archiver.html">Archiver</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="context.html">Context</a>
+						<a href="Context.html">Context</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="graphics.html">Graphics</a>
+						<a href="Graphics.html">Graphics</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="leviathan_utility_helpers.html">Leviathan <wbr>Utility helpers</a>
+						<a href="Leviathan_Utility_helpers.html">Leviathan <wbr>Utility helpers</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="leviathan_worker_helpers.html">Leviathan <wbr>Worker helpers</a>
-					</li>
-					<li class="current tsd-kind-module">
-						<a href="state.html">State</a>
+						<a href="Leviathan_Worker_helpers.html">Leviathan <wbr>Worker helpers</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="teardown.html">Teardown</a>
+						<a href="State.html">State</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="test.html">Test</a>
+						<a href="Teardown.html">Teardown</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="Test.html">Test</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="balena_git_helpers.html">balena git helpers</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="balenacli_helpers.html">balenaCLI helpers</a>
+						<a href="balenaCLI_helpers.html">balenaCLI helpers</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="balenaos_helpers.html">balenaOS helpers</a>
+						<a href="balenaOS_helpers.html">balenaOS helpers</a>
 					</li>
-					<li class=" tsd-kind-module">
-						<a href="balenasdk_helpers.html">balenaSDK helpers</a>
+					<li class="current tsd-kind-module">
+						<a href="balenaSDK_helpers.html">balenaSDK helpers</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-class tsd-parent-kind-module">
-						<a href="../classes/state.export_.html" class="tsd-kind-icon">export&#61;</a>
+						<a href="../classes/balenaSDK_helpers.export_.html" class="tsd-kind-icon">export&#61;</a>
 					</li>
 				</ul>
 			</nav>
