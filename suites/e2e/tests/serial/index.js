@@ -14,26 +14,23 @@
 
 'use strict';
 
+const { delay } = require('bluebird');
+const fs = require('fs').promises;
+
 module.exports = {
-	title: 'OS corruption tests',
+	title: 'Serial test',
 	tests: [
 		{
-			title: 'resinos.fingerprint file test',
-			run: async function(test) {
-				let error = null;
-				try {
-					await this.context
-						.get()
-						.worker.executeCommandInHostOS(
-							'md5sum --quiet -c /resinos.fingerprint',
-							this.context.get().link,
-						);
-				} catch (e) {
-					error = e;
-				}
-
-				test.is(error, null, 'Device rootfs seems to be corrupted');
-			},
+			title: 'Recording DUT serial output',
+			run: async function (test) {
+				await this.context.get().worker.on();
+				await delay(20 * 1000);
+				test.not(
+					(await fs.stat('/reports/dut-serial.txt')).size,
+					0,
+					`Should be able to retrieve serial output from DUT`,
+				);
+			}
 		},
 	],
 };

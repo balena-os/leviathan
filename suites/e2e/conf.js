@@ -30,6 +30,9 @@ const id = `${Math.random()
 module.exports = options => {
 	return {
 		id,
+		balena: {
+			apiUrl: options.balenaApiUrl,
+		},
 		balenaOS: {
 			config: {
 				uuid: uid(),
@@ -46,7 +49,6 @@ module.exports = options => {
 			},
 			releaseInfo: {
 				version: options.osReleaseVersion,
-				variant: options.osReleaseVariant,
 			},
 		},
 	};
