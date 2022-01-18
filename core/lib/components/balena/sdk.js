@@ -131,7 +131,7 @@ module.exports = class BalenaSDK {
 	 * @category helper
 	 */
 	getAllSupportedOSVersions(deviceType) {
-		return this.balena.models.os.getSupportedVersions(deviceType);
+		return this.balena.models.os.getAvailableOsVersions(deviceType);
 	}
 
 	// Deprecated - Use fetchOS method instead
@@ -611,11 +611,12 @@ module.exports = class BalenaSDK {
 	 */
 	async fetchOS(version = 'latest', deviceType) {
 		if (version === 'latest') {
-			const versions = await this.balena.models.os.getSupportedVersions(
-				deviceType,
+			const latestVersion = await this.balena.models.os.getMaxSatisfyingVersion(
+				deviceType, 'latest',
 			);
 			// make sure we always flash the development variant
-			version = versions.latest.replace('prod', 'dev');
+			// variants have been merged but keeping this for old branches/devices
+			version = latestVersion.replace('prod', 'dev');
 		}
 
 		const path = join(
