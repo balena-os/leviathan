@@ -58,15 +58,15 @@ const utils = require('../../common/utils');
 const exec = Bluebird.promisify(require('child_process').exec);
 const config = require('config');
 const { toInteger } = require('lodash');
+const { getSdk } = require('balena-sdk');
 
 module.exports = class BalenaSDK {
 	constructor(
 		apiUrl,
 		logger = { log: console.log, status: console.log, info: console.log },
 	) {
-		this.balena = require('balena-sdk')({
+		this.balena = getSdk({
 			apiUrl: `https://api.${apiUrl}`,
-			imageMakerUrl: `https://img.${apiUrl}`,
 		});
 
 		this.pine = this.balena.pine;
