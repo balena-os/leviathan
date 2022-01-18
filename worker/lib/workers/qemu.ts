@@ -90,6 +90,13 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 		});
 	}
 
+	// Method to pull any relevant information about the worker to be used into tests
+	public async diagnostics() {
+		return {
+			// Add diagnostics information to be qeuried as needed
+		}
+	}
+
 	public async teardown(signal?: NodeJS.Signals): Promise<void> {
 		await this.powerOff();
 

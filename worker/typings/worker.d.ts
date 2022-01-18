@@ -2,6 +2,12 @@ import { EventEmitter } from 'events';
 import { StatusCodeError } from 'request-promise/errors';
 import { Readable } from 'stream';
 
+interface Contract {
+	uuid: string | undefined;
+	workerType: string | undefined;
+	supportedFeatures: { [key: string]: boolean | string };
+}
+
 declare global {
 	interface Dictionary<T> {
 		[key: string]: T;
@@ -51,6 +57,8 @@ declare global {
 			network(configuration): Promise<void>;
 			/** Control HDMI capture process. */
 			captureScreen(action: 'start' | 'stop'): Promise<void | Readable>;
+			/** Returns relevant information about the worker to be used in tests */
+			diagnostics(): any;
 		}
 
 		interface Options {

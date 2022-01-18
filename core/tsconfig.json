@@ -34,6 +34,6 @@
     // "excludeNotDocumented": true,
     "categorizeByGroup": true,
     "categoryOrder": ["helper", "*"],
-    "highlightTheme": "dark-plus",
+    "highlightTheme": "slack-ochin",
   }
 }

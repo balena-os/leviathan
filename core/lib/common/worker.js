@@ -152,6 +152,13 @@ module.exports = class Worker {
 		await rp.post(`${this.url}/dut/off`);
 	}
 
+	/**
+	 * Gather diagnostics from testbot
+	 */
+	async diagnostics() {
+		return JSON.parse(await rp.get(`${this.url}/dut/diagnostics`));
+	}
+
 	async network(network) {
 		await rp.post({
 			uri: `${this.url}/dut/network`,
@@ -367,6 +374,7 @@ module.exports = class Worker {
 				(await this.executeCommandInHostOS(
 					'[[ ! -f /tmp/reboot-check ]] && echo pass',
 					target,
+					{ interval: 10000, tries: 10 },
 				)) === 'pass'
 			);
 		}, false);

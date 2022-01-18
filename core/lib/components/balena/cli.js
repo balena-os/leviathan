@@ -86,10 +86,8 @@ module.exports = class CLI {
 		const Inspect = await Container.inspect();
 		const Mount = Inspect.Mounts.find((mount) => {
 			return mount.Name != null
-				? mount.Name.slice(
-						mount.Name.length - Inspect.Config.Labels.share.length,
-				  ) === Inspect.Config.Labels.share
-				: false;
+				? image.includes(mount.Destination)
+				: false 
 		});
 
 		image = image.replace(Mount.Destination, '');

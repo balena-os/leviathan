@@ -15,8 +15,8 @@ const pipeline = util.promisify(Stream.pipeline);
 
 import { executeCommandOverSSH, executeCommandInHostOS } from './helpers/ssh';
 
+import config = require("config");
 import {
-	getIpFromIface,
 	getRuntimeConfiguration,
 	resolveLocalTarget,
 } from './helpers';
@@ -27,6 +27,11 @@ import { createGzip, createGunzip } from 'zlib';
 import { retryAsync } from 'ts-retry';
 import * as rp from 'request-promise';
 
+import { Contract } from '../typings/worker';
+
+const balena = getSdk({
+	apiUrl: 'https://api.balena-cloud.com/',
+});
 
 const workersDict: Dictionary<typeof TestBotWorker | typeof QemuWorker> = {
 	testbot_hat: TestBotWorker,
@@ -66,13 +71,12 @@ async function setup(): Promise<express.Application> {
 
 	const supportedTags = [`dut`, `screencapture`, `modem`];
 	// parse labels and create 'contract'
-	const contract: any = {
+	const contract: Contract = {
 		uuid: process.env.BALENA_DEVICE_UUID,
-		workerType: process.env.WORKER_TYPE,
+		workerType: config.get('worker.runtimeConfiguration.workerType'),
+		supportedFeatures: {}
 	};
-	const balena = getSdk({
-		apiUrl: 'https://api.balena-cloud.com/',
-	});
+
 	if (
 		typeof process.env.BALENA_API_KEY === 'string' &&
 		typeof process.env.BALENA_DEVICE_UUID === 'string'
@@ -83,11 +87,7 @@ async function setup(): Promise<express.Application> {
 		);
 		for (const tag of tags) {
 			if (supportedTags.includes(tag.tag_key)) {
-				if (tag.value === 'true') {
-					contract[tag.tag_key] = true;
-				} else {
-					contract[tag.tag_key] = tag.value;
-				}
+				contract.supportedFeatures[tag.tag_key] = tag.value === 'true' ? true : tag.value
 			}
 		}
 	} else {
@@ -119,6 +119,20 @@ async function setup(): Promise<express.Application> {
 				clearInterval(timer);
 				res.write('OK');
 				res.end();
+			}
+		},
+	);
+	app.get(
+		'/dut/diagnostics',
+		async (
+			_req: express.Request,
+			res: express.Response,
+			next: express.NextFunction,
+		) => {
+			try {
+				res.send(await worker.diagnostics());
+			} catch (err) {
+				next(err);
 			}
 		},
 	);
