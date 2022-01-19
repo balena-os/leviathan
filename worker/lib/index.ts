@@ -454,7 +454,7 @@ async function setup(): Promise<express.Application> {
 					maxTry:30, 
 					until: lastResult => lastResult.services[req.body.containerName] != null
 				});
-				res.write(state);
+				res.write(JSON.stringify(state));
 			} catch (err) {
 				res.write(err.stack);
 				next(err);
