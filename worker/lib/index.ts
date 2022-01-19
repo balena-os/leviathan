@@ -425,10 +425,17 @@ async function setup(): Promise<express.Application> {
 			res: express.Response,
 			next: express.NextFunction,
 		) => {
+
+			res.writeHead(202, {
+				'Content-Type': 'text/event-stream',
+				Connection: 'keep-alive',
+			});
+
 			try {
 				await execSync(
 					`balena push ${req.body.target} --source ${CONTAINERPATH} --nolive --detached`,
 				);
+				console.log(`Container Pushed!`)
 				let state:any = {}
 				await retryAsync(async() => {
 					state = await rp({
@@ -444,10 +451,12 @@ async function setup(): Promise<express.Application> {
 					maxTry:30, 
 					until: lastResult => lastResult.services[req.body.containerName] != null
 				});
-				res.send(state);
+				res.write(state);
 			} catch (err) {
-				res.status(500).send(err.stack);
+				res.write(err.stack);
 				next(err);
+			} finally{
+				res.end();
 			}
 		},
 	);
