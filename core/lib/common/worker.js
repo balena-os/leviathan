@@ -450,7 +450,7 @@ module.exports = class Worker {
 				data: data,
 				uri: uri,
 			},
-			uri: this.url,
+			uri: `${this.url}/dut/http-proxy`,
 		});
 		return result;
 	}

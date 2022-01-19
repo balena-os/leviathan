@@ -384,19 +384,18 @@ async function setup(): Promise<express.Application> {
 			res: express.Response,
 			next: express.NextFunction,
 		) => {
-			try {
-				
-				// receive files put to specific directory
-				res.writeHead(202, {
-					'Content-Type': 'text/event-stream',
-					Connection: 'keep-alive',
-				});
-	
-				const timer = setInterval(() => {
-					res.write('pending');
-				}, httpServer.keepAliveTimeout);
-	
 
+			// receive files put to specific directory
+			res.writeHead(202, {
+				'Content-Type': 'text/event-stream',
+				Connection: 'keep-alive',
+			});
+
+			const timer = setInterval(() => {
+				res.write('pending');
+			}, httpServer.keepAliveTimeout);
+
+			try {
 				// Make sure we start clean
 				await remove(CONTAINERPATH);				
 				const line = pipeline(
@@ -412,6 +411,7 @@ async function setup(): Promise<express.Application> {
 				res.write(err)
 				next(err);
 			} finally {
+				clearInterval(timer);
 				res.end();
 			}
 		},
