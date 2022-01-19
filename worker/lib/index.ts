@@ -431,11 +431,14 @@ async function setup(): Promise<express.Application> {
 				Connection: 'keep-alive',
 			});
 
+			const timer = setInterval(() => {
+				res.write('pending');
+			}, httpServer.keepAliveTimeout);
+
 			try {
 				await execSync(
 					`balena push ${req.body.target} --source ${CONTAINERPATH} --nolive --detached`,
 				);
-				console.log(`Container Pushed!`)
 				let state:any = {}
 				await retryAsync(async() => {
 					state = await rp({
@@ -456,7 +459,8 @@ async function setup(): Promise<express.Application> {
 				res.write(err.stack);
 				next(err);
 			} finally{
-				res.end();
+				clearInterval(timer);
+				res.end()
 			}
 		},
 	);
