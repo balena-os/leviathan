@@ -174,7 +174,7 @@ class Suite {
 
 		// Recursive DFS
 		const treeExpander = async ([
-			{ interactive, os, skip, deviceType, title, workerContract, run, tests },
+			{ os, skip, deviceType, title, workerContract, run, tests },
 			testNode,
 		]) => {
 			// Check our contracts
