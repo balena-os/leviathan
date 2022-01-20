@@ -95,7 +95,7 @@ module.exports = class BalenaSDK {
 
 		return retry(
 			async () => {
-				if (!(await this.isDeviceConnectedToVpn(device))) {
+				if (!(await this.balena.models.device.isOnline(device))) {
 					throw new Error(`${device}: is not marked as connected to our VPN.`);
 				}
 
@@ -487,10 +487,7 @@ module.exports = class BalenaSDK {
 	async pushReleaseToApp(application, directory) {
 		await exec(`balena push ${application} --source ${directory}`);
 		// check new commit of app
-		let commit = await this.balena.models.application
-			.get(application)
-			.get('commit');
-
+		let commit = await this.balena.models.application.getTargetReleaseHash(application);
 		return commit;
 	}
 
@@ -557,13 +554,14 @@ module.exports = class BalenaSDK {
 	 * @category helper
 	 */
 	async checkLogsContain(uuid, contains, _start = null, _end = null) {
-		let logs = await this.balena.logs.history(uuid).map((log) => {
+		let logs = await this.balena.logs.history(uuid);
+		let logsMessages = logs.map((log) => {
 			return log.message;
 		});
 
-		let startIndex = _start != null ? logs.indexOf(_start) : 0;
-		let endIndex = _end != null ? logs.indexOf(_end) : logs.length;
-		let slicedLogs = logs.slice(startIndex, endIndex);
+		let startIndex = _start != null ? logsMessages.indexOf(_start) : 0;
+		let endIndex = _end != null ? logsMessages.indexOf(_end) : logsMessages.length;
+		let slicedLogs = logsMessages.slice(startIndex, endIndex);
 
 		let pass = false;
 		slicedLogs.forEach((element) => {
