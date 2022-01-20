@@ -176,16 +176,9 @@ export function resolveLocalTarget(target: string): PromiseLike<string> {
 	});
 }
 
-export async function getRuntimeConfiguration(
-	possibleWorkers: string[],
-): Promise<Leviathan.RuntimeConfiguration> {
+export async function getRuntimeConfiguration()
+	: Promise<Leviathan.RuntimeConfiguration> {
 	const runtimeConfiguration: any = config.get('worker.runtimeConfiguration');
-
-	if (!possibleWorkers.includes(runtimeConfiguration.workerType)) {
-		throw new Error(
-			`${runtimeConfiguration.workerType} is not a supported worker`,
-		);
-	}
 
 	if (
 		runtimeConfiguration.network == null ||
