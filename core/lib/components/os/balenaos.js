@@ -62,6 +62,7 @@ const config = require('config');
 const imagefs = require('resin-image-fs');
 const { fs } = require('mz');
 const { join } = require('path');
+const tmp = require('tmp');
 const pipeline = Bluebird.promisify(require('stream').pipeline);
 const zlib = require('zlib');
 
@@ -141,7 +142,7 @@ module.exports = class BalenaOS {
 		this.network = options.network;
 		this.image = {
 			input: options.image === undefined ? config.get('leviathan.uploads').image : options.image,
-			path: join(config.get('leviathan.downloads'), `image-${id()}`),
+			path: tmp.tmpNameSync(),
 		};
 		this.configJson = options.configJson || {};
 		this.contract = {
