@@ -322,7 +322,8 @@ module.exports = class Worker {
 			},
 			json: true,
 		})
-		return state;
+		state = state.replace(/pending/g, '')
+		return JSON.parse(state);
 	}
 
 	/**
