@@ -58,15 +58,15 @@ const utils = require('../../common/utils');
 const exec = Bluebird.promisify(require('child_process').exec);
 const config = require('config');
 const { toInteger } = require('lodash');
+const { getSdk } = require('balena-sdk');
 
 module.exports = class BalenaSDK {
 	constructor(
 		apiUrl,
 		logger = { log: console.log, status: console.log, info: console.log },
 	) {
-		this.balena = require('balena-sdk')({
+		this.balena = getSdk({
 			apiUrl: `https://api.${apiUrl}`,
-			imageMakerUrl: `https://img.${apiUrl}`,
 		});
 
 		this.pine = this.balena.pine;
@@ -95,7 +95,7 @@ module.exports = class BalenaSDK {
 
 		return retry(
 			async () => {
-				if (!(await this.isDeviceConnectedToVpn(device))) {
+				if (!(await this.balena.models.device.isOnline(device))) {
 					throw new Error(`${device}: is not marked as connected to our VPN.`);
 				}
 
@@ -131,7 +131,7 @@ module.exports = class BalenaSDK {
 	 * @category helper
 	 */
 	getAllSupportedOSVersions(deviceType) {
-		return this.balena.models.os.getSupportedVersions(deviceType);
+		return this.balena.models.os.getAvailableOsVersions(deviceType);
 	}
 
 	// Deprecated - Use fetchOS method instead
@@ -487,10 +487,7 @@ module.exports = class BalenaSDK {
 	async pushReleaseToApp(application, directory) {
 		await exec(`balena push ${application} --source ${directory}`);
 		// check new commit of app
-		let commit = await this.balena.models.application
-			.get(application)
-			.get('commit');
-
+		let commit = await this.balena.models.application.getTargetReleaseHash(application);
 		return commit;
 	}
 
@@ -557,13 +554,14 @@ module.exports = class BalenaSDK {
 	 * @category helper
 	 */
 	async checkLogsContain(uuid, contains, _start = null, _end = null) {
-		let logs = await this.balena.logs.history(uuid).map((log) => {
+		let logs = await this.balena.logs.history(uuid);
+		let logsMessages = logs.map((log) => {
 			return log.message;
 		});
 
-		let startIndex = _start != null ? logs.indexOf(_start) : 0;
-		let endIndex = _end != null ? logs.indexOf(_end) : logs.length;
-		let slicedLogs = logs.slice(startIndex, endIndex);
+		let startIndex = _start != null ? logsMessages.indexOf(_start) : 0;
+		let endIndex = _end != null ? logsMessages.indexOf(_end) : logsMessages.length;
+		let slicedLogs = logsMessages.slice(startIndex, endIndex);
 
 		let pass = false;
 		slicedLogs.forEach((element) => {
@@ -602,28 +600,31 @@ module.exports = class BalenaSDK {
 	/**
 	 * Downloads provided version of balenaOS for the provided deviceType using balenaSDK
 	 *
-	 * @param version The semver compatible balenaOS version that will be downloaded, example: `2.80.3+rev1.dev`. Default value: `latest` where latest development variant of balenaOS will be downloaded.
+	 * @param versionOrRange The semver compatible balenaOS version that will be downloaded, example: `2.80.3+rev1`. Default value: `latest` where latest development variant of balenaOS will be downloaded.
 	 * @param deviceType The device type for which balenaOS needs to be downloaded
+	 * @param osType Can be one of 'default', 'esr' or null to include all types
 	 * @remark Stores the downloaded image in `leviathan.downloads` directory,
 	 * @throws Rejects promise if download fails. Retries thrice to download an image before giving up.
 	 *
 	 * @category helper
 	 */
-	async fetchOS(version = 'latest', deviceType) {
-		if (version === 'latest') {
-			const versions = await this.balena.models.os.getSupportedVersions(
-				deviceType,
-			);
-			// make sure we always flash the development variant
-			version = versions.latest.replace('prod', 'dev');
-		}
+	async fetchOS(versionOrRange = 'latest', deviceType, osType = 'default') {
+
+		// normalize the version string/range, supports 'latest', 'recommended', etc
+		let version = await this.balena.models.os.getMaxSatisfyingVersion(
+			deviceType, versionOrRange, osType
+		);
+
+		// variant is deprecated in recent balenaOS releases but
+		// if prod variant is still present after being normalized, replace it with dev
+		version = version.replace('.prod', '.dev');
 
 		const path = join(
 			config.get('leviathan.downloads'),
 			`balenaOs-${version}.img`,
 		);
 
-		// Caching implmentation if needed - Check https://github.com/balena-os/leviathan/issues/441
+		// Caching implementation if needed - Check https://github.com/balena-os/leviathan/issues/441
 
 		let attempt = 0;
 		const downloadLatestOS = async () => {
