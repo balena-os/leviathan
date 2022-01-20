@@ -29,19 +29,7 @@ const Context = require('./context');
 
 module.exports = class Test {
 	constructor(id, suite) {
-		this.suite = {
-			rootPath: suite.rootPath,
-			context: suite.context,
-			teardown: {
-				register: (fn, bucket) => {
-					suite.teardown.register(fn, bucket);
-				},
-			},
-			deviceType: suite.deviceType,
-			options: suite.options,
-			state: suite.state,
-		};
-
+		this.suite = suite;
 		this.id = id;
 
 		this.teardown = {
