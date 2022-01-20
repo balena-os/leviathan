@@ -1,10 +1,12 @@
 import * as config from 'config';
 import setup from '../lib/index';
+import { getRuntimeConfiguration } from '../lib/helpers';
 
 (async function (): Promise<void> {
 	const port: number = config.get('worker.port');
 
-	const app = await setup();
+	const runtimeConfiguration = await getRuntimeConfiguration();
+	const app = await setup(runtimeConfiguration);
 
 	/**
 	 * Start Express Server
