@@ -29,7 +29,7 @@ declare global {
 			cpus: string;
 			memory: string;
 			debug: boolean;
-			firmware: {
+			firmware?: {
 				code: string,
 				vars: string
 			},
