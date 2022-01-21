@@ -256,11 +256,11 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 				'-global',
 				'ICH9-LPC.disable_s3=1',
 				'-drive',
-				'if=pflash,format=raw,unit=0,file=/usr/share/OVMF/OVMF_CODE.fd,readonly=on',
+				`if=pflash,format=raw,unit=0,file=${this.qemuOptions.firmware.code},readonly=on`,
 				'-drive',
-				'if=pflash,format=raw,unit=1,file=/usr/share/OVMF/OVMF_VARS.fd',
+				`if=pflash,format=raw,unit=1,file=${this.qemuOptions.firmware.vars},readonly=on`,
 			],
-			aarch64: ['-bios', '/usr/share/qemu-efi-aarch64/QEMU_EFI.fd'],
+			aarch64: ['-bios', this.qemuOptions.firmware.code],
 		};
 		const qmpArgs = ['-qmp', `tcp:localhost:${qmpPort},server,nowait`];
 		let args = baseArgs

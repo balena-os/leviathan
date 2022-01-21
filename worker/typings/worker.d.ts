@@ -29,6 +29,10 @@ declare global {
 			cpus: string;
 			memory: string;
 			debug: boolean;
+			firmware: {
+				code: string,
+				vars: string
+			},
 			network: {
 				bridgeName: string;
 				bridgeAddress: string;
