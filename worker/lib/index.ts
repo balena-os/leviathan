@@ -1,5 +1,5 @@
 import * as bodyParser from 'body-parser';
-import { ChildProcess } from 'child_process';
+import { ChildProcess, exec } from 'child_process';
 import { multiWrite } from 'etcher-sdk';
 import * as express from 'express';
 import * as http from 'http';
@@ -11,6 +11,10 @@ import {
 import { TestBotWorker } from './workers/testbot';
 import QemuWorker from './workers/qemu';
 import { Contract } from '../typings/worker';
+import * as peripherals from './peripherals/peripherals.json';
+
+import * as util from 'util';
+const execSync = util.promisify(exec)
 
 const balena = getSdk({
 	apiUrl: 'https://api.balena-cloud.com/',
@@ -54,29 +58,20 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 		},
 	};
 
-	const supportedTags = [`dut`, `screencapture`, `modem`];
-	// parse labels and create 'contract'
 	const contract: Contract = {
 		uuid: process.env.BALENA_DEVICE_UUID,
 		workerType: config.get('worker.runtimeConfiguration.workerType'),
 		supportedFeatures: {}
 	};
 
-	if (
-		typeof process.env.BALENA_API_KEY === 'string' &&
-		typeof process.env.BALENA_DEVICE_UUID === 'string'
-	) {
-		await balena.auth.loginWithToken(process.env.BALENA_API_KEY);
-		const tags = await balena.models.device.tags.getAllByDevice(
-			process.env.BALENA_DEVICE_UUID,
-		);
-		for (const tag of tags) {
-			if (supportedTags.includes(tag.tag_key)) {
-				contract.supportedFeatures[tag.tag_key] = tag.value === 'true' ? true : tag.value
+
+	if(contract.workerType !== 'qemu' ){
+		for(let peripheral of peripherals){
+			let check = await execSync(peripheral.cmd);
+			if (check.stdout === 'PASS'){
+				contract.supportedFeatures[peripheral.slug] = true
 			}
 		}
-	} else {
-		console.log(`API key not available...`);
 	}
 
 	await worker.setup();

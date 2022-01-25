@@ -1,0 +1,10 @@
+[{
+	"name": "HDMI capture device",
+	"slug": "hdmi-capture",
+	"cmd": "[ -e /dev/video0 ] && echo PASS"
+},
+{
+	"name": "USB to ethernet adapter",
+	"slug": "ethernet",
+	"cmd": "[ -d /sys/class/net/eth1 ] && echo PASS"
+}]
