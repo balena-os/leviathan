@@ -96,7 +96,11 @@ module.exports = class CLI {
 		// path than where our docker daemon runs. Until we fix the issue on the preloader
 		await ensureFile(join(Mount.Source, image));
 
-		this.logger.log('Preloading image');
+		this.logger.log('--Preloading image--');
+		this.logger.log(`Image path: ${join(Mount.Source, image)}`);
+		this.logger.log(`Fleet: ${options.app}`);
+		this.logger.log(`Commit: ${options.commit}`);
+		this.logger.log(`Socket Path: ${socketPath}`)
 		await new Promise((resolve, reject) => {
 			const output = [];
 			const child = spawn(
