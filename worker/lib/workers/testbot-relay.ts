@@ -48,6 +48,7 @@ async function waitInternalFlash() {
 
 }
 
+
 /** Worker implementation based on testbot. */
 class TestBotRelay extends EventEmitter implements Leviathan.Worker {
 	private internalState: Leviathan.WorkerState = { network: {} };
@@ -90,6 +91,12 @@ class TestBotRelay extends EventEmitter implements Leviathan.Worker {
 	private async relayOff() {
 		//await exec(`echo 0 >/sys/class/gpio/gpio${relayPin}/value`);
 		await this.hatBoard.powerOffDUT();
+	}
+
+	public async diagnostics() {
+		return {
+			// Add diagnostics information to be qeuried as needed
+		}
 	}
 
 	public async setup() {
