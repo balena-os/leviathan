@@ -3,6 +3,7 @@ const path = require('path');
 
 const possibleReports = {
 	'dut-serial.txt': 'text/plain',
+	'test-summary.json': 'text/plain'
 };
 
 const notFound = resp => {

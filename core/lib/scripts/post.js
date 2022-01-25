@@ -33,7 +33,7 @@ const config = {
 
 const pensieve = new Pensieve(config, 'results', 'results');
 
-const createNewFragment = async results => {
+const createNewFragment = async (results) => {
 	const schema = _.map(await pensieve.getSchema(), 'name');
 
 	const newFragment = {

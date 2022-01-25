@@ -2,6 +2,12 @@ import { EventEmitter } from 'events';
 import { StatusCodeError } from 'request-promise/errors';
 import { Readable } from 'stream';
 
+interface Contract {
+	uuid: string | undefined;
+	workerType: string | undefined;
+	supportedFeatures: { [key: string]: boolean | string };
+}
+
 declare global {
 	interface Dictionary<T> {
 		[key: string]: T;
@@ -12,9 +18,32 @@ declare global {
 			workerType: string;
 			screenCapture: boolean;
 			network: Leviathan.Options.network;
+			qemu: Leviathan.QemuOptions;
 		}
 		interface WorkerState {
 			network: { wired?: string; wireless?: string };
+		}
+
+		interface QemuOptions {
+			architecture: string;
+			cpus: string;
+			memory: string;
+			debug: boolean;
+			firmware?: {
+				code: string,
+				vars: string
+			},
+			network: {
+				bridgeName: string;
+				bridgeAddress: string;
+				dhcpRange: string;
+				vncPort: number;
+				qmpPort: number;
+				vncMinPort: number;
+				vncMaxPort: number;
+				qmpMinPort: number;
+				qmpMaxPort: number;
+			}
 		}
 
 		interface Worker extends EventEmitter {
@@ -32,6 +61,8 @@ declare global {
 			network(configuration): Promise<void>;
 			/** Control HDMI capture process. */
 			captureScreen(action: 'start' | 'stop'): Promise<void | Readable>;
+			/** Returns relevant information about the worker to be used in tests */
+			diagnostics(): any;
 		}
 
 		interface Options {
@@ -49,7 +80,8 @@ declare global {
 						wired: string;
 				  };
 			screen?: { VNC: { host: string; port: string }; HDMI: { dev: number } };
-			screenCapture?: boolean
+			screenCapture?: boolean;
+			qemu?: QemuOptions;
 		}
 	}
 }

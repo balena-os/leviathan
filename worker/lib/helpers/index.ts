@@ -59,7 +59,7 @@ export function exec(
 			stdio: 'inherit',
 		});
 
-		proc.on('error', error => {
+		proc.on('error', (error) => {
 			reject(
 				new Error(
 					command +
@@ -73,7 +73,7 @@ export function exec(
 			);
 		});
 
-		proc.on('exit', function(code) {
+		proc.on('exit', function (code) {
 			if (code !== 0) {
 				reject(
 					new Error(
@@ -140,7 +140,7 @@ export function resolveLocalTarget(target: string): PromiseLike<string> {
 			}
 
 			function destroy(socks: any[]) {
-				socks.forEach(sock => {
+				socks.forEach((sock) => {
 					sock.destroy();
 				});
 			}
@@ -150,13 +150,13 @@ export function resolveLocalTarget(target: string): PromiseLike<string> {
 				reject(new Error(`Could not resolve ${target}`));
 			}, 4000);
 
-			sockets.forEach(socket => {
+			sockets.forEach((socket) => {
 				socket.on('error', () => {
 					clearTimeout(timeout);
 					destroy(sockets);
 					reject();
 				});
-				socket.on('response', function(response: any) {
+				socket.on('response', function (response: any) {
 					const answer = response.answers.find(
 						(x: any) => x.name === target && x.type === 'A',
 					);
@@ -176,18 +176,9 @@ export function resolveLocalTarget(target: string): PromiseLike<string> {
 	});
 }
 
-export async function getRuntimeConfiguration(
-	possibleWorkers: string[],
-): Promise<Leviathan.RuntimeConfiguration> {
-	const runtimeConfiguration: any = cleanObject(
-		config.get('worker.runtimeConfiguration'),
-	);
-
-	if (!possibleWorkers.includes(runtimeConfiguration.workerType)) {
-		throw new Error(
-			`${runtimeConfiguration.workerType} is not a supported worker`,
-		);
-	}
+export async function getRuntimeConfiguration()
+	: Promise<Leviathan.RuntimeConfiguration> {
+	const runtimeConfiguration: any = config.get('worker.runtimeConfiguration');
 
 	if (
 		runtimeConfiguration.network == null ||
@@ -197,7 +188,7 @@ export async function getRuntimeConfiguration(
 		throw new Error('No network configuration provided');
 	}
 
-	forEach(runtimeConfiguration.network, value => {
+	forEach(runtimeConfiguration.network, (value) => {
 		if (value != null && !(value in networkInterfaces())) {
 			// TODO: Think if this should throw instead.
 			console.error(`Network interface ${value} is not available`);

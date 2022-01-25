@@ -56,9 +56,7 @@ class NetworkManager {
 	}
 
 	private static generateId(): string {
-		return Math.random()
-			.toString(36)
-			.substring(2, 10);
+		return Math.random().toString(36).substring(2, 10);
 	}
 
 	private static wiredTemplate(method: string) {

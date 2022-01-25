@@ -1,35 +1,44 @@
 import * as bodyParser from 'body-parser';
-import { ChildProcess, spawn } from 'child_process';
+import { ChildProcess } from 'child_process';
 import { multiWrite } from 'etcher-sdk';
 import * as express from 'express';
 import * as http from 'http';
-import { Readable } from 'stream';
-
+import { getSdk } from 'balena-sdk';
+import config = require("config");
 import {
-	getIpFromIface,
-	getRuntimeConfiguration,
 	resolveLocalTarget,
 } from './helpers';
 import { TestBotWorker } from './workers/testbot';
 import { TestBotRelay } from './workers/testbot-relay';
+import QemuWorker from './workers/qemu';
+import { Contract } from '../typings/worker';
 
+const balena = getSdk({
+	apiUrl: 'https://api.balena-cloud.com/',
+});
 
-const workersDict: Dictionary<typeof TestBotWorker | typeof TestBotRelay> = {
+const workersDict: Dictionary<typeof TestBotWorker | typeof QemuWorker | typeof TestBotRelay> = {
 	testbot_hat: TestBotWorker,
-	testbot_relay: TestBotRelay
+	qemu: QemuWorker,
+  testbot_relay: TestBotRelay
 };
 
-async function setup(): Promise<express.Application> {
-	const runtimeConfiguration = await getRuntimeConfiguration(
-		Object.keys(workersDict),
-	);
+async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
+	: Promise<express.Application> {
+	const possibleWorkers = Object.keys(workersDict);
+	if (!possibleWorkers.includes(runtimeConfiguration.workerType)) {
+		throw new Error(
+			`${runtimeConfiguration.workerType} is not a supported worker`,
+		);
+	}
 
 	const worker: Leviathan.Worker = new workersDict[
 		runtimeConfiguration.workerType
 	]({
 		worker: { workdir: runtimeConfiguration.workdir },
 		network: runtimeConfiguration.network,
-		screenCapture: runtimeConfiguration.screenCapture
+		screenCapture: runtimeConfiguration.screenCapture,
+		qemu: runtimeConfiguration.qemu,
 	});
 
 	/**
@@ -46,6 +55,31 @@ async function setup(): Promise<express.Application> {
 			}
 		},
 	};
+
+	const supportedTags = [`dut`, `screencapture`, `modem`];
+	// parse labels and create 'contract'
+	const contract: Contract = {
+		uuid: process.env.BALENA_DEVICE_UUID,
+		workerType: config.get('worker.runtimeConfiguration.workerType'),
+		supportedFeatures: {}
+	};
+
+	if (
+		typeof process.env.BALENA_API_KEY === 'string' &&
+		typeof process.env.BALENA_DEVICE_UUID === 'string'
+	) {
+		await balena.auth.loginWithToken(process.env.BALENA_API_KEY);
+		const tags = await balena.models.device.tags.getAllByDevice(
+			process.env.BALENA_DEVICE_UUID,
+		);
+		for (const tag of tags) {
+			if (supportedTags.includes(tag.tag_key)) {
+				contract.supportedFeatures[tag.tag_key] = tag.value === 'true' ? true : tag.value
+			}
+		}
+	} else {
+		console.log(`API key not available...`);
+	}
 
 	await worker.setup();
 
@@ -71,6 +105,20 @@ async function setup(): Promise<express.Application> {
 				clearInterval(timer);
 				res.write('OK');
 				res.end();
+			}
+		},
+	);
+	app.get(
+		'/dut/diagnostics',
+		async (
+			_req: express.Request,
+			res: express.Response,
+			next: express.NextFunction,
+		) => {
+			try {
+				res.send(await worker.diagnostics());
+			} catch (err) {
+				next(err);
 			}
 		},
 	);
@@ -125,6 +173,21 @@ async function setup(): Promise<express.Application> {
 			}
 		},
 	);
+	app.get(
+		'/contract',
+		jsonParser,
+		async (
+			req: express.Request,
+			res: express.Response,
+			next: express.NextFunction,
+		) => {
+			try {
+				res.send(JSON.stringify(contract));
+			} catch (err) {
+				next(err);
+			}
+		},
+	);
 	app.post(
 		'/dut/capture',
 		async (
@@ -149,7 +212,7 @@ async function setup(): Promise<express.Application> {
 		) => {
 			try {
 				await worker.captureScreen('stop');
-				res.send('OK')
+				res.send('OK');
 			} catch (err) {
 				next(err);
 			}
@@ -164,33 +227,14 @@ async function setup(): Promise<express.Application> {
 			res: express.Response,
 			next: express.NextFunction,
 		) => {
-			// For simplicity we will delegate to glider for now
+			// This function is effectively stubbed and does nothing except return 127.0.0.1.
+			// Glider has been removed from the worker, since the old proxy tests were always
+			// passing even without a working proxy, they were invalid.
+			// New proxy tests install glider in a container on the DUT and don't use this endpoint.
+			console.warn(`proxy endpoint has been deprecated, returning localhost`);
 			try {
-				proxy.kill();
 				if (req.body.port != null) {
-					let ip;
-
-					if (worker.state.network.wired != null) {
-						ip = {
-							ip: getIpFromIface(worker.state.network.wired),
-						};
-					}
-
-					if (worker.state.network.wireless != null) {
-						ip = {
-							ip: getIpFromIface(worker.state.network.wireless),
-						};
-					}
-
-					if (ip == null) {
-						throw new Error('DUT network could not be found');
-					}
-
-					process.off('exit', proxy.kill);
-					proxy.proc = spawn('glider', ['-listen', req.body.port]);
-					process.on('exit', proxy.kill);
-
-					res.send(ip);
+					res.send('127.0.0.1');
 				} else {
 					res.send('OK');
 				}
@@ -215,7 +259,7 @@ async function setup(): Promise<express.Application> {
 			}
 		},
 	);
-	app.use(function(
+	app.use(function (
 		err: Error,
 		_req: express.Request,
 		res: express.Response,

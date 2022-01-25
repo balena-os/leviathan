@@ -48,17 +48,17 @@ export default class ScreenCapture {
 					shell: '/bin/bash',
 				},
 			);
-			this.proc.stdout.on('data', data => {
+			this.proc.stdout.on('data', (data) => {
 				this.exit.details.stdout += `${data.toString('utf-8')}\n`;
 			});
-			this.proc.stderr.on('data', data => {
+			this.proc.stderr.on('data', (data) => {
 				this.exit.details.stderr += `${data.toString('utf-8')}\n`;
 			});
-			this.proc.on('exit', code => {
+			this.proc.on('exit', (code) => {
 				this.exit.details.code = code;
 				this.proc = undefined;
 			});
-			this.proc.on('error', error => {
+			this.proc.on('error', (error) => {
 				this.exit.reason = 'Could not start gstreamer pipeline';
 				this.exit.details.error = error;
 				this.proc = undefined;

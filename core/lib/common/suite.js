@@ -25,7 +25,6 @@
 
 'use strict';
 
-const assignIn = require('lodash/assignIn');
 const config = require('config');
 const isEmpty = require('lodash/isEmpty');
 const isObject = require('lodash/isObject');
@@ -43,13 +42,26 @@ const Bluebird = require('bluebird');
 const fse = require('fs-extra');
 const npm = require('npm');
 const { tmpdir } = require('os');
+const util = require('util');
+const exec = util.promisify(require('child_process').exec);
 const path = require('path');
 
 const Context = require('./context');
 const State = require('./state');
 const Teardown = require('./teardown');
 const Test = require('./test');
-const utils = require('./utils');
+
+// Device identification
+function uid(a) {
+	return a
+		? (a ^ (Math.random() * 16)).toString(16)
+		: ([1e15] + 1e15).replace(/[01]/g, uid);
+}
+
+// Test identification
+const id = `${Math.random()
+	.toString(36)
+	.substring(2, 10)}`;
 
 function cleanObject(object) {
 	if (!isObject(object)) {
@@ -71,17 +83,43 @@ function cleanObject(object) {
 class Suite {
 	constructor() {
 		const conf = require(config.get('leviathan.uploads.config'));
-
 		this.rootPath = path.join(__dirname, '..');
-		this.options = assignIn(
-			{
-				packdir: config.get('leviathan.workdir'),
-				tmpdir: conf.tmpdir || tmpdir(),
-				interactiveTests: conf.interactive,
-				replOnFailure: conf.repl,
+		const options = {
+			id,
+			packdir: config.get('leviathan.workdir'),
+			tmpdir: conf.tmpdir || tmpdir(),
+			interactiveTests: conf.interactive,
+			replOnFailure: conf.repl,
+			balena: {
+				application: {
+					env: {
+						delta: conf.supervisorDelta || false,
+					},
+				},
+				apiKey: conf.balenaApiKey,
+				apiUrl: conf.balenaApiUrl,
+				organization: conf.organization
 			},
-			require(path.join(config.get('leviathan.uploads.suite'), 'conf'))(conf),
-		);
+			balenaOS: {
+				config: {
+					uuid: uid(),
+				},
+				download: {
+					version: conf.downloadVersion,
+				},
+				network: {
+					wired: conf.networkWired,
+					wireless: conf.networkWireless,
+				}
+			}
+		}
+
+		// In the future, deprecate the options object completely to create a mega-conf
+		// Breaking changes will need to be done to both test suites + helpers
+		this.options = {
+			...options,
+			...conf
+		}
 		cleanObject(this.options);
 
 		// State
@@ -89,6 +127,16 @@ class Suite {
 		this.teardown = new Teardown();
 		this.state = new State();
 		this.passing = null;
+		this.testSummary = {
+			suite: ``,
+			stats: {
+				tests: 0,
+				passes: 0,
+				fails: 0,
+				ran: 0,
+			},
+			tests: {},
+		};
 
 		try {
 			this.deviceType = require(`../../contracts/contracts/hw.device-type/${conf.deviceType}/contract.json`);
@@ -103,6 +151,7 @@ class Suite {
 
 	async init() {
 		await Bluebird.try(async () => {
+			await exec('npm cache clear --silent --force');
 			await this.installDependencies();
 			await fs.ensureDir(config.get('leviathan.downloads'));
 			if (fs.existsSync(config.get('leviathan.artifacts'))) {
@@ -112,7 +161,8 @@ class Suite {
 			this.rootTree = this.resolveTestTree(
 				path.join(config.get('leviathan.uploads.suite'), 'suite'),
 			);
-		}).catch(async error => {
+			this.testSummary.suite = this.rootTree.title;
+		}).catch(async (error) => {
 			await this.removeDependencies();
 			await this.removeDownloads();
 			throw error;
@@ -125,7 +175,7 @@ class Suite {
 
 		// Recursive DFS
 		const treeExpander = async ([
-			{ interactive, os, skip, deviceType, title, run, tests },
+			{ interactive, os, skip, deviceType, title, workerContract, run, tests },
 			testNode,
 		]) => {
 			// Check our contracts
@@ -135,7 +185,10 @@ class Suite {
 				(deviceType != null && !ajv.compile(deviceType)(this.deviceType)) ||
 				(os != null &&
 					this.context.get().os != null &&
-					!ajv.compile(os)(this.context.get().os.contract))
+					!ajv.compile(os)(this.context.get().os.contract)) ||
+				(workerContract != null &&
+					this.context.get().workerContract != null &&
+					!ajv.compile(workerContract)(this.context.get().workerContract))
 			) {
 				return;
 			}
@@ -150,29 +203,27 @@ class Suite {
 					buffered: false,
 					bail: true,
 				},
-				async t => {
+				async (t) => {
 					if (run != null) {
 						try {
 							await Reflect.apply(Bluebird.method(run), test, [t]);
 						} catch (error) {
 							t.threw(error);
-
-							if (this.options.replOnFailure) {
-								await utils.repl(
-									{
-										context: this.context.get(),
-									},
-									{
-										name: t.name,
-									},
-								);
-							}
 						} finally {
 							await test.finish();
 						}
 					}
 
 					if (tests == null) {
+						this.testSummary.stats.ran++;
+						let result = testNode.passing();
+						if (result) {
+							this.testSummary.tests[title] = 'pass';
+							this.testSummary.stats.passes++;
+						} else {
+							this.testSummary.tests[title] = 'fail';
+							this.testSummary.stats.fails++;
+						}
 						return;
 					}
 					for (const node of tests) {
@@ -188,8 +239,12 @@ class Suite {
 			// Teardown all running test suites before removing assets & dependencies
 			this.state.log(`Test suite completed. Tearing down now.`);
 			await this.teardown.runAll();
+			await this.createJsonSummary();
 			await this.removeDependencies();
-			await this.removeDownloads();
+			// This env variable can be used to keep a configured, unpacked image for use when developing tests
+			if (process.env.DEBUG_KEEP_IMG !== true) {
+				await this.removeDownloads();
+			}
 			this.state.log(`Teardown complete.`);
 			this.passing = tap.passing();
 			tap.end();
@@ -239,6 +294,8 @@ class Suite {
 			this.state.log(`${'\t'.repeat(depth)} ${title}`);
 
 			if (tests == null) {
+				this.testSummary.stats.tests++;
+				this.testSummary.tests[title] = 'skipped';
 				return;
 			}
 
@@ -263,6 +320,12 @@ class Suite {
 		);
 	}
 
+	async createJsonSummary() {
+		this.state.log(`Creating JSON test summary...`);
+		let data = JSON.stringify(this.testSummary, null, 4);
+		await fs.writeFileSync(`/reports/test-summary.json`, data);
+	}
+
 	async removeDependencies() {
 		this.state.log(`Removing npm dependencies for suite:`);
 		await Bluebird.promisify(fse.remove)(
@@ -284,12 +347,13 @@ class Suite {
 	process.on('SIGINT', async () => {
 		suite.state.log(`Suite recieved SIGINT`);
 		await suite.teardown.runAll();
+		await suite.createJsonSummary();
 		await suite.removeDependencies();
 		await suite.removeDownloads();
 		process.exit(128);
 	});
 
-	const messageHandler = message => {
+	const messageHandler = (message) => {
 		const { action } = message;
 
 		if (action === 'reconnect') {

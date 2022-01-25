@@ -2,6 +2,9 @@
 *.img
 *.js
 *.conf
+*.docker
+*.zip
 
 reports/
 saved-images/
+!config.example.js

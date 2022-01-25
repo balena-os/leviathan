@@ -50,9 +50,7 @@ const rp = require('request-promise');
 const exec = Bluebird.promisify(require('child_process').exec);
 
 function id() {
-	return `${Math.random()
-		.toString(36)
-		.substring(2, 10)}`;
+	return `${Math.random().toString(36).substring(2, 10)}`;
 }
 
 module.exports = class Worker {
@@ -73,55 +71,60 @@ module.exports = class Worker {
 	 * @category helper
 	 */
 	async flash(imagePath) {
-		this.logger.log('Preparing to flash');
+		if (process.env.DEBUG_KEEP_IMG) {
+			this.logger.log('[DEBUG] Skip flashing');
+			return "Skipping flashing"
+		} else {
+			this.logger.log('Preparing to flash');
 
-		await new Promise(async (resolve, reject) => {
-			const req = rp.post({ uri: `${this.url}/dut/flash` });
+			await new Promise(async (resolve, reject) => {
+				const req = rp.post({ uri: `${this.url}/dut/flash` });
 
-			req.catch(error => {
-				reject(error);
-			});
-			req.finally(() => {
-				if (lastStatus !== 'done') {
-					reject(new Error('Unexpected end of TCP connection'));
-				}
-
-				resolve();
-			});
-
-			let lastStatus;
-			req.on('data', data => {
-				const computedLine = RegExp('(.+?): (.*)').exec(data.toString());
-
-				if (computedLine) {
-					if (computedLine[1] === 'error') {
-						req.cancel();
-						reject(new Error(computedLine[2]));
+				req.catch((error) => {
+					reject(error);
+				});
+				req.finally(() => {
+					if (lastStatus !== 'done') {
+						reject(new Error('Unexpected end of TCP connection'));
 					}
 
-					if (computedLine[1] === 'progress') {
-						once(() => {
-							this.logger.log('Flashing');
-						});
-						// Hide any errors as the lines we get can be half written
-						const state = JSON.parse(computedLine[2]);
-						if (state != null && isNumber(state.percentage)) {
-							this.logger.status({
-								message: 'Flashing',
-								percentage: state.percentage,
+					resolve();
+				});
+
+				let lastStatus;
+				req.on('data', (data) => {
+					const computedLine = RegExp('(.+?): (.*)').exec(data.toString());
+
+					if (computedLine) {
+						if (computedLine[1] === 'error') {
+							req.cancel();
+							reject(new Error(computedLine[2]));
+						}
+
+						if (computedLine[1] === 'progress') {
+							once(() => {
+								this.logger.log('Flashing');
 							});
+							// Hide any errors as the lines we get can be half written
+							const state = JSON.parse(computedLine[2]);
+							if (state != null && isNumber(state.percentage)) {
+								this.logger.status({
+									message: 'Flashing',
+									percentage: state.percentage,
+								});
+							}
+						}
+
+						if (computedLine[1] === 'status') {
+							lastStatus = computedLine[2];
 						}
 					}
+				});
 
-					if (computedLine[1] === 'status') {
-						lastStatus = computedLine[2];
-					}
-				}
+				pipeline(fs.createReadStream(imagePath), req);
 			});
-
-			pipeline(fs.createReadStream(imagePath), req);
-		});
-		this.logger.log('Flash completed');
+			this.logger.log('Flash completed');
+		}
 	}
 
 	/**
@@ -143,6 +146,13 @@ module.exports = class Worker {
 	async off() {
 		this.logger.log('Powering off DUT');
 		await rp.post(`${this.url}/dut/off`);
+	}
+
+	/**
+	 * Gather diagnostics from testbot
+	 */
+	async diagnostics() {
+		return JSON.parse(await rp.get(`${this.url}/dut/diagnostics`));
 	}
 
 	async network(network) {
@@ -184,6 +194,10 @@ module.exports = class Worker {
 
 	async teardown() {
 		await rp.post({ uri: `${this.url}/teardown`, json: true });
+	}
+
+	async getContract() {
+		return rp.get({ uri: `${this.url}/contract`, json: true });
 	}
 
 	capture(action) {
@@ -328,6 +342,7 @@ module.exports = class Worker {
 				(await this.executeCommandInHostOS(
 					'[[ ! -f /tmp/reboot-check ]] && echo pass',
 					target,
+					{ interval: 10000, tries: 10 },
 				)) === 'pass'
 			);
 		}, false);
@@ -349,7 +364,7 @@ module.exports = class Worker {
 			target,
 		);
 		let match;
-		output.split('\n').every(x => {
+		output.split('\n').every((x) => {
 			if (x.startsWith('VERSION=')) {
 				match = x.split('=')[1];
 				return false;

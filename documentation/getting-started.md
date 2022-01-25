@@ -29,7 +29,7 @@ module.exports = {
 };
 ```
 
-- Run the `run-tests.sh` script from the `workspace` directory and watch the logs. At the end of the run, reports and logs about the test will be stored in `workspace/reports` directory.
+- Run `make test` in the root of the project and watch the logs. At the end of the run, reports and logs about the test will be stored in `workspace/reports` directory.
 
 Information on properties in `config.js`:
 

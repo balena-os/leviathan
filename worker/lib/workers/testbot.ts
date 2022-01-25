@@ -5,7 +5,9 @@ import {
 	TestBotHat,
 	BalenaFin,
 	BalenaFinV09,
-	BeagleBone
+	BeagleBone,
+	RevPiCore3,
+	CM4IOBoard,
 } from '@balena/testbot';
 import { EventEmitter } from 'events';
 import { createWriteStream } from 'fs';
@@ -31,6 +33,12 @@ const resolveDeviceInteractor = (hat: TestBotHat): DeviceInteractor => {
 	}
 	if (process.env.TESTBOT_DUT_TYPE === 'intel-nuc') {
 		return new IntelNuc(hat);
+	}
+	if (process.env.TESTBOT_DUT_TYPE === 'revpi-core-3') {
+		return new RevPiCore3(hat);
+	}
+	if (process.env.TESTBOT_DUT_TYPE === 'raspberrypicm4-ioboard') {
+		return new CM4IOBoard(hat);
 	}
 	return new RaspberryPi(hat);
 };
@@ -90,6 +98,14 @@ class TestBotWorker extends EventEmitter implements Leviathan.Worker {
 		console.log('Trying to power on DUT...');
 		await this.deviceInteractor.powerOn();
 		console.log('Vout=', await this.hatBoard.readVout());
+	}
+
+	public async diagnostics() {
+		return {
+			vout: await this.hatBoard.readVout(),
+			amperage: await this.hatBoard.readVoutAmperage(),
+			deviceVoltage: this.deviceInteractor.powerVoltage,
+		};
 	}
 
 	public async powerOff() {

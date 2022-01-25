@@ -62,6 +62,7 @@ const config = require('config');
 const imagefs = require('resin-image-fs');
 const { fs } = require('mz');
 const { join } = require('path');
+const tmp = require('tmp');
 const pipeline = Bluebird.promisify(require('stream').pipeline);
 const zlib = require('zlib');
 
@@ -129,9 +130,7 @@ async function isGzip(filePath) {
 }
 
 function id() {
-	return `${Math.random()
-		.toString(36)
-		.substring(2, 10)}`;
+	return `${Math.random().toString(36).substring(2, 10)}`;
 }
 
 module.exports = class BalenaOS {
@@ -142,12 +141,12 @@ module.exports = class BalenaOS {
 		this.deviceType = options.deviceType;
 		this.network = options.network;
 		this.image = {
-			input: options.image || config.get('leviathan.uploads').image,
-			path: join(config.get('leviathan.downloads'), `image-${id()}`),
+			input: options.image === undefined ? config.get('leviathan.uploads').image : options.image,
+			path: tmp.tmpNameSync(),
 		};
 		this.configJson = options.configJson || {};
 		this.contract = {
-			network: mapValues(this.network, value => {
+			network: mapValues(this.network, (value) => {
 				return typeof value === 'boolean' ? value : true;
 			}),
 		};
@@ -163,17 +162,21 @@ module.exports = class BalenaOS {
 	 * @category helper
 	 */
 	async fetch() {
-		this.logger.log(`Unpacking the file: ${this.image.input}`);
-		const unpack = await isGzip(this.image.input);
-		if (unpack) {
-			await pipeline(
-				fs.createReadStream(this.image.input),
-				zlib.createGunzip(),
-				fs.createWriteStream(this.image.path),
-			);
+		if (process.env.DEBUG_KEEP_IMG) {
+			this.logger.log('[DEBUG] Skip unpacking image');
 		} else {
-			// image is already unzipped, so no need to do anything
-			this.image.path = this.image.input;
+			this.logger.log(`Unpacking the file: ${this.image.input}`);
+			const unpack = await isGzip(this.image.input);
+			if (unpack) {
+				await pipeline(
+					fs.createReadStream(this.image.input),
+					zlib.createGunzip(),
+					fs.createWriteStream(this.image.path),
+				);
+			} else {
+				// image is already unzipped, so no need to do anything
+				this.image.path = this.image.input;
+			}
 		}
 	}
 
@@ -239,11 +242,15 @@ module.exports = class BalenaOS {
 	 * @category helper
 	 */
 	async configure() {
-		await this.readOsRelease();
-		this.logger.log(`Configuring balenaOS image: ${this.image.input}`);
-		if (this.configJson) {
-			await injectBalenaConfiguration(this.image.path, this.configJson);
+		if (process.env.DEBUG_KEEP_IMG) {
+			this.logger.log('[DEBUG] Skip configuring image');
+		} else {
+			await this.readOsRelease();
+			this.logger.log(`Configuring balenaOS image: ${this.image.input}`);
+			if (this.configJson) {
+				await injectBalenaConfiguration(this.image.path, this.configJson);
+			}
+			await injectNetworkConfiguration(this.image.path, this.network);
 		}
-		await injectNetworkConfiguration(this.image.path, this.network);
 	}
 };

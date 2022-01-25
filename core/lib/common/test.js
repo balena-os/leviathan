@@ -48,7 +48,7 @@ module.exports = class Test {
 			run: async () => {
 				await suite.teardown.run(this.id);
 			},
-			register: fn => {
+			register: (fn) => {
 				this.suite.teardown.register(fn, id);
 			},
 		};
