@@ -20,7 +20,7 @@ const balena = getSdk({
 const workersDict: Dictionary<typeof TestBotWorker | typeof QemuWorker | typeof TestBotRelay> = {
 	testbot_hat: TestBotWorker,
 	qemu: QemuWorker,
-  testbot_relay: TestBotRelay
+	testbot_relay: TestBotRelay
 };
 
 async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
