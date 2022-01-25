@@ -6,7 +6,6 @@ import * as http from 'http';
 import { getSdk } from 'balena-sdk';
 import config = require("config");
 import {
-	getRuntimeConfiguration,
 	resolveLocalTarget,
 } from './helpers';
 import { TestBotWorker } from './workers/testbot';
@@ -22,10 +21,14 @@ const workersDict: Dictionary<typeof TestBotWorker | typeof QemuWorker> = {
 	qemu: QemuWorker,
 };
 
-async function setup(): Promise<express.Application> {
-	const runtimeConfiguration = await getRuntimeConfiguration(
-		Object.keys(workersDict),
-	);
+async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
+	: Promise<express.Application> {
+	const possibleWorkers = Object.keys(workersDict);
+	if (!possibleWorkers.includes(runtimeConfiguration.workerType)) {
+		throw new Error(
+			`${runtimeConfiguration.workerType} is not a supported worker`,
+		);
+	}
 
 	const worker: Leviathan.Worker = new workersDict[
 		runtimeConfiguration.workerType
