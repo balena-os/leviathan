@@ -48,7 +48,7 @@ const path = require('path');
 
 const Context = require('./context');
 const State = require('./state');
-const Teardown = require('./teardown');
+const { Teardown } = require('./taskQueue');
 const Test = require('./test');
 
 // Device identification
