@@ -7,3 +7,6 @@ services:
       - "${WORKSPACE:-./workspace}:/usr/src/app/workspace:ro"
       - "${REPORTS:-./workspace/reports}:/usr/src/app/reports:rw"
       - "${SUITES:-./suites}:/usr/src/app/suites:ro"
+    environment:
+      - BALENACLOUD_API_KEY=${BALENACLOUD_API_KEY}
+      - BALENACLOUD_ORG=${BALENACLOUD_ORG}
