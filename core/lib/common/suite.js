@@ -30,7 +30,6 @@ const isEmpty = require('lodash/isEmpty');
 const isObject = require('lodash/isObject');
 const isString = require('lodash/isString');
 const template = require('lodash/template');
-const fs = require('fs-extra');
 
 const AJV = require('ajv');
 const ajv = new AJV();
@@ -48,7 +47,7 @@ const path = require('path');
 
 const Context = require('./context');
 const State = require('./state');
-const { Teardown } = require('./taskQueue');
+const { Setup, Teardown } = require('./taskQueue');
 const Test = require('./test');
 
 // Device identification
@@ -126,6 +125,7 @@ module.exports = class Suite {
 
 		// State
 		this.context = new Context();
+		this.setup = new Setup();
 		this.teardown = new Teardown();
 		this.state = new State();
 		this.passing = null;
@@ -136,12 +136,16 @@ module.exports = class Suite {
 			stats: {
 				tests: 0,
 				ran: 0,
-				skipped: () =>
-					this.testSummary.stats.tests - this.testSummary.stats.ran,
 				passed: 0,
 				failed: 0,
 			},
 			tests: {},
+			get skipped() {
+				this.stats.tests - this.stats.ran;
+			},
+			get dateTime() {
+				return new Date().toString();
+			},
 		};
 
 		try {
@@ -157,20 +161,14 @@ module.exports = class Suite {
 
 	async init() {
 		await Bluebird.try(async () => {
-			await exec('npm cache clear --silent --force');
+			await this.setup.runAll();
 			await this.installDependencies();
-			await fs.ensureDir(config.get('leviathan.downloads'));
-			if (fs.existsSync(config.get('leviathan.artifacts'))) {
-				this.state.log(`Removing artifacts from previous tests...`);
-				fs.emptyDirSync(config.get('leviathan.artifacts'));
-			}
 			this.rootTree = this.resolveTestTree(
 				path.join(config.get('leviathan.uploads.suite'), 'suite'),
 			);
 			this.testSummary.suite = this.rootTree.title;
 		}).catch(async (error) => {
 			await this.removeDependencies();
-			await this.removeDownloads();
 			throw error;
 		});
 	}
@@ -244,12 +242,7 @@ module.exports = class Suite {
 			// Teardown all running test suites before removing assets & dependencies
 			this.state.log(`Test suite completed. Tearing down now.`);
 			await this.teardown.runAll();
-			await this.createJsonSummary();
 			await this.removeDependencies();
-			// This env variable can be used to keep a configured, unpacked image for use when developing tests
-			if (process.env.DEBUG_KEEP_IMG !== true) {
-				await this.removeDownloads();
-			}
 			this.state.log(`Teardown complete.`);
 			this.passing = tap.passing();
 			tap.end();
@@ -312,6 +305,8 @@ module.exports = class Suite {
 	}
 
 	async installDependencies() {
+		await exec('npm cache clear --silent --force');
+
 		this.state.log(`Install npm dependencies for suite: `);
 		await Bluebird.promisify(npm.load)({
 			loglevel: 'silent',
@@ -324,24 +319,10 @@ module.exports = class Suite {
 		);
 	}
 
-	async createJsonSummary() {
-		this.testSummary.stats.skipped = this.testSummary.stats.skipped();
-		this.testSummary.dateTime = `${new Date().toString()}`;
-		let data = JSON.stringify(this.testSummary, null, 4);
-		await fs.writeFileSync(`/reports/test-summary.json`, data);
-	}
-
 	async removeDependencies() {
 		this.state.log(`Removing npm dependencies for suite:`);
 		await Bluebird.promisify(fse.remove)(
 			path.join(config.get('leviathan.uploads.suite'), 'node_modules'),
 		);
-	}
-
-	async removeDownloads() {
-		if (fs.existsSync(config.get('leviathan.downloads'))) {
-			this.state.log(`Removing downloads directory...`);
-			fs.emptyDirSync(config.get('leviathan.downloads'));
-		}
 	}
 }
