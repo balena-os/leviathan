@@ -26,7 +26,9 @@ module.exports = class State {
 			sendObject.data = this._log.join('\n');
 		}
 
-		process.send(sendObject);
+		if (process.send !== undefined) {
+			process.send(sendObject);
+		}
 	}
 
 	status(status) {
@@ -41,7 +43,9 @@ module.exports = class State {
 			sendObject.data = this._status;
 		}
 
-		process.send(sendObject);
+		if (process.send !== undefined) {
+			process.send(sendObject);
+		}
 	}
 
 	info(info) {
@@ -56,6 +60,8 @@ module.exports = class State {
 			sendObject.data = this._info;
 		}
 
-		process.send(sendObject);
+		if (process.send !== undefined) {
+			process.send(sendObject);
+		}
 	}
 };
