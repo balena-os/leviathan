@@ -25,7 +25,6 @@
 
 'use strict';
 
-const config = require('config');
 const isEmpty = require('lodash/isEmpty');
 const isObject = require('lodash/isObject');
 const isString = require('lodash/isString');
@@ -80,34 +79,36 @@ function cleanObject(object) {
 }
 
 module.exports = class Suite {
-	constructor() {
-		const conf = require(config.get('leviathan.uploads.config'));
+	constructor(suiteParams, extraSuiteConf={}) {
+		this.path = suiteParams.suitePath;
+		this.image = suiteParams.imagePath;
+		this.deviceTypeSlug = suiteParams.deviceType;
+		this.workerAddress = suiteParams.workerAddress;
 		this.rootPath = path.join(__dirname, '..');
 		const options = {
 			id,
-			packdir: config.get('leviathan.workdir'),
-			tmpdir: conf.tmpdir || tmpdir(),
-			replOnFailure: conf.repl,
+			tmpdir: extraSuiteConf.tmpdir || tmpdir(),
+			replOnFailure: extraSuiteConf.repl,
 			balena: {
 				application: {
 					env: {
-						delta: conf.supervisorDelta || false,
+						delta: extraSuiteConf.supervisorDelta || false,
 					},
 				},
-				apiKey: conf.balenaApiKey,
-				apiUrl: conf.balenaApiUrl,
-				organization: conf.organization
+				apiKey: extraSuiteConf.balenaApiKey,
+				apiUrl: extraSuiteConf.balenaApiUrl,
+				organization: extraSuiteConf.organization
 			},
 			balenaOS: {
 				config: {
 					uuid: uid(),
 				},
 				download: {
-					version: conf.downloadVersion,
+					version: extraSuiteConf.downloadVersion,
 				},
 				network: {
-					wired: conf.networkWired,
-					wireless: conf.networkWireless,
+					wired: extraSuiteConf.networkWired || false,
+					wireless: extraSuiteConf.networkWireless || false,
 				}
 			}
 		}
@@ -116,7 +117,7 @@ module.exports = class Suite {
 		// Breaking changes will need to be done to both test suites + helpers
 		this.options = {
 			...options,
-			...conf
+			...extraSuiteConf
 		}
 		cleanObject(this.options);
 
@@ -138,10 +139,10 @@ module.exports = class Suite {
 		};
 
 		try {
-			this.deviceType = require(`../../contracts/contracts/hw.device-type/${conf.deviceType}/contract.json`);
+			this.deviceType = require(`../../contracts/contracts/hw.device-type/${this.deviceTypeSlug}/contract.json`);
 		} catch (e) {
 			if (e.code === 'MODULE_NOT_FOUND') {
-				throw new Error(`Invalid/Unsupported device type: ${conf.deviceType}`);
+				throw new Error(`Invalid/Unsupported device type: ${this.deviceTypeSlug}`);
 			} else {
 				throw e;
 			}
@@ -154,7 +155,7 @@ module.exports = class Suite {
 			await exec('npm cache clear --silent --force');
 			await this.installDependencies();
 			this.rootTree = this.resolveTestTree(
-				path.join(config.get('leviathan.uploads.suite'), 'suite'),
+				path.join(this.path, 'suite'),
 			);
 			this.testSummary.suite = this.rootTree.title;
 		}).catch(async (error) => {
@@ -255,7 +256,7 @@ module.exports = class Suite {
 					if (isString(test)) {
 						try {
 							test = tests[i] = require(path.join(
-								config.get('leviathan.uploads.suite'),
+								this.path,
 								test,
 							));
 						} catch (error) {
@@ -297,21 +298,20 @@ module.exports = class Suite {
 
 	async installDependencies() {
 		this.state.log(`Install npm dependencies for suite: `);
-		await Bluebird.promisify(npm.load)({
+		return Bluebird.promisify(npm.load)({
 			loglevel: 'silent',
 			progress: false,
-			prefix: config.get('leviathan.uploads.suite'),
+			prefix: this.path,
 			'package-lock': false,
-		});
-		await Bluebird.promisify(npm.install)(
-			config.get('leviathan.uploads.suite'),
+		}).then(
+			() => Bluebird.promisify(npm.install)(this.path)
 		);
 	}
 
 	async removeDependencies() {
 		this.state.log(`Removing npm dependencies for suite:`);
 		await Bluebird.promisify(fse.remove)(
-			path.join(config.get('leviathan.uploads.suite'), 'node_modules'),
+			path.join(this.path, 'node_modules'),
 		);
 	}
 }
