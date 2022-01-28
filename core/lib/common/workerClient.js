@@ -39,7 +39,6 @@ const Bluebird = require('bluebird');
 const retry = require('bluebird-retry');
 const utils = require('../common/utils');
 const archiver = require('../common/archiver');
-const config = require('config');
 const isNumber = require('lodash/isNumber');
 const { fs } = require('mz');
 const once = require('lodash/once');
@@ -53,7 +52,7 @@ function id() {
 	return `${Math.random().toString(36).substring(2, 10)}`;
 }
 
-class WorkerClient {
+module.exports = class WorkerClient {
 	constructor(
 		deviceType,
 		workerAddress,
@@ -411,15 +410,3 @@ class WorkerClient {
 	}
 };
 
-module.exports = class Worker extends WorkerClient {
-	constructor(
-		deviceType,
-		logger = {log: console.log, status: console.log, info: console.log }
-	) {
-		super(
-			deviceType,
-			`${config.get('worker.url')}:${config.get('worker.port')}`,
-			logger
-		);
-	}
-};
