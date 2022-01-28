@@ -14,8 +14,8 @@ data:
   applicationEnvironmentVariables:
     - TESTBOT_DUT_TYPE: raspberrypi3
     - SCREEN_CAPTURE: false
-    - TESTBOT_PSU_ADDRESS: null
+    - ? TESTBOT_PSU_ADDRESS
   defaultDeviceType: fincm3
   supportedDeviceTypes:
     - fincm3
-version: 1.35.9
+version: 1.35.10
