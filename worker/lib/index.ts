@@ -38,6 +38,7 @@ const workersDict: Dictionary<typeof TestBotWorker | typeof QemuWorker> = {
 };
 
 var state = 'IDLE';
+var heartbeatTimeout: NodeJS.Timeout;
 
 async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 	: Promise<express.Application> {
@@ -279,6 +280,7 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 				await worker.teardown();
 				proxy.kill();
 				state = 'IDLE';
+				clearTimeout(heartbeatTimeout);
 				res.send('OK');
 			} catch (e) {
 				next(e);
@@ -517,6 +519,18 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 		},
 	)
 	
+
+	app.get('/heartbeat', async (				
+		req: express.Request,
+		res: express.Response,) => {
+		try {
+			heartbeatTimeout.refresh();
+			res.status(200).send('OK');
+		} catch (e) {
+			res.status(500).send(e.stack);
+		}
+	});
+
 	app.get('/state', async (				
 		req: express.Request,
 		res: express.Response,) => {
@@ -532,7 +546,13 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 		res: express.Response,) => {
 		try {
 			if(state !== 'BUSY'){
-				state = 'BUSY'
+				state = 'BUSY';
+				heartbeatTimeout = setTimeout(async() => {
+					console.log('Did not receive heartbeat from client - Tearing down...');
+					await worker.teardown();
+					proxy.kill();
+					state = 'IDLE';
+				}, 1000*60);
 				res.status(200).send('OK')
 			} else{
 				res.status(200).send('BUSY');

@@ -52,7 +52,7 @@
 		"@types/lodash": "^4.14.120",
 		"@types/mocha": "^5.2.5",
 		"@types/mz": "0.0.32",
-		"@types/node": "^10.12.18",
+		"@types/node": "^10.17.60",
 		"@types/request-promise": "^4.1.42",
 		"@types/sinon": "^7.0.11",
 		"@types/ssh2": "^0.5.50",
