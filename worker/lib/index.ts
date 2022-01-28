@@ -4,7 +4,6 @@ import { multiWrite } from 'etcher-sdk';
 import * as express from 'express';
 import * as http from 'http';
 import { getSdk } from 'balena-sdk';
-import config = require("config");
 import {
 	resolveLocalTarget,
 } from './helpers';
@@ -58,7 +57,7 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 	// parse labels and create 'contract'
 	const contract: Contract = {
 		uuid: process.env.BALENA_DEVICE_UUID,
-		workerType: config.get('worker.runtimeConfiguration.workerType'),
+		workerType: runtimeConfiguration.workerType,
 		supportedFeatures: {}
 	};
 
