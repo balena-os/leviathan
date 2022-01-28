@@ -1,8 +1,11 @@
 /**
- * # Teardown
+ * # TaskQueue
  *
- * You can register functions to be carried out upon "teardown" of the suite or test. These will
- * execute when the test ends, regardless of passing or failing:
+ * A queue of tasks to be carried out at a certain part of the suite or test.
+ *
+ * # Teardown
+ * A TaskQueue used to maintain a list of tasks to execute at the end of the
+ * suite or test. These will execute regardless of passing or failing.
  *
  * ```js
  * this.suite.teardown.register(() => {
@@ -41,7 +44,7 @@
  *  }
  * ```
  *
- * @module Teardown
+ * @module TaskQueue
  */
 
 /*
@@ -66,9 +69,49 @@ const isFunction = require('lodash/isFunction');
 const noop = require('lodash/noop');
 const Bluebird = require('bluebird');
 
-module.exports = class Teardown {
+class TaskQueue {
 	constructor() {
-		this.store = new Map();
+		this.tasks = new Map();
+	}
+
+	async runAll(scheduler = setImmediate) {
+		for (const bucket of Array.from(this.tasks.keys()).reverse()) {
+			await this.run(bucket, scheduler);
+		}
+	}
+
+	async run(bucket = 'global', scheduler = setImmediate) {
+		const prev = Bluebird.setScheduler(scheduler);
+
+		if (this.tasks.has(bucket)) {
+			for (const task of this.tasks.get(bucket).reverse()) {
+				await task().catch((error) => {
+					console.log(error);
+				});
+			}
+
+			this.tasks.delete(bucket);
+		}
+
+		Bluebird.setScheduler(prev);
+	}
+
+	register(fn, bucket = 'global') {
+		if (!isFunction(fn)) {
+			throw new Error(`Can only register functions, got ${typeof fn}`);
+		}
+
+		if (!this.tasks.has(bucket)) {
+			this.tasks.set(bucket, [fn]);
+		} else {
+			this.tasks.get(bucket).push(fn);
+		}
+	}
+}
+
+class Teardown extends TaskQueue {
+	constructor() {
+		super();
 
 		process.on('SIGINT', noop);
 		process.on('SIGTERM', noop);
@@ -81,38 +124,9 @@ module.exports = class Teardown {
 			process.exit();
 		});
 	}
+}
 
-	async runAll(scheduler = setImmediate) {
-		for (const bucket of Array.from(this.store.keys()).reverse()) {
-			await this.run(bucket, scheduler);
-		}
-	}
-
-	async run(bucket = 'global', scheduler = setImmediate) {
-		const prev = Bluebird.setScheduler(scheduler);
-
-		if (this.store.has(bucket)) {
-			for (const teardown of this.store.get(bucket).reverse()) {
-				await teardown().catch((error) => {
-					console.log(error);
-				});
-			}
-
-			this.store.delete(bucket);
-		}
-
-		Bluebird.setScheduler(prev);
-	}
-
-	register(fn, bucket = 'global') {
-		if (!isFunction(fn)) {
-			throw new Error(`Can only register functions, got ${typeof fn}`);
-		}
-
-		if (!this.store.has(bucket)) {
-			this.store.set(bucket, [fn]);
-		} else {
-			this.store.get(bucket).push(fn);
-		}
-	}
+module.exports = {
+	Setup: TaskQueue,
+	Teardown: Teardown,
 };

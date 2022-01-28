@@ -406,15 +406,6 @@ module.exports = class Client extends PassThrough {
 			// Keep the websocket alive
 			ws.on('ping', () => ws.pong('heartbeat'));
 
-			process.stdin.on('data', (data) => {
-				ws.send(
-					JSON.stringify({
-						type: 'input',
-						data,
-					}),
-				);
-			});
-
 			// And then await till it's closed.
 			await new Promise((resolve, reject) => {
 				if (capturedError) {

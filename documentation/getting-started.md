@@ -18,8 +18,8 @@ module.exports = {
     suite: `${__dirname}/../suites/os`,
     config: {
         networkWired: false,
-        networkWireless: true,
-        interactiveTests: false,
+        networkWireless: true
+        downloadVersion: 'latest',
         balenaApiKey: process.env.BALENACLOUD_API_KEY,
         balenaApiUrl: 'balena-cloud.com',
         organization: process.env.BALENACLOUD_ORG
@@ -36,7 +36,6 @@ Information on properties in `config.js`:
 - `deviceType` is the Device Under Test (DUT) attached to the testbot. Example: Raspberrypi3 64-bit device, the `deviceType` property needs to be `raspberrypi3-64`.
 - `suite` is the absolute path to the test suite directory that you want to execute. The path after `__dirname` in the config is a path relative to the workspace directory.
 - `networkWired` and `networkWireless` properties for configuration of Network Manager. Used to configure the right mode of connection for the DUT to connect to the Access Point (AP) created by the testbot.
-- `interactiveTests` If it's a semi-auto test or not.
 - `balenaApiKey` is the balenaCloud API key used when running the release suite. Ideally, you can add it as an environment variable and reference it with `process.env.BALENACLOUD_API_KEY`.
 - `balenaApiUrl` is the balenaCloud environment you are targetting for your test suite. Production is `'balena-cloud.com'` and staging is `'balena-staging.com'`.
 - `organization` is the balenaCloud organizations where test applications are created. Ideally, you can add it as an environment variable and reference it with `process.env.BALENACLOUD_ORG`.
@@ -84,7 +83,7 @@ module.exports = [{
         config: {
             networkWired: false,
             networkWireless: true,
-            interactiveTests: false,
+            downloadVersion: 'latest',
             balenaApiKey: process.env.BALENACLOUD_API_KEY,
             balenaApiUrl: 'balena-cloud.com',
             organization: process.env.BALENACLOUD_ORG,
@@ -101,7 +100,7 @@ module.exports = [{
         config: {
             networkWired: false,
             networkWireless: true,
-            interactiveTests: false,
+            downloadVersion: 'latest',
             balenaApiKey: process.env.BALENACLOUD_API_KEY,
             balenaApiUrl: 'balena-cloud.com',
             organization: process.env.BALENACLOUD_ORG
@@ -118,7 +117,7 @@ module.exports = [{
         config: {
             networkWired: false,
             networkWireless: true,
-            interactiveTests: false,
+            downloadVersion: 'latest',
             balenaApiKey: process.env.BALENACLOUD_API_KEY,
             balenaApiUrl: 'balena-cloud.com',
             organization: process.env.BALENACLOUD_ORG
@@ -142,7 +141,7 @@ module.exports = [{
         config: {
             networkWired: false,
             networkWireless: true,
-            interactiveTests: false,
+            downloadVersion: 'latest',
             balenaApiKey: process.env.BALENACLOUD_API_KEY,
             balenaApiUrl: 'balena-cloud.com',
             organization: process.env.BALENACLOUD_ORG,
@@ -156,7 +155,7 @@ module.exports = [{
         config: {
             networkWired: false,
             networkWireless: true,
-            interactiveTests: false,
+            downloadVersion: 'latest',
             balenaApiKey: process.env.BALENACLOUD_API_KEY,
             balenaApiUrl: 'balena-cloud.com',
             organization: process.env.BALENACLOUD_ORG

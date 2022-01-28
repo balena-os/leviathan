@@ -9,7 +9,6 @@ const { getSdk } = require('balena-sdk');
 const balena = getSdk({
 	apiurl: config.get('balena.apiUrl'),
 });
-const blessed = require('blessed');
 const { fork } = require('child_process');
 const { ensureDir } = require('fs-extra');
 const { fs } = require('mz');
@@ -42,12 +41,6 @@ const yargs = require('yargs')
 	.option('p', {
 		alias: 'print',
 		description: 'print all output to stdout',
-		type: 'boolean',
-		default: false,
-	})
-	.option('n', {
-		alias: 'non-interactive',
-		description: 'use when calling from CI integrations',
 		type: 'boolean',
 		default: false,
 	})
@@ -186,162 +179,8 @@ class NonInteractiveState {
 	}
 }
 
-class State {
-	constructor() {
-		if (process.stdout.isTTY !== true) {
-			throw new Error('The multi client requires a tty environmet to run in');
-		}
-
-		this.blessed = {
-			screen: blessed.screen({
-				log: 'client.log',
-				dump: true,
-				smartCSR: true,
-			}),
-		};
-
-		this.blessed.main = {
-			layout: blessed.layout({
-				parent: this.blessed.screen,
-				top: 'center',
-				left: 'center',
-				width: '100%',
-				height: '100%',
-				border: 'none',
-			}),
-		};
-
-		this.blessed.main.info = blessed.text({
-			label: 'main',
-			align: 'left',
-			parent: this.blessed.main.layout,
-			width: '99%',
-			height: '99%',
-			border: 'line',
-			scrollable: true,
-			alwaysScroll: true,
-			style: {
-				border: {
-					fg: '#009933',
-				},
-				label: {
-					fg: '#009933',
-				},
-			},
-		});
-
-		this.blessed.screen.key(['C-c'], function () {
-			process.kill(process.pid, 'SIGINT');
-		});
-
-		this.blessed.screen.render();
-	}
-
-	info(data) {
-		this.blessed.main.info.setContent(` ${data.toString()}`);
-		this.blessed.screen.render();
-	}
-
-	attachPanel(list) {
-		this.blessed.main.info.height = '7%';
-
-		list.forEach((elem) => {
-			const layout = blessed.layout({
-				parent: this.blessed.main.layout,
-				width: `${99 / list.length}%`,
-				height: '93%',
-			});
-
-			const info = blessed.log({
-				parent: layout,
-				width: '100%',
-				height: '20%',
-				border: 'line',
-				alwaysScroll: true,
-				mouse: true,
-				scrollable: true,
-				style: {
-					border: {
-						fg: '#006600',
-					},
-				},
-			});
-
-			const status = blessed.progressbar({
-				parent: layout,
-				width: '100%',
-				height: '6%',
-				border: 'line',
-				style: {
-					bar: {
-						bg: '#b35900',
-					},
-					border: {
-						fg: '#ff9933',
-					},
-				},
-			});
-
-			const log = blessed.log({
-				align: 'left',
-				parent: layout,
-				width: '100%',
-				height: 'shrink',
-				shrink: 'grow',
-				border: 'line',
-				scrollOnInput: true,
-				mouse: true,
-				scrollbar: true,
-				style: {
-					scrollbar: {
-						bg: 'white',
-					},
-				},
-			});
-
-			status.hide();
-
-			elem.status = ({ message, percentage }) => {
-				percentage = Math.round(percentage);
-
-				if (percentage !== 100) {
-					if (status.hidden) {
-						status.show();
-					}
-					status.setLabel(`${message} - ${percentage} %`);
-					status.setProgress(percentage);
-				} else {
-					if (!status.hidden) {
-						status.hide();
-					}
-				}
-				this.blessed.screen.render();
-			};
-			elem.info = (data) => {
-				info.setContent(` ${data.toString()}`);
-				this.blessed.screen.render();
-			};
-			elem.log = (data) => {
-				log.add(` ${data.toString().trimEnd()}`);
-				this.blessed.screen.render();
-			};
-		});
-
-		this.blessed.screen.render();
-	}
-
-	async teardown() {
-		if (this.blessed) {
-			this.blessed.screen.destroy();
-			this.blessed = null;
-		}
-	}
-}
-
 (async () => {
-	const state = yargs['non-interactive']
-		? new NonInteractiveState()
-		: new State();
+	const state = new NonInteractiveState();
 	let runQueue = [];
 
 	const children = {};

@@ -48,7 +48,7 @@ const path = require('path');
 
 const Context = require('./context');
 const State = require('./state');
-const Teardown = require('./teardown');
+const { Teardown } = require('./taskQueue');
 const Test = require('./test');
 
 // Device identification
@@ -88,7 +88,6 @@ class Suite {
 			id,
 			packdir: config.get('leviathan.workdir'),
 			tmpdir: conf.tmpdir || tmpdir(),
-			interactiveTests: conf.interactive,
 			replOnFailure: conf.repl,
 			balena: {
 				application: {
@@ -175,13 +174,12 @@ class Suite {
 
 		// Recursive DFS
 		const treeExpander = async ([
-			{ interactive, os, skip, deviceType, title, workerContract, run, tests },
+			{ os, skip, deviceType, title, workerContract, run, tests },
 			testNode,
 		]) => {
 			// Check our contracts
 			if (
 				skip ||
-				(interactive && !this.options.interactiveTests) ||
 				(deviceType != null && !ajv.compile(deviceType)(this.deviceType)) ||
 				(os != null &&
 					this.context.get().os != null &&

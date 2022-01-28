@@ -59,7 +59,8 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 		}
 
 		if (options.qemu) {
-			this.qemuOptions = options.qemu;
+			this.qemuOptions = Object.assign({}, options.qemu);
+
 			console.debug('QEMU options:');
 			console.debug(this.qemuOptions);
 		}
@@ -83,6 +84,16 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 			throw new Error(
 				`Kernel IP forwarding required for virtualized device networking, enable with 'sysctl -w net.ipv4.ip_forward=1'`,
 			);
+		}
+
+		if (this.qemuOptions.firmware === undefined) {
+			this.qemuOptions.firmware = await this.findUEFIFirmware(this.qemuOptions.architecture);
+			if (this.qemuOptions.firmware) {
+				console.log('Found UEFI firmware: '
+					+ JSON.stringify(this.qemuOptions.firmware, null, 2));
+			} else {
+				throw new Error('Unable to find UEFI firmware, check that OVMF/AAVMF is installed');
+			}
 		}
 
 		manageHandlers(this.signalHandler, {
@@ -168,6 +179,47 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 
 		await this.activeFlash;
 		this.activeFlash = undefined;
+	}
+
+	private async findUEFIFirmware(architecture: string)
+		: Promise<undefined | {code: string, vars: string}> {
+		const searchPaths: { [arch: string]: {code: string, vars: string}[] } = {
+			x86_64: [
+				{
+					// alpine/debian/fedora/ubuntu
+					code: '/usr/share/OVMF/OVMF_CODE.fd',
+					vars: '/usr/share/OVMF/OVMF_VARS.fd',
+				},
+				{
+					// archlinux
+					code: '/usr/share/ovmf/x64/OVMF_CODE.fd',
+					vars: '/usr/share/ovmf/x64/OVMF_VARS.fd',
+				},
+			],
+			aarch64: [
+				{
+					// alpine
+					code: '/usr/share/OVMF/QEMU_EFI.fd',
+					vars: '/usr/share/OVMF/QEMU_VARS.fd',
+				},
+				{
+					// fedora
+					code: '/usr/share/AAVMF/AAVMF_CODE.fd',
+					vars: '/usr/share/AAVMF/AAVMF_CODE.fd',
+				}
+			]
+		}
+
+		// Promise.any is only available in Node 15+
+		return Bluebird.any(
+			searchPaths[architecture].map((paths) => {
+				return fs.access(paths.code).then(() => {
+					return fs.access(paths.vars).then(() => {
+						return paths;
+					});
+				});
+			})
+		);
 	}
 
 	public async powerOn(): Promise<void> {
@@ -256,11 +308,11 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 				'-global',
 				'ICH9-LPC.disable_s3=1',
 				'-drive',
-				'if=pflash,format=raw,unit=0,file=/usr/share/OVMF/OVMF_CODE.fd,readonly=on',
+				`if=pflash,format=raw,unit=0,file=${this.qemuOptions.firmware!.code},readonly=on`,
 				'-drive',
-				'if=pflash,format=raw,unit=1,file=/usr/share/OVMF/OVMF_VARS.fd',
+				`if=pflash,format=raw,unit=1,file=${this.qemuOptions.firmware!.vars},readonly=on`,
 			],
-			aarch64: ['-bios', '/usr/share/qemu-efi-aarch64/QEMU_EFI.fd'],
+			aarch64: ['-bios', this.qemuOptions.firmware!.code],
 		};
 		const qmpArgs = ['-qmp', `tcp:localhost:${qmpPort},server,nowait`];
 		let args = baseArgs

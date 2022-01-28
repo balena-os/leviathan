@@ -21,10 +21,14 @@ export COMPOSE_DOCKER_CLI_BUILD ?= 1
 export DOCKER_BUILDKIT ?= 1
 export DOCKERD_EXTRA_ARGS ?=
 
-# override these in make command (eg. make local-test SUITES=/path/to/suites)
+# export existing env vars (eg. BALENACLOUD_ORG=test make) ...
+# as if they were passed into make (eg. make BALENACLOUD_ORG=test)
+# so they are available to docker-compose.client.yml
 export WORKSPACE
 export REPORTS
 export SUITES
+export BALENACLOUD_API_KEY
+export BALENACLOUD_ORG
 
 # use this target to force real targets to be recreated
 .PHONY: .FORCE
