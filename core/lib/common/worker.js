@@ -53,13 +53,14 @@ function id() {
 	return `${Math.random().toString(36).substring(2, 10)}`;
 }
 
-module.exports = class Worker {
+class WorkerClient {
 	constructor(
 		deviceType,
+		workerAddress,
 		logger = { log: console.log, status: console.log, info: console.log },
 	) {
 		this.deviceType = deviceType;
-		this.url = `${config.get('worker.url')}:${config.get('worker.port')}`;
+		this.url = workerAddress;
 		this.logger = logger;
 	}
 
@@ -407,5 +408,18 @@ module.exports = class Worker {
 		} catch (e) {
 			this.logger.log(`Couldn't retrieve logs with error: ${e}`);
 		}
+	}
+};
+
+module.exports = class Worker extends WorkerClient {
+	constructor(
+		deviceType,
+		logger = { log: console.log, status: console.log, info: console.log },
+	) {
+		super(
+			deviceType,
+			`${config.get('worker.url')}:${config.get('worker.port')}`,
+			logger,
+		);
 	}
 };
