@@ -65,10 +65,11 @@ module.exports = class BalenaSDK {
 		apiUrl,
 		logger = { log: console.log, status: console.log, info: console.log },
 	) {
+		// Setting the correct API environment for CLI calls
+		exec(`echo "balenaUrl: '${apiUrl}'" >> ~/.balenarc.yml`);
 		this.balena = getSdk({
 			apiUrl: `https://api.${apiUrl}`,
 		});
-
 		this.pine = this.balena.pine;
 		this.logger = logger;
 	}
