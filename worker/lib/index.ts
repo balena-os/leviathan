@@ -604,7 +604,11 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 		},
 	);
 
-	app.use('/dut/supervisor', proxy.createProxyMiddleware({ target: dutIp, changeOrigin: true }));
+	const customRouter = function () {
+		return `http://${dutIp}`; // protocol + host
+	};
+
+	app.use('/dut/supervisor', proxy.createProxyMiddleware({ target: 'http://example.org', changeOrigin: true, router: customRouter }));
 
 	return app;
 }
