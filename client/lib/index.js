@@ -295,6 +295,11 @@ module.exports = class Client extends PassThrough {
 				process.exit(128 + constants.signals.SIGTERM);
 			});
 
+			const heartbeat = setInterval(async() => {
+				await rp.get(`${this.uri.href}/heartbeat`);
+			}, 1000*20);
+	
+
 			let capturedError = null;
 			const wsMessageHandler = (wsConnection) => async (pkg) => {
 				try {
