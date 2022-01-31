@@ -113,6 +113,9 @@ class Suite {
 			}
 		}
 
+		// Setting the correct API environment for CLI calls
+		exec(`echo "balenaUrl: '${conf.balenaApiUrl}'" >> ~/.balenarc.yml`);
+
 		// In the future, deprecate the options object completely to create a mega-conf
 		// Breaking changes will need to be done to both test suites + helpers
 		this.options = {

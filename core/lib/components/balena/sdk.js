@@ -68,7 +68,6 @@ module.exports = class BalenaSDK {
 		this.balena = getSdk({
 			apiUrl: `https://api.${apiUrl}`,
 		});
-
 		this.pine = this.balena.pine;
 		this.logger = logger;
 	}
