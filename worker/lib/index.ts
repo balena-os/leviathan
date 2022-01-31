@@ -9,6 +9,7 @@ import { join } from 'path';
 import { homedir } from 'os';
 import * as tar from 'tar-fs';
 import * as util from 'util';
+import * as proxy from 'http-proxy-middleware';
 const execSync = util.promisify(exec)
 const pipeline = util.promisify(Stream.pipeline);
 
@@ -39,6 +40,7 @@ const workersDict: Dictionary<typeof TestBotWorker | typeof QemuWorker> = {
 
 var state = 'IDLE';
 var heartbeatTimeout: NodeJS.Timeout;
+var dutIp: string;
 
 async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 	: Promise<express.Application> {
@@ -58,6 +60,7 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 		qemu: runtimeConfiguration.qemu,
 	});
 
+
 	/**
 	 * Server context
 	 */
@@ -65,13 +68,6 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 	const app = express();
 	const httpServer = http.createServer(app);
 
-	const proxy: { proc?: ChildProcess; kill: () => void } = {
-		kill: () => {
-			if (proxy.proc != null) {
-				proxy.proc.kill();
-			}
-		},
-	};
 
 	const supportedTags = [`dut`, `screencapture`, `modem`];
 	// parse labels and create 'contract'
@@ -182,7 +178,9 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 		) => {
 			try {
 				if (req.body.target != null) {
-					res.send(await resolveLocalTarget(req.body.target));
+					let ip  = await resolveLocalTarget(req.body.target);
+					dutIp = ip;
+					res.send(ip);
 				} else {
 					throw new Error('Target missing');
 				}
@@ -278,9 +276,9 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 		) => {
 			try {
 				await worker.teardown();
-				proxy.kill();
 				state = 'IDLE';
 				clearTimeout(heartbeatTimeout);
+				dutIp = '';
 				res.send('OK');
 			} catch (e) {
 				next(e);
@@ -550,7 +548,6 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 				heartbeatTimeout = setTimeout(async() => {
 					console.log('Did not receive heartbeat from client - Tearing down...');
 					await worker.teardown();
-					proxy.kill();
 					state = 'IDLE';
 				}, 1000*60);
 				res.status(200).send('OK')
@@ -607,6 +604,7 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 		},
 	);
 
+	app.use('/dut/supervisor', proxy.createProxyMiddleware({ target: dutIp, changeOrigin: true }));
 
 	return app;
 }
