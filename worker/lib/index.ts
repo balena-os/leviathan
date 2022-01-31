@@ -605,10 +605,22 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 	);
 
 	const customRouter = function () {
+		console.log(`DUT IP is: ${dutIp}`);
 		return `http://${dutIp}`; // protocol + host
 	};
 
-	app.use('/dut/supervisor', proxy.createProxyMiddleware({ target: 'http://example.org', changeOrigin: true, router: customRouter }));
+	const SUPERVISOR_PORT = 48484;
+	app.use('/dut/supervisor', proxy.createProxyMiddleware({ 
+		target: 'http://example.org', 
+		changeOrigin: true, 
+		router: customRouter,
+		pathRewrite: async(path: string) => {
+			console.log(path);
+			path = path.replace(/^(.*?supervisor)/, `:${SUPERVISOR_PORT}`);
+			console.log(path);
+			return path;
+		}
+	}));
 
 	return app;
 }
