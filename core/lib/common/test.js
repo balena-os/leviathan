@@ -43,6 +43,26 @@ module.exports = class Test {
 
 		this.archiver = Archiver;
 		this.context = new Context(this.suite.context);
+
+		/* Return a proxy of this object that will forward access to properties
+		* present in the context object to that object.
+		*
+		* This allows us to shorten, e.g.:
+		*
+		* this.context.get().worker.executeCommandInHostOS(...)
+		*
+		* To just:
+		*
+		* this.worker.executeCommandInHostOS(...)
+		*/
+		return new Proxy(this, {
+			get: function(target, prop, receiver) {
+				const context = target.context.get();
+				return prop in context
+					? context[prop]
+					: Reflect.get(target, prop);
+			}
+		});
 	}
 
 	log(message) {
