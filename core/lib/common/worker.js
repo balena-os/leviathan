@@ -51,6 +51,7 @@ const keygen = Bluebird.promisify(require('ssh-keygen'));
 const exec = Bluebird.promisify(require('child_process').exec);
 const { createGzip, createGunzip } = require('zlib');
 const tar = require('tar-fs');
+const { getSdk } = require('balena-sdk');
 
 function id() {
 	return `${Math.random().toString(36).substring(2, 10)}`;
@@ -60,11 +61,17 @@ module.exports = class Worker {
 	constructor(
 		deviceType,
 		logger = { log: console.log, status: console.log, info: console.log },
-		url
+		uuid
 	) {
 		this.deviceType = deviceType;
 		this.url = url;
+		this.uuid = url.replace(/?<=https:\/\/)(.*)(?=.balena-devices.com)/, '');
+		console.log(`Worker URL: ${this.url}`);
+		console.log(`Worker UUID: ${this.uuid}`);
 		this.logger = logger;
+		this.balena = getSdk({
+			apiUrl: `https://api.balena-cloud.com/`,
+		});
 	}
 
 	/**
@@ -257,7 +264,7 @@ module.exports = class Worker {
 	 *
 	 * @category helper
 	 */
-	async executeCommandInHostOS(
+	/*async executeCommandInHostOS(
 		command,
 		target,
 		timeout = {
@@ -276,6 +283,44 @@ module.exports = class Worker {
 					json: true,
 				})
 				return stdout
+			},
+			{
+				max_tries: timeout.tries,
+				interval: timeout.interval,
+				throw_original: true,
+			},
+		);
+	}*/
+	//`host -s ${device} source /etc/profile ; ${command}`,
+	async executeCommandInHostOS(
+		command,
+		device,
+		ip,
+		timeout = {
+			interval: 10000,
+			tries: 10,
+		},
+	) {
+		const sshPort = 22;
+
+		return retry(
+			async () => {
+				const result = await utils.executeCommandOverSSH(
+					`hostvia ${this.uuid} ${device} ${ip} source /etc/profile ; ${command}`,
+					{
+						host: `ssh.${await this.balena.settings.get('proxyUrl')}`,
+						username: await this.balena.auth.whoami(),
+						port: sshPort,
+					},
+				);
+
+				if (result.code !== 0) {
+					throw new Error(
+						`"${command}" failed. stderr: ${result.stderr}, stdout: ${result.stdout}, code: ${result.code}`,
+					);
+				}
+
+				return result.stdout;
 			},
 			{
 				max_tries: timeout.tries,
