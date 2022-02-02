@@ -62,7 +62,8 @@ module.exports = class Worker {
 	constructor(
 		deviceType,
 		logger = { log: console.log, status: console.log, info: console.log },
-		uuid
+		url,
+		username
 	) {
 		this.deviceType = deviceType;
 		this.url = url;
@@ -70,9 +71,7 @@ module.exports = class Worker {
 		console.log(`Worker URL: ${this.url}`);
 		console.log(`Worker UUID: ${this.uuid}`);
 		this.logger = logger;
-		this.balena = getSdk({
-			apiUrl: `https://api.balena-cloud.com/`,
-		});
+		this.username = username
 	}
 
 	/**
@@ -222,30 +221,12 @@ module.exports = class Worker {
 				const line = pipeline(
 					capture,
 					createGunzip(),
-					tar.extract('/data/capture')
+					tar.extract('/tmp/capture')
 				).catch(error => {throw error});
 				await line;
 		}
 	}
 
-
-	async sshSetup(){
-		// create the ssh keys
-		let keys = await keygen({location: '/tmp/testKeys'});
-
-		await rp.post({
-			uri: `${this.url}/ssh/setup`,
-			body: { 
-				id: keys.key,
-				id_pub: keys.pubKey
-			},
-			json: true,
-		})
-
-		// return public ssh Key so that they can be added to image in test suite
-		return keys.pubKey.trim()
-	}
-	
 	/**
 	 * Executes command-line operations in the host OS of the DUT. Assuming the DUT is
 	 * connected to the access point broadcasted by the testbot:
@@ -270,19 +251,18 @@ module.exports = class Worker {
 		target,
 	) {
 		const ip = /.*\.local/.test(target) ? await this.ip(target) : target;
-		let sshCommand = `ssh ${ip} -p 22222 -o StrictHostKeyChecking=no ${command}`;
-		console.log(`DEBUG:: ${sshCommand}`);
-		let output = utils.executeCommandInWorkerHost(this.username, this.uuid, sshCommand);
-		return output.stdout
+		let sshCommand = `ssh root@${ip} -p 22222 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "${command}"`;
+		//console.log(`DEBUG:: ${sshCommand}`);
+		let output = await utils.executeCommandInWorkerHost(this.username, this.uuid, sshCommand);
+		console.log(`ssh output::: ${output}`);
+		return output
 	}
 
 	async createTunneltoDUT(
-		username, 
 		target,
 		dutPort,
 		workerPort
 	) {
-		const ip = /.*\.local/.test(target) ? await this.ip(target) : target;
 		// setup listener in DUT host OS - do this via a worker endpoint for now. Host OS doesn't have socat
 		await rp.post({
 			uri: `${this.url}/tunnel`,
@@ -299,8 +279,9 @@ module.exports = class Worker {
 		// this will be torn down at the end of the tests when the core is destroyed
 		let args = [
 			`tcp-listen:${dutPort},reuseaddr,fork`,
-			`"system:ssh ${this.username}@ssh.balena-devices.com -o StrictHostKeyChecking=no host ${this.uuid} /usr/bin/nc localhost ${workerPort}"`
+			`"system:ssh ${this.username}@ssh.balena-devices.com -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null host ${this.uuid} /usr/bin/nc localhost ${workerPort}"`
 		]
+		console.log(args)
 		let tunnelProc = spawn(`socat`, args);
 	}
 

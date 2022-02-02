@@ -323,33 +323,6 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 		},
 	);
 
-	// give SSH keys to access DUT (is this the best way of doing this???)
-	app.post(
-		'/ssh/setup',
-		jsonParser,
-		async (
-			req: express.Request,
-			res: express.Response,
-			next: express.NextFunction,
-		) => {
-			try {
-				const keyPath = join(homedir(), 'id');
-				const keyPathPub = join(homedir(), 'id.pub');;
-				// need to write these strings to files
-				writeFileSync(keyPath, req.body.id);
-				writeFileSync(keyPathPub, req.body.id_pub);
-				await execSync('ssh-add -D');
-				await execSync(`chmod 600 ${keyPath}`);
-				await execSync(`ssh-add ${keyPath}`);
-				res.send('OK');
-			} catch (err) {
-				console.error(err);
-				res.status(500).send(err.stack);
-				next(err);
-			}
-		},
-	);
-
 	app.get('/heartbeat', async (				
 		req: express.Request,
 		res: express.Response,) => {
@@ -424,14 +397,17 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 					`tcp-listen:${req.body.workerPort},reuseaddr,fork`,
 					`"ssh ${ip} p- 22222 -o StrictHostKeyChecking=no /usr/bin/nc localhost ${req.body.dutPort}"`
 				]
+				console.log(args);
 				// create a tunnel to DUT in a sub process, then add the id of that sub process to an array so we can then tear down
 				// even if the DUT reboots, the tunnel will re-establish (tested manually)
 				let tunnelProc = spawn(`socat`, args);
 				tunnels.push(tunnelProc);
+				res.send('OK');
 			} catch (err) {
+				console.log(err)
 				next(err);
 			}
-		},
+		}
 	);
 
 	return app;
