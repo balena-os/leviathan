@@ -218,9 +218,12 @@ module.exports = class Worker {
 	 * const Worker = this.require('common/worker');
 	 * const worker = new Worker(DEVICE_TYPE_SLUG, this.getLogger())
 	 * await worker.executeCommandInHostOS('cat /etc/hostname', `${UUID}.local`);
+	 * await worker.executeCommandInHostOS(
+	 *   ['jq', `'.hostname=${newHostname}'`, '/mnt/boot/config.json'], `${UUID}.local`
+	 * );
 	 * ```
 	 *
-	 * @param {string} command command to be executed on the DUT
+	 * @param {string | Array} command command to be executed on the DUT, arrays are joined by spaces
 	 * @param {string} target local UUID of the DUT, example:`${UUID}.local`
 	 * @param {{"interval": number, "tries": number}} timeout object containing details of how many times the
 	 * command needs to be retried and the intervals between each command execution
@@ -241,7 +244,7 @@ module.exports = class Worker {
 		return retry(
 			async () => {
 				const result = await utils.executeCommandOverSSH(
-					`source /etc/profile ; ${command}`,
+					`source /etc/profile ; ${command instanceof Array ? command.join(' ') : command}`,
 					{
 						host: ip,
 						port: '22222',
@@ -304,7 +307,7 @@ module.exports = class Worker {
 
 	/**
 	 * Executes the command in the targeted container of a device
-	 * @param {string} command The command to be executed
+	 * @param {string | Array} command The command to be executed, arrays are joined by spaces
 	 * @param {string} containerName The name of the service/container to run the command in
 	 * @param {*} target The `<UUID.local>` of the target device
 	 * @returns {string} output of the command that is executed on the targetted container of the device
@@ -319,7 +322,7 @@ module.exports = class Worker {
 		});
 
 		const stdout = await this.executeCommandInHostOS(
-			`balena exec ${state.services[containerName]} ${command}`,
+			`balena exec ${state.services[containerName]} ${command instanceof Array ? command.join(' ') : command}`,
 			target,
 		);
 		return stdout;
