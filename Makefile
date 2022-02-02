@@ -80,8 +80,8 @@ clean: ## Clean locally generated Dockerfiles
 	-@rm -f $(COREDIR)/Dockerfile
 	-@rm -f $(WORKERDIR)/Dockerfile
 
-test: $(DOCKERCOMPOSE) client ## Run the client only and connect to an existing worker
-	$(DOCKERCOMPOSE) up $(UPARGS) client
+test: $(DOCKERCOMPOSE) client core ## Run the client only and connect to an existing worker
+	$(DOCKERCOMPOSE) up $(UPARGS) client core
 
 local-test: $(DOCKERCOMPOSE) core worker client ## Run local (QEMU) worker and client (streaming logs)
 	$(DOCKERCOMPOSE) up $(UPARGS) --abort-on-container-exit

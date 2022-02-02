@@ -76,28 +76,21 @@ const getSSHClientDisposer = (config) => {
 };
 
 module.exports = {
-	/**
-	 * This is the base hostOS execution command used by many other functions like `executeCommandIntoHostOs` to
-	 * execute commands on the DUT being passed through SSH.
-	 *
-	 * @param {string} command The command to be executed over SSH
-	 * @param {*} config
-	 *
-	 * @category helper
-	 */
-	executeCommandOverSSH: async (command, config) => {
-		return Bluebird.using(getSSHClientDisposer(config), (client) => {
-			return new Bluebird(async (resolve, reject) => {
-				client.connection.on('error', (err) => {
-					reject(err);
-				});
-				resolve(
-					await client.exec(command, [], {
-						stream: 'both',
-					}),
-				);
-			});
-		});
+	executeCommandInWorkerHost: async (username, uuid, command) => {
+		let result = await exec(`ssh ${username}@ssh.balena-devices.com -o StrictHostKeyChecking=no host ${uuid} ${command}`);
+		return result
+	},
+
+	executeCommandInWorkerContainer: async (username, uuid, command) => {
+		// should probably execute this in the worker container. 
+		// 1. ssh into the worker hostOS, use the supervisor to get the container ID
+		// 2. use balena exec to run the command
+		let state = await this.executeCommandInWorkerHost(username, uuid, 'curl localhost:48484/v2/containerId');
+		state = JSON.parse(state.stdout);
+		console.log(state);
+		let containerId = state.services['worker'];
+		let output = await this.executeCommandInWorkerHost(username, uuid, `balena exec ${containerId} ${command}`);
+		return output;
 	},
 
 	/**

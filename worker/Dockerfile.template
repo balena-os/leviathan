@@ -28,6 +28,7 @@ ENV UDEV 1
 RUN apk add --no-cache \
   nodejs=~12.22.6 \
   openssh-client \
+  socat \
   libusb-dev dbus-dev \
   gstreamer-tools gst-plugins-base gst-plugins-bad gst-plugins-good \
   bridge bridge-utils iproute2 dnsmasq iptables \

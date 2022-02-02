@@ -49,6 +49,7 @@ const rp = require('request-promise');
 const keygen = Bluebird.promisify(require('ssh-keygen'));
 
 const exec = Bluebird.promisify(require('child_process').exec);
+const spawn = require('child_process').spawn;
 const { createGzip, createGunzip } = require('zlib');
 const tar = require('tar-fs');
 const { getSdk } = require('balena-sdk');
@@ -65,7 +66,7 @@ module.exports = class Worker {
 	) {
 		this.deviceType = deviceType;
 		this.url = url;
-		this.uuid = url.replace(/?<=https:\/\/)(.*)(?=.balena-devices.com)/, '');
+		this.uuid = url.match(/(?<=https:\/\/)(.*)(?=.balena-devices.com)/)[1];
 		console.log(`Worker URL: ${this.url}`);
 		console.log(`Worker UUID: ${this.uuid}`);
 		this.logger = logger;
@@ -264,71 +265,45 @@ module.exports = class Worker {
 	 *
 	 * @category helper
 	 */
-	/*async executeCommandInHostOS(
+	 async executeCommandInHostOS(
 		command,
 		target,
-		timeout = {
-			interval: 10000,
-			tries: 10,
-		},
 	) {
-		return retry(
-			async () => {
-				let stdout = await rp.post({
-					uri: `${this.url}/dut/exec`,
-					body: { 
-						target: target,
-						cmd: command
-					},
-					json: true,
-				})
-				return stdout
-			},
-			{
-				max_tries: timeout.tries,
-				interval: timeout.interval,
-				throw_original: true,
-			},
-		);
-	}*/
-	//`host -s ${device} source /etc/profile ; ${command}`,
-	async executeCommandInHostOS(
-		command,
-		device,
-		ip,
-		timeout = {
-			interval: 10000,
-			tries: 10,
-		},
-	) {
-		const sshPort = 22;
-
-		return retry(
-			async () => {
-				const result = await utils.executeCommandOverSSH(
-					`hostvia ${this.uuid} ${device} ${ip} source /etc/profile ; ${command}`,
-					{
-						host: `ssh.${await this.balena.settings.get('proxyUrl')}`,
-						username: await this.balena.auth.whoami(),
-						port: sshPort,
-					},
-				);
-
-				if (result.code !== 0) {
-					throw new Error(
-						`"${command}" failed. stderr: ${result.stderr}, stdout: ${result.stdout}, code: ${result.code}`,
-					);
-				}
-
-				return result.stdout;
-			},
-			{
-				max_tries: timeout.tries,
-				interval: timeout.interval,
-				throw_original: true,
-			},
-		);
+		const ip = /.*\.local/.test(target) ? await this.ip(target) : target;
+		let sshCommand = `ssh ${ip} -p 22222 -o StrictHostKeyChecking=no ${command}`;
+		console.log(`DEBUG:: ${sshCommand}`);
+		let output = utils.executeCommandInWorkerHost(this.username, this.uuid, sshCommand);
+		return output.stdout
 	}
+
+	async createTunneltoDUT(
+		username, 
+		target,
+		dutPort,
+		workerPort
+	) {
+		const ip = /.*\.local/.test(target) ? await this.ip(target) : target;
+		// setup listener in DUT host OS - do this via a worker endpoint for now. Host OS doesn't have socat
+		await rp.post({
+			uri: `${this.url}/tunnel`,
+			body: { 
+				target: target,
+				workerPort: workerPort,
+				dutPort: dutPort
+			},
+			json: true,
+		})
+
+		// setup a listener from this host to worker must be a sub process... 
+		// we must give map the same port on this host and the DUT - so the cli can use it 
+		// this will be torn down at the end of the tests when the core is destroyed
+		let args = [
+			`tcp-listen:${dutPort},reuseaddr,fork`,
+			`"system:ssh ${this.username}@ssh.balena-devices.com -o StrictHostKeyChecking=no host ${this.uuid} /usr/bin/nc localhost ${workerPort}"`
+		]
+		let tunnelProc = spawn(`socat`, args);
+	}
+
 
 	/**
 	 * Pushes a release to an application from a given directory for unmanaged devices
@@ -342,33 +317,30 @@ module.exports = class Worker {
 	 */
 	async pushContainerToDUT(target, source, containerName) {
 		// send files to the worker
-		console.log(`Uploading files to worker...`)
-		await new Promise(async (resolve, reject) => {
-			const upload = request.post({
-				uri: `${this.url}/dut/container/send`
-			});
-			upload.on('end', resolve).on('error', reject)
-
-			const line = pipeline(
-				tar.pack(source),
-				createGzip({ level: 6 }),
-				upload
-			).catch(error => {throw error});
-			await line;
-    	});
-    	console.log('Directory uploaded');
-		
-		console.log('Pushing container to DUT')
-		let state = await rp.post({
-			uri: `${this.url}/dut/container/push`,
-			body: { 
-				target: target,
-				containerName: containerName
+		await retry(
+			async () => {
+				await exec(
+					`balena push 127.0.0.1 --source ${source} --nolive --detached`,
+				);
 			},
-			json: true,
-		})
-		state = state.replace(/pending/g, '')
-		return JSON.parse(state);
+			{
+				max_tries: 10,
+				interval: 5000,
+			},
+		);
+		// now wait for new container to be available
+		let state = {};
+		await utils.waitUntil(async () => {
+			state = await rp({
+				method: 'GET',
+				uri: `http://localhost:48484/v2/containerId`,
+				json: true,
+			});
+
+			return state.services[containerName] != null;
+		}, false);
+
+		return state;
 	}
 
 	/**
@@ -380,26 +352,17 @@ module.exports = class Worker {
 	 * @category helper
 	 */
 	async executeCommandInContainer(command, containerName, target) {
-		let stdout = await rp.post({
-			uri: `${this.url}/dut/container/exec`,
-			body: { 
-				target: target,
-				containerName: containerName,
-				cmd: command
-			},
+		// get container ID
+		const state = await rp({
+			method: 'GET',
+			uri: `http://localhost:48484/v2/containerId`,
 			json: true,
-		})
-		return stdout;
-	}
+		});
 
-	async executeCommandOnWorker(command){
-		let stdout = await rp.post({
-			uri: `${this.url}/exec`,
-			body: { 
-				cmd: command
-			},
-			json: true,
-		})
+		const stdout = await this.executeCommandInHostOS(
+			`balena exec ${state.services[containerName]} ${command}`,
+			target,
+		);
 		return stdout;
 	}
 
@@ -482,22 +445,5 @@ module.exports = class Worker {
 		} catch (e) {
 			this.logger.log(`Couldn't retrieve logs with error: ${e}`);
 		}
-	}
-
-	async httpFromWorker(method, uri, data={}){
-		const result = await rp({
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			json: true,
-			body: {
-				method: method,
-				data: data,
-				uri: uri,
-			},
-			uri: `${this.url}/dut/http-proxy`,
-		});
-		return result;
 	}
 };

@@ -1,5 +1,5 @@
 import * as bodyParser from 'body-parser';
-import { ChildProcess, exec } from 'child_process';
+import { ChildProcess, spawn, exec } from 'child_process';
 import { multiWrite } from 'etcher-sdk';
 import * as express from 'express';
 import * as http from 'http';
@@ -9,7 +9,6 @@ import { join } from 'path';
 import { homedir } from 'os';
 import * as tar from 'tar-fs';
 import * as util from 'util';
-import * as proxy from 'http-proxy-middleware';
 const execSync = util.promisify(exec)
 const pipeline = util.promisify(Stream.pipeline);
 
@@ -40,7 +39,7 @@ const workersDict: Dictionary<typeof TestBotWorker | typeof QemuWorker> = {
 
 var state = 'IDLE';
 var heartbeatTimeout: NodeJS.Timeout;
-var dutIp: string;
+const tunnels:ChildProcess[] = [];
 
 async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 	: Promise<express.Application> {
@@ -178,9 +177,7 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 		) => {
 			try {
 				if (req.body.target != null) {
-					let ip  = await resolveLocalTarget(req.body.target);
-					dutIp = ip;
-					res.send(ip);
+					res.send(await resolveLocalTarget(req.body.target));
 				} else {
 					throw new Error('Target missing');
 				}
@@ -278,7 +275,9 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 				await worker.teardown();
 				state = 'IDLE';
 				clearTimeout(heartbeatTimeout);
-				dutIp = '';
+				for(let tunnel of tunnels){
+					process.kill(tunnel.pid);
+				}
 				res.send('OK');
 			} catch (e) {
 				next(e);
@@ -352,172 +351,6 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 		},
 	);
 
-	app.post(
-		'/dut/exec',
-		jsonParser,
-		async (
-			req: express.Request,
-			res: express.Response,
-			next: express.NextFunction,
-		) => {
-			try {
-				if (req.body.cmd != null){
-					if(req.body.target != null){
-						let cmd = req.body.cmd;
-						let target = await resolveLocalTarget(`${req.body.target}`);
-						// execute command over ssh here - TODO - do we keep the retries?
-						const result = await executeCommandInHostOS(cmd, target);
-						res.send(result);
-					}
-				} else {
-						throw new Error('Invalid request');
-				}
-			} catch (err) {
-				res.status(500).send(err.stack);
-				next(err);
-			}
-		},
-	);
-
-	app.post(
-		'/dut/container/send',
-		jsonParser,
-		async (
-			req: express.Request,
-			res: express.Response,
-			next: express.NextFunction,
-		) => {
-
-			// receive files put to specific directory
-			res.writeHead(202, {
-				'Content-Type': 'text/event-stream',
-				Connection: 'keep-alive',
-			});
-
-			const timer = setInterval(() => {
-				res.write('pending');
-			}, httpServer.keepAliveTimeout);
-
-			try {
-				// Make sure we start clean
-				await remove(CONTAINERPATH);				
-				const line = pipeline(
-					req,
-					createGunzip(),
-					tar.extract(CONTAINERPATH)
-				).catch((err) =>{ 
-					throw err 
-				})
-
-				await line;
-			} catch (err) {
-				res.write(err)
-				next(err);
-			} finally {
-				clearInterval(timer);
-				res.end();
-			}
-		},
-	);
-
-	app.post(
-		'/dut/container/push',
-		jsonParser,
-		async (
-			req: express.Request,
-			res: express.Response,
-			next: express.NextFunction,
-		) => {
-
-			res.writeHead(202, {
-				'Content-Type': 'text/event-stream',
-				Connection: 'keep-alive',
-			});
-
-			const timer = setInterval(() => {
-				res.write('pending');
-			}, httpServer.keepAliveTimeout);
-
-			try {
-				await execSync(
-					`balena push ${req.body.target} --source ${CONTAINERPATH} --nolive --detached`,
-				);
-				let state:any = {}
-				await retryAsync(async() => {
-					state = await rp({
-						method: 'GET',
-						uri: `http://${req.body.target}:48484/v2/containerId`,
-						json: true,
-					});
-
-					return state;
-				}, 
-				{
-					delay: 5000, 
-					maxTry:30, 
-					until: lastResult => lastResult.services[req.body.containerName] != null
-				});
-				res.write(JSON.stringify(state));
-			} catch (err) {
-				res.write(err.stack);
-				next(err);
-			} finally{
-				clearInterval(timer);
-				res.end()
-			}
-		},
-	);
-
-	app.post(
-		'/dut/container/exec',
-		jsonParser,
-		async (
-			req: express.Request,
-			res: express.Response,
-			next: express.NextFunction,
-		) => {
-			try {
-				let state = await rp({
-					method: 'GET',
-					uri: `http://${req.body.target}:48484/v2/containerId`,
-					json: true,
-				});
-
-				let target = await resolveLocalTarget(`${req.body.target}`);
-				const result = await executeCommandInHostOS(
-					`balena exec ${state.services[req.body.containerName]} ${req.body.cmd}`,
-					target,
-				);
-				
-				res.send(result);
-			} catch (err) {
-				res.status(500).send(err.stack);
-				next(err);
-			}
-		},
-	);
-
-	app.post(
-		`/exec`,
-		jsonParser,
-		async (
-			req: express.Request,
-			res: express.Response,
-			next: express.NextFunction,
-		) => {
-			try {
-				if (req.body.cmd != null){
-					let cmd = req.body.cmd
-					const { stdout, stderr } = await execSync(`${cmd}`);
-					res.send(stdout);
-				}
-			} catch (err) {
-				next(err);
-			}
-		},
-	)
-	
-
 	app.get('/heartbeat', async (				
 		req: express.Request,
 		res: express.Response,) => {
@@ -579,7 +412,7 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 	});
 
 	app.post(
-		'/dut/http-proxy',
+		'/tunnel',
 		jsonParser,
 		async (
 			req: express.Request,
@@ -587,40 +420,20 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 			next: express.NextFunction,
 		) => {
 			try {
-				let result = await rp({
-					method: req.body.method,
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					json: true,
-					body: req.body.data,
-					uri: req.body.uri
-				});
-				
-				res.send(result);
+				let ip = await resolveLocalTarget(req.body.target)
+				let args = [
+					`tcp-listen:${req.body.workerPort},reuseaddr,fork`,
+					`"ssh ${ip} p- 22222 -o StrictHostKeyChecking=no /usr/bin/nc localhost ${req.body.dutPort}"`
+				]
+				// create a tunnel to DUT in a sub process, then add the id of that sub process to an array so we can then tear down
+				// even if the DUT reboots, the tunnel will re-establish (tested manually)
+				let tunnelProc = spawn(`socat`, args);
+				tunnels.push(tunnelProc);
 			} catch (err) {
 				next(err);
 			}
 		},
 	);
-
-	const customRouter = function () {
-		console.log(`DUT IP is: ${dutIp}`);
-		return `http://${dutIp}`; // protocol + host
-	};
-
-	const SUPERVISOR_PORT = 48484;
-	app.use('/dut/supervisor', proxy.createProxyMiddleware({ 
-		target: 'http://example.org', 
-		changeOrigin: true, 
-		router: customRouter,
-		pathRewrite: async(path: string) => {
-			console.log(path);
-			path = path.replace(/^(.*?supervisor)/, `:${SUPERVISOR_PORT}`);
-			console.log(path);
-			return path;
-		}
-	}));
 
 	return app;
 }
