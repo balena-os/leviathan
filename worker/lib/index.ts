@@ -15,7 +15,6 @@ const pipeline = util.promisify(Stream.pipeline);
 
 import { executeCommandOverSSH, executeCommandInHostOS } from './helpers/ssh';
 
-import config = require("config");
 import {
 	resolveLocalTarget,
 } from './helpers';
@@ -72,7 +71,7 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 	// parse labels and create 'contract'
 	const contract: Contract = {
 		uuid: process.env.BALENA_DEVICE_UUID,
-		workerType: config.get('worker.runtimeConfiguration.workerType'),
+		workerType: runtimeConfiguration.workerType,
 		supportedFeatures: {}
 	};
 
