@@ -56,7 +56,6 @@ module.exports = class CLI {
 		logger = { log: console.log, status: console.log, info: console.log },
 	) {
 		this.logger = logger;
-		exec(`BALENARC_BALENA_URL=${apiUrl}`);
 	}
 
 	/**
