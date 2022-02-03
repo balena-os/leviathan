@@ -1,6 +1,6 @@
 # Config.js Reference
 
-Create the `config.js` file in the `workspace` directory using the [config.example.js](https://github.com/balena-os/leviathan/blob/master/workspace/config.example.js) file. 
+Create the `config.js` file in the `workspace` directory using the [config.example.js](https://github.com/balena-os/leviathan/blob/master/workspace/config.example.js) file. Environment variables referenced in the documentation are merely placeholders. You can create and refer to values in your config.js file with any environemnt variable you see fit.
 
 ```js
 module.exports = {

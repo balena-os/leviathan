@@ -1,6 +1,6 @@
 # Quick start 
 
-This is a quick start guide for using the leviathan remote testing framework with a testbot. As a prerequisite for this guide, you will have to prepare your testbot, using the following [guide](https://github.com/balena-io/testbot-hardware/blob/master/documentation/getting-started.md).
+This is a quick start guide for using the leviathan remote testing framework with a testbot. As a prerequisite, build your testbot using the following [guide](https://github.com/balena-io/testbot-hardware/blob/master/documentation/getting-started.md).
 
 ## Prerequisites
 
@@ -9,10 +9,31 @@ This is a quick start guide for using the leviathan remote testing framework wit
 
 ## Build your config.json file
 
-- Navigate to the `workspace` directory in the project using `cd workspace/`
-- Create a `config.js` file in the `workspace` directory using the `config.example.js` file. To know more about the properties, check the {@page Config.js Reference | Config.js reference}.
+The config.js file is the master configuration file for your test run. The testbot runs and configures your device under test (DUT) accordingly with the settings provided in the `config.js` file. To know more about each property, refer ti the {@page Config.js Reference | Config.js reference}.
 
-Check the {@page Config.js Reference | Config.js reference} for more examples. 
+To get started, 
+
+- Navigate to the `workspace` directory in leviathan.
+- Create a `config.js` file in the `workspace` directory using the `config.example.js` file. 
+- The config.js file should look like the following. Here, we are assuming that the worker is a testbot with a raspberrypi3 DUT attached to it. The suite and the image path points to a test suite and a balenaOS image that is going to be tested. 
+- The `config` object includes 
+
+```
+module.exports = {
+    deviceType: "raspberrypi3",
+    suite: `${__dirname}/../suites/e2e`,
+    config: {
+        networkWired: false,
+        networkWireless: true,
+        downloadVersion: 'latest',
+        balenaApiKey: process.env.BALENACLOUD_API_KEY,
+        balenaApiUrl: 'balena-cloud.com',
+        organization: process.env.BALENACLOUD_ORG
+    },
+    image: `${__dirname}/balena.img.gz`,
+    workers: ['http://<short UUID of your testbot in balenaCloud>.local'],
+};
+```
 
 ## Start your first test run
 
@@ -21,9 +42,7 @@ Check the {@page Config.js Reference | Config.js reference} for more examples.
 ```JS
 suite: `${__dirname}/../suites/e2e`,
 ```
-
-- [Optional] Set the image property to the `false` in the config.json file if you don't wish to provide a balenaOS image. The e2e test won't explicitly be needing a balenaOS image to run the test. 
-
+ 
 - To start a test run, run the following command:
 
 ```

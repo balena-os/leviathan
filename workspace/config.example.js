@@ -18,7 +18,7 @@ module.exports = [
 			downloadVersion: 'latest',
 
 			// Needed the provision the DUT to a balenaCloud fleet
-			balenaApiKey: process.env.BALENA_CLOUD_API_KEY,
+			balenaApiKey: process.env.BALENACLOUD_API_KEY,
 			balenaApiUrl: 'balena-cloud.com',
 			organization: process.env.BALENA_CLOUD_ORG,
 		},
