@@ -24,8 +24,6 @@
 
 'use strict';
 
-require('any-promise/register/bluebird');
-
 const isEmpty = require('lodash/isEmpty');
 const forEach = require('lodash/forEach');
 const noop = require('lodash/noop');
@@ -187,18 +185,16 @@ module.exports = {
 		return fs.writeFile(filePath, replace(content, regex, replacer), 'utf-8');
 	},
 	createSSHKey: (keyPath) => {
-		return fs
-			.access(path.dirname(keyPath))
-			.then(async () => {
-				const keys = await keygen({
-					location: keyPath,
-				});
-				await exec('ssh-add -D');
-				await exec(`ssh-add ${keyPath}`);
-				return keys;
-			})
-			.get('pubKey')
-			.then(trim);
+		return fs.access(
+			path.dirname(keyPath)
+		).then(async () => {
+			const keys = await keygen({
+				location: keyPath,
+			});
+			await exec('ssh-add -D');
+			await exec(`ssh-add ${keyPath}`);
+			return keys;
+		}).then(keys => keys.pubKey.trim());
 	},
 	getFilesFromDirectory(basePath, ignore = []) {
 		async function _recursive(_basePath, _ignore = []) {
