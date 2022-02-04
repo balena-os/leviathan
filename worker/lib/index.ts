@@ -395,7 +395,7 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 				let ip = await resolveLocalTarget(req.body.target)
 				let args = [
 					`tcp-listen:${req.body.workerPort},reuseaddr,fork`,
-					`"ssh ${ip} p- 22222 -o StrictHostKeyChecking=no /usr/bin/nc localhost ${req.body.dutPort}"`
+					`"system:ssh ${ip} -p 22222 -o StrictHostKeyChecking=no /usr/bin/nc localhost ${req.body.dutPort}"`
 				]
 				console.log(args);
 				// create a tunnel to DUT in a sub process, then add the id of that sub process to an array so we can then tear down
@@ -408,6 +408,24 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 				next(err);
 			}
 		}
+	);
+
+	app.post(
+		'/dut/network',
+		jsonParser,
+		async (
+			req: express.Request,
+			res: express.Response,
+			next: express.NextFunction,
+		) => {
+			try {
+				await worker.network(req.body);
+				res.send('OK');
+			} catch (err) {
+				console.error(err);
+				next(err);
+			}
+		},
 	);
 
 	return app;

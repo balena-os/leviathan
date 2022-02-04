@@ -63,15 +63,15 @@ module.exports = class Worker {
 		deviceType,
 		logger = { log: console.log, status: console.log, info: console.log },
 		url,
-		username
+		username,
+		sshKey
 	) {
 		this.deviceType = deviceType;
 		this.url = url;
 		this.uuid = url.match(/(?<=https:\/\/)(.*)(?=.balena-devices.com)/)[1];
-		console.log(`Worker URL: ${this.url}`);
-		console.log(`Worker UUID: ${this.uuid}`);
 		this.logger = logger;
-		this.username = username
+		this.username = username;
+		this.sshKey = sshKey;
 	}
 
 	/**
@@ -240,8 +240,6 @@ module.exports = class Worker {
 	 *
 	 * @param {string} command command to be executed on the DUT
 	 * @param {string} target local UUID of the DUT, example:`${UUID}.local`
-	 * @param {{"interval": number, "tries": number}} timeout object containing details of how many times the
-	 * command needs to be retried and the intervals between each command execution
 	 * @returns {string} Output of the command that was exected on hostOS of the DUT
 	 *
 	 * @category helper
@@ -250,39 +248,96 @@ module.exports = class Worker {
 		command,
 		target,
 	) {
-		const ip = /.*\.local/.test(target) ? await this.ip(target) : target;
-		let sshCommand = `ssh root@${ip} -p 22222 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "${command}"`;
-		//console.log(`DEBUG:: ${sshCommand}`);
-		let output = await utils.executeCommandInWorkerHost(this.username, this.uuid, sshCommand);
-		console.log(`ssh output::: ${output}`);
-		return output
+		return retry(
+			async () => {
+				const ip = /.*\.local/.test(target) ? await this.ip(target) : target;
+				// add escapes to appropriate characters, so they don't get mangled during the journey to the DUT
+				const escapeChars = [`"`, `$`];
+				for(let char of escapeChars){
+					var re = new RegExp(`\\${char}`, "g");
+					command = command.replace(re, `\\${char}`);
+				}
+
+				let sshCommand = `ssh root@${ip} -p 22222 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=quiet "${command}"`;
+				console.log(`SSH COMMAND::: ${sshCommand}`);
+
+				try{
+					let output = await utils.executeCommandInWorkerHost(this.username, this.uuid, sshCommand);
+					return output;
+				} catch(e){
+					console.log(`SSH COMMAND ERROR:: ${e}`)
+					throw new Error(
+						`"${command}" failed. Error: ${e}`
+					);
+				}
+			},
+			{
+				max_tries: 10,
+				interval: 1000,
+				throw_original: true,
+			})
 	}
 
-	async createTunneltoDUT(
+	// Execute a command in the worker container 
+	async executeCommandInWorker(
+		command,
+	) {
+		return retry(
+			async () => {
+				// get the container ID
+				let containerId = await utils.executeCommandInWorkerHost(this.username, this.uuid, `balena ps | grep worker | awk "{print \\$1}"`);
+				const escapeChars = [`"`, `$`];
+				for(let char of escapeChars){
+					var re = new RegExp(`\\${char}`, "g");
+					command = command.replace(re, `\\${char}`);
+				}
+				console.log(`WORKER COMMAND::: ${command}`);
+				let output = await utils.executeCommandInWorkerHost(this.username, this.uuid, `balena exec ${containerId} "${command}"`);
+				return output
+			},
+			{
+				max_tries: 10,
+				interval: 1000,
+				throw_original: true,
+			})
+	}
+
+
+	async createTunneltoDUTSSH(
 		target,
 		dutPort,
 		workerPort
 	) {
 		// setup listener in DUT host OS - do this via a worker endpoint for now. Host OS doesn't have socat
-		await rp.post({
-			uri: `${this.url}/tunnel`,
-			body: { 
-				target: target,
-				workerPort: workerPort,
-				dutPort: dutPort
-			},
-			json: true,
-		})
+		let ip = await this.ip(target);
+		//get containerID of the worker container on the testbot - we must do socat from inside the worker container
+		let containerId = await utils.executeCommandInWorkerHost(this.username, this.uuid, `balena ps | grep worker | awk "{print \\$1}"`);
+		console.log(containerId)
+		let argsWorker = [
+			`${this.username}@ssh.balena-devices.com`,
+			`-o`,
+			`StrictHostKeyChecking=no`,
+			`-i`,
+			this.sshKey,
+			`host`,
+			this.uuid,
+			`balena`,
+			`exec`,
+			containerId,
+			`socat`,
+			`tcp-listen:${workerPort},reuseaddr,fork "system:ssh ${ip} -p 22222 -o StrictHostKeyChecking=no /usr/bin/nc localhost ${dutPort}"`
+		]
+		console.log(argsWorker);
+		let tunnelProcWorker = spawn(`ssh`, argsWorker, {stdio: 'inherit'});
 
 		// setup a listener from this host to worker must be a sub process... 
 		// we must give map the same port on this host and the DUT - so the cli can use it 
 		// this will be torn down at the end of the tests when the core is destroyed
-		let args = [
+		let argsClient = [
 			`tcp-listen:${dutPort},reuseaddr,fork`,
-			`"system:ssh ${this.username}@ssh.balena-devices.com -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null host ${this.uuid} /usr/bin/nc localhost ${workerPort}"`
+			`system:ssh ${this.username}@ssh.balena-devices.com -o StrictHostKeyChecking=no -i ${this.sshKey} host ${this.uuid} /usr/bin/nc localhost ${workerPort}`
 		]
-		console.log(args)
-		let tunnelProc = spawn(`socat`, args);
+		let tunnelProcClient = spawn(`socat`, argsClient);
 	}
 
 
@@ -305,7 +360,7 @@ module.exports = class Worker {
 				);
 			},
 			{
-				max_tries: 10,
+				max_tries: 3,
 				interval: 5000,
 			},
 		);

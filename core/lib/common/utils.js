@@ -77,20 +77,8 @@ const getSSHClientDisposer = (config) => {
 
 module.exports = {
 	executeCommandInWorkerHost: async (username, uuid, command) => {
-		let result = await exec(`ssh ${username}@ssh.balena-devices.com -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null host ${uuid} ${command}`);
+		let result = await exec(`ssh ${username}@ssh.balena-devices.com -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=quiet host ${uuid} '${command}'`);
 		return result.trim()
-	},
-
-	executeCommandInWorkerContainer: async (username, uuid, command) => {
-		// should probably execute this in the worker container. 
-		// 1. ssh into the worker hostOS, use the supervisor to get the container ID
-		// 2. use balena exec to run the command
-		let state = await this.executeCommandInWorkerHost(username, uuid, 'curl localhost:48484/v2/containerId');
-		state = JSON.parse(state);
-		console.log(state);
-		let containerId = state.services['worker'];
-		let output = await this.executeCommandInWorkerHost(username, uuid, `balena exec ${containerId} ${command}`);
-		return output;
 	},
 
 	/**

@@ -440,7 +440,9 @@ module.exports = class Client extends PassThrough {
 				this.log(error.stack);
 			})
 			.finally(async () => {
-				await rp.post(`localhost:80/stop`).catch(this.log);
+				//await rp.post(`localhost:80/stop`).catch(this.log);
+				console.log(`End of client - should exit...`)
+				process.exit()
 			});
 	}
 };

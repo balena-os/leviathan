@@ -25,7 +25,8 @@ RUN apk add --no-cache nodejs=~12.22.6 \
 		       unzip \
 		       bluez \
 		       skopeo \
-		       openssh-client
+		       openssh-client \
+			   socat
 
 WORKDIR /usr/app
 
