@@ -263,7 +263,7 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 			'-smp',
 			this.qemuOptions.cpus,
 			'-drive',
-			'format=raw,file=/data/os.img,if=virtio',
+			`format=raw,file=${this.image},if=virtio`,
 			'-serial',
 			`file:${dutSerialPath}`,
 		];
