@@ -23,20 +23,15 @@ const workersDict: Dictionary<typeof TestBotWorker | typeof QemuWorker> = {
 async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 	: Promise<express.Application> {
 	const possibleWorkers = Object.keys(workersDict);
-	if (!possibleWorkers.includes(runtimeConfiguration.workerType)) {
+	if (!possibleWorkers.includes(runtimeConfiguration.worker.deviceType)) {
 		throw new Error(
-			`${runtimeConfiguration.workerType} is not a supported worker`,
+			`${runtimeConfiguration.worker.deviceType} is not a supported worker`,
 		);
 	}
 
 	const worker: Leviathan.Worker = new workersDict[
-		runtimeConfiguration.workerType
-	]({
-		worker: { workdir: runtimeConfiguration.workdir },
-		network: runtimeConfiguration.network,
-		screenCapture: runtimeConfiguration.screenCapture,
-		qemu: runtimeConfiguration.qemu,
-	});
+		runtimeConfiguration.worker.deviceType
+	](runtimeConfiguration);
 
 	/**
 	 * Server context
@@ -57,7 +52,7 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 	// parse labels and create 'contract'
 	const contract: Contract = {
 		uuid: process.env.BALENA_DEVICE_UUID,
-		workerType: runtimeConfiguration.workerType,
+		workerType: runtimeConfiguration.worker.deviceType,
 		supportedFeatures: {}
 	};
 

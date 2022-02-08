@@ -13,13 +13,6 @@ declare global {
 		[key: string]: T;
 	}
 	namespace Leviathan {
-		interface RuntimeConfiguration {
-			workdir: string;
-			workerType: string;
-			screenCapture: boolean;
-			network: Leviathan.Options.network;
-			qemu: Leviathan.QemuOptions;
-		}
 		interface WorkerState {
 			network: { wired?: string; wireless?: string };
 		}
@@ -65,10 +58,11 @@ declare global {
 			diagnostics(): any;
 		}
 
-		interface Options {
+		interface RuntimeConfiguration {
 			worker: {
 				disk?: string;
 				workdir: string;
+				deviceType: string;
 			};
 			network?:
 				| {

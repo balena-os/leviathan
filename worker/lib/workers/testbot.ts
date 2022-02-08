@@ -53,7 +53,7 @@ class TestBotWorker extends EventEmitter implements Leviathan.Worker {
 	private readonly deviceInteractor: DeviceInteractor;
 	private dutLogStream: Stream.Writable | null = null;
 
-	constructor(options: Leviathan.Options) {
+	constructor(options: Leviathan.RuntimeConfiguration) {
 		super();
 
 		this.hatBoard = new TestBotHat();

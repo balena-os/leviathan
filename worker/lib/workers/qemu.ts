@@ -35,7 +35,7 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 	private bridgeName: string;
 	private dhcpRange: string;
 
-	constructor(options: Leviathan.Options) {
+	constructor(options: Leviathan.RuntimeConfiguration) {
 		super();
 
 		if (options != null) {

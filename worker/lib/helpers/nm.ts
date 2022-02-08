@@ -31,7 +31,7 @@ class Teardown {
 
 class NetworkManager {
 	constructor(
-		private options: Leviathan.Options['network'],
+		private options: Leviathan.RuntimeConfiguration['network'],
 		private bus = dbus.sessionBus({
 			busAddress:
 				process.env.DBUS_SYSTEM_BUS_ADDRESS ||
