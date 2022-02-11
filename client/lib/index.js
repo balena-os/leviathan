@@ -370,11 +370,8 @@ module.exports = class Client extends PassThrough {
 					}
 				} catch (e) {
 					capturedError = e;
-					console.log(`[WSHandlerError] ${e}`);
-					// If there is an error here, then uncomment the following throw statement to debug.
-					// We don't throw an error here is to let the WebSocket connection close gracefully. Hence it's commented out.
-					// throw new Error(`[WSHandlerError] ${e}`)
 					ws.close();
+					throw new Error(`[WSHandlerError] ${e}`)
 				}
 			};
 
