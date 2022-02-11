@@ -288,7 +288,7 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 
 		const archArgs: { [arch: string]: string[] } = {
 			x86_64: ['-M', 'q35', '-cpu', 'max'],
-			aarch64: [],
+			aarch64: ['-M', 'virt', '-cpu', 'cortex-a72'],
 		};
 		const networkArgs = [
 			'-net',
@@ -331,6 +331,8 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 			let options = {};
 			if (this.qemuOptions.debug) {
 				options = { stdio: 'inherit' };
+			} else {
+				options = { stdio: 'ignore' };
 			}
 
 			this.qemuProc = spawn(`qemu-system-${deviceArch}`, args, options);
