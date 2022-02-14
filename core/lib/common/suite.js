@@ -129,13 +129,16 @@ class Suite {
 		this.teardown = new Teardown();
 		this.state = new State();
 		this.passing = null;
+
+		// Test summary
 		this.testSummary = {
 			suite: ``,
 			stats: {
 				tests: 0,
-				passes: 0,
-				fails: 0,
 				ran: 0,
+				skipped: () => this.testSummary.stats.tests - this.testSummary.stats.ran,
+				passed: 0,
+				failed: 0,
 			},
 			tests: {},
 		};
@@ -219,11 +222,11 @@ class Suite {
 						this.testSummary.stats.ran++;
 						let result = testNode.passing();
 						if (result) {
-							this.testSummary.tests[title] = 'pass';
-							this.testSummary.stats.passes++;
+							this.testSummary.tests[title] = 'passed';
+							this.testSummary.stats.passed++;
 						} else {
-							this.testSummary.tests[title] = 'fail';
-							this.testSummary.stats.fails++;
+							this.testSummary.tests[title] = 'failed';
+							this.testSummary.stats.failed++;
 						}
 						return;
 					}
@@ -293,7 +296,6 @@ class Suite {
 		this.state.log('Run queue summary:');
 		const treeExpander = ({ title, tests }, depth) => {
 			this.state.log(`${'\t'.repeat(depth)} ${title}`);
-
 			if (tests == null) {
 				this.testSummary.stats.tests++;
 				this.testSummary.tests[title] = 'skipped';
@@ -322,7 +324,8 @@ class Suite {
 	}
 
 	async createJsonSummary() {
-		this.state.log(`Creating JSON test summary...`);
+		this.testSummary.stats.skipped = this.testSummary.stats.skipped()
+		this.testSummary.dateTime = `${new Date().toString()}`
 		let data = JSON.stringify(this.testSummary, null, 4);
 		await fs.writeFileSync(`/reports/test-summary.json`, data);
 	}
