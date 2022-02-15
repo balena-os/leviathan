@@ -125,31 +125,33 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 			await this.screenCapturer.teardown();
 		}
 
-		// remove iptables rules set up from host
-		try {
-			await execProm(
-				`iptables-legacy-save | grep -v 'comment ${this.iptablesComment}' | iptables-legacy-restore`,
-			);
-		} catch (e) {
-			console.error(`error while removing iptables rules: ${e}`);
-		}
-
-		try {
-			await execProm(`ip link set dev ${this.bridgeName} down`);
-			await execProm(`brctl delbr ${this.bridgeName}`);
-		} catch (e) {
-			console.error(`error while removing bridge: ${e}`);
-		}
-
-		await new Promise<void>((resolve, reject) => {
-			if (this.dnsmasqProc && !this.dnsmasqProc.killed) {
-				// don't return until the process is dead
-				this.dnsmasqProc.on('exit', resolve);
-				this.dnsmasqProc.kill();
-			} else {
-				resolve();
+		if (this.qemuOptions.network.autoconfigure) {
+			// remove iptables rules set up from host
+			try {
+				await execProm(
+					`iptables-legacy-save | grep -v 'comment ${this.iptablesComment}' | iptables-legacy-restore`,
+				);
+			} catch (e) {
+				console.error(`error while removing iptables rules: ${e}`);
 			}
-		});
+
+			try {
+				await execProm(`ip link set dev ${this.bridgeName} down`);
+				await execProm(`brctl delbr ${this.bridgeName}`);
+			} catch (e) {
+				console.error(`error while removing bridge: ${e}`);
+			}
+
+			await new Promise<void>((resolve, reject) => {
+				if (this.dnsmasqProc && !this.dnsmasqProc.killed) {
+					// don't return until the process is dead
+					this.dnsmasqProc.on('exit', resolve);
+					this.dnsmasqProc.kill();
+				} else {
+					resolve();
+				}
+			});
+		}
 	}
 
 	public async flash(stream: Stream.Readable): Promise<void> {
@@ -485,69 +487,85 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 	public async network(configuration: {
 		wired?: { nat: boolean };
 	}): Promise<void> {
-		if (this.qemuOptions.network.bridgeName === null) {
-			// generate random bridge name
-			const id = `${Math.random().toString(36).substring(2, 10)}`;
-			this.bridgeName = `br${id}`;
-		} else {
-			this.bridgeName = this.qemuOptions.network.bridgeName;
-		}
-
-		if (this.qemuOptions.network.bridgeAddress === null) {
-			// generate bridge subnet
-			// e.g '10.10.10.X'
-			const ip = await this.getBridgeIpAddress();
-
-			// Assign ip address to bridge
-			// e.g '10.10.10.1'
-			this.bridgeAddress = `${ip}.1`;
-			// generate dhcpRange for dnsmasq
-			// e.g '10.10.10.2,10.10.10.254'
-			this.dhcpRange = `${ip}.2,${ip}.254`;
-		} else {
-			this.bridgeAddress = this.qemuOptions.network.bridgeAddress;
-			if (this.qemuOptions.network.dhcpRange === null) {
-				throw new Error(
-					'If manually providing a bridge address, must also specify a DHCP range!',
-				);
+		/* Network configuration, including creating a bridge, setting iptables
+		 * rules, and running a DHCP server, requires privileges. This can all be
+		 * done easily in a container, but would otherwise necessitate running the
+		 * whole test suite privileged, or with CAP_NET_ADMIN.
+		 *
+		 * Allow users to disable network autoconfiguration in favor of manually
+		 * setting up a bridge and DHCP server separately.
+		 */
+		if (this.qemuOptions.network.autoconfigure) {
+			if (this.qemuOptions.network.bridgeName === null) {
+				// generate random bridge name
+				const id = `${Math.random().toString(36).substring(2, 10)}`;
+				this.bridgeName = `br${id}`;
 			} else {
-				this.dhcpRange = this.qemuOptions.network.dhcpRange;
+				this.bridgeName = this.qemuOptions.network.bridgeName;
+			}
+
+			if (this.qemuOptions.network.bridgeAddress === null) {
+				// generate bridge subnet
+				// e.g '10.10.10.X'
+				const ip = await this.getBridgeIpAddress();
+
+				// Assign ip address to bridge
+				// e.g '10.10.10.1'
+				this.bridgeAddress = `${ip}.1`;
+				// generate dhcpRange for dnsmasq
+				// e.g '10.10.10.2,10.10.10.254'
+				this.dhcpRange = `${ip}.2,${ip}.254`;
+			} else {
+				this.bridgeAddress = this.qemuOptions.network.bridgeAddress;
+				if (this.qemuOptions.network.dhcpRange === null) {
+					throw new Error(
+						'If manually providing a bridge address, must also specify a DHCP range!',
+					);
+				} else {
+					this.dhcpRange = this.qemuOptions.network.dhcpRange;
+				}
+			}
+
+			const dnsmasqArgs = [
+				`--interface=${this.bridgeName}`,
+				`--dhcp-range=${this.dhcpRange}`,
+				'--conf-file',
+				'--except-interface=lo',
+				'--bind-interfaces',
+				'--no-daemon',
+				`--dhcp-leasefile=/var/run/qemu-dnsmasq-${this.bridgeName}.leases`,
+			];
+
+			// Disable DNS entirely, as we only require DHCP and this avoids problems
+			// with running multiple instances of dnsmasq concurrently
+			dnsmasqArgs.push('--port=0');
+
+			return this.setupBridge(this.bridgeName, this.bridgeAddress).then(() => {
+				return new Promise(async (resolve, reject) => {
+					await this.iptablesRules(this.bridgeName, this.bridgeAddress);
+					this.dnsmasqProc = spawn('dnsmasq', dnsmasqArgs, { stdio: 'inherit' });
+
+					this.dnsmasqProc.on('exit', (code, signal) => {
+						console.debug(`dnsmasq exited with ${code}`);
+						if (code !== 0) {
+							throw new Error(`dnsmasq exited with code ${code}`);
+						}
+					});
+
+					this.dnsmasqProc.on('error', (err: Error) => {
+						console.error('error launching dnsmasq');
+						reject(err);
+					});
+					resolve();
+				});
+			});
+		} else {
+			if (this.qemuOptions.network.bridgeName) {
+				this.bridgeName = this.qemuOptions.network.bridgeName;
+			} else {
+				throw new Error('Bridge name is required when autoconfiguration is disabled');
 			}
 		}
-
-		const dnsmasqArgs = [
-			`--interface=${this.bridgeName}`,
-			`--dhcp-range=${this.dhcpRange}`,
-			'--conf-file',
-			'--except-interface=lo',
-			'--bind-interfaces',
-			'--no-daemon',
-			`--dhcp-leasefile=/var/run/qemu-dnsmasq-${this.bridgeName}.leases`,
-		];
-
-		// Disable DNS entirely, as we only require DHCP and this avoids problems
-		// with running multiple instances of dnsmasq concurrently
-		dnsmasqArgs.push('--port=0');
-
-		return this.setupBridge(this.bridgeName, this.bridgeAddress).then(() => {
-			return new Promise(async (resolve, reject) => {
-				await this.iptablesRules(this.bridgeName, this.bridgeAddress);
-				this.dnsmasqProc = spawn('dnsmasq', dnsmasqArgs, { stdio: 'inherit' });
-
-				this.dnsmasqProc.on('exit', (code, signal) => {
-					console.debug(`dnsmasq exited with ${code}`);
-					if (code !== 0) {
-						throw new Error(`dnsmasq exited with code ${code}`);
-					}
-				});
-
-				this.dnsmasqProc.on('error', (err: Error) => {
-					console.error('error launching dnsmasq');
-					reject(err);
-				});
-				resolve();
-			});
-		});
 	}
 
 	public async captureScreen(
