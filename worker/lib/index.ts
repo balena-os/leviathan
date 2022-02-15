@@ -279,7 +279,9 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 				worker.on('progress', onProgress);
 				await worker.flash(req);
 			} catch (e) {
-				res.write(`error: ${e.message}`);
+				if (e instanceof Error) {
+					res.write(`error: ${e.message}`);
+				}
 			} finally {
 				worker.removeListener('progress', onProgress);
 				res.write('status: done');
