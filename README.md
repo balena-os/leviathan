@@ -3,15 +3,20 @@
 [![GitHub Issues](https://img.shields.io/github/issues/balena-io/leviathan.svg)](https://github.com/balena-io/leviathan/issues)
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/balena-io/leviathan.svg)](https://github.com/balena-io/leviathan/pulls)
 [![node](https://img.shields.io/badge/node-v12.0.0-green.svg)](https://nodejs.org/download/release/v12.0.0/)
-[![License](https://img.shields.io/badge/license-APACHE%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![License](https://img.shields.io/badge/license-APACHE%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)  [![balena deploy button](https://www.balena.io/deploy.svg)](https://dashboard.balena-cloud.com/deploy?repoUrl=https://github.com/balena-os/leviathan)
 
-[![balena deploy button](https://www.balena.io/deploy.svg)](https://dashboard.balena-cloud.com/deploy?repoUrl=https://github.com/balena-os/leviathan)
+> A distributed testing system for hardware devices
 
-> A distributed testing framework for hardware
+Leviathan can be used to automate, test and control real/virtual devices in production or controlled environments. What can you do:
+
+1. Stress testing the provisioning process on boards for reliablity, performance & fault tolerance.
+2. Testing new versions of the OS on different board revisions, prod/staging environements, wifi/eth0 connectivity.
+3. Automating release deployment on fleets by testing codebase on real/virtual devices under test.
+4. Automating support for new modems, sensors, interfaces and eventually covering custom device support.
 
 ## Getting Started
 
-Leviathan allows for running tests either on a device connected to and controlled by a testbot rig, or on a virtualized QEMU worker. Follow the [quickstart](https://balena-os.github.io/leviathan/pages/Getting-Started/quickstart.html) guide to start your first test. 
+Leviathan allows for running tests on a device controlled by a worker. A worker is a component on which your tests actually runs. It can be both real hardware or virtualised environments. Leviathan is designed to work with multiple workers. At the moment, leviathan supports [testbot][quickstart-testbot] and [qemu][quickstart-qemu] workers.
 
 ### Clone the repository
 
@@ -25,49 +30,20 @@ Leviathan allows for running tests either on a device connected to and controlle
 
 ### Worker setup
 
-A worker is a component on which your tests actually runs. It can be both real hardware or virtualised environments. Leviathan is designed to work with multiple workers. Following are detailed instructions on how to setup each type of worker:
+Leviathan allows for running tests either on a device under test (DUT) connected to and controlled by either a testbot worker, or on a virtualized device using the QEMU worker. Check out the following getting started guides to setup and run each type of worker.
 
-#### Testbot setup
-
-Start with building your standalone testbot by [following the guide](https://github.com/balena-io-hardware/testbot-hardware/blob/master/documentation/getting-started.md#quick-start-guide-for-testbot).
-
-#### QEMU
-
-Run `make local` to build the core and worker services and run the worker using docker-compose.
-Worker configuration variables can be specified in `docker-compose.local.yml`, under `environment`. The default configuration should suffice in most cases.
-
-| Variable            | Description                                         |
-| -----------         | --------------------------------------------------- |
-| QEMU_ARCH           | Architecture to virtualize (default: x86_64)        |
-| QEMU_CPUS           | Number of CPUs to virtualize (default: 4)           |
-| QEMU_MEMORY         | Amount of memory to virtualize (default: 2G)        |
-| QEMU_BRIDGE_NAME    | Name of bridge to use for networking (default: br0) |
-| QEMU_BRIDGE_ADDRESS | IP address to assign to bridge                      |
-| QEMU_DHCP_RANGE     | Range of DHCP addresses to hand out to workers      |
-
-### Configuration
-
-To run the tests, you need to specify the configuration of the worker.
-
-- Create your test configuration by creating a `config.json` file using the `config.example.js` file in the workspace directory. Read the [config.js reference](https://balena-os.github.io/leviathan/pages/Getting-Started/config-reference.html) to learn more about config.js properteries  
-
-### Running tests
-
-Run the tests by navigating to the project directory and running:
-
-```bash
-make test
-```
-
-On first run, it will build the client (one-time process) and start the tests. 
+1. [Testbot worker][quickstart-testbot]
+   
+2. [QEMU worker][quickstart-qemu]
 
 ## Instructions for rig-owners
 
-To push a new release to balenaCloud, run `npm install` and then push to the balenaCloud application.
+To push a new release of leviathan to balenaCloud, use the following command:
 
 ```bash
 balena push <appname>
 ```
+
 ## Documentation for Leviathan Helpers
 
 Documentation for Leviathan helpers can be found on [https://balena-os.github.io/leviathan](https://balena-os.github.io/leviathan). To generate the documentation, run the following command from either the root of the repository or the `core` directory.
@@ -87,11 +63,6 @@ Info: Documentation generated at /path/to/documentation
 
 If you're having any problem, please [raise an issue][newissue] on GitHub and the balena team will be happy to help.
 
-## Contribute
-
-- Issue Tracker: [github.com/balena-io/leviathan/issues][issues]
-- Source Code: [github.com/balena-io/leviathan][source]
-
 ## License
 
 The project is licensed under the Apache 2.0 license.
@@ -99,3 +70,5 @@ The project is licensed under the Apache 2.0 license.
 [issues]: https://github.com/balena-io/leviathan/issues
 [newissue]: https://github.com/balena-io/leviathan/issues/new
 [source]: https://github.com/balena-io/leviathan
+[quickstart-qemu]: https://balena-os.github.io/leviathan/pages/Getting-Started/quickstart-qemu.html
+[quickstart-testbot]: https://balena-os.github.io/leviathan/pages/Getting-Started/quickstart-testbot.html
