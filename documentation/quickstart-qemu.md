@@ -40,12 +40,6 @@ Here, we are assuming that the device under test (DUT) is a `raspberrypi3`. The 
 
 ## Start your first test run
 
-- For the first test run, we will be running the [e2e test suite](https://github.com/balena-os/leviathan/tree/master/suites/e2e). Make sure the the `suite` property in your config.js is pointing to the e2e suites directory like:
-
-```JS
-suite: `${__dirname}/../suites/e2e`,
-```
-
 To start the test run, navigate to the root of the leviathan directory and run the following command:
 
 ```

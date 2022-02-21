@@ -15,6 +15,5 @@ Leviathan allows for running tests on a device controlled by a worker. A worker 
 
 Following are quick start guides into setting up each type of worker:
 
-1. [Testbot worker](https://balena-os.github.io/leviathan/pages/Getting-Started/quickstart-testbot.html)
-   
-2. [QEMU worker](https://balena-os.github.io/leviathan/pages/Getting-Started/quickstart-qemu.html)
+1. {@page Testbot worker | Testbot worker}
+2. {@page QEMU worker | QEMU worker}

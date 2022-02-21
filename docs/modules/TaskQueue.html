@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Teardown | Leviathan Helpers</title>
+	<title>TaskQueue | Leviathan Helpers</title>
 	<meta name="description" content="Documentation for Leviathan Helpers">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,10 +55,10 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="Teardown.html">Teardown</a>
+					<a href="TaskQueue.html">TaskQueue</a>
 				</li>
 			</ul>
-			<h1>Module Teardown</h1>
+			<h1>Module TaskQueue</h1>
 		</div>
 	</div>
 </header>
@@ -68,12 +68,16 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<a href="#teardown" id="teardown" style="color: inherit; text-decoration: none;">
-							<h1>Teardown</h1>
+						<a href="#taskqueue" id="taskqueue" style="color: inherit; text-decoration: none;">
+							<h1>TaskQueue</h1>
 						</a>
 					</div>
-					<p>You can register functions to be carried out upon &quot;teardown&quot; of the suite or test. These will
-					execute when the test ends, regardless of passing or failing:</p>
+					<p>A queue of tasks to be carried out at a certain part of the suite or test.</p>
+					<a href="#teardown" id="teardown" style="color: inherit; text-decoration: none;">
+						<h1>Teardown</h1>
+					</a>
+					<p>A TaskQueue used to maintain a list of tasks to execute at the end of the
+					suite or test. These will execute regardless of passing or failing.</p>
 					<pre><code class="language-js"><span style="color: #000000">this</span><span style="color: #002339">.</span><span style="color: #2F86D2">suite</span><span style="color: #002339">.</span><span style="color: #2F86D2">teardown</span><span style="color: #002339">.</span><span style="color: #7EB233">register</span><span style="color: #002339">(() </span><span style="color: #0991B6">=&gt;</span><span style="color: #002339"> {</span>
 <span style="color: #002339">   </span><span style="color: #000000">this</span><span style="color: #002339">.</span><span style="color: #7EB233">log</span><span style="color: #002339">(</span><span style="color: #A44185">&#039;Worker teardown&#039;</span><span style="color: #002339">);</span>
 <span style="color: #002339">   </span><span style="color: #7B30D0">return</span><span style="color: #002339"> </span><span style="color: #000000">this</span><span style="color: #002339">.</span><span style="color: #2F86D2">context</span><span style="color: #002339">.</span><span style="color: #7EB233">get</span><span style="color: #002339">().</span><span style="color: #2F86D2">worker</span><span style="color: #002339">.</span><span style="color: #7EB233">teardown</span><span style="color: #002339">();</span>
@@ -116,11 +120,41 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Classes</h3>
+							<h3>Namespaces</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/Teardown.export_.html" class="tsd-kind-icon">export&#61;</a></li>
+								<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="TaskQueue.export_.html" class="tsd-kind-icon">export&#61;</a></li>
 							</ul>
 						</section>
+						<section class="tsd-index-section ">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-module"><a href="TaskQueue.html#export_-1" class="tsd-kind-icon">export&#61;</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-module">
+					<a name="export_-1" class="tsd-anchor"></a>
+					<h3>export&#61;</h3>
+					<div class="tsd-signature tsd-kind-icon">export&#61;<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>Setup<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">typeof </span><span class="tsd-signature-type">TaskQueue</span><span class="tsd-signature-symbol">; </span>Teardown<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">typeof </span><span class="tsd-signature-type">Teardown</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/bbf083d/core/lib/common/taskQueue.js#L129">lib/common/taskQueue.js:129</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5>Setup<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">typeof </span><span class="tsd-signature-type">TaskQueue</span></h5>
+							</li>
+							<li class="tsd-parameter">
+								<h5>Teardown<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">typeof </span><span class="tsd-signature-type">Teardown</span></h5>
+							</li>
+						</ul>
 					</div>
 				</section>
 			</section>
@@ -131,7 +165,7 @@
 					<li class="label pp-nav pp-group">
 						<span>Getting-<wbr><wbr>Started</span>
 					</li>
-					<li class=" pp-nav pp-page">
+					<li class=" pp-nav pp-page pp-parent">
 						<a href="../pages/Getting-Started/quickstart.html">Quickstart</a>
 					</li>
 					<li class=" pp-nav pp-page">
@@ -171,7 +205,12 @@
 						<a href="State.html">State</a>
 					</li>
 					<li class="current tsd-kind-module">
-						<a href="Teardown.html">Teardown</a>
+						<a href="TaskQueue.html">Task<wbr>Queue</a>
+						<ul>
+							<li class=" tsd-kind-namespace tsd-parent-kind-module">
+								<a href="TaskQueue.export_.html">export&#61;</a>
+							</li>
+						</ul>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="Test.html">Test</a>
@@ -192,8 +231,8 @@
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-					<li class=" tsd-kind-class tsd-parent-kind-module">
-						<a href="../classes/Teardown.export_.html" class="tsd-kind-icon">export&#61;</a>
+					<li class=" tsd-kind-property tsd-parent-kind-module">
+						<a href="TaskQueue.html#export_-1" class="tsd-kind-icon">export&#61;</a>
 					</li>
 				</ul>
 			</nav>

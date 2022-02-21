@@ -8,11 +8,11 @@
                     "source": "../documentation/quickstart.md",
                     "children": [
                         {
-                            "title": "Testbot Worker",
+                            "title": "Testbot worker",
                             "source": "../documentation/quickstart-testbot.md"
                         },
                         {
-                            "title": "Qemu Worker",
+                            "title": "QEMU worker",
                             "source": "../documentation/quickstart-qemu.md"
                         }
                     ]

@@ -5,14 +5,12 @@
 [![node](https://img.shields.io/badge/node-v12.0.0-green.svg)](https://nodejs.org/download/release/v12.0.0/)
 [![License](https://img.shields.io/badge/license-APACHE%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)  [![balena deploy button](https://www.balena.io/deploy.svg)](https://dashboard.balena-cloud.com/deploy?repoUrl=https://github.com/balena-os/leviathan)
 
-> A distributed testing system for hardware devices
-
 Leviathan can be used to automate, test and control real/virtual devices in production or controlled environments. What can you do:
 
-1. Stress testing the provisioning process on boards for reliablity, performance & fault tolerance.
-2. Testing new versions of the OS on different board revisions, prod/staging environements, wifi/eth0 connectivity.
-3. Automating release deployment on fleets by testing codebase on real/virtual devices under test.
-4. Automating support for new modems, sensors, interfaces and eventually covering custom device support.
+1. Stress testing the provisioning process for reliablity, performance & fault tolerance.
+2. Testing new balenaOS, balenaEngine and balena supervisor on different board revisions, prod/staging environements for managed and unmanaged scenarios.
+3. Automate release deployment for balenaCloud fleets by testing codebase on real/virtual devices under test.
+4. Automating support for new modems, sensors, components and eventualy new boards.
 
 ## Getting Started
 
@@ -33,7 +31,6 @@ Leviathan allows for running tests on a device controlled by a worker. A worker 
 Leviathan allows for running tests either on a device under test (DUT) connected to and controlled by either a testbot worker, or on a virtualized device using the QEMU worker. Check out the following getting started guides to setup and run each type of worker.
 
 1. [Testbot worker][quickstart-testbot]
-   
 2. [QEMU worker][quickstart-qemu]
 
 ## Instructions for rig-owners
@@ -70,5 +67,5 @@ The project is licensed under the Apache 2.0 license.
 [issues]: https://github.com/balena-io/leviathan/issues
 [newissue]: https://github.com/balena-io/leviathan/issues/new
 [source]: https://github.com/balena-io/leviathan
-[quickstart-qemu]: https://balena-os.github.io/leviathan/pages/Getting-Started/quickstart-qemu.html
-[quickstart-testbot]: https://balena-os.github.io/leviathan/pages/Getting-Started/quickstart-testbot.html
+[quickstart-qemu]: https://balena-os.github.io/leviathan/pages/Getting-Started/quickstart/quickstart-qemu.html
+[quickstart-testbot]: https://balena-os.github.io/leviathan/pages/Getting-Started/quickstart/quickstart-testbot.html
