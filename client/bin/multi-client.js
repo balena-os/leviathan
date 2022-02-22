@@ -232,6 +232,15 @@ class NonInteractiveState {
 				},
 			).join(',')}`,
 		);
+
+		let summaries = [];
+		nativeFs.readdirSync(`reports`).forEach((file) => {
+			if (/^test-summary-(.*).json$/.test(file)) {
+				summaries.push(JSON.parse(fs.readFileSync('reports/' + file).toString()));
+				fs.unlinkSync('reports/' + file);
+			}
+		});
+		nativeFs.writeFileSync(`reports/final-result.json`, JSON.stringify(summaries, null, 2));
 	});
 
 	const signalHandler = once(async (sig) => {

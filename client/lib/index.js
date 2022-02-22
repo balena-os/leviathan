@@ -85,7 +85,9 @@ module.exports = class Client extends PassThrough {
 
 	async handleArtifact(artifact, token, attempt) {
 		if (attempt > 1) {
-			this.log(`Previously failed to upload artifact ${artifact.name} - retrying...`);
+			this.log(
+				`Previously failed to upload artifact ${artifact.name} - retrying...`,
+			);
 		}
 		const ignore = ['node_modules'];
 
@@ -306,7 +308,7 @@ module.exports = class Client extends PassThrough {
 
 							const artifact = {
 								name,
-								id
+								id,
 							};
 
 							switch (id) {
@@ -320,7 +322,7 @@ module.exports = class Client extends PassThrough {
 									if (image === 'false') {
 										// Had to create fake image in home directory otherwise
 										// facing a permission issue since client root is read-only
-										const fakeImagePath = '/home/test-balena.img.gz'
+										const fakeImagePath = '/home/test-balena.img.gz';
 										await fs.writeFile(fakeImagePath, '');
 										artifact.path = makePath(fakeImagePath);
 										artifact.type = 'isFile';
@@ -371,7 +373,7 @@ module.exports = class Client extends PassThrough {
 				} catch (e) {
 					capturedError = e;
 					ws.close();
-					throw new Error(`[WSHandlerError] ${e}`)
+					throw new Error(`[WSHandlerError] ${e}`);
 				}
 			};
 
