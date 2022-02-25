@@ -24,34 +24,14 @@
 
 'use strict';
 
-const isEmpty = require('lodash/isEmpty');
-const forEach = require('lodash/forEach');
-const noop = require('lodash/noop');
-const assignIn = require('lodash/assignIn');
-const assign = require('lodash/assign');
-const replace = require('lodash/replace');
-const trim = require('lodash/trim');
-
 const Bluebird = require('bluebird');
 const exec = Bluebird.promisify(require('child_process').exec);
 const { fs } = require('mz');
-const inquirer = require('inquirer');
 const keygen = Bluebird.promisify(require('ssh-keygen'));
 const path = require('path');
-const repl = require('repl');
 const SSH = require('node-ssh');
+const assignIn = require('lodash/assignIn');
 
-const printInstructionsSet = (title, instructions) => {
-	if (isEmpty(instructions)) {
-		return;
-	}
-
-	console.log(`==== ${title}`);
-
-	forEach(instructions, (instruction) => {
-		console.log(`- ${instruction}`);
-	});
-};
 
 const getSSHClientDisposer = (config) => {
 	const createSSHClient = (conf) => {
@@ -83,7 +63,7 @@ module.exports = {
 	 *
 	 * @category helper
 	 */
-	executeCommandOverSSH: async (command, config) => {
+	 executeCommandOverSSH: async (command, config) => {
 		return Bluebird.using(getSSHClientDisposer(config), (client) => {
 			return new Bluebird(async (resolve, reject) => {
 				client.connection.on('error', (err) => {
@@ -135,55 +115,7 @@ module.exports = {
 
 		await _waitUntil(_times);
 	},
-	runManualTestCase: async (testCase) => {
-		// Some padding space to make it easier to the eye
-		await Bluebird.delay(50);
-		printInstructionsSet('PREPARE', testCase.prepare);
-		printInstructionsSet('DO', testCase.do);
-		printInstructionsSet('ASSERT', testCase.assert);
-		printInstructionsSet('CLEANUP', testCase.cleanup);
-
-		return (
-			await inquirer.prompt([
-				{
-					type: 'confirm',
-					name: 'result',
-					message: 'Did the test pass?',
-					default: false,
-				},
-			])
-		).result;
-	},
-	getDeviceUptime: async (connection) => {
-		const start = process.hrtime()[0];
-		const uptime = await connection("cut -d ' ' -f 1 /proc/uptime");
-
-		return Number(uptime) - (start - process.hrtime()[0]);
-	},
-	clearHandlers: (events) => {
-		forEach(events, (event) => {
-			process.on(event, noop);
-		});
-	},
-	repl: (context, options) => {
-		return new Bluebird((resolve, _reject) => {
-			const prompt = repl.start({
-				prompt: `${options.name} > `,
-				useGlobal: true,
-				terminal: true,
-			});
-
-			assign(prompt.context, context);
-
-			prompt.on('exit', () => {
-				resolve();
-			});
-		});
-	},
-	searchAndReplace: async (filePath, regex, replacer) => {
-		const content = await fs.readFile(filePath, 'utf-8');
-		return fs.writeFile(filePath, replace(content, regex, replacer), 'utf-8');
-	},
+	
 	createSSHKey: (keyPath) => {
 		return fs.access(
 			path.dirname(keyPath)
@@ -194,7 +126,12 @@ module.exports = {
 			await exec('ssh-add -D');
 			await exec(`ssh-add ${keyPath}`);
 			return keys;
-		}).then(keys => keys.pubKey.trim());
+		}).then((keys) => {
+			return {
+				pubKey: keys.pubKey.trim(), 
+				key: keys.key.trim()
+			}
+		});
 	},
 	getFilesFromDirectory(basePath, ignore = []) {
 		async function _recursive(_basePath, _ignore = []) {

@@ -4,11 +4,7 @@ const { join } = require('path');
 
 module.exports = {
   express: {
-    port: process.env.CORE_PORT || 80
-  },
-  worker: {
-    url: 'http://127.0.0.1',
-    port: process.env.WORKER_PORT || 2000
+    port: process.env.LISTEN_PORT || 2000
   },
   leviathan: {
     artifacts: '/tmp/artifacts',    // To store artifacts meant to be reported as results at the end of the suite
