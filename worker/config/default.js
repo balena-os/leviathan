@@ -1,6 +1,6 @@
 module.exports = {
 	worker: {
-		port: process.env.LISTEN_PORT || 80,
+		port: process.env.WORKER_PORT || 80,
 		runtimeConfiguration: {
 			worker: {
 				workdir: process.env.WORKDIR || '/data',
