@@ -416,6 +416,10 @@ class NonInteractiveState {
 				// after creating child process, add the worker to the busy workers array
 				busyWorkers.push(job.workers);
 
+				let status = await rp.get(
+					new url.URL('/start', deviceUrl).toString(),
+				);
+
 				// child state
 				children[child.pid] = {
 					_child: child,
