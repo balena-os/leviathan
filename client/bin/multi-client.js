@@ -236,11 +236,16 @@ class NonInteractiveState {
 		let summaries = [];
 		nativeFs.readdirSync(`reports`).forEach((file) => {
 			if (/^test-summary-(.*).json$/.test(file)) {
-				summaries.push(JSON.parse(fs.readFileSync('reports/' + file).toString()));
+				summaries.push(
+					JSON.parse(fs.readFileSync('reports/' + file).toString()),
+				);
 				fs.unlinkSync('reports/' + file);
 			}
 		});
-		nativeFs.writeFileSync(`reports/final-result.json`, JSON.stringify(summaries, null, 2));
+		nativeFs.writeFileSync(
+			`reports/final-result.json`,
+			JSON.stringify(summaries, null, 2),
+		);
 	});
 
 	const signalHandler = once(async (sig) => {
@@ -417,9 +422,7 @@ class NonInteractiveState {
 				// after creating child process, add the worker to the busy workers array
 				busyWorkers.push(job.workers);
 
-				let status = await rp.get(
-					new url.URL('/start', deviceUrl).toString(),
-				);
+				let status = await rp.get(new url.URL('/start', deviceUrl).toString());
 
 				// child state
 				children[child.pid] = {

@@ -65,7 +65,7 @@ module.exports = class Client extends PassThrough {
 	constructor(uri, workdir) {
 		super();
 		this.uri = uri;
-		let uriParsed =  parse(uri);
+		let uriParsed = parse(uri);
 		this.workdir = join(workdir, uriParsed.hostname);
 		this.coreHost = config.core.host;
 		this.corePort = config.core.port;
@@ -298,9 +298,9 @@ module.exports = class Client extends PassThrough {
 				process.exit(128 + constants.signals.SIGTERM);
 			});
 
-			const heartbeat = setInterval(async() => {
+			const heartbeat = setInterval(async () => {
 				await rp.get(`${this.uri}/heartbeat`);
-			}, 1000*20);
+			}, 1000 * 20);
 
 			let capturedError = null;
 			const wsMessageHandler = (wsConnection) => async (pkg) => {
@@ -385,7 +385,9 @@ module.exports = class Client extends PassThrough {
 
 			const createWs = () =>
 				new Promise((resolve, reject) => {
-					const wsConnection = new WebSocket(`ws://${this.coreHost}:${this.corePort}/start`);
+					const wsConnection = new WebSocket(
+						`ws://${this.coreHost}:${this.corePort}/start`,
+					);
 
 					const msgHandler = wsMessageHandler(wsConnection);
 					wsConnection.on('message', msgHandler);
@@ -439,8 +441,8 @@ module.exports = class Client extends PassThrough {
 				this.log(error.stack);
 			})
 			.finally(async () => {
-				console.log(`Exiting client process...`)
-				process.exit()
+				console.log(`Exiting client process...`);
+				process.exit();
 			});
 	}
 };
