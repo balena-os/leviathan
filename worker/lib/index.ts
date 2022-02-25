@@ -1,12 +1,10 @@
 import * as bodyParser from 'body-parser';
-import { ChildProcess, exec} from 'child_process';
+import { ChildProcess, exec } from 'child_process';
 import { multiWrite } from 'etcher-sdk';
 import * as express from 'express';
 import * as http from 'http';
 import { getSdk } from 'balena-sdk';
-import {
-	resolveLocalTarget,
-} from './helpers';
+import { resolveLocalTarget } from './helpers';
 import { TestBotWorker } from './workers/testbot';
 import QemuWorker from './workers/qemu';
 import { Contract } from '../typings/worker';
@@ -17,7 +15,7 @@ import * as tar from 'tar-fs';
 import * as util from 'util';
 const pipeline = util.promisify(Stream.pipeline);
 const execSync = util.promisify(exec);
-import { readFile} from 'fs-extra';
+import { readFile } from 'fs-extra';
 import { createGzip, createGunzip } from 'zlib';
 
 const balena = getSdk({
@@ -29,12 +27,13 @@ const workersDict: Dictionary<typeof TestBotWorker | typeof QemuWorker> = {
 	qemu: QemuWorker,
 };
 
-var state = 'IDLE';
-var heartbeatTimeout: NodeJS.Timeout;
-const tunnels:ChildProcess[] = [];
+let state = 'IDLE';
+let heartbeatTimeout: NodeJS.Timeout;
+const tunnels: ChildProcess[] = [];
 
-async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
-	: Promise<express.Application> {
+async function setup(
+	runtimeConfiguration: Leviathan.RuntimeConfiguration,
+): Promise<express.Application> {
 	const possibleWorkers = Object.keys(workersDict);
 	if (!possibleWorkers.includes(runtimeConfiguration.worker.deviceType)) {
 		throw new Error(
@@ -66,7 +65,7 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 	const contract: Contract = {
 		uuid: process.env.BALENA_DEVICE_UUID,
 		workerType: runtimeConfiguration.worker.deviceType,
-		supportedFeatures: {}
+		supportedFeatures: {},
 	};
 
 	if (
@@ -79,7 +78,8 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 		);
 		for (const tag of tags) {
 			if (supportedTags.includes(tag.tag_key)) {
-				contract.supportedFeatures[tag.tag_key] = tag.value === 'true' ? true : tag.value
+				contract.supportedFeatures[tag.tag_key] =
+					tag.value === 'true' ? true : tag.value;
 			}
 		}
 	} else {
@@ -218,12 +218,17 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 			try {
 				await worker.captureScreen('stop');
 				/// send the captured images to the core, instead of relying on volume
-				const CAPTURE_PATH = join(runtimeConfiguration.worker.workdir, 'capture');
+				const CAPTURE_PATH = join(
+					runtimeConfiguration.worker.workdir,
+					'capture',
+				);
 				const line = pipeline(
 					tar.pack(CAPTURE_PATH),
 					createGzip({ level: 6 }),
-					res
-				).catch(error => {throw error});
+					res,
+				).catch((error) => {
+					throw error;
+				});
 				await line;
 				res.send('OK');
 			} catch (err) {
@@ -266,14 +271,14 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 			try {
 				await worker.teardown();
 				proxy.kill();
-				try{
+				try {
 					await execSync(`pkill -f socat`);
-				} catch(e){
-					console.log(`Error tearing down tunnels : ${e.messsage}`)
+				} catch (e) {
+					console.log(`Error tearing down tunnels : ${e.messsage}`);
 				}
 				state = 'IDLE';
 				clearTimeout(heartbeatTimeout);
-				for(let tunnel of tunnels){
+				for (const tunnel of tunnels) {
 					process.kill(tunnel.pid);
 				}
 				res.send('OK');
@@ -308,7 +313,7 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 
 			try {
 				worker.on('progress', onProgress);
-				let imageStream = createGunzip();
+				const imageStream = createGunzip();
 				req.pipe(imageStream);
 				await worker.flash(imageStream);
 			} catch (e) {
@@ -324,9 +329,7 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 		},
 	);
 
-	app.get('/heartbeat', async (				
-		req: express.Request,
-		res: express.Response,) => {
+	app.get('/heartbeat', async (req: express.Request, res: express.Response) => {
 		try {
 			heartbeatTimeout.refresh();
 			res.status(200).send('OK');
@@ -335,9 +338,7 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 		}
 	});
 
-	app.get('/state', async (				
-		req: express.Request,
-		res: express.Response,) => {
+	app.get('/state', async (req: express.Request, res: express.Response) => {
 		try {
 			res.status(200).send(state);
 		} catch (e) {
@@ -345,19 +346,19 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 		}
 	});
 
-	app.get('/start', async (				
-		req: express.Request,
-		res: express.Response,) => {
+	app.get('/start', async (req: express.Request, res: express.Response) => {
 		try {
-			if(state !== 'BUSY'){
+			if (state !== 'BUSY') {
 				state = 'BUSY';
-				heartbeatTimeout = setTimeout(async() => {
-					console.log('Did not receive heartbeat from client - Tearing down...');
+				heartbeatTimeout = setTimeout(async () => {
+					console.log(
+						'Did not receive heartbeat from client - Tearing down...',
+					);
 					await worker.teardown();
 					state = 'IDLE';
-				}, 1000*60);
-				res.status(200).send('OK')
-			} else{
+				}, 1000 * 60);
+				res.status(200).send('OK');
+			} else {
 				res.status(200).send('BUSY');
 			}
 		} catch (e) {
@@ -365,10 +366,7 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 		}
 	});
 
-	app.get('/dut/serial', (
-		req: express.Request, 
-		res: express.Response,) => {
-
+	app.get('/dut/serial', (req: express.Request, res: express.Response) => {
 		const reportPath = '/reports/dut-serial.txt';
 		readFile(reportPath, (err, data) => {
 			if (err) {
