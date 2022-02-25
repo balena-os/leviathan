@@ -1,5 +1,5 @@
 import * as bodyParser from 'body-parser';
-import { ChildProcess } from 'child_process';
+import { ChildProcess, exec} from 'child_process';
 import { multiWrite } from 'etcher-sdk';
 import * as express from 'express';
 import * as http from 'http';
@@ -11,6 +11,15 @@ import { TestBotWorker } from './workers/testbot';
 import QemuWorker from './workers/qemu';
 import { Contract } from '../typings/worker';
 
+import { Stream } from 'stream';
+import { join } from 'path';
+import * as tar from 'tar-fs';
+import * as util from 'util';
+const pipeline = util.promisify(Stream.pipeline);
+const execSync = util.promisify(exec);
+import { readFile} from 'fs-extra';
+import { createGzip, createGunzip } from 'zlib';
+
 const balena = getSdk({
 	apiUrl: 'https://api.balena-cloud.com/',
 });
@@ -19,6 +28,10 @@ const workersDict: Dictionary<typeof TestBotWorker | typeof QemuWorker> = {
 	testbot_hat: TestBotWorker,
 	qemu: QemuWorker,
 };
+
+var state = 'IDLE';
+var heartbeatTimeout: NodeJS.Timeout;
+const tunnels:ChildProcess[] = [];
 
 async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 	: Promise<express.Application> {
@@ -204,6 +217,14 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 		) => {
 			try {
 				await worker.captureScreen('stop');
+				/// send the captured images to the core, instead of relying on volume
+				const CAPTURE_PATH = join(runtimeConfiguration.worker.workdir, 'capture');
+				const line = pipeline(
+					tar.pack(CAPTURE_PATH),
+					createGzip({ level: 6 }),
+					res
+				).catch(error => {throw error});
+				await line;
 				res.send('OK');
 			} catch (err) {
 				next(err);
@@ -245,6 +266,16 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 			try {
 				await worker.teardown();
 				proxy.kill();
+				try{
+					await execSync(`pkill -f socat`);
+				} catch(e){
+					console.log(`Error tearing down tunnels : ${e.messsage}`)
+				}
+				state = 'IDLE';
+				clearTimeout(heartbeatTimeout);
+				for(let tunnel of tunnels){
+					process.kill(tunnel.pid);
+				}
 				res.send('OK');
 			} catch (e) {
 				next(e);
@@ -277,7 +308,9 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 
 			try {
 				worker.on('progress', onProgress);
-				await worker.flash(req);
+				let imageStream = createGunzip();
+				req.pipe(imageStream);
+				await worker.flash(imageStream);
 			} catch (e) {
 				if (e instanceof Error) {
 					res.write(`error: ${e.message}`);
@@ -290,6 +323,66 @@ async function setup(runtimeConfiguration: Leviathan.RuntimeConfiguration)
 			}
 		},
 	);
+
+	app.get('/heartbeat', async (				
+		req: express.Request,
+		res: express.Response,) => {
+		try {
+			heartbeatTimeout.refresh();
+			res.status(200).send('OK');
+		} catch (e) {
+			res.status(500).send(e.stack);
+		}
+	});
+
+	app.get('/state', async (				
+		req: express.Request,
+		res: express.Response,) => {
+		try {
+			res.status(200).send(state);
+		} catch (e) {
+			res.status(500).send(e.stack);
+		}
+	});
+
+	app.get('/start', async (				
+		req: express.Request,
+		res: express.Response,) => {
+		try {
+			if(state !== 'BUSY'){
+				state = 'BUSY';
+				heartbeatTimeout = setTimeout(async() => {
+					console.log('Did not receive heartbeat from client - Tearing down...');
+					await worker.teardown();
+					state = 'IDLE';
+				}, 1000*60);
+				res.status(200).send('OK')
+			} else{
+				res.status(200).send('BUSY');
+			}
+		} catch (e) {
+			res.status(500).send(e.stack);
+		}
+	});
+
+	app.get('/dut/serial', (
+		req: express.Request, 
+		res: express.Response,) => {
+
+		const reportPath = '/reports/dut-serial.txt';
+		readFile(reportPath, (err, data) => {
+			if (err) {
+				console.error(`Unable to read ${reportPath}`, reportPath);
+				res.status(500);
+				res.send({ message: 'Cannot read the requested report' });
+				return;
+			}
+
+			res.setHeader('content-type', 'text/plain');
+			res.status(200);
+			res.send(data);
+		});
+	});
 
 	return app;
 }
