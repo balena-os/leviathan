@@ -408,6 +408,7 @@ class NonInteractiveState {
 					{
 						stdio: 'pipe',
 						env: {
+							...process.env,
 							CI: true,
 						},
 					},
