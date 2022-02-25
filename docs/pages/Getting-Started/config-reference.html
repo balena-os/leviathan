@@ -72,7 +72,7 @@
 				<a href="#configjs-reference" id="configjs-reference" style="color: inherit; text-decoration: none;">
 					<h1>Config.js Reference</h1>
 				</a>
-				<p>Create the <code>config.js</code> file in the <code>workspace</code> directory using the <a href="https://github.com/balena-os/leviathan/blob/master/workspace/config.example.js">config.example.js</a> file. Environment variables referenced in the documentation are merely placeholders. You can create your own environment variables and use them to refer to values in your config.js file as you see fit.</p>
+				<p>Create the <code>config.js</code> file in the <code>workspace</code> directory using the <a href="https://github.com/balena-os/leviathan/blob/master/workspace/config.example.js">config.example.js</a> file. Environment variables referenced in the documentation are merely suggestions. You can technically use hardcoded values, but it is a common practice to get some <code>config.json</code> fields from the environment by setting them to something like <code>process.env.MY_ENV_VAR</code>.</p>
 				<pre><code class="language-js"><span style="color: #DC3EB7">module</span><span style="color: #002339">.</span><span style="color: #DC3EB7">exports</span><span style="color: #002339"> </span><span style="color: #7B30D0">=</span><span style="color: #002339"> {</span>
 <span style="color: #002339">    deviceType: </span><span style="color: #A44185">&#039;&lt;DUT device type, for example &quot;raspberrypi3-64&quot;&gt;&#039;</span><span style="color: #002339">,</span>
 <span style="color: #002339">    suite: </span><span style="color: #A44185">`${</span><span style="color: #2F86D2">__dirname</span><span style="color: #A44185">}/../suites/&lt;name-of-test-suite&gt;`</span><span style="color: #002339">,</span>
@@ -91,28 +91,29 @@
 				<p>Information on properties in <code>config.js</code>:</p>
 				<ul>
 					<li><strong><code>deviceType</code></strong> is the Device Under Test (DUT) attached to the testbot. Example: Raspberrypi3 64-bit device, the <code>deviceType</code> property needs to be <code>raspberrypi3-64</code>.</li>
-					<li><strong><code>suite</code></strong> is the absolute path to the test suite directory that you want to execute. The path after <code>__dirname</code> in the config is a path relative to the workspace directory.</li>
+					<li><strong><code>suite</code></strong> is the absolute path to the test suite directory that you want to execute.  As shown in the example above, <code>${__dirname}</code> expands to the absolute path of the <code>workspace</code> directory, so you can use it to specify a path relative to <code>workspace</code>.</li>
 					<li><strong><code>networkWired</code></strong> and <strong><code>networkWireless</code></strong> properties are configuration for the Network Manager. This sets up the Access Point (AP) created by the testbot for the DUT to use while provisioning.</li>
-					<li><strong><code>balenaApiKey</code></strong> is the balenaCloud API key used when running the cloud release suite. Ideally, you can add it as an environment variable and refere it with <code>process.env.BALENACLOUD_API_KEY</code>.</li>
+					<li><strong><code>balenaApiKey</code></strong> is the balenaCloud API key used when running the cloud release suite. </li>
 					<li><strong><code>balenaApiUrl</code></strong> is the balenaCloud environment you are targetting for your test suite. Production is <code>&#39;balena-cloud.com&#39;</code> and staging is <code>&#39;balena-staging.com&#39;</code>.</li>
-					<li><strong><code>organization</code></strong> is the balenaCloud organizations where test applications are created for the cloud suite.</li>
-					<li><strong><code>image</code></strong> is the absolute path to the balenaOS image that is flashed onto the Device Under Test (DUT). The image should be kept under the <code>workspace</code> directory. The path after <code>__dirname</code> in the config is a path relative to the workspace directory.</li>
+					<li><strong><code>organization</code></strong> is the balenaCloud organization where test applications are created for the cloud suite.</li>
+					<li><strong><code>image</code></strong> is the absolute path to the balenaOS image that is flashed onto the Device Under Test (DUT).  As shown in the example above, <code>${__dirname}</code> expands to the absolute path of the <code>workspace</code> directory, so you can use it to specify a path relative to <code>workspace</code>.</li>
 				</ul>
-				<p>Make sure to rename the image to balena.img. If you provide <code>balena.img</code> as your balenaOS image, then Leviathan will compress it for you in <code>gz</code> format on runtime. We recommend compressing beforehand, as it saves time. For any reason if your tests download an image already and you don&#39;t want to upload an image, then set the image property to false. For example, in the e2e test suite, if you don&#39;t upload an image and set the image property to false, then the test suite will download the image from balenaCloud.</p>
+				<p>Make sure to rename the image to balena.img. If you provide <code>balena.img</code> as your balenaOS image, then Leviathan will compress it for you in <code>gz</code> format on runtime. We recommend compressing beforehand, as it saves time. For any reason if your tests download an image already and you don&#39;t want to upload an image, then set the <code>image</code> property to <code>false</code> in config.js </p>
+				<p>For example, in the e2e test suite, if you don&#39;t upload an image and set <code>image: false</code>, then the test suite will download the image from balenaCloud. This is test specific, not a leviathan feature. </p>
 				<ul>
 					<li><strong><code>downloadVersion</code></strong>: If you intend to download a balenaOS version for your tests, then you can use the property to specify the balenaOS version semver. The <code>fetchOS</code> helper will use this property to find and download the balenaOS image. </li>
-					<li><strong><code>workers</code></strong> is the property where we specify precisely where the test suites will be executed on and what type of workers are going to be used. You can specify this in multiple ways as per the requirement:</li>
+					<li><strong><code>workers</code></strong> is the property where we specify precisely where the test suites will be executed on and what type of workers are going to be used. You can specify this in multiple ways as per your requirements:</li>
 				</ul>
 				<a href="#different-workers-configurations-available" id="different-workers-configurations-available" style="color: inherit; text-decoration: none;">
-					<h3>Different <code>workers</code> configurations available</h3>
+					<h2>Different <code>workers</code> configurations available</h2>
 				</a>
 				<ol>
-					<li><strong>Using <UUID>.local</strong> - The last line in the <code>config.json</code> above assumes you are on the same network with the testbot worker. Note: that on some Linux distributions, the container will not be able to resolve <code>.local</code> addresses. If you face this problem until we find a proper solution, you can replace this address with your device&#39;s local IP (copy it from the device summary page on balenaCloud).</li>
+					<li><strong><UUID>.local</strong> - The last line in the <code>config.json</code> above assumes you are on the same network with the testbot worker. Note that on some Linux distributions, the container will not be able to resolve <code>.local</code> addresses. If you face this problem until we find a proper solution, you can replace this address with your device&#39;s local IP (copy it from the device summary page on balenaCloud).</li>
 				</ol>
 				<pre><code class="language-js"><span style="color: #002339">workers: [</span><span style="color: #A44185">&#039;http://&lt;short UUID of your testbot in balenaCloud&gt;.local&#039;</span><span style="color: #002339">],</span>
 </code></pre>
-				<ol start="2">
-					<li><strong>Using public device URLs</strong> - If the testbot is not on the same network as you, please enable the public URL in balenaCloud and use that in the <code>workers</code> array. If multiple URLs are provided, then each url in the array will be running the same test suite listed in the <code>config.js</code>.</li>
+				<ol>
+					<li><strong>Public device URLs</strong> - If the testbot is not on the same network as you, please enable the public URL in balenaCloud and use that in the <code>workers</code> array. If multiple URLs are provided, then each URL in the array will run the same test suite listed in the <code>config.js</code>.</li>
 				</ol>
 				<pre><code class="language-js"><span style="color: #002339">workers: [</span><span style="color: #A44185">&#039;Public URL of your testbot&#039;</span><span style="color: #002339">],</span>
 </code></pre>
@@ -125,14 +126,14 @@
 <span style="color: #002339">}</span>
 </code></pre>
 				<ol start="4">
-					<li><strong>Specify Localhost for QEMU worker</strong> - When intending to test using a QEMU worker, then use the follow configuration. This will run the test suite on a QEMU worker.</li>
+					<li><strong>Specify Localhost for QEMU worker</strong> - Using the following configuration leviathan will run the test suite on a QEMU worker.</li>
 				</ol>
 				<pre><code class="language-js"><span style="color: #002339">workers: [</span><span style="color: #A44185">&#039;http://localhost&#039;</span><span style="color: #002339">],</span>
 </code></pre>
 				<a href="#configjs-examples" id="configjs-examples" style="color: inherit; text-decoration: none;">
 					<h3><code>config.js</code> Examples</h3>
 				</a>
-				<p>Following is an exhaustive list of config.js examples which can be used for reference.</p>
+				<p>Following is an exhaustive list of <code>config.js</code> examples which can be used for reference.</p>
 				<a href="#running-3-test-suites-parrallely-using-workers-objects" id="running-3-test-suites-parrallely-using-workers-objects" style="color: inherit; text-decoration: none;">
 					<h4>Running 3 test suites parrallely using workers objects</h4>
 				</a>
@@ -189,8 +190,8 @@
 <span style="color: #002339">    }]</span>
 </code></pre>
 				<br>
-				<a href="#running-the-same-test-suite-on-2-seperate-workers" id="running-the-same-test-suite-on-2-seperate-workers" style="color: inherit; text-decoration: none;">
-					<h2>Running the same test suite on 2 seperate workers</h2>
+				<a href="#running-the-same-test-suite-on-2-separate-workers" id="running-the-same-test-suite-on-2-separate-workers" style="color: inherit; text-decoration: none;">
+					<h2>Running the same test suite on 2 separate workers</h2>
 				</a>
 				<pre><code class="language-js"><span style="color: #DC3EB7">module</span><span style="color: #002339">.</span><span style="color: #DC3EB7">exports</span><span style="color: #002339"> </span><span style="color: #7B30D0">=</span><span style="color: #002339"> [{</span>
 <span style="color: #002339">        deviceType: </span><span style="color: #A44185">&quot;raspberrypi3&quot;</span><span style="color: #002339">,</span>

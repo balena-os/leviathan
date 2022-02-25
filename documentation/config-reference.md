@@ -1,6 +1,6 @@
 # Config.js Reference
 
-Create the `config.js` file in the `workspace` directory using the [config.example.js](https://github.com/balena-os/leviathan/blob/master/workspace/config.example.js) file. Environment variables referenced in the documentation are merely placeholders. You can create your own environment variables and use them to refer to values in your config.js file as you see fit.
+Create the `config.js` file in the `workspace` directory using the [config.example.js](https://github.com/balena-os/leviathan/blob/master/workspace/config.example.js) file. Environment variables referenced in the documentation are merely suggestions. You can technically use hardcoded values, but it is a common practice to get some `config.json` fields from the environment by setting them to something like `process.env.MY_ENV_VAR`.
 
 ```js
 module.exports = {
@@ -22,27 +22,29 @@ module.exports = {
 Information on properties in `config.js`:
 
 - **`deviceType`** is the Device Under Test (DUT) attached to the testbot. Example: Raspberrypi3 64-bit device, the `deviceType` property needs to be `raspberrypi3-64`.
-- **`suite`** is the absolute path to the test suite directory that you want to execute. The path after `__dirname` in the config is a path relative to the workspace directory.
+- **`suite`** is the absolute path to the test suite directory that you want to execute.  As shown in the example above, `${__dirname}` expands to the absolute path of the `workspace` directory, so you can use it to specify a path relative to `workspace`.
 - **`networkWired`** and **`networkWireless`** properties are configuration for the Network Manager. This sets up the Access Point (AP) created by the testbot for the DUT to use while provisioning.
-- **`balenaApiKey`** is the balenaCloud API key used when running the cloud release suite. Ideally, you can add it as an environment variable and refere it with `process.env.BALENACLOUD_API_KEY`.
+- **`balenaApiKey`** is the balenaCloud API key used when running the cloud release suite. 
 - **`balenaApiUrl`** is the balenaCloud environment you are targetting for your test suite. Production is `'balena-cloud.com'` and staging is `'balena-staging.com'`.
-- **`organization`** is the balenaCloud organizations where test applications are created for the cloud suite.
-- **`image`** is the absolute path to the balenaOS image that is flashed onto the Device Under Test (DUT). The image should be kept under the `workspace` directory. The path after `__dirname` in the config is a path relative to the workspace directory. 
+- **`organization`** is the balenaCloud organization where test applications are created for the cloud suite.
+- **`image`** is the absolute path to the balenaOS image that is flashed onto the Device Under Test (DUT).  As shown in the example above, `${__dirname}` expands to the absolute path of the `workspace` directory, so you can use it to specify a path relative to `workspace`.
 
-Make sure to rename the image to balena.img. If you provide `balena.img` as your balenaOS image, then Leviathan will compress it for you in `gz` format on runtime. We recommend compressing beforehand, as it saves time. For any reason if your tests download an image already and you don't want to upload an image, then set the image property to false. For example, in the e2e test suite, if you don't upload an image and set the image property to false, then the test suite will download the image from balenaCloud.
+Make sure to rename the image to balena.img. If you provide `balena.img` as your balenaOS image, then Leviathan will compress it for you in `gz` format on runtime. We recommend compressing beforehand, as it saves time. For any reason if your tests download an image already and you don't want to upload an image, then set the `image` property to `false` in config.js 
+
+For example, in the e2e test suite, if you don't upload an image and set `image: false`, then the test suite will download the image from balenaCloud. This is test specific, not a leviathan feature. 
 
 - **`downloadVersion`**: If you intend to download a balenaOS version for your tests, then you can use the property to specify the balenaOS version semver. The `fetchOS` helper will use this property to find and download the balenaOS image. 
-- **`workers`** is the property where we specify precisely where the test suites will be executed on and what type of workers are going to be used. You can specify this in multiple ways as per the requirement: 
+- **`workers`** is the property where we specify precisely where the test suites will be executed on and what type of workers are going to be used. You can specify this in multiple ways as per your requirements: 
 
-### Different `workers` configurations available
+## Different `workers` configurations available
 
-1. **Using <UUID>.local** - The last line in the `config.json` above assumes you are on the same network with the testbot worker. Note: that on some Linux distributions, the container will not be able to resolve `.local` addresses. If you face this problem until we find a proper solution, you can replace this address with your device's local IP (copy it from the device summary page on balenaCloud).
+1. **<UUID>.local** - The last line in the `config.json` above assumes you are on the same network with the testbot worker. Note that on some Linux distributions, the container will not be able to resolve `.local` addresses. If you face this problem until we find a proper solution, you can replace this address with your device's local IP (copy it from the device summary page on balenaCloud).
 
 ```js
 workers: ['http://<short UUID of your testbot in balenaCloud>.local'],
 ```
 
-2. **Using public device URLs** - If the testbot is not on the same network as you, please enable the public URL in balenaCloud and use that in the `workers` array. If multiple URLs are provided, then each url in the array will be running the same test suite listed in the `config.js`.
+1. **Public device URLs** - If the testbot is not on the same network as you, please enable the public URL in balenaCloud and use that in the `workers` array. If multiple URLs are provided, then each URL in the array will run the same test suite listed in the `config.js`.
 
 ```js
 workers: ['Public URL of your testbot'],
@@ -57,7 +59,7 @@ workers: {
 }
 ```
 
-4. **Specify Localhost for QEMU worker** - When intending to test using a QEMU worker, then use the follow configuration. This will run the test suite on a QEMU worker.
+4. **Specify Localhost for QEMU worker** - Using the following configuration leviathan will run the test suite on a QEMU worker.
 
 ```js
 workers: ['http://localhost'],
@@ -65,7 +67,8 @@ workers: ['http://localhost'],
 
 ### `config.js` Examples
 
-Following is an exhaustive list of config.js examples which can be used for reference.
+Following is an exhaustive list of `config.js` examples which can be used for reference.
+
 #### Running 3 test suites parrallely using workers objects
 
 ```js
@@ -123,7 +126,7 @@ module.exports = [{
 ```
 <br>
 
-## Running the same test suite on 2 seperate workers
+## Running the same test suite on 2 separate workers
 
 ```js
 module.exports = [{

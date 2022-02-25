@@ -1,6 +1,6 @@
-# Getting Started with Qemu Worker
+# Getting Started with QEMU Worker
 
-This is a quick start guide for using the leviathan framework with the qemu worker.
+This is a quick start guide for using the leviathan framework with the QEMU worker.
 
 ## Start your first test run
 
@@ -8,9 +8,9 @@ For your first test run, we will be running the [e2e test suite](https://github.
 
 A balenaOS image that is used to flash and provision the device under test will be needed for the test. You can download an unmanaged image from [balena.io/os](balena.io/os). Extract the downloaded balenaOS image you want to test with to the `workspace` directory and rename it to `balena.img` file.
 
-## Build your config.json file
+## Build your `config.js` file
 
-The config.js file is the master configuration file for your test run. The qemu worker spins up and configures your device under test (DUT) accordingly with the settings provided in the `config.js` file. To know more about each property, refer to the {@page Config.js Reference | Config.js reference}.
+The config.js file is the master configuration file for your test run. The QEMU worker spins up and configures your device under test (DUT) accordingly with the settings provided in the `config.js` file. To know more about each property, refer to the {@page Config.js Reference | Config.js reference}.
 
 To get started,
 
@@ -46,7 +46,7 @@ To start the test run, navigate to the root of the leviathan directory and run t
 make local-test
 ```
 
-This starts to build the core and worker services and run the worker using docker-compose. The logs will start streaming on the terminal for the test run.After then, the test will start. Wait for the test scenario to finish and check the device logs on the dashboard in the meantime. 
+This will first build the core and worker services and run the worker using docker-compose. Then, the test will run and the logs will start streaming on the terminal. Wait for the test scenario to finish and check the device logs on the dashboard in the meantime. 
 
 A successful run of the e2e test suite without any errors makes sure that your QEMU worker is set up correctly and can be used for further tests.
 
@@ -83,7 +83,7 @@ That's the end of the quick start guide, you successfully setup your QEMu worker
 ## Where do you go from here?
 
 1. Start by {@page Writing tests | writing your first test}.
-2. To know more about the config.js and it's properties, refer to {@page Config.js Reference | Config.js reference}.
+2. To know more about `config.js` and its properties, refer to {@page Config.js Reference | Config.js reference}.
 3. To understand the bigger picture about the project read/watch these {@page Links, and more links | resources}.
 4. Some tips and references for {@page Tips and Reference | writing better tests} with Leviathan.
 5. Check out the source for tests that you ran, [e2e test suite](https://github.com/balena-os/leviathan/tree/master/suites).

@@ -73,18 +73,18 @@
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
 				<a href="#getting-started-with-qemu-worker" id="getting-started-with-qemu-worker" style="color: inherit; text-decoration: none;">
-					<h1>Getting Started with Qemu Worker</h1>
+					<h1>Getting Started with QEMU Worker</h1>
 				</a>
-				<p>This is a quick start guide for using the leviathan framework with the qemu worker.</p>
+				<p>This is a quick start guide for using the leviathan framework with the QEMU worker.</p>
 				<a href="#start-your-first-test-run" id="start-your-first-test-run" style="color: inherit; text-decoration: none;">
 					<h2>Start your first test run</h2>
 				</a>
 				<p>For your first test run, we will be running the <a href="https://github.com/balena-os/leviathan/tree/master/suites/e2e">e2e test suite</a>.</p>
 				<p>A balenaOS image that is used to flash and provision the device under test will be needed for the test. You can download an unmanaged image from <a href="balena.io/os">balena.io/os</a>. Extract the downloaded balenaOS image you want to test with to the <code>workspace</code> directory and rename it to <code>balena.img</code> file.</p>
-				<a href="#build-your-configjson-file" id="build-your-configjson-file" style="color: inherit; text-decoration: none;">
-					<h2>Build your config.json file</h2>
+				<a href="#build-your-configjs-file" id="build-your-configjs-file" style="color: inherit; text-decoration: none;">
+					<h2>Build your <code>config.js</code> file</h2>
 				</a>
-				<p>The config.js file is the master configuration file for your test run. The qemu worker spins up and configures your device under test (DUT) accordingly with the settings provided in the <code>config.js</code> file. To know more about each property, refer to the <a href="../config-reference.html">Config.js reference</a>.</p>
+				<p>The config.js file is the master configuration file for your test run. The QEMU worker spins up and configures your device under test (DUT) accordingly with the settings provided in the <code>config.js</code> file. To know more about each property, refer to the <a href="../config-reference.html">Config.js reference</a>.</p>
 				<p>To get started,</p>
 				<ul>
 					<li>Navigate to the <code>workspace</code> directory in leviathan.</li>
@@ -114,7 +114,7 @@
 				<p>To start the test run, navigate to the root of the leviathan directory and run the following command:</p>
 				<pre><code><span style="color: #2F86D2">make</span><span style="color: #002339"> </span><span style="color: #2F86D2">local</span><span style="color: #7B30D0">-</span><span style="color: #2F86D2">test</span>
 </code></pre>
-				<p>This starts to build the core and worker services and run the worker using docker-compose. The logs will start streaming on the terminal for the test run.After then, the test will start. Wait for the test scenario to finish and check the device logs on the dashboard in the meantime. </p>
+				<p>This will first build the core and worker services and run the worker using docker-compose. Then, the test will run and the logs will start streaming on the terminal. Wait for the test scenario to finish and check the device logs on the dashboard in the meantime. </p>
 				<p>A successful run of the e2e test suite without any errors makes sure that your QEMU worker is set up correctly and can be used for further tests.</p>
 				<a href="#let39s-run-some-quotrealquot-tests" id="let39s-run-some-quotrealquot-tests" style="color: inherit; text-decoration: none;">
 					<h2>Let&#39;s run some &quot;real&quot; tests</h2>
@@ -149,7 +149,7 @@
 				</a>
 				<ol>
 					<li>Start by <a href="../writing-tests.html">writing your first test</a>.</li>
-					<li>To know more about the config.js and it&#39;s properties, refer to <a href="../config-reference.html">Config.js reference</a>.</li>
+					<li>To know more about <code>config.js</code> and its properties, refer to <a href="../config-reference.html">Config.js reference</a>.</li>
 					<li>To understand the bigger picture about the project read/watch these <a href="../learn-more.html">resources</a>.</li>
 					<li>Some tips and references for <a href="../reference-tips.html">writing better tests</a> with Leviathan.</li>
 					<li>Check out the source for tests that you ran, <a href="https://github.com/balena-os/leviathan/tree/master/suites">e2e test suite</a>.</li>

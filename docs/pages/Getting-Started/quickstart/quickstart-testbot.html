@@ -85,15 +85,15 @@
 				</a>
 				<p>For your first test run, we will be running the <a href="https://github.com/balena-os/leviathan/tree/master/suites/e2e">e2e test suite</a>. </p>
 				<p>A balenaOS image that is used to flash and provision the device under test will be needed for the test. You can download an unmanaged image from <a href="balena.io/os">balena.io/os</a>. Extract the downloaded balenaOS image you want to test with to the <code>workspace</code> directory and rename it to <code>balena.img</code> file. </p>
-				<a href="#build-your-configjson-file" id="build-your-configjson-file" style="color: inherit; text-decoration: none;">
-					<h3>Build your config.json file</h3>
+				<a href="#build-your-configjs-file" id="build-your-configjs-file" style="color: inherit; text-decoration: none;">
+					<h3>Build your <code>config.js</code> file</h3>
 				</a>
-				<p>The config.js file is the master configuration file for your test run. The testbot runs and configures your device under test (DUT) accordingly with the settings provided in the <code>config.js</code> file. To know more about each property, refer to the <a href="../config-reference.html">Config.js reference</a>.</p>
+				<p>The <code>config.js</code> file is the master configuration file for your test run. The testbot runs and configures your device under test (DUT) accordingly with the settings provided in the <code>config.js</code> file. To know more about each property, refer to the <a href="../config-reference.html">Config.js reference</a>.</p>
 				<p>To get started, </p>
 				<ul>
 					<li>Navigate to the <code>workspace</code> directory in leviathan.</li>
 					<li>Create a <code>config.js</code> file in the <code>workspace</code> directory using the <code>config.example.js</code> file. </li>
-					<li>The config.js file should look close to the following:</li>
+					<li>The <code>config.js</code> file should look close to the following:</li>
 				</ul>
 				<pre><code class="language-js"><span style="color: #DC3EB7">module</span><span style="color: #002339">.</span><span style="color: #DC3EB7">exports</span><span style="color: #002339"> </span><span style="color: #7B30D0">=</span><span style="color: #002339"> {</span>
 <span style="color: #002339">    deviceType: </span><span style="color: #A44185">&quot;raspberrypi3&quot;</span><span style="color: #002339">,</span>
@@ -113,7 +113,7 @@
 <span style="color: #002339">    }</span>
 <span style="color: #002339">}</span>
 </code></pre>
-				<p>Here, we are assuming that the device under test (DUT) is a <code>raspberrypi3</code>. The suite and the image property points to a valid test suite and balenaOS image that is going to be tested with. </p>
+				<p>The suite and the image property points to a valid test suite and balenaOS image that is going to be tested with. </p>
 				<a href="#start-your-first-test-run-1" id="start-your-first-test-run-1" style="color: inherit; text-decoration: none;">
 					<h2>Start your first test run</h2>
 				</a>
@@ -158,7 +158,7 @@
 				</a>
 				<ol>
 					<li>Start by <a href="../writing-tests.html">writing your first test</a>.</li>
-					<li>To know more about the config.js and it&#39;s properties, refer to <a href="../config-reference.html">Config.js reference</a>.</li>
+					<li>To know more about <code>config.js</code> and its properties, refer to <a href="../config-reference.html">Config.js reference</a>.</li>
 					<li>To understand the bigger picture about the project read/watch these <a href="../learn-more.html">resources</a>.</li>
 					<li>Some tips and references for <a href="../reference-tips.html">writing better tests</a> with Leviathan.</li>
 					<li>Check out the source for tests that you ran, <a href="https://github.com/balena-os/leviathan/tree/master/suites">e2e test suite</a>.</li>

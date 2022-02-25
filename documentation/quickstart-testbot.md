@@ -12,15 +12,15 @@ For your first test run, we will be running the [e2e test suite](https://github.
 
 A balenaOS image that is used to flash and provision the device under test will be needed for the test. You can download an unmanaged image from [balena.io/os](balena.io/os). Extract the downloaded balenaOS image you want to test with to the `workspace` directory and rename it to `balena.img` file. 
 
-### Build your config.json file
+### Build your `config.js` file
 
-The config.js file is the master configuration file for your test run. The testbot runs and configures your device under test (DUT) accordingly with the settings provided in the `config.js` file. To know more about each property, refer to the {@page Config.js Reference | Config.js reference}.
+The `config.js` file is the master configuration file for your test run. The testbot runs and configures your device under test (DUT) accordingly with the settings provided in the `config.js` file. To know more about each property, refer to the {@page Config.js Reference | Config.js reference}.
 
 To get started, 
 
 - Navigate to the `workspace` directory in leviathan.
 - Create a `config.js` file in the `workspace` directory using the `config.example.js` file. 
-- The config.js file should look close to the following: 
+- The `config.js` file should look close to the following: 
 
 ```js
 module.exports = {
@@ -42,7 +42,7 @@ module.exports = {
 }
 ```
 
-Here, we are assuming that the device under test (DUT) is a `raspberrypi3`. The suite and the image property points to a valid test suite and balenaOS image that is going to be tested with. 
+The suite and the image property points to a valid test suite and balenaOS image that is going to be tested with. 
 
 ## Start your first test run
 
@@ -91,7 +91,7 @@ That's the end of the quick start guide, you successfully setup your testbot wor
 ## Where do you go from here?
 
 1. Start by {@page Writing tests | writing your first test}.
-2. To know more about the config.js and it's properties, refer to {@page Config.js Reference | Config.js reference}.
+2. To know more about `config.js` and its properties, refer to {@page Config.js Reference | Config.js reference}.
 3. To understand the bigger picture about the project read/watch these {@page Links, and more links | resources}.
 4. Some tips and references for {@page Tips and Reference | writing better tests} with Leviathan.
 5. Check out the source for tests that you ran, [e2e test suite](https://github.com/balena-os/leviathan/tree/master/suites).
