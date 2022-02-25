@@ -32,7 +32,6 @@ const path = require('path');
 const SSH = require('node-ssh');
 const assignIn = require('lodash/assignIn');
 
-
 const getSSHClientDisposer = (config) => {
 	const createSSHClient = (conf) => {
 		return Bluebird.resolve(
@@ -63,7 +62,7 @@ module.exports = {
 	 *
 	 * @category helper
 	 */
-	 executeCommandOverSSH: async (command, config) => {
+	executeCommandOverSSH: async (command, config) => {
 		return Bluebird.using(getSSHClientDisposer(config), (client) => {
 			return new Bluebird(async (resolve, reject) => {
 				client.connection.on('error', (err) => {
@@ -115,23 +114,24 @@ module.exports = {
 
 		await _waitUntil(_times);
 	},
-	
+
 	createSSHKey: (keyPath) => {
-		return fs.access(
-			path.dirname(keyPath)
-		).then(async () => {
-			const keys = await keygen({
-				location: keyPath,
+		return fs
+			.access(path.dirname(keyPath))
+			.then(async () => {
+				const keys = await keygen({
+					location: keyPath,
+				});
+				await exec('ssh-add -D');
+				await exec(`ssh-add ${keyPath}`);
+				return keys;
+			})
+			.then((keys) => {
+				return {
+					pubKey: keys.pubKey.trim(),
+					key: keys.key.trim(),
+				};
 			});
-			await exec('ssh-add -D');
-			await exec(`ssh-add ${keyPath}`);
-			return keys;
-		}).then((keys) => {
-			return {
-				pubKey: keys.pubKey.trim(), 
-				key: keys.key.trim()
-			}
-		});
 	},
 	getFilesFromDirectory(basePath, ignore = []) {
 		async function _recursive(_basePath, _ignore = []) {

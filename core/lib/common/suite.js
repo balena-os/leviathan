@@ -53,22 +53,21 @@ const Test = require('./test');
 
 // Device identification
 function uid(a) {
+	/* tslint:disable:no-bitwise */
 	return a
 		? (a ^ (Math.random() * 16)).toString(16)
 		: ([1e15] + 1e15).replace(/[01]/g, uid);
 }
 
 // Test identification
-const id = `${Math.random()
-	.toString(36)
-	.substring(2, 10)}`;
+const id = `${Math.random().toString(36).substring(2, 10)}`;
 
 function cleanObject(object) {
 	if (!isObject(object)) {
 		return;
 	}
 
-	for (const key in object) {
+	for (const key of Object.keys(object)) {
 		cleanObject(object[key]);
 
 		if (
@@ -97,7 +96,7 @@ class Suite {
 				},
 				apiKey: conf.balenaApiKey,
 				apiUrl: conf.balenaApiUrl,
-				organization: conf.organization
+				organization: conf.organization,
 			},
 			balenaOS: {
 				config: {
@@ -109,9 +108,9 @@ class Suite {
 				network: {
 					wired: conf.networkWired,
 					wireless: conf.networkWireless,
-				}
-			}
-		}
+				},
+			},
+		};
 
 		// Setting the correct API environment for CLI calls
 		exec(`echo "balenaUrl: '${conf.balenaApiUrl}'" > ~/.balenarc.yml`);
@@ -120,8 +119,8 @@ class Suite {
 		// Breaking changes will need to be done to both test suites + helpers
 		this.options = {
 			...options,
-			...conf
-		}
+			...conf,
+		};
 		cleanObject(this.options);
 
 		// State
@@ -136,7 +135,8 @@ class Suite {
 			stats: {
 				tests: 0,
 				ran: 0,
-				skipped: () => this.testSummary.stats.tests - this.testSummary.stats.ran,
+				skipped: () =>
+					this.testSummary.stats.tests - this.testSummary.stats.ran,
 				passed: 0,
 				failed: 0,
 			},
@@ -324,8 +324,8 @@ class Suite {
 	}
 
 	async createJsonSummary() {
-		this.testSummary.stats.skipped = this.testSummary.stats.skipped()
-		this.testSummary.dateTime = `${new Date().toString()}`
+		this.testSummary.stats.skipped = this.testSummary.stats.skipped();
+		this.testSummary.dateTime = `${new Date().toString()}`;
 		let data = JSON.stringify(this.testSummary, null, 4);
 		await fs.writeFileSync(`/reports/test-summary.json`, data);
 	}
@@ -361,8 +361,8 @@ class Suite {
 		const { action } = message;
 
 		if (action === 'reconnect') {
-			for (const action of ['info', 'log', 'status']) {
-				suite.state[action]();
+			for (const item of ['info', 'log', 'status']) {
+				suite.state[item]();
 			}
 		}
 	};

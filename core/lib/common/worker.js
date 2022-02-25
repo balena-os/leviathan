@@ -39,7 +39,7 @@ const Bluebird = require('bluebird');
 const retry = require('bluebird-retry');
 const utils = require('../common/utils');
 const archiver = require('../common/archiver');
-const config = require('config');
+// const config = require('config');
 const isNumber = require('lodash/isNumber');
 const { fs } = require('mz');
 const path = require('path');
@@ -64,7 +64,7 @@ module.exports = class Worker {
 		logger = { log: console.log, status: console.log, info: console.log },
 		url,
 		username,
-		sshKey
+		sshKey,
 	) {
 		this.deviceType = deviceType;
 		this.url = url;
@@ -78,9 +78,11 @@ module.exports = class Worker {
 		this.workerUser = 'root';
 		this.sshPrefix = '';
 		this.uuid = '';
-		if(this.url.includes(`balena-devices.com`)){
+		if (this.url.includes(`balena-devices.com`)) {
 			// worker is a testbot connected to balena cloud - we ssh into it via the vpn
-			this.uuid = this.url.match(/(?<=https:\/\/)(.*)(?=.balena-devices.com)/)[1];
+			this.uuid = this.url.match(
+				/(?<=https:\/\/)(.*)(?=.balena-devices.com)/,
+			)[1];
 			this.workerHost = `ssh.balena-devices.com`;
 			this.workerUser = this.username;
 			this.workerPort = '22';
@@ -98,7 +100,7 @@ module.exports = class Worker {
 	async flash(imagePath) {
 		if (process.env.DEBUG_KEEP_IMG) {
 			this.logger.log('[DEBUG] Skip flashing');
-			return "Skipping flashing"
+			return 'Skipping flashing';
 		} else {
 			this.logger.log('Preparing to flash');
 
@@ -192,13 +194,13 @@ module.exports = class Worker {
 		return rp.post({ uri: `${this.url}/proxy`, body: proxy, json: true });
 	}
 
-	async getDutIp (
+	async getDutIp(
 		target,
 		timeout = {
 			interval: 10000,
 			tries: 60,
-		}
-	){
+		},
+	) {
 		return retry(
 			() => {
 				return rp.get({
@@ -212,18 +214,14 @@ module.exports = class Worker {
 				interval: timeout.interval,
 				throw_original: true,
 			},
-		)
+		);
 	}
 
-	ip(
-		target,
-	) {
-		// ip of DUT - used to talk to it 
+	ip(target) {
+		// ip of DUT - used to talk to it
 		// if testbot/local testbot, then we dont wan't the ip, as we use SSH tunneling to talk to it - so return 127.0.0.1
 		// if qemu, return the ip - as we talk to the DUT directly
-		return (this.url.includes(`localhost`))
-			? this.getDutIp(target)
-			: `127.0.0.1`;
+		return this.url.includes(`localhost`) ? this.getDutIp(target) : `127.0.0.1`;
 	}
 
 	async teardown() {
@@ -244,8 +242,10 @@ module.exports = class Worker {
 				const line = pipeline(
 					capture,
 					createGunzip(),
-					tar.extract('/tmp/capture')
-				).catch(error => {throw error});
+					tar.extract('/tmp/capture'),
+				).catch((error) => {
+					throw error;
+				});
 				await line;
 		}
 	}
@@ -272,35 +272,29 @@ module.exports = class Worker {
 	 *
 	 * @category helper
 	 */
-	async executeCommandInHostOS(
-		command,
-		target,
-	) {
-		command = (command instanceof Array) ? command.join(' ') : command;
-		let config = {}
-		// depending on if the target arguement is a .local uuid or not, SSH via the proxy or directly
-		if(/.*\.local/.test(target)){
-			let ip = await this.ip(target)
+	async executeCommandInHostOS(command, target) {
+		command = command instanceof Array ? command.join(' ') : command;
+		let config = {};
+		// depending on if the target argument is a .local uuid or not, SSH via the proxy or directly
+		if (/.*\.local/.test(target)) {
+			let ip = await this.ip(target);
 			config = {
 				host: ip, // the this.ip() method will return the DUT ip or localhost, depending on if its a virtual worker or not
 				port: '22222',
-				username: 'root'
-			}
+				username: 'root',
+			};
 		} else {
 			config = {
 				host: 'ssh.balena-devices.com',
 				port: '22',
-				username: this.username
-			}
-			command = `host ${target} ${command}`
+				username: this.username,
+			};
+			command = `host ${target} ${command}`;
 		}
 
 		return retry(
 			async () => {
-				const result = await utils.executeCommandOverSSH(
-					command,
-					config
-				);
+				const result = await utils.executeCommandOverSSH(command, config);
 
 				if (typeof result.code === 'number' && result.code !== 0) {
 					throw new Error(
@@ -314,50 +308,52 @@ module.exports = class Worker {
 				max_tries: 30,
 				interval: 5000,
 				throw_original: true,
-			})
+			},
+		);
 	}
 
-	async executeCommandInWorkerHost (command){
+	async executeCommandInWorkerHost(command) {
 		let config = {};
 		const result = await utils.executeCommandOverSSH(
 			`${this.sshPrefix}${command}`,
 			{
 				host: this.workerHost,
 				port: this.workerPort,
-				username: this.workerUser
-			}
+				username: this.workerUser,
+			},
 		);
-	
+
 		return result.stdout;
 	}
 
 	// executes command in the worker container
-	async executeCommandInWorker(
-		command,
-	) {
+	async executeCommandInWorker(command) {
 		return retry(
 			async () => {
-				let containerId = await this.executeCommandInWorkerHost(`balena ps | grep worker | awk '{print $1}'`);
-				let result = await this.executeCommandInWorkerHost(`balena exec ${containerId} ${command}`);
-				return result
+				let containerId = await this.executeCommandInWorkerHost(
+					`balena ps | grep worker | awk '{print $1}'`,
+				);
+				let result = await this.executeCommandInWorkerHost(
+					`balena exec ${containerId} ${command}`,
+				);
+				return result;
 			},
 			{
 				max_tries: 10,
 				interval: 1000,
 				throw_original: true,
-			})
+			},
+		);
 	}
 
 	// creates a tunnel a specified DUT port
 	// In the case of a virtual worker, can we map the qemu devices ports directly, without this???
-	async createTunneltoDUT(
-		target,
-		dutPort,
-		workerPort
-	) {
-		let ip =  await this.getDutIp(target);
+	async createTunneltoDUT(target, dutPort, workerPort) {
+		let ip = await this.getDutIp(target);
 		//get containerID of the worker container on the testbot - we must do socat from inside the worker container
-		let containerId = await this.executeCommandInWorkerHost(`balena ps | grep worker | awk '{print $1}'`);
+		let containerId = await this.executeCommandInWorkerHost(
+			`balena ps | grep worker | awk '{print $1}'`,
+		);
 		let argsWorker = [];
 		argsWorker = argsWorker.concat([
 			`${this.workerUser}@${this.workerHost}`,
@@ -371,11 +367,8 @@ module.exports = class Worker {
 			`UserKnownHostsFile=/dev/null`,
 		]);
 
-		if(this.sshPrefix != ''){
-			argsWorker = argsWorker.concat([
-				`host`,
-				this.uuid
-			])
+		if (this.sshPrefix !== '') {
+			argsWorker = argsWorker.concat([`host`, this.uuid]);
 		}
 
 		argsWorker = argsWorker.concat([
@@ -383,63 +376,69 @@ module.exports = class Worker {
 			`exec`,
 			containerId,
 			`socat`,
-			`tcp-listen:${workerPort},reuseaddr,fork "system:ssh ${ip} -p 22222 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${this.dutSshKey} /usr/bin/nc localhost ${dutPort}"`
+			`tcp-listen:${workerPort},reuseaddr,fork "system:ssh ${ip} -p 22222 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${this.dutSshKey} /usr/bin/nc localhost ${dutPort}"`,
 		]);
 
 		let tunnelProWorker = spawn(`ssh`, argsWorker);
 
-		// setup a listener from this host to worker must be a sub process... 
-		// we must give map the same port on this host and the DUT - so the cli can use it 
+		// setup a listener from this host to worker must be a sub process...
+		// we must give map the same port on this host and the DUT - so the cli can use it
 		// this will be torn down at the end of the tests when the core is destroyed
 		let argsClient = [
 			`tcp-listen:${dutPort},reuseaddr,fork`,
-			`system:ssh ${this.workerUser}@${this.workerHost} -p ${this.workerPort} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${this.sshKey} ${this.sshPrefix}/usr/bin/nc localhost ${workerPort}`
+			`system:ssh ${this.workerUser}@${this.workerHost} -p ${this.workerPort} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${this.sshKey} ${this.sshPrefix}/usr/bin/nc localhost ${workerPort}`,
 		];
 
 		let tunnelProcClient = spawn(`socat`, argsClient);
 	}
 
 	// create tunnels to relevant DUT ports to we can access them remotely
-	async createSSHTunnels(target){
-		if(!this.url.includes(`localhost`)){
+	async createSSHTunnels(target) {
+		if (!this.url.includes(`localhost`)) {
 			const DUT_PORTS = [
 				48484, // supervisor
 				22222, // ssh
-				2375 // engine
-			]
+				2375, // engine
+			];
 			let workerPort = 8888;
-			for(let port of DUT_PORTS){
-				console.log(`creating tunnel to dut port ${port}...`)
-				await this.createTunneltoDUT(
-					target,
-					port,
-					workerPort
-				)
+			for (let port of DUT_PORTS) {
+				console.log(`creating tunnel to dut port ${port}...`);
+				await this.createTunneltoDUT(target, port, workerPort);
 				workerPort = workerPort + 1;
 			}
-		} 
+		}
 	}
 
-    // sends file over rsync
-	async sendFile(filePath, destination, target){
-		if (target === 'worker'){
-			let containerId = await this.executeCommandInWorkerHost(`balena ps | grep worker | awk '{print $1}'`);
+	// sends file over rsync
+	async sendFile(filePath, destination, target) {
+		if (target === 'worker') {
+			let containerId = await this.executeCommandInWorkerHost(
+				`balena ps | grep worker | awk '{print $1}'`,
+			);
 			// todo : replace with npm package
-			await exec(`rsync -av -e "ssh ${this.workerUser}@${this.workerHost} -p ${this.workerPort} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -q ${this.sshPrefix}balena exec -i" ${filePath} ${containerId}:${destination}`);
+			await exec(
+				`rsync -av -e "ssh ${this.workerUser}@${this.workerHost} -p ${this.workerPort} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -q ${this.sshPrefix}balena exec -i" ${filePath} ${containerId}:${destination}`,
+			);
 		} else {
 			let ip = await this.ip(target);
-			await exec(`rsync -av -e "ssh -p 22222 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -q -i ${this.sshKey}" ${filePath} root@${ip}:${destination}`);
+			await exec(
+				`rsync -av -e "ssh -p 22222 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -q -i ${this.sshKey}" ${filePath} root@${ip}:${destination}`,
+			);
 		}
 	}
 
 	// add ssh key to the worker, so it cas ssh into prod DUT's
-	async addSSHKey(keyPath){
-		if(!this.url.includes(`localhost`)){
+	async addSSHKey(keyPath) {
+		if (!this.url.includes(`localhost`)) {
 			console.log(`Adding dut ssh key to worker...`);
 			const SSH_KEY_PATH = '/tmp/';
 			this.dutSshKey = `${SSH_KEY_PATH}${path.basename(keyPath)}`;
 			await this.sendFile(keyPath, SSH_KEY_PATH, 'worker');
-			await this.sendFile(keyPath, `${SSH_KEY_PATH}${path.basename(keyPath)}.pub`, 'worker');
+			await this.sendFile(
+				keyPath,
+				`${SSH_KEY_PATH}${path.basename(keyPath)}.pub`,
+				'worker',
+			);
 			console.log(`ssh key added!`);
 		}
 	}
@@ -459,9 +458,7 @@ module.exports = class Worker {
 		await retry(
 			async () => {
 				// if virtualised worker, push directly wo the DUT
-				await exec(
-					`balena push ${ip} --source ${source} --nolive --detached`
-				);
+				await exec(`balena push ${ip} --source ${source} --nolive --detached`);
 			},
 			{
 				max_tries: 10,
@@ -501,7 +498,9 @@ module.exports = class Worker {
 		});
 
 		const stdout = await this.executeCommandInHostOS(
-			`balena exec ${state.services[containerName]} ${command instanceof Array ? command.join(' ') : command}`,
+			`balena exec ${state.services[containerName]} ${
+				command instanceof Array ? command.join(' ') : command
+			}`,
 			target,
 		);
 		return stdout;
