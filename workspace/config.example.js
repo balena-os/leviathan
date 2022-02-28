@@ -1,12 +1,16 @@
-// Check Config.js reference for all documentation on config.js
+// Config.js examples
+
+// Check Config.js reference for all documentation on config.js files
 // https://balena-os.github.io/leviathan/pages/Getting-Started/config-reference.html
 
-// Use the following config to run the e2e tests. Further commented configs c
+// Use the following config to run the e2e tests with some customizations
+
 module.exports = [
 	{
 		// Device under test (DUT) name goes here
 		deviceType: "raspberrypi3",
-		// SUITE NAME GOES HERE
+
+		// Suite name goes here
 		suite: `${__dirname}/../suites/e2e`,
 		config: {
 
@@ -14,24 +18,23 @@ module.exports = [
 			networkWired: false,
 			networkWireless: true,
 
-			// balenaOS version that is downloaded using fetchOS helper. Default: latest
+			// For tests that need a specific balenaOS version to be downloaded. Default: latest
 			downloadVersion: 'latest',
 
 			// Needed the provision the DUT to a balenaCloud fleet
-			balenaApiKey: process.env.BALENA_CLOUD_API_KEY,
+			balenaApiKey: process.env.BALENACLOUD_API_KEY,
 			balenaApiUrl: 'balena-cloud.com',
-			organization: process.env.BALENA_CLOUD_ORG,
+			organization: 'BALENACLOUD_ORG_GOES_HERE',
 		},
 
-		// If you don't want to upload an image, set the image property to false
-		// To run the e2e test suite, you won't need to upload an image
-		image: false,
+		// Path to the gzipped image to be tested goes here. This image is used to provision the DUT
+		image: `${__dirname}/balena.img.gz`,
 
 		// Worker configuration: Pointing to a Fleet
 		// https://balena-os.github.io/leviathan/pages/Getting-Started/config-reference.html#different-workers-configurations-available
 		workers: {
 			balenaApplication: 'testbot-personal',
-			apiKey: process.env.BALENA_CLOUD_API_KEY
+			apiKey: process.env.BALENACLOUD_API_KEY
 		}
 	},
 	// 
@@ -43,14 +46,13 @@ module.exports = [
 	// 		networkWireless: true,
 	// 		balenaApiKey: process.env.BALENACLOUD_API_KEY,
 	// 		balenaApiUrl: 'balena-cloud.com',
-	// 		organization: process.env.BALENACLOUD_ORG
+	// 		organization: 'BALENACLOUD_ORG_GOES_HERE'
 	// 	},
-	// 	// balenaOS image that is uploaded to the testbot
 	// 	image: `${__dirname}/balena.img.gz`,
 	// 	// https://balena-os.github.io/leviathan/pages/Getting-Started/config-reference.html#different-workers-configurations-available
 	// 	workers: {
 	// 		balenaApplication: 'testbot-personal',
-	// 		apiKey: process.env.BALENA_CLOUD_API_KEY
+	// 		apiKey: process.env.BALENACLOUD_API_KEY
 	// 	}
 	// },
 	// 
@@ -63,9 +65,8 @@ module.exports = [
 	// 		networkWireless: true,
 	// 		balenaApiKey: process.env.BALENACLOUD_API_KEY,
 	// 		balenaApiUrl: 'balena-cloud.com',
-	// 		organization: process.env.BALENACLOUD_ORG
+	// 		organization: 'BALENACLOUD_ORG_GOES_HERE'
 	// 	},
-	// 	// balenaOS image that is uploaded to the testbot
 	// 	image: `${__dirname}/balena.img.gz`,
 	// 	// Worker configuration: Public URL's
 	// 	// https://balena-os.github.io/leviathan/pages/Getting-Started/config-reference.html#different-workers-configurations-available
@@ -81,7 +82,7 @@ module.exports = [
 	// 		networkWireless: true,
 	// 		balenaApiKey: process.env.BALENACLOUD_API_KEY,
 	// 		balenaApiUrl: 'balena-cloud.com',
-	// 		organization: process.env.BALENACLOUD_ORG
+	// 		organization: 'BALENACLOUD_ORG_GOES_HERE'
 	// 	},
 	// 	// balenaOS image that is uploaded to the testbot
 	// 	image: `${__dirname}/balena.img.gz`,

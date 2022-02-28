@@ -69,15 +69,18 @@
 				<p><a href="https://github.com/balena-io/leviathan/issues"><img src="https://img.shields.io/github/issues/balena-io/leviathan.svg" alt="GitHub Issues"></a>
 					<a href="https://github.com/balena-io/leviathan/pulls"><img src="https://img.shields.io/github/issues-pr/balena-io/leviathan.svg" alt="GitHub pull requests"></a>
 					<a href="https://nodejs.org/download/release/v12.0.0/"><img src="https://img.shields.io/badge/node-v12.0.0-green.svg" alt="node"></a>
-				<a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/badge/license-APACHE%202.0-blue.svg" alt="License"></a></p>
-				<p><a href="https://dashboard.balena-cloud.com/deploy?repoUrl=https://github.com/balena-os/leviathan"><img src="https://www.balena.io/deploy.svg" alt="balena deploy button"></a></p>
-				<blockquote>
-					<p>A distributed testing framework for hardware</p>
-				</blockquote>
+				<a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/badge/license-APACHE%202.0-blue.svg" alt="License"></a>  <a href="https://dashboard.balena-cloud.com/deploy?repoUrl=https://github.com/balena-os/leviathan"><img src="https://www.balena.io/deploy.svg" alt="balena deploy button"></a></p>
+				<p>Leviathan can be used to automate, test and control real/virtual devices in production or controlled environments. What can you do:</p>
+				<ol>
+					<li>Stress testing the provisioning process for reliablity, performance &amp; fault tolerance.</li>
+					<li>Testing new balenaOS, balenaEngine and balena supervisor on different board revisions, prod/staging environements for managed and unmanaged scenarios.</li>
+					<li>Automate release deployment for balenaCloud fleets by testing codebase on real/virtual devices under test.</li>
+					<li>Automate support for new modems, sensors, components and eventually new boards.</li>
+				</ol>
 				<a href="#getting-started" id="getting-started" style="color: inherit; text-decoration: none;">
 					<h2>Getting Started</h2>
 				</a>
-				<p>Leviathan allows for running tests either on a device connected to and controlled by a testbot rig, or on a virtualized QEMU worker. Follow the <a href="https://balena-os.github.io/leviathan/pages/Getting-Started/quickstart.html">quickstart</a> guide to start your first test. </p>
+				<p>Leviathan allows for running tests on a device controlled by a worker. A worker is a component on which your tests actually runs. The worker can be either real hardware or a virtualised environment. Leviathan is designed to work with multiple workers. At the moment, leviathan supports <a href="https://balena-os.github.io/leviathan/pages/Getting-Started/quickstart/quickstart-testbot.html">testbot</a> and <a href="https://balena-os.github.io/leviathan/pages/Getting-Started/quickstart/quickstart-qemu.html">qemu</a> workers. Learn more about <a href="https://balena-os.github.io/leviathan/pages/Getting-Started/learn-more.html">Leviathan</a>.</p>
 				<a href="#clone-the-repository" id="clone-the-repository" style="color: inherit; text-decoration: none;">
 					<h3>Clone the repository</h3>
 				</a>
@@ -85,8 +88,8 @@
 					<li>Clone this repository with <code>git clone --recursive</code> or</li>
 					<li>Run <code>git clone</code> and then <code>git submodule update --init --recursive</code> to install submodules.</li>
 				</ul>
-				<a href="#prerequisites-needed" id="prerequisites-needed" style="color: inherit; text-decoration: none;">
-					<h3>Prerequisites needed</h3>
+				<a href="#prerequisites" id="prerequisites" style="color: inherit; text-decoration: none;">
+					<h3>Prerequisites</h3>
 				</a>
 				<ul>
 					<li>Install Docker, node and npm in your system. We recommend installing <a href="https://github.com/nvm-sh/nvm#install--update-script">LTS versions from NVM</a>.</li>
@@ -95,68 +98,19 @@
 				<a href="#worker-setup" id="worker-setup" style="color: inherit; text-decoration: none;">
 					<h3>Worker setup</h3>
 				</a>
-				<p>A worker is a component on which your tests actually runs. It can be both real hardware or virtualised environments. Leviathan is designed to work with multiple workers. Following are detailed instructions on how to setup each type of worker:</p>
-				<a href="#testbot-setup" id="testbot-setup" style="color: inherit; text-decoration: none;">
-					<h4>Testbot setup</h4>
-				</a>
-				<p>Start with building your standalone testbot by <a href="https://github.com/balena-io-hardware/testbot-hardware/blob/master/documentation/getting-started.md#quick-start-guide-for-testbot">following the guide</a>.</p>
-				<a href="#qemu" id="qemu" style="color: inherit; text-decoration: none;">
-					<h4>QEMU</h4>
-				</a>
-				<p>Run <code>make local</code> to build the core and worker services and run the worker using docker-compose.
-				Worker configuration variables can be specified in <code>docker-compose.local.yml</code>, under <code>environment</code>. The default configuration should suffice in most cases.</p>
-				<table>
-					<thead>
-						<tr>
-							<th>Variable</th>
-							<th>Description</th>
-						</tr>
-					</thead>
-					<tbody><tr>
-							<td>QEMU_ARCH</td>
-							<td>Architecture to virtualize (default: x86_64)</td>
-						</tr>
-						<tr>
-							<td>QEMU_CPUS</td>
-							<td>Number of CPUs to virtualize (default: 4)</td>
-						</tr>
-						<tr>
-							<td>QEMU_MEMORY</td>
-							<td>Amount of memory to virtualize (default: 2G)</td>
-						</tr>
-						<tr>
-							<td>QEMU_BRIDGE_NAME</td>
-							<td>Name of bridge to use for networking (default: br0)</td>
-						</tr>
-						<tr>
-							<td>QEMU_BRIDGE_ADDRESS</td>
-							<td>IP address to assign to bridge</td>
-						</tr>
-						<tr>
-							<td>QEMU_DHCP_RANGE</td>
-							<td>Range of DHCP addresses to hand out to workers</td>
-						</tr>
-				</tbody></table>
-				<a href="#configuration" id="configuration" style="color: inherit; text-decoration: none;">
-					<h3>Configuration</h3>
-				</a>
-				<p>To run the tests, you need to specify the configuration of the worker.</p>
-				<ul>
-					<li>Create your test configuration by creating a <code>config.json</code> file using the <code>config.example.js</code> file in the workspace directory. Read the <a href="https://balena-os.github.io/leviathan/pages/Getting-Started/config-reference.html">config.js reference</a> to learn more about config.js properteries</li>
-				</ul>
-				<a href="#running-tests" id="running-tests" style="color: inherit; text-decoration: none;">
-					<h3>Running tests</h3>
-				</a>
-				<p>Run the tests by navigating to the project directory and running:</p>
-				<pre><code class="language-bash"><span style="color: #002339">make </span><span style="color: #1AB394">test</span>
-</code></pre>
-				<p>On first run, it will build the client (one-time process) and start the tests. </p>
+				<p>Leviathan allows for running tests on a device under test (DUT) connected to and controlled by either a testbot worker, or on a virtualized device using the QEMU worker. Check out the following getting started guides to setup and run each type of worker.</p>
+				<ol>
+					<li><a href="https://balena-os.github.io/leviathan/pages/Getting-Started/quickstart/quickstart-testbot.html">Testbot worker</a></li>
+					<li><a href="https://balena-os.github.io/leviathan/pages/Getting-Started/quickstart/quickstart-qemu.html">QEMU worker</a></li>
+				</ol>
 				<a href="#instructions-for-rig-owners" id="instructions-for-rig-owners" style="color: inherit; text-decoration: none;">
 					<h2>Instructions for rig-owners</h2>
 				</a>
-				<p>To push a new release to balenaCloud, run <code>npm install</code> and then push to the balenaCloud application.</p>
-				<pre><code class="language-bash"><span style="color: #002339">balena push </span><span style="color: #7B30D0">&lt;</span><span style="color: #002339">appname</span><span style="color: #7B30D0">&gt;</span>
+				<p>Leviathan is made up of a client and worker. The client is the test runner while the worker is where tests get executed. For testbot workers, the worker component exists on the testbot device. The testbot devices are part of a <a href="https://balena.io">balenaCloud</a> fleet. In order to update the worker component for testbot workers, you need to <a href="https://www.balena.io/docs/learn/deploy/deployment/">push a new release</a> to the testbot fleet. </p>
+				<p>To push a new release of leviathan to balenaCloud, use the following command:</p>
+				<pre><code class="language-bash"><span style="color: #002339">balena push </span><span style="color: #7B30D0">&lt;</span><span style="color: #002339">fleetName</span><span style="color: #7B30D0">&gt;</span>
 </code></pre>
+				<p>The <code>&lt;fleetName&gt;</code> is the name of the fleet you intend to push a new version of leviathan to. Keep in mind, the client and the test that run are indenpendent of the worker. Hence, updates to the client or the tests don&#39;t need to be pushed to the balenaCloud fleet. In order to change the worker component, you need to push a new release to the balenaCloud fleet.</p>
 				<a href="#documentation-for-leviathan-helpers" id="documentation-for-leviathan-helpers" style="color: inherit; text-decoration: none;">
 					<h2>Documentation for Leviathan Helpers</h2>
 				</a>
@@ -171,13 +125,6 @@
 					<h2>Support</h2>
 				</a>
 				<p>If you&#39;re having any problem, please <a href="https://github.com/balena-io/leviathan/issues/new">raise an issue</a> on GitHub and the balena team will be happy to help.</p>
-				<a href="#contribute" id="contribute" style="color: inherit; text-decoration: none;">
-					<h2>Contribute</h2>
-				</a>
-				<ul>
-					<li>Issue Tracker: <a href="https://github.com/balena-io/leviathan/issues">github.com/balena-io/leviathan/issues</a></li>
-					<li>Source Code: <a href="https://github.com/balena-io/leviathan">github.com/balena-io/leviathan</a></li>
-				</ul>
 				<a href="#license" id="license" style="color: inherit; text-decoration: none;">
 					<h2>License</h2>
 				</a>
@@ -190,7 +137,7 @@
 					<li class="label pp-nav pp-group">
 						<span>Getting-<wbr><wbr>Started</span>
 					</li>
-					<li class=" pp-nav pp-page">
+					<li class=" pp-nav pp-page pp-parent">
 						<a href="pages/Getting-Started/quickstart.html">Quickstart</a>
 					</li>
 					<li class=" pp-nav pp-page">
@@ -230,7 +177,7 @@
 						<a href="modules/State.html">State</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/Teardown.html">Teardown</a>
+						<a href="modules/TaskQueue.html">Task<wbr>Queue</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/Test.html">Test</a>

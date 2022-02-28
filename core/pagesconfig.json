@@ -5,7 +5,17 @@
             "pages": [
                 {
                     "title": "Quickstart",
-                    "source": "../documentation/quickstart.md"
+                    "source": "../documentation/quickstart.md",
+                    "children": [
+                        {
+                            "title": "Testbot worker",
+                            "source": "../documentation/quickstart-testbot.md"
+                        },
+                        {
+                            "title": "QEMU worker",
+                            "source": "../documentation/quickstart-qemu.md"
+                        }
+                    ]
                 },
                 {
                     "title": "Config.js Reference",
