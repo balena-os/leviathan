@@ -3,6 +3,10 @@ import { BalenaCloudInteractor } from '../lib/balena';
 
 process.env.NODE_CONFIG_DIR = `${__dirname}/../config`;
 const config = require('config');
+const coreHost = config.core.host;
+const corePort = config.core.port;
+const coreUrl = `http://${coreHost}:${corePort}`;
+
 
 const ajv = new (require('ajv'))({ allErrors: true });
 const { getSdk } = require('balena-sdk');
@@ -124,7 +128,7 @@ class NonInteractiveState {
 			return;
 		}
 
-		const dutLogUrl = `${workerData.workerUrl}/reports/dut-serial.txt`;
+		const dutLogUrl = `${workerData.workerUrl}/dut/serial`;
 		console.log(`Downloading DUT serial log with ${dutLogUrl}`);
 		const downloadLog = request
 			.get(dutLogUrl)
@@ -136,7 +140,7 @@ class NonInteractiveState {
 		let downloadLogDone = new Promise((resolve) =>
 			downloadLog.on('end', resolve).on('error', resolve),
 		);
-		const dutArtifactUrl = `${workerData.workerUrl}/artifacts`;
+		const dutArtifactUrl = `${coreUrl}/artifacts`;
 		console.log(`Downloading artifacts`);
 		const downloadImages = request
 			.get(dutArtifactUrl)
@@ -148,7 +152,7 @@ class NonInteractiveState {
 		let downloadArtifactDone = new Promise((resolve) =>
 			downloadImages.on('end', resolve).on('error', resolve),
 		);
-		const dutSummaryUrl = `${workerData.workerUrl}/reports/test-summary.json`;
+		const dutSummaryUrl = `${coreUrl}/reports/test-summary.json`;
 		console.log(`Downloading test summary with ${dutSummaryUrl}`);
 		const downloadSummary = request
 			.get(dutSummaryUrl)
