@@ -345,7 +345,7 @@ module.exports = class Worker {
 				(await this.executeCommandInHostOS(
 					'[[ ! -f /tmp/reboot-check ]] && echo pass',
 					target,
-					{ interval: 10000, tries: 10 },
+					{ interval: 10000, tries: 30 },
 				)) === 'pass'
 			);
 		}, false);
