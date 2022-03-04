@@ -16,7 +16,7 @@
 		"test:fast": "npm run build:test && mocha"
 	},
 	"dependencies": {
-		"@balena/testbot": "^1.9.8",
+		"@balena/testbot": "^1.9.10-add-243390-rpi3-889404352b38cb6f5992caa5adff71a7590946bd",
 		"@types/bluebird": "^3.5.25",
 		"@types/config": "0.0.34",
 		"balena-sdk": "^16.12.1",
