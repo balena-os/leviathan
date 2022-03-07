@@ -84,9 +84,7 @@ module.exports = class CLI {
 		);
 		const Inspect = await Container.inspect();
 		const Mount = Inspect.Mounts.find((mount) => {
-			return mount.Name != null
-				? image.includes(mount.Destination)
-				: false 
+			return mount.Name != null ? image.includes(mount.Destination) : false;
 		});
 
 		image = image.replace(Mount.Destination, '');
@@ -99,7 +97,7 @@ module.exports = class CLI {
 		this.logger.log(`Image path: ${join(Mount.Source, image)}`);
 		this.logger.log(`Fleet: ${options.app}`);
 		this.logger.log(`Commit: ${options.commit}`);
-		this.logger.log(`Socket Path: ${socketPath}`)
+		this.logger.log(`Socket Path: ${socketPath}`);
 		await new Promise((resolve, reject) => {
 			const output = [];
 			const child = spawn(

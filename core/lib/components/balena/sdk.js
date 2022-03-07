@@ -9,13 +9,13 @@
  * const Cloud = this.require("components/balena/sdk");
  *
  * this.suite.context.set({
- *	cloud: new Balena(`https://api.balena-cloud.com/`, this.getLogger())
+ *  cloud: new Balena("https://api.balena-cloud.com/", this.getLogger())
  * });
  *
  * // login
  * await this.context
- *	.get()
- *	.cloud.balena.auth.loginWithToken(this.suite.options.balena.apiKey);
+ *  .get()
+ *  .cloud.balena.auth.loginWithToken(this.suite.options.balena.apiKey);
  *
  * // create a balena application
  * await this.context.get().cloud.balena.models.application.create({
@@ -175,9 +175,9 @@ module.exports = class BalenaSDK {
 		const repo = await this.balena.models.application
 			.get(application)
 			.get('slug');
-		const config = await this.balena.models.config.getAll();
+		const balenaConfig = await this.balena.models.config.getAll();
 		const user = await this.balena.auth.whoami();
-		return `${user}@${config.gitServerUrl}:${repo}.git`;
+		return `${user}@${balenaConfig.gitServerUrl}:${repo}.git`;
 	}
 
 	loginWithToken(apiKey) {
@@ -202,7 +202,7 @@ module.exports = class BalenaSDK {
 	 *
 	 * @category helper
 	 */
-	async createApplication(name, deviceType, config) {
+	async createApplication(name, deviceType, appConfig) {
 		this.logger.log(
 			`Creating application: ${name} with device type ${deviceType}`,
 		);
@@ -212,14 +212,14 @@ module.exports = class BalenaSDK {
 			deviceType,
 		});
 
-		if (config.delta) {
+		if (appConfig.delta) {
 			this.logger.log(
-				config.delta === '1' ? 'Enabling delta' : 'Disabling delta',
+				appConfig.delta === '1' ? 'Enabling delta' : 'Disabling delta',
 			);
 			await this.balena.setAppConfigVariable(
 				name,
 				'RESIN_SUPERVISOR_DELTA',
-				config.delta,
+				appConfig.delta,
 			);
 		}
 	}
@@ -486,7 +486,9 @@ module.exports = class BalenaSDK {
 	async pushReleaseToApp(application, directory) {
 		await exec(`balena push ${application} --source ${directory}`);
 		// check new commit of app
-		let commit = await this.balena.models.application.getTargetReleaseHash(application);
+		let commit = await this.balena.models.application.getTargetReleaseHash(
+			application,
+		);
 		return commit;
 	}
 
@@ -495,12 +497,12 @@ module.exports = class BalenaSDK {
 	 * @param {string} uuid The UUID of the device
 	 * @param {Array[string]} services An array of the service names
 	 * @param {string} commit The release commit hash that services should be on
-	 * @param {number} __times (optional) The number of attemps to retry. Retries are spaced 30s apart
+	 * @param {number} retries (optional) The number of attempts to retry. Retries are spaced 30s apart
 	 * @returns {boolean} returns true if all services in the release commit are running on the device
 	 *
 	 * @category helper
 	 */
-	async waitUntilServicesRunning(uuid, services, commit, __times = 50) {
+	async waitUntilServicesRunning(uuid, services, commit, retries = 50) {
 		await utils.waitUntil(
 			async () => {
 				let deviceServices =
@@ -515,7 +517,7 @@ module.exports = class BalenaSDK {
 				return running;
 			},
 			false,
-			__times,
+			retries,
 		);
 	}
 
@@ -559,7 +561,8 @@ module.exports = class BalenaSDK {
 		});
 
 		let startIndex = _start != null ? logsMessages.indexOf(_start) : 0;
-		let endIndex = _end != null ? logsMessages.indexOf(_end) : logsMessages.length;
+		let endIndex =
+			_end != null ? logsMessages.indexOf(_end) : logsMessages.length;
 		let slicedLogs = logsMessages.slice(startIndex, endIndex);
 
 		let pass = false;
@@ -608,10 +611,11 @@ module.exports = class BalenaSDK {
 	 * @category helper
 	 */
 	async fetchOS(versionOrRange = 'latest', deviceType, osType = 'default') {
-
 		// normalize the version string/range, supports 'latest', 'recommended', etc
 		let version = await this.balena.models.os.getMaxSatisfyingVersion(
-			deviceType, versionOrRange, osType
+			deviceType,
+			versionOrRange,
+			osType,
 		);
 
 		// variant is deprecated in recent balenaOS releases but
@@ -643,19 +647,24 @@ module.exports = class BalenaSDK {
 							reject(`Image download failed: ${error}`);
 						}
 						// Shows progress of image download
-						let progress = 0
-						stream.on('progress', data => {
+						let progress = 0;
+						stream.on('progress', (data) => {
 							if (data.percentage >= progress + 10) {
-								console.log(`Downloading balenaOS image: ${toInteger(data.percentage) + '%'}`);
-								progress = data.percentage
+								console.log(
+									`Downloading balenaOS image: ${
+										toInteger(data.percentage) + '%'
+									}`,
+								);
+								progress = data.percentage;
 							}
-						})
+						});
 						stream.pipe(fs.createWriteStream(path));
 						stream.on('finish', () => {
 							console.log(`Download Successful: ${path}`);
 							resolve(path);
 						});
-					});
+					},
+				);
 			});
 		};
 		return retry(downloadLatestOS, { max_tries: 3, interval: 500 });

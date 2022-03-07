@@ -39,15 +39,20 @@ const Bluebird = require('bluebird');
 const retry = require('bluebird-retry');
 const utils = require('../common/utils');
 const archiver = require('../common/archiver');
-const config = require('config');
+// const config = require('config');
 const isNumber = require('lodash/isNumber');
 const { fs } = require('mz');
+const path = require('path');
 const once = require('lodash/once');
 const pipeline = Bluebird.promisify(require('stream').pipeline);
 const request = require('request');
 const rp = require('request-promise');
 
 const exec = Bluebird.promisify(require('child_process').exec);
+const spawn = require('child_process').spawn;
+const { createGzip, createGunzip } = require('zlib');
+const tar = require('tar-fs');
+const { getSdk } = require('balena-sdk');
 
 function id() {
 	return `${Math.random().toString(36).substring(2, 10)}`;
@@ -57,10 +62,32 @@ module.exports = class Worker {
 	constructor(
 		deviceType,
 		logger = { log: console.log, status: console.log, info: console.log },
+		url,
+		username,
+		sshKey,
 	) {
 		this.deviceType = deviceType;
-		this.url = `${config.get('worker.url')}:${config.get('worker.port')}`;
+		this.url = url;
 		this.logger = logger;
+		this.username = username;
+		this.sshKey = sshKey;
+		this.dutSshKey = `/tmp`;
+		this.logger = logger;
+		this.workerHost = new URL(this.url).hostname;
+		this.workerPort = '22222';
+		this.workerUser = 'root';
+		this.sshPrefix = '';
+		this.uuid = '';
+		if (this.url.includes(`balena-devices.com`)) {
+			// worker is a testbot connected to balena cloud - we ssh into it via the vpn
+			this.uuid = this.url.match(
+				/(?<=https:\/\/)(.*)(?=.balena-devices.com)/,
+			)[1];
+			this.workerHost = `ssh.balena-devices.com`;
+			this.workerUser = this.username;
+			this.workerPort = '22';
+			this.sshPrefix = `host ${this.uuid} `;
+		}
 	}
 
 	/**
@@ -73,57 +100,66 @@ module.exports = class Worker {
 	async flash(imagePath) {
 		if (process.env.DEBUG_KEEP_IMG) {
 			this.logger.log('[DEBUG] Skip flashing');
-			return "Skipping flashing"
+			return 'Skipping flashing';
 		} else {
-			this.logger.log('Preparing to flash');
+			let attempt = 0;
+			await retry(async () => {
+				attempt++;
+				this.logger.log(`Preparing to flash, attempt ${attempt}...`);
 
-			await new Promise(async (resolve, reject) => {
-				const req = rp.post({ uri: `${this.url}/dut/flash` });
+				await new Promise(async (resolve, reject) => {
+					const req = rp.post({ uri: `${this.url}/dut/flash` });
 
-				req.catch((error) => {
-					reject(error);
-				});
-				req.finally(() => {
-					if (lastStatus !== 'done') {
-						reject(new Error('Unexpected end of TCP connection'));
-					}
-
-					resolve();
-				});
-
-				let lastStatus;
-				req.on('data', (data) => {
-					const computedLine = RegExp('(.+?): (.*)').exec(data.toString());
-
-					if (computedLine) {
-						if (computedLine[1] === 'error') {
-							req.cancel();
-							reject(new Error(computedLine[2]));
+					req.catch((error) => {
+						reject(error);
+					});
+					req.finally(() => {
+						if (lastStatus !== 'done') {
+							reject(new Error('Unexpected end of TCP connection'));
 						}
 
-						if (computedLine[1] === 'progress') {
-							once(() => {
-								this.logger.log('Flashing');
-							});
-							// Hide any errors as the lines we get can be half written
-							const state = JSON.parse(computedLine[2]);
-							if (state != null && isNumber(state.percentage)) {
-								this.logger.status({
-									message: 'Flashing',
-									percentage: state.percentage,
+						resolve();
+					});
+
+					let lastStatus;
+					req.on('data', (data) => {
+						const computedLine = RegExp('(.+?): (.*)').exec(data.toString());
+
+						if (computedLine) {
+							if (computedLine[1] === 'error') {
+								req.cancel();
+								reject(new Error(computedLine[2]));
+							}
+
+							if (computedLine[1] === 'progress') {
+								once(() => {
+									this.logger.log('Flashing');
 								});
+								// Hide any errors as the lines we get can be half written
+								const state = JSON.parse(computedLine[2]);
+								if (state != null && isNumber(state.percentage)) {
+									this.logger.status({
+										message: 'Flashing',
+										percentage: state.percentage,
+									});
+								}
+							}
+
+							if (computedLine[1] === 'status') {
+								lastStatus = computedLine[2];
 							}
 						}
+					});
 
-						if (computedLine[1] === 'status') {
-							lastStatus = computedLine[2];
-						}
-					}
+					pipeline(fs.createReadStream(imagePath), createGzip({ level: 6 }), req);
 				});
-
-				pipeline(fs.createReadStream(imagePath), req);
-			});
-			this.logger.log('Flash completed');
+				this.logger.log('Flash completed');
+			},
+			{
+				max_tries: 5,
+				interval: 1000* 5,
+				throw_original: true,
+			})
 		}
 	}
 
@@ -167,29 +203,34 @@ module.exports = class Worker {
 		return rp.post({ uri: `${this.url}/proxy`, body: proxy, json: true });
 	}
 
-	ip(
+	async getDutIp(
 		target,
 		timeout = {
 			interval: 10000,
 			tries: 60,
 		},
 	) {
-		return /.*\.local/.test(target)
-			? retry(
-					() => {
-						return rp.get({
-							uri: `${this.url}/dut/ip`,
-							body: { target },
-							json: true,
-						});
-					},
-					{
-						max_tries: timeout.tries,
-						interval: timeout.interval,
-						throw_original: true,
-					},
-			  )
-			: target;
+		return retry(
+			() => {
+				return rp.get({
+					uri: `${this.url}/dut/ip`,
+					body: { target },
+					json: true,
+				});
+			},
+			{
+				max_tries: timeout.tries,
+				interval: timeout.interval,
+				throw_original: true,
+			},
+		);
+	}
+
+	ip(target) {
+		// ip of DUT - used to talk to it
+		// if testbot/local testbot, then we dont wan't the ip, as we use SSH tunneling to talk to it - so return 127.0.0.1
+		// if qemu, return the ip - as we talk to the DUT directly
+		return this.url.includes(`localhost`) ? this.getDutIp(target) : `127.0.0.1`;
 	}
 
 	async teardown() {
@@ -200,12 +241,21 @@ module.exports = class Worker {
 		return rp.get({ uri: `${this.url}/contract`, json: true });
 	}
 
-	capture(action) {
+	async capture(action) {
 		switch (action) {
 			case 'start':
 				return rp.post({ uri: `${this.url}/dut/capture`, json: true });
 			case 'stop':
-				return request.get({ uri: `${this.url}/dut/capture` });
+				// have to receive tar.gz and unpack them? then return path to directory for the test to consume
+				let capture = request.get({ uri: `${this.url}/dut/capture` });
+				const line = pipeline(
+					capture,
+					createGunzip(),
+					tar.extract('/tmp/capture'),
+				).catch((error) => {
+					throw error;
+				});
+				await line;
 		}
 	}
 
@@ -231,26 +281,29 @@ module.exports = class Worker {
 	 *
 	 * @category helper
 	 */
-	async executeCommandInHostOS(
-		command,
-		target,
-		timeout = {
-			interval: 10000,
-			tries: 10,
-		},
-	) {
-		const ip = /.*\.local/.test(target) ? await this.ip(target) : target;
+	async executeCommandInHostOS(command, target) {
+		command = command instanceof Array ? command.join(' ') : command;
+		let config = {};
+		// depending on if the target argument is a .local uuid or not, SSH via the proxy or directly
+		if (/.*\.local/.test(target)) {
+			let ip = await this.ip(target);
+			config = {
+				host: ip, // the this.ip() method will return the DUT ip or localhost, depending on if its a virtual worker or not
+				port: '22222',
+				username: 'root',
+			};
+		} else {
+			config = {
+				host: 'ssh.balena-devices.com',
+				port: '22',
+				username: this.username,
+			};
+			command = `host ${target} ${command}`;
+		}
 
 		return retry(
 			async () => {
-				const result = await utils.executeCommandOverSSH(
-					`source /etc/profile ; ${command instanceof Array ? command.join(' ') : command}`,
-					{
-						host: ip,
-						port: '22222',
-						username: 'root',
-					},
-				);
+				const result = await utils.executeCommandOverSSH(command, config);
 
 				if (typeof result.code === 'number' && result.code !== 0) {
 					throw new Error(
@@ -261,11 +314,142 @@ module.exports = class Worker {
 				return result.stdout;
 			},
 			{
-				max_tries: timeout.tries,
-				interval: timeout.interval,
+				max_tries: 30,
+				interval: 5000,
 				throw_original: true,
 			},
 		);
+	}
+
+	async executeCommandInWorkerHost(command) {
+		let config = {};
+		const result = await utils.executeCommandOverSSH(
+			`${this.sshPrefix}${command}`,
+			{
+				host: this.workerHost,
+				port: this.workerPort,
+				username: this.workerUser,
+			},
+		);
+
+		return result.stdout;
+	}
+
+	// executes command in the worker container
+	async executeCommandInWorker(command) {
+		return retry(
+			async () => {
+				let containerId = await this.executeCommandInWorkerHost(
+					`balena ps | grep worker | awk '{print $1}'`,
+				);
+				let result = await this.executeCommandInWorkerHost(
+					`balena exec ${containerId} ${command}`,
+				);
+				return result;
+			},
+			{
+				max_tries: 10,
+				interval: 1000,
+				throw_original: true,
+			},
+		);
+	}
+
+	// creates a tunnel a specified DUT port
+	// In the case of a virtual worker, can we map the qemu devices ports directly, without this???
+	async createTunneltoDUT(target, dutPort, workerPort) {
+		let ip = await this.getDutIp(target);
+		//get containerID of the worker container on the testbot - we must do socat from inside the worker container
+		let containerId = await this.executeCommandInWorkerHost(
+			`balena ps | grep worker | awk '{print $1}'`,
+		);
+		let argsWorker = [];
+		argsWorker = argsWorker.concat([
+			`${this.workerUser}@${this.workerHost}`,
+			`-p`,
+			this.workerPort,
+			`-i`,
+			this.sshKey,
+			`-o`,
+			`StrictHostKeyChecking=no`,
+			`-o`,
+			`UserKnownHostsFile=/dev/null`,
+		]);
+
+		if (this.sshPrefix !== '') {
+			argsWorker = argsWorker.concat([`host`, this.uuid]);
+		}
+
+		argsWorker = argsWorker.concat([
+			`balena`,
+			`exec`,
+			containerId,
+			`socat`,
+			`tcp-listen:${workerPort},reuseaddr,fork "system:ssh ${ip} -p 22222 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${this.dutSshKey} /usr/bin/nc localhost ${dutPort}"`,
+		]);
+
+		let tunnelProWorker = spawn(`ssh`, argsWorker);
+
+		// setup a listener from this host to worker must be a sub process...
+		// we must give map the same port on this host and the DUT - so the cli can use it
+		// this will be torn down at the end of the tests when the core is destroyed
+		let argsClient = [
+			`tcp-listen:${dutPort},reuseaddr,fork`,
+			`system:ssh ${this.workerUser}@${this.workerHost} -p ${this.workerPort} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${this.sshKey} ${this.sshPrefix}/usr/bin/nc localhost ${workerPort}`,
+		];
+
+		let tunnelProcClient = spawn(`socat`, argsClient);
+	}
+
+	// create tunnels to relevant DUT ports to we can access them remotely
+	async createSSHTunnels(target) {
+		if (!this.url.includes(`localhost`)) {
+			const DUT_PORTS = [
+				48484, // supervisor
+				22222, // ssh
+				2375, // engine
+			];
+			let workerPort = 8888;
+			for (let port of DUT_PORTS) {
+				console.log(`creating tunnel to dut port ${port}...`);
+				await this.createTunneltoDUT(target, port, workerPort);
+				workerPort = workerPort + 1;
+			}
+		}
+	}
+
+	// sends file over rsync
+	async sendFile(filePath, destination, target) {
+		if (target === 'worker') {
+			let containerId = await this.executeCommandInWorkerHost(
+				`balena ps | grep worker | awk '{print $1}'`,
+			);
+			// todo : replace with npm package
+			await exec(
+				`rsync -av -e "ssh ${this.workerUser}@${this.workerHost} -p ${this.workerPort} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -q ${this.sshPrefix}balena exec -i" ${filePath} ${containerId}:${destination}`,
+			);
+		} else {
+			let ip = await this.ip(target);
+			await exec(
+				`rsync -av -e "ssh -p 22222 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -q -i ${this.sshKey}" ${filePath} root@${ip}:${destination}`,
+			);
+		}
+	}
+
+	// add ssh key to the worker, so it cas ssh into prod DUT's
+	async addSSHKey(keyPath) {
+		if (!this.url.includes(`localhost`)) {
+			console.log(`Adding dut ssh key to worker...`);
+			const SSH_KEY_PATH = '/tmp/';
+			this.dutSshKey = `${SSH_KEY_PATH}${path.basename(keyPath)}`;
+			await this.sendFile(keyPath, SSH_KEY_PATH, 'worker');
+			await this.sendFile(
+				keyPath,
+				`${SSH_KEY_PATH}${path.basename(keyPath)}.pub`,
+				'worker',
+			);
+			console.log(`ssh key added!`);
+		}
 	}
 
 	/**
@@ -279,11 +463,11 @@ module.exports = class Worker {
 	 * @category helper
 	 */
 	async pushContainerToDUT(target, source, containerName) {
+		let ip = await this.ip(target);
 		await retry(
 			async () => {
-				await exec(
-					`balena push ${target} --source ${source} --nolive --detached`,
-				);
+				// if virtualised worker, push directly wo the DUT
+				await exec(`balena push ${ip} --source ${source} --nolive --detached`);
 			},
 			{
 				max_tries: 10,
@@ -295,7 +479,7 @@ module.exports = class Worker {
 		await utils.waitUntil(async () => {
 			state = await rp({
 				method: 'GET',
-				uri: `http://${target}:48484/v2/containerId`,
+				uri: `http://${ip}:48484/v2/containerId`,
 				json: true,
 			});
 
@@ -314,15 +498,18 @@ module.exports = class Worker {
 	 * @category helper
 	 */
 	async executeCommandInContainer(command, containerName, target) {
+		let ip = await this.ip(target);
 		// get container ID
 		const state = await rp({
 			method: 'GET',
-			uri: `http://${target}:48484/v2/containerId`,
+			uri: `http://${ip}:48484/v2/containerId`,
 			json: true,
 		});
 
 		const stdout = await this.executeCommandInHostOS(
-			`balena exec ${state.services[containerName]} ${command instanceof Array ? command.join(' ') : command}`,
+			`balena exec ${state.services[containerName]} ${
+				command instanceof Array ? command.join(' ') : command
+			}`,
 			target,
 		);
 		return stdout;

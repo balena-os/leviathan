@@ -1,4 +1,5 @@
-FROM balenalib/%%BALENA_ARCH%%-alpine-node:12.19.1-3.12-run-20201211 AS npm-install
+ARG BALENA_ARCH=%%BALENA_ARCH%%
+FROM balenalib/${BALENA_ARCH}-alpine-node:12.19.1-3.12-run-20201211 AS npm-install
 
 ENV npm_config_unsafe_perm true
 
@@ -11,7 +12,7 @@ COPY package*.json ./
 
 RUN npm ci
 
-FROM balenalib/%%BALENA_ARCH%%-alpine:3.12-run-20211030
+FROM balenalib/${BALENA_ARCH}-alpine:3.12-run-20211030
 
 ENV UDEV 1
 ENV DBUS_SYSTEM_BUS_ADDRESS unix:path=/host/run/dbus/system_bus_socket
@@ -23,9 +24,10 @@ RUN apk add --no-cache nodejs~=12.22 \
 		       vim \
 		       rsync \
 		       unzip \
-		       bluez \
 		       skopeo \
-		       openssh-client
+		       openssh-client \
+			   socat \
+			   rsync
 
 WORKDIR /usr/app
 

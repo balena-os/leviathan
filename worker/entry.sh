@@ -1,5 +1,7 @@
 #!/bin/sh
 
+eval $(ssh-agent)
+
 if [ "${WORKER_TYPE}" != "qemu" ]; then
 	exec node ./build/bin
 fi

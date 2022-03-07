@@ -11,7 +11,7 @@ import { manageHandlers } from '../helpers';
 import ScreenCapture from '../helpers/graphics';
 import { promisify } from 'util';
 const execProm = promisify(exec);
-const fp = require('find-free-port');
+import * as fp from 'find-free-port';
 
 Bluebird.config({
 	cancellation: true,
@@ -87,12 +87,18 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 		}
 
 		if (this.qemuOptions.firmware === undefined) {
-			this.qemuOptions.firmware = await this.findUEFIFirmware(this.qemuOptions.architecture);
+			this.qemuOptions.firmware = await this.findUEFIFirmware(
+				this.qemuOptions.architecture,
+			);
 			if (this.qemuOptions.firmware) {
-				console.log('Found UEFI firmware: '
-					+ JSON.stringify(this.qemuOptions.firmware, null, 2));
+				console.log(
+					'Found UEFI firmware: ' +
+						JSON.stringify(this.qemuOptions.firmware, null, 2),
+				);
 			} else {
-				throw new Error('Unable to find UEFI firmware, check that OVMF/AAVMF is installed');
+				throw new Error(
+					'Unable to find UEFI firmware, check that OVMF/AAVMF is installed',
+				);
 			}
 		}
 
@@ -105,7 +111,7 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 	public async diagnostics() {
 		return {
 			// Add diagnostics information to be qeuried as needed
-		}
+		};
 	}
 
 	public async teardown(signal?: NodeJS.Signals): Promise<void> {
@@ -181,9 +187,12 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 		this.activeFlash = undefined;
 	}
 
-	private async findUEFIFirmware(architecture: string)
-		: Promise<undefined | {code: string, vars: string}> {
-		const searchPaths: { [arch: string]: {code: string, vars: string}[] } = {
+	private async findUEFIFirmware(
+		architecture: string,
+	): Promise<undefined | { code: string; vars: string }> {
+		const searchPaths: {
+			[arch: string]: Array<{ code: string; vars: string }>;
+		} = {
 			x86_64: [
 				{
 					// alpine/debian/fedora/ubuntu
@@ -206,9 +215,9 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 					// fedora
 					code: '/usr/share/AAVMF/AAVMF_CODE.fd',
 					vars: '/usr/share/AAVMF/AAVMF_CODE.fd',
-				}
-			]
-		}
+				},
+			],
+		};
 
 		// Promise.any is only available in Node 15+
 		return Bluebird.any(
@@ -218,7 +227,7 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 						return paths;
 					});
 				});
-			})
+			}),
 		);
 	}
 
@@ -308,9 +317,13 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 				'-global',
 				'ICH9-LPC.disable_s3=1',
 				'-drive',
-				`if=pflash,format=raw,unit=0,file=${this.qemuOptions.firmware!.code},readonly=on`,
+				`if=pflash,format=raw,unit=0,file=${
+					this.qemuOptions.firmware!.code
+				},readonly=on`,
 				'-drive',
-				`if=pflash,format=raw,unit=1,file=${this.qemuOptions.firmware!.vars},readonly=on`,
+				`if=pflash,format=raw,unit=1,file=${
+					this.qemuOptions.firmware!.vars
+				},readonly=on`,
 			],
 			aarch64: ['-bios', this.qemuOptions.firmware!.code],
 		};

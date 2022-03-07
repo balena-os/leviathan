@@ -176,8 +176,7 @@ export function resolveLocalTarget(target: string): PromiseLike<string> {
 	});
 }
 
-export async function getRuntimeConfiguration()
-	: Promise<Leviathan.RuntimeConfiguration> {
+export async function getRuntimeConfiguration(): Promise<Leviathan.RuntimeConfiguration> {
 	const runtimeConfiguration: any = config.get('worker.runtimeConfiguration');
 
 	if (

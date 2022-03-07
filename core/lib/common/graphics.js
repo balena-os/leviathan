@@ -129,6 +129,7 @@ module.exports = {
 		for (let i = 0; i < hashA.length; i++) {
 			var n1 = parseInt(hashA[i], 16);
 			var n2 = parseInt(hashB[i], 16);
+			/* tslint:disable:no-bitwise */
 			d += oneBits[n1 ^ n2];
 		}
 		return d;
@@ -138,6 +139,7 @@ module.exports = {
 	blockhash: function (data, bits = 8) {
 		const result = [];
 
+		/* tslint:disable:one-variable-per-declaration */
 		let weightTop, weightBottom, weightLeft, weightRight;
 		let blockTop, blockBottom, blockLeft, blockRight;
 		let yMod, yFrac, yInt;

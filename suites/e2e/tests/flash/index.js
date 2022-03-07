@@ -21,16 +21,14 @@ module.exports = {
 			title: 'Flashing an image',
 			run: async function (test) {
 				try {
-					await this.context.get().worker.off(); // Ensure DUT is off before starting tests
-					await this.context
-						.get()
-						.worker.flash(this.context.get().os.image.path);
+					await this.worker.off(); // Ensure DUT is off before starting tests
+					await this.worker.flash(this.os.image.path);
 				} catch (err) {
 					throw new Error(`Flashing failed with error: ${err}`);
 				}
 				test.true(
 					true,
-					`${this.context.get().os.image.path} should be flashed properly`,
+					`${this.os.image.path} should be flashed properly`,
 				);
 			},
 		},

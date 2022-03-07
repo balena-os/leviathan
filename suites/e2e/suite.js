@@ -14,6 +14,49 @@ const imagefs = require('balena-image-fs');
 const stream = require('stream')
 const pipeline = require('bluebird').promisify(stream.pipeline);
 
+
+// copied from the SV
+// https://github.com/balena-os/balena-supervisor/blob/master/src/config/backends/config-txt.ts
+// TODO: retrieve this from the SDK (requires v16.2.0) or future versions of device contracts
+// https://www.balena.io/docs/reference/sdk/node-sdk/#balena.models.config.getConfigVarSchema
+const supportsBootConfig = (deviceType) => {
+	return (
+		[
+			'fincm3',
+			'rt-rpi-300',
+			'243390-rpi3',
+			'nebra-hnt',
+			'revpi-connect',
+			'revpi-core-3',
+		].includes(deviceType) || deviceType.startsWith('raspberry')
+	);
+};
+
+const enableSerialConsole = async (imagePath) => {
+	const bootConfig = await imagefs.interact(imagePath, 1, async (_fs) => {
+		return util.promisify(_fs.readFile)('/config.txt')
+			.catch((err) => {
+				return undefined;
+			});
+	});
+
+	if (bootConfig) {
+		await imagefs.interact(imagePath, 1, async (_fs) => {
+			const regex = /^enable_uart=.*$/m;
+			const value = 'enable_uart=1';
+
+			console.log(`Setting ${value} in config.txt...`);
+
+			// delete any existing instances before appending to the file
+			const newConfig = bootConfig.toString().replace(regex, '');
+			await util.promisify(_fs.writeFile)(
+				'/config.txt',
+				newConfig.concat(`\n\n${value}\n\n`),
+			);
+		});
+	}
+};
+
 module.exports = {
 	title: 'Testbot Diagnositcs',
 	run: async function (test) {
@@ -29,9 +72,16 @@ module.exports = {
 		this.suite.context.set({
 			utils: this.require('common/utils'),
 			sshKeyPath: join(homedir(), 'id'),
+			sshKeyLabel: this.suite.options.id,
 			sdk: new Balena(this.suite.options.balena.apiUrl, this.getLogger()),
 			link: `${this.suite.options.balenaOS.config.uuid.slice(0, 7)}.local`,
-			worker: new Worker(this.suite.deviceType.slug, this.getLogger()),
+			worker: new Worker(
+				this.suite.deviceType.slug, 
+				this.getLogger(), 
+				this.suite.options.workerUrl, 
+				this.suite.options.balena.organization, 
+				join(homedir(), 'id')
+			)
 		});
 
 		// Network definitions - here we check what network configuration is selected for the DUT for the suite, and add the appropriate configuration options (e.g wifi credentials)
@@ -52,6 +102,8 @@ module.exports = {
 			delete this.suite.options.balenaOS.network.wireless;
 		}
 
+		const keys = await this.utils.createSSHKey(this.sshKeyPath);
+
 		// Create an instance of the balenaOS object, containing information such as device type, and config.json options
 		this.suite.context.set({
 			os: new BalenaOS(
@@ -68,9 +120,7 @@ module.exports = {
 						uuid: this.suite.options.balenaOS.config.uuid,
 						os: {
 							sshKeys: [
-								await this.context
-									.get()
-									.utils.createSSHKey(this.context.get().sshKeyPath),
+								keys.pubKey
 							],
 						},
 						// Set an API endpoint for the HTTPS time sync service.
@@ -90,52 +140,80 @@ module.exports = {
 		// Register a teardown function execute at the end of the test, regardless of a pass or fail
 		this.suite.teardown.register(() => {
 			this.log('Worker teardown');
-			return this.context.get().worker.teardown();
+			return this.worker.teardown();
 		});
 
 		this.log('Setting up worker');
 
 		// Get worker setup info
 		this.suite.context.set({
-			workerContract: await this.context.get().worker.getContract()
+			workerContract: await this.worker.getContract()
 		})
 
 		// Create network AP on testbot
-		await this.context
-			.get()
-			.worker.network(this.suite.options.balenaOS.network);
+		await this.worker.network(this.suite.options.balenaOS.network);
 
 		// Unpack OS image .gz
-		await this.context.get().os.fetch();
+		await this.os.fetch();
 
 		// If this is a flasher image, and we are using qemu, unwrap
-		if (this.suite.deviceType.data.storage.internal && (process.env.WORKER_TYPE === `qemu`)) {
-			const RAW_IMAGE_PATH = `/opt/balena-image-${this.suite.deviceType.slug}.balenaos-img`
-			const OUTPUT_IMG_PATH = '/data/downloads/unwrapped.img'
-			console.log(`Unwrapping file ${this.context.get().os.image.path}`)
-			console.log(`Looking for ${RAW_IMAGE_PATH}`)
+		if (
+			this.suite.deviceType.data.storage.internal &&
+			this.workerContract.workerType === `qemu`
+		) {
+			const RAW_IMAGE_PATH = `/opt/balena-image-${this.suite.deviceType.slug}.balenaos-img`;
+			const OUTPUT_IMG_PATH = '/data/downloads/unwrapped.img';
+			console.log(`Unwrapping file ${this.os.image.path}`);
+			console.log(`Looking for ${RAW_IMAGE_PATH}`);
 			try {
-				await imagefs.interact(this.context.get().os.image.path, 2, async (fsImg) => {
-					await pipeline(
-						fsImg.createReadStream(RAW_IMAGE_PATH),
-						fse.createWriteStream(OUTPUT_IMG_PATH)
-					)
-				})
+				await imagefs.interact(
+					this.os.image.path,
+					2,
+					async (fsImg) => {
+						await pipeline(
+							fsImg.createReadStream(RAW_IMAGE_PATH),
+							fse.createWriteStream(OUTPUT_IMG_PATH),
+						);
+					},
+				);
 
-				this.context.get().os.image.path = OUTPUT_IMG_PATH;
+				this.os.image.path = OUTPUT_IMG_PATH;
 				console.log(`Unwrapped flasher image!`);
 			} catch (e) {
 				// If the outer image doesn't contain an image for installation, ignore the error
 				if (e.code === 'ENOENT') {
-					console.log("Not a flasher image, skipping unwrap");
+					console.log('Not a flasher image, skipping unwrap');
 				} else {
 					throw e;
 				}
 			}
 		}
 
+		if (supportsBootConfig(this.suite.deviceType.slug)) {
+			await enableSerialConsole(this.os.image.path);
+		}
+
+		this.log("Logging into balena with balenaSDK");
+		await this.context
+		  .get()
+		  .sdk.balena.auth.loginWithToken(this.suite.options.balena.apiKey);
+		await this.context
+		.get()
+		.sdk.balena.models.key.create(
+			this.sshKeyLabel,
+			keys.pubKey
+		);
+		this.suite.teardown.register(() => {
+			return Promise.resolve(
+				this.context
+				.get()
+				.sdk.removeSSHKey(this.sshKeyLabel)
+			);
+		});
+
+
 		// Configure OS image
-		await this.context.get().os.configure();
+		await this.os.configure();
 
 		// Retrieving journalctl logs - Uncomment if needed for debugging
 		// Overkill quite frankly, since we aren't testing the OS and if testbot fails e2e

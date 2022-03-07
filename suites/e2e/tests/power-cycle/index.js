@@ -32,11 +32,11 @@ module.exports = {
 				},
 			},
 			run: async function (test) {
-				await this.context.get().worker.on();
+				await this.worker.on();
 				await delay(4 * 1000); // Wait 4s before measuring Vout.
 				const maxDeviation = 0.15; // 8%
 				// Poll worker diagnostics only after the device has fully powered on.
-				const testbot = await this.context.get().worker.diagnostics();
+				const testbot = await this.worker.diagnostics();
 
 				test.true(
 					testbot.vout >= testbot.deviceVoltage * maxDeviation,
@@ -54,26 +54,35 @@ module.exports = {
 					`Output current ${testbot.amperage} should be above the 0.03 limit`,
 				);
 
-				await this.context.get().worker.off();
+				await this.worker.off();
 				test.true(true, 'Device should be able to power cycle properly.');
 			},
 		},
 		{
 			title: 'Is the DUT reachable?',
 			run: async function (test) {
-				await this.context.get().worker.on();
+
+				await this.worker.addSSHKey(this.sshKeyPath);
+
+				// create tunnels
+				this.log('Creating SSH tunnels to DUT');
+				await this.worker.createSSHTunnels(
+					this.link,
+				);
+
+				await this.worker.on();
 				this.log('Waiting for device to be reachable');
 				test.equal(
 					await this.context
 						.get()
 						.worker.executeCommandInHostOS(
 							'cat /etc/hostname',
-							this.context.get().link,
+							this.link,
 						),
-					this.context.get().link.split('.')[0],
+					this.link.split('.')[0],
 					'Device should be reachable',
 				);
-				await this.context.get().worker.off();
+				await this.worker.off();
 			}
 		}
 	],

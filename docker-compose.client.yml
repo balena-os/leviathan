@@ -1,12 +1,39 @@
-version: '2'
+version: "2"
+
 services:
   client:
     build: ./client
-    network_mode: host
     volumes:
       - "${WORKSPACE:-./workspace}:/usr/src/app/workspace:ro"
       - "${REPORTS:-./workspace/reports}:/usr/src/app/reports:rw"
       - "${SUITES:-./suites}:/usr/src/app/suites:ro"
     environment:
-      - BALENACLOUD_API_KEY=${BALENACLOUD_API_KEY}
-      - BALENACLOUD_ORG=${BALENACLOUD_ORG}
+      - CORE_PORT # default 2000, change this to avoid port conflicts
+      - WORKER_PORT # allow this env var to be used in config.js
+      - BALENACLOUD_API_KEY # allow this env var to be used in config.js
+      - BALENACLOUD_ORG # allow this env var to be used in config.js
+      - BALENACLOUD_APP_NAME # allow this env var to be used in config.js
+      - DEVICE_TYPE # allow this env var to be used in config.js
+      - WORKER_TYPE # allow this env var to be used in config.js
+    depends_on:
+      - core
+    network_mode: host
+
+  core:
+    build:
+      context: ./core
+      dockerfile: Dockerfile.template
+      args:
+        - BALENA_ARCH=amd64
+    volumes:
+      - core-storage:/data
+      - reports-storage:/reports
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - UDEV=0
+      - CORE_PORT # default 2000, change this to avoid port conflicts
+    network_mode: host
+
+volumes:
+  core-storage:
+  reports-storage:

@@ -64,11 +64,12 @@ function makePath(p) {
 module.exports = class Client extends PassThrough {
 	constructor(uri, workdir) {
 		super();
-		this.uri = parse(uri);
-		if (this.uri.protocol == null) {
-			this.uri = parse(`http://${uri}`);
-		}
-		this.workdir = join(workdir, this.uri.hostname);
+		this.uri = uri;
+		let uriParsed = parse(uri);
+		this.workdir = join(workdir, uriParsed.hostname);
+		this.coreHost = config.core.host;
+		this.corePort = config.core.port;
+		this.coreUrl = `http://${this.coreHost}:${this.corePort}`;
 	}
 
 	status(data) {
@@ -212,7 +213,7 @@ module.exports = class Client extends PassThrough {
 					time: 100,
 				});
 				const req = request.post({
-					uri: `${this.uri.href}upload`,
+					uri: `${this.coreUrl}/upload`,
 					headers: {
 						'x-token': token,
 						'x-artifact': artifact.name,
@@ -289,13 +290,17 @@ module.exports = class Client extends PassThrough {
 	run() {
 		const main = async (deviceType, suite, conf, image) => {
 			process.on('SIGINT', async () => {
-				await rp.post(`${this.uri.href}stop`).catch(this.log.bind(this));
+				await rp.post(`${this.coreUrl}/stop`).catch(this.log.bind(this));
 				process.exit(128 + constants.signals.SIGINT);
 			});
 			process.on('SIGTERM', async () => {
-				await rp.post(`${this.uri.href}stop`).catch(this.log.bind(this));
+				await rp.post(`${this.coreUrl}/stop`).catch(this.log.bind(this));
 				process.exit(128 + constants.signals.SIGTERM);
 			});
+
+			const heartbeat = setInterval(async () => {
+				await rp.get(`${this.uri}/heartbeat`);
+			}, 1000 * 20);
 
 			let capturedError = null;
 			const wsMessageHandler = (wsConnection) => async (pkg) => {
@@ -340,6 +345,7 @@ module.exports = class Client extends PassThrough {
 										artifact.data = JSON.parse(conf);
 									}
 									artifact.data.deviceType = deviceType;
+									artifact.data.workerUrl = this.uri;
 									artifact.data.image = image;
 									break;
 								default:
@@ -379,7 +385,9 @@ module.exports = class Client extends PassThrough {
 
 			const createWs = () =>
 				new Promise((resolve, reject) => {
-					const wsConnection = new WebSocket(`ws://${this.uri.host}/start`);
+					const wsConnection = new WebSocket(
+						`ws://${this.coreHost}:${this.corePort}/start`,
+					);
 
 					const msgHandler = wsMessageHandler(wsConnection);
 					wsConnection.on('message', msgHandler);
@@ -433,19 +441,8 @@ module.exports = class Client extends PassThrough {
 				this.log(error.stack);
 			})
 			.finally(async () => {
-				await new Promise((resolve, reject) => {
-					request
-						.get(`${this.uri.href}artifacts`)
-						.pipe(zlib.createGunzip())
-						.pipe(
-							fs.createWriteStream(
-								join(this.workdir, `${config.get('leviathan.artifacts')}.tar`),
-							),
-						)
-						.on('end', resolve)
-						.on('error', reject);
-				});
-				await rp.post(`${this.uri.href}stop`).catch(this.log);
+				console.log(`Exiting client process...`);
+				process.exit();
 			});
 	}
 };
