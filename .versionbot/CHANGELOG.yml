@@ -1,4 +1,122 @@
 - commits:
+    - subject: "tests/e2e: update tests for core being on client"
+      hash: d59e6592184d4b1e77347a48f44dc6ca2232d04a
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+    - subject: "core: add retry to flash function"
+      hash: 5c1e38372c33b6ad828b31839acf92fe7cbdd8b9
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+    - subject: "client: fix serial and artifacts"
+      hash: 7daf49453f24efefb3781d53ec3808ad7c1b347d
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+    - subject: "client: Fix linting and tslint errors"
+      hash: 366df112dd5c9c902f276e71dd89272764feaa01
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+    - subject: "worker: Fix linting and tslint errors"
+      hash: cd38605cce792d0f2c7d5cbd31abff38d78c7b6b
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+    - subject: "core: Fix linting and tslint errors"
+      hash: 3f3ce25253d8cae73c6ea44b58cdeda9a6f7ef70
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+    - subject: "client: Fix loading of environment variables for multi-client"
+      hash: 6e5ca1d2f1d2be66d249e17f7f8b1176bbfb1166
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+    - subject: "make: Rename compose files and clean up Makefile"
+      hash: 2f47d044f4c1de05cd059736289b81262c01a106
+      body: |
+        - remove redundant build targets
+        - avoid copying dockerfiles for local builds
+        - expose additional env vars and env files
+        - respect WORKER_TYPE to switch between qemu and testbot
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+    - subject: "client: Update client to support core on client"
+      hash: 3776da063655afb9a4bbfbc0be07bcbbda040327
+      body: ""
+      footer:
+        Change-type: major
+        change-type: major
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+    - subject: "worker: Update worker to support core on client"
+      hash: 5a265205808314c84e9ee5b9cfc6c49b0b08a502
+      body: ""
+      footer:
+        Change-type: major
+        change-type: major
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+    - subject: "core: Update core to move to client"
+      hash: 4b849385ec30389251794ddf95147711ab162a6a
+      body: ""
+      footer:
+        Change-type: major
+        change-type: major
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.0.0
+  title: "'Move core service from testbot to client'"
+  date: 2022-03-04T14:30:46.747Z
+- commits:
     - subject: Enable nested changelogs when this project is consumed
       hash: 357fe8d3cf427750c0cbe079ab1924ed50a2752b
       body: >
