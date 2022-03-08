@@ -248,14 +248,11 @@ module.exports = class Worker {
 			case 'stop':
 				// have to receive tar.gz and unpack them? then return path to directory for the test to consume
 				let capture = request.get({ uri: `${this.url}/dut/capture` });
-				const line = pipeline(
+				return pipeline(
 					capture,
 					createGunzip(),
 					tar.extract('/tmp/capture'),
-				).catch((error) => {
-					throw error;
-				});
-				await line;
+				);
 		}
 	}
 
