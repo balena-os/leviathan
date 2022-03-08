@@ -1,4 +1,38 @@
 - commits:
+    - subject: "core: Lint files"
+      hash: 1fe4f076a415d616a71dc2ba7eba4a45d891caef
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+    - subject: "core: Remove redundant promise catch"
+      hash: 04b25dd57fa8c3aa3d3d553388aa2954df9f4018
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+    - subject: "core: Re-enable tslint features that were disabled"
+      hash: ded5e6df4132a8b79d75c1b87c1098a278195274
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.0.1
+  title: "'core: Re-enable tslint features that were disabled'"
+  date: 2022-03-08T13:13:48.432Z
+- commits:
     - subject: "tests/e2e: update tests for core being on client"
       hash: d59e6592184d4b1e77347a48f44dc6ca2232d04a
       body: ""
