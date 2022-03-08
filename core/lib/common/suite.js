@@ -57,6 +57,7 @@ function uid(a) {
 	return a
 		? (a ^ (Math.random() * 16)).toString(16)
 		: ([1e15] + 1e15).replace(/[01]/g, uid);
+	/* tslint:enable:no-bitwise */
 }
 
 // Test identification
