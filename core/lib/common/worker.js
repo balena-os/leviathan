@@ -103,63 +103,69 @@ module.exports = class Worker {
 			return 'Skipping flashing';
 		} else {
 			let attempt = 0;
-			await retry(async () => {
-				attempt++;
-				this.logger.log(`Preparing to flash, attempt ${attempt}...`);
+			await retry(
+				async () => {
+					attempt++;
+					this.logger.log(`Preparing to flash, attempt ${attempt}...`);
 
-				await new Promise(async (resolve, reject) => {
-					const req = rp.post({ uri: `${this.url}/dut/flash` });
+					await new Promise(async (resolve, reject) => {
+						const req = rp.post({ uri: `${this.url}/dut/flash` });
 
-					req.catch((error) => {
-						reject(error);
-					});
-					req.finally(() => {
-						if (lastStatus !== 'done') {
-							reject(new Error('Unexpected end of TCP connection'));
-						}
-
-						resolve();
-					});
-
-					let lastStatus;
-					req.on('data', (data) => {
-						const computedLine = RegExp('(.+?): (.*)').exec(data.toString());
-
-						if (computedLine) {
-							if (computedLine[1] === 'error') {
-								req.cancel();
-								reject(new Error(computedLine[2]));
+						req.catch((error) => {
+							reject(error);
+						});
+						req.finally(() => {
+							if (lastStatus !== 'done') {
+								reject(new Error('Unexpected end of TCP connection'));
 							}
 
-							if (computedLine[1] === 'progress') {
-								once(() => {
-									this.logger.log('Flashing');
-								});
-								// Hide any errors as the lines we get can be half written
-								const state = JSON.parse(computedLine[2]);
-								if (state != null && isNumber(state.percentage)) {
-									this.logger.status({
-										message: 'Flashing',
-										percentage: state.percentage,
+							resolve();
+						});
+
+						let lastStatus;
+						req.on('data', (data) => {
+							const computedLine = RegExp('(.+?): (.*)').exec(data.toString());
+
+							if (computedLine) {
+								if (computedLine[1] === 'error') {
+									req.cancel();
+									reject(new Error(computedLine[2]));
+								}
+
+								if (computedLine[1] === 'progress') {
+									once(() => {
+										this.logger.log('Flashing');
 									});
+									// Hide any errors as the lines we get can be half written
+									const state = JSON.parse(computedLine[2]);
+									if (state != null && isNumber(state.percentage)) {
+										this.logger.status({
+											message: 'Flashing',
+											percentage: state.percentage,
+										});
+									}
+								}
+
+								if (computedLine[1] === 'status') {
+									lastStatus = computedLine[2];
 								}
 							}
+						});
 
-							if (computedLine[1] === 'status') {
-								lastStatus = computedLine[2];
-							}
-						}
+						pipeline(
+							fs.createReadStream(imagePath),
+							createGzip({ level: 6 }),
+							req,
+						);
 					});
-
-					pipeline(fs.createReadStream(imagePath), createGzip({ level: 6 }), req);
-				});
-				this.logger.log('Flash completed');
-			},
-			{
-				max_tries: 5,
-				interval: 1000* 5,
-				throw_original: true,
-			})
+					this.logger.log('Flash completed');
+				},
+				{
+					max_tries: 5,
+					interval: 1000 * 5,
+					throw_original: true,
+				},
+			);
 		}
 	}
 
@@ -248,11 +254,7 @@ module.exports = class Worker {
 			case 'stop':
 				// have to receive tar.gz and unpack them? then return path to directory for the test to consume
 				let capture = request.get({ uri: `${this.url}/dut/capture` });
-				return pipeline(
-					capture,
-					createGunzip(),
-					tar.extract('/tmp/capture'),
-				);
+				return pipeline(capture, createGunzip(), tar.extract('/tmp/capture'));
 		}
 	}
 
