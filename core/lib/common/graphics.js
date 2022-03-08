@@ -131,6 +131,7 @@ module.exports = {
 			var n2 = parseInt(hashB[i], 16);
 			/* tslint:disable:no-bitwise */
 			d += oneBits[n1 ^ n2];
+			/* tslint:enable:no-bitwise */
 		}
 		return d;
 	},
@@ -144,6 +145,7 @@ module.exports = {
 		let blockTop, blockBottom, blockLeft, blockRight;
 		let yMod, yFrac, yInt;
 		let xMod, xFrac, xInt;
+		/* tslint:enable:one-variable-per-declaration */
 		let blocks = [];
 
 		const evenX = data.width % bits === 0;
