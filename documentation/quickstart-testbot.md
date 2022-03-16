@@ -35,10 +35,7 @@ module.exports = {
         organization: 'BALENACLOUD_ORG_GOES_HERE',
     },
     image: `${__dirname}/balena.img`,
-    workers: {
-        balenaApplication: 'testbot-personal',
-        apiKey: process.env.BALENACLOUD_API_KEY
-    }
+    workers: ['<Public device URL of your testbot>'],
 }
 ```
 
