@@ -74,7 +74,7 @@ module.exports = {
     },
     image: `${__dirname}/balena.img`,
     workers: {
-        balenaApplication: 'testbot-personal',
+        balenaApplication: 'balena/testbot-personal',
         apiKey: process.env.BALENACLOUD_API_KEY
     }
 };
