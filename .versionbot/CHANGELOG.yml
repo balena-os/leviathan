@@ -1,4 +1,34 @@
 - commits:
+    - subject: "docker-compose: Set restart policies for core and qemu worker"
+      hash: e1d848f8622787d388164ffab2aba472f17826e0
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+    - subject: "makefile: Use Jenkins BUILD_TAG to create unique compose project names"
+      hash: 6d323e8bfda5e273fdbeb97270e2d86efc3fb9d9
+      body: |
+        The compose project name is used to prefix all components of the
+        docker-compose stack, like volumes, networks, containers, etc.
+
+        If we are running on Jenkins it would be best to avoid having all builds
+        using the same default prefix "leviathan-" since they are sharing
+        a docker host.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.0.2
+  title: "'makefile: Use Jenkins BUILD_TAG to create unique compose project names'"
+  date: 2022-03-17T13:24:14.262Z
+- commits:
     - subject: "core: Lint files"
       hash: 1fe4f076a415d616a71dc2ba7eba4a45d891caef
       body: ""
