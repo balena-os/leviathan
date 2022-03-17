@@ -49,7 +49,7 @@ RUN mkdir -p /etc/qemu \
 WORKDIR /usr/app
 
 COPY config config
-COPY entry.sh .
+COPY entry.sh entry.sh
 
 COPY --from=node-build /tmp/node/package.json .
 COPY --from=node-build /tmp/node/node_modules node_modules

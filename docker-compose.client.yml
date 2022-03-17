@@ -8,7 +8,6 @@ services:
       - "${REPORTS:-./workspace/reports}:/usr/src/app/reports:rw"
       - "${SUITES:-./suites}:/usr/src/app/suites:ro"
     environment:
-      - CORE_PORT # default 2000, change this to avoid port conflicts
       - WORKER_PORT # allow this env var to be used in config.js
       - BALENACLOUD_API_KEY # allow this env var to be used in config.js
       - BALENACLOUD_ORG # allow this env var to be used in config.js
@@ -17,9 +16,9 @@ services:
       - WORKER_TYPE # allow this env var to be used in config.js
     depends_on:
       - core
-    network_mode: host
 
   core:
+    privileged: true
     build:
       context: ./core
       dockerfile: Dockerfile.template
@@ -28,11 +27,11 @@ services:
     volumes:
       - core-storage:/data
       - reports-storage:/reports
-      - /var/run/docker.sock:/var/run/docker.sock
+    tmpfs:
+      - /var/run
+      - /var/lib/docker
     environment:
-      - UDEV=0
-      - CORE_PORT # default 2000, change this to avoid port conflicts
-    network_mode: host
+      - UDEV=1
     restart: 'no'
 
 volumes:

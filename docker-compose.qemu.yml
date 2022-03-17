@@ -14,7 +14,6 @@ services:
       - "c 10:* rmw"
     cap_add:
       - NET_ADMIN # allow network setup
-    network_mode: host
     volumes:
       - "core-storage:/data"
       - "reports-storage:/reports"

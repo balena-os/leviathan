@@ -10,5 +10,5 @@ module.exports = [{
     organization: process.env.BALENACLOUD_ORG
   },
   image: false,
-  workers: ['http://localhost']
+  workers: ['http://worker']
 }];
