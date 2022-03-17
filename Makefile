@@ -19,6 +19,10 @@ export COMPOSE_DOCKER_CLI_BUILD := 1
 export DOCKER_BUILDKIT := 1
 export DOCKERD_EXTRA_ARGS :=
 
+ifneq ($(BUILD_TAG),)
+export COMPOSE_PROJECT := $(BUILD_TAG)
+endif
+
 DOCKERCOMPOSE := ./bin/docker-compose
 
 # install docker-compose as a run script

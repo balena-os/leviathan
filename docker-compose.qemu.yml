@@ -23,6 +23,11 @@ services:
       - WORKER_TYPE=qemu
       - SCREEN_CAPTURE=true
       - WORKER_PORT # default 80 and must match client config.js workers
+    restart: 'no'
+
+  core:
+    depends_on:
+      - worker
 
 volumes:
   core-storage:

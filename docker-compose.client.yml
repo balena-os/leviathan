@@ -33,6 +33,7 @@ services:
       - UDEV=0
       - CORE_PORT # default 2000, change this to avoid port conflicts
     network_mode: host
+    restart: 'no'
 
 volumes:
   core-storage:
