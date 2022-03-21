@@ -8,6 +8,9 @@ import {
 	BeagleBone,
 	RevPiCore3,
 	CM4IOBoard,
+	Imx8mmebcrs08a2,
+	CoralDevBoard,
+	JetsonNano,
 } from '@balena/testbot';
 import { EventEmitter } from 'events';
 import { createWriteStream } from 'fs';
@@ -39,6 +42,15 @@ const resolveDeviceInteractor = (hat: TestBotHat): DeviceInteractor => {
 	}
 	if (process.env.TESTBOT_DUT_TYPE === 'raspberrypicm4-ioboard') {
 		return new CM4IOBoard(hat);
+	}
+	if (process.env.TESTBOT_DUT_TYPE === 'imx8mmebcrs08a2') {
+		return new Imx8mmebcrs08a2(hat);
+	}
+	if (process.env.TESTBOT_DUT_TYPE === 'coral-dev') {
+		return new CoralDevBoard(hat);
+	}
+	if (process.env.TESTBOT_DUT_TYPE === 'jetson-nano') {
+		return new JetsonNano(hat);
 	}
 	return new RaspberryPi(hat);
 };
