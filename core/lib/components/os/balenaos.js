@@ -67,11 +67,11 @@ const pipeline = Bluebird.promisify(require('stream').pipeline);
 const zlib = require('zlib');
 
 // TODO: This function should be implemented using Reconfix
-const injectBalenaConfiguration = (image, configuration) => {
+const injectBalenaConfiguration = (image, configuration, partition = 1) => {
 	return imagefs.writeFile(
 		{
 			image,
-			partition: 1,
+			partition: partition,
 			path: '/config.json',
 		},
 		JSON.stringify(configuration),
@@ -79,7 +79,7 @@ const injectBalenaConfiguration = (image, configuration) => {
 };
 
 // TODO: This function should be implemented using Reconfix
-const injectNetworkConfiguration = async (image, configuration) => {
+const injectNetworkConfiguration = async (image, configuration, partition = 1) => {
 	if (configuration.wireless == null) {
 		return;
 	}
@@ -116,7 +116,7 @@ const injectNetworkConfiguration = async (image, configuration) => {
 	await imagefs.writeFile(
 		{
 			image,
-			partition: 1,
+			partition: partition,
 			path: '/system-connections/balena-wifi',
 		},
 		wifiConfiguration.join('\n'),
@@ -138,6 +138,7 @@ module.exports = class BalenaOS {
 		options = {},
 		logger = { log: console.log, status: console.log, info: console.log },
 	) {
+		this.bootPartition = 1;
 		this.deviceType = options.deviceType;
 		this.network = options.network;
 		this.image = {
@@ -153,6 +154,9 @@ module.exports = class BalenaOS {
 				return typeof value === 'boolean' ? value : true;
 			}),
 		};
+		if (this.deviceType == 'jetson-nano') {
+			this.bootPartition = 12;
+		}
 		this.logger = logger;
 		this.releaseInfo = { version: null, variant: null };
 	}
@@ -196,7 +200,7 @@ module.exports = class BalenaOS {
 				const value = pattern.exec(
 					await imagefs.readFile({
 						image: image,
-						partition: 1,
+						partition: this.bootPartition,
 						path: '/os-release',
 					}),
 				);
@@ -211,7 +215,7 @@ module.exports = class BalenaOS {
 					const value1 = pattern.exec(
 						await imagefs.readFile({
 							image: image,
-							partition: 2,
+							partition: this.bootPartition + 1,
 							path: '/usr/lib/os-release',
 						}),
 					);
@@ -251,9 +255,9 @@ module.exports = class BalenaOS {
 			await this.readOsRelease();
 			this.logger.log(`Configuring balenaOS image: ${this.image.input}`);
 			if (this.configJson) {
-				await injectBalenaConfiguration(this.image.path, this.configJson);
+				await injectBalenaConfiguration(this.image.path, this.configJson, this.bootPartition);
 			}
-			await injectNetworkConfiguration(this.image.path, this.network);
+			await injectNetworkConfiguration(this.image.path, this.network, this.bootPartition);
 		}
 	}
 };
