@@ -274,7 +274,9 @@ async function setup(
 				try {
 					await execSync(`pkill -f socat`);
 				} catch (e) {
-					console.log(`Error tearing down tunnels : ${e.messsage}`);
+					if (e instanceof Error) {
+						console.log(`Error tearing down tunnels : ${e.message}`);
+					}
 				}
 				state = 'IDLE';
 				clearTimeout(heartbeatTimeout);
@@ -334,7 +336,9 @@ async function setup(
 			heartbeatTimeout.refresh();
 			res.status(200).send('OK');
 		} catch (e) {
-			res.status(500).send(e.stack);
+			if (e instanceof Error) {
+				res.status(500).send(e.stack);
+			}
 		}
 	});
 
@@ -342,7 +346,9 @@ async function setup(
 		try {
 			res.status(200).send(state);
 		} catch (e) {
-			res.status(500).send(e.stack);
+			if (e instanceof Error) {
+				res.status(500).send(e.stack);
+			}
 		}
 	});
 
@@ -362,7 +368,9 @@ async function setup(
 				res.status(200).send('BUSY');
 			}
 		} catch (e) {
-			res.status(500).send(e.stack);
+			if (e instanceof Error) {
+				res.status(500).send(e.stack);
+			}
 		}
 	});
 
