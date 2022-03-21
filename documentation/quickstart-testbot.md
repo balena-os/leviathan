@@ -82,7 +82,7 @@ module.exports = {
     }
 };
 ```
-
+- Add the slug of the device under test to the testbot. In the Admin Panel > Device Variables add the variable TESTBOT_DUT_TYPE:\<DUT_SLUG\>, and a testbot Tag named "DUT" that contains the slug of the device under test.
 - Run `make test` in the root of the project and watch the logs. The logs will start streaming on the terminal for the test run.
 - At the end of the run, reports and logs for the test run will be stored in `workspace/reports` directory.
 
