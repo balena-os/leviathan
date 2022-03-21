@@ -1,4 +1,19 @@
 - commits:
+    - subject: "worker: fix TS2571 errors when importing into TS module"
+      hash: cff8659c086d2091d8bfdd4b7308435d75f66404
+      body: |
+        Also fix a misspelled property caught by the TS compiler.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+  version: 2.0.3
+  title: "'worker: fix TS2571 errors when importing into TS module'"
+  date: 2022-03-21T22:26:08.477Z
+- commits:
     - subject: "docker-compose: Set restart policies for core and qemu worker"
       hash: e1d848f8622787d388164ffab2aba472f17826e0
       body: ""
