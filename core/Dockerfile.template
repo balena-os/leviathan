@@ -27,7 +27,9 @@ RUN apk add --no-cache nodejs~=12.22 \
 		       skopeo \
 		       openssh-client \
 			   socat \
-			   rsync
+			   rsync \
+			   docker \
+			   bind-tools
 
 WORKDIR /usr/app
 
@@ -42,6 +44,6 @@ RUN ln -sf /usr/app/node_modules/balena-cli/bin/balena /usr/bin/balena && \
 COPY contracts contracts
 COPY lib lib
 COPY config config
-COPY entry.sh ./
+COPY entry.sh entry.sh
 
 CMD [ "./entry.sh" ]

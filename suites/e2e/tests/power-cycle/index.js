@@ -62,6 +62,7 @@ module.exports = {
 			title: 'Is the DUT reachable?',
 			run: async function (test) {
 
+				await this.worker.on();
 				await this.worker.addSSHKey(this.sshKeyPath);
 
 				// create tunnels
@@ -70,7 +71,6 @@ module.exports = {
 					this.link,
 				);
 
-				await this.worker.on();
 				this.log('Waiting for device to be reachable');
 				test.equal(
 					await this.context

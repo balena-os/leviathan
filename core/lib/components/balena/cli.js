@@ -67,60 +67,25 @@ module.exports = class CLI {
 	 * @category helper
 	 */
 	async preload(image, options) {
-		const socketPath = (await pathExists('/var/run/balena.sock'))
-			? '/var/run/balena.sock'
-			: '/var/run/docker.sock';
-
-		// We are making use of the docker daemon on the host, so we need to figure out where our image is on the host
-		const docker = new Docker({ socketPath });
-
-		const Container = docker.getContainer(
-			// Get containerId from inside our container
-			(
-				await exec(
-					'cat /proc/self/cgroup | head -1 | sed -n "s/.*\\([0-9a-z]\\{64\\}\\).*/\\1/p" | tr -d "\n"',
-				)
-			)[0],
-		);
-		const Inspect = await Container.inspect();
-		const Mount = Inspect.Mounts.find((mount) => {
-			return mount.Name != null ? image.includes(mount.Destination) : false;
-		});
-
-		image = image.replace(Mount.Destination, '');
-
-		// We have to deal with the fact that our image exist on the fs the preloader runs in a different
-		// path than where our docker daemon runs. Until we fix the issue on the preloader
-		await ensureFile(join(Mount.Source, image));
-
 		this.logger.log('--Preloading image--');
-		this.logger.log(`Image path: ${join(Mount.Source, image)}`);
+		this.logger.log(`Image path: ${image}`);
 		this.logger.log(`Fleet: ${options.app}`);
 		this.logger.log(`Commit: ${options.commit}`);
-		this.logger.log(`Socket Path: ${socketPath}`);
 		await new Promise((resolve, reject) => {
 			const output = [];
 			const child = spawn(
 				'balena',
 				[
-					`preload ${join(
-						Mount.Source,
-						image,
-					)} --docker ${socketPath} --fleet ${options.app} --commit ${
+					`preload ${image} --fleet ${options.app} --commit ${
 						options.commit
 					} ${options.pin ? '--pin-device-to-release ' : ''}`,
+					'--debug'
 				],
 				{
-					stdio: 'pipe',
+					stdio: 'inherit',
 					shell: true,
 				},
 			);
-
-			for (const io of ['stdout', 'stderr']) {
-				child[io].on('data', (data) => {
-					output.push(data.toString());
-				});
-			}
 
 			function handleSignal(signal) {
 				child.kill(signal);
@@ -134,7 +99,7 @@ module.exports = class CLI {
 				if (code === 0) {
 					resolve();
 				} else {
-					reject(output.join('\n'));
+					reject()
 				}
 			});
 			child.on('error', (err) => {

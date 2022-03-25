@@ -236,7 +236,7 @@ module.exports = class Worker {
 		// ip of DUT - used to talk to it
 		// if testbot/local testbot, then we dont wan't the ip, as we use SSH tunneling to talk to it - so return 127.0.0.1
 		// if qemu, return the ip - as we talk to the DUT directly
-		return this.url.includes(`localhost`) ? this.getDutIp(target) : `127.0.0.1`;
+		return this.url.includes(`worker`) ? this.getDutIp(target) : `127.0.0.1`;
 	}
 
 	async teardown() {
@@ -287,7 +287,7 @@ module.exports = class Worker {
 		if (/.*\.local/.test(target)) {
 			let ip = await this.ip(target);
 			config = {
-				host: ip, // the this.ip() method will return the DUT ip or localhost, depending on if its a virtual worker or not
+				host: ip,
 				port: '22222',
 				username: 'root',
 			};
@@ -355,19 +355,20 @@ module.exports = class Worker {
 	}
 
 	// creates a tunnel a specified DUT port
-	// In the case of a virtual worker, can we map the qemu devices ports directly, without this???
 	async createTunneltoDUT(target, dutPort, workerPort) {
-		let ip = await this.getDutIp(target);
+
 		//get containerID of the worker container on the testbot - we must do socat from inside the worker container
 		let containerId = await this.executeCommandInWorkerHost(
 			`balena ps | grep worker | awk '{print $1}'`,
 		);
+
+		let ip = await this.getDutIp(target);
 		let argsWorker = [];
 		argsWorker = argsWorker.concat([
 			`${this.workerUser}@${this.workerHost}`,
 			`-p`,
 			this.workerPort,
-			`-i`,
+			'-i',
 			this.sshKey,
 			`-o`,
 			`StrictHostKeyChecking=no`,
@@ -402,7 +403,7 @@ module.exports = class Worker {
 
 	// create tunnels to relevant DUT ports to we can access them remotely
 	async createSSHTunnels(target) {
-		if (!this.url.includes(`localhost`)) {
+		if (!this.url.includes(`worker`)) {
 			const DUT_PORTS = [
 				48484, // supervisor
 				22222, // ssh
@@ -413,6 +414,19 @@ module.exports = class Worker {
 				console.log(`creating tunnel to dut port ${port}...`);
 				await this.createTunneltoDUT(target, port, workerPort);
 				workerPort = workerPort + 1;
+			}
+		} else {
+			// set up route to DUT via the worker ip
+			console.log(`Getting ip of dut`)
+			let dutIp = await this.ip(target);
+			console.log(`getting ip of worker`)
+			let workerIp = await exec(`dig +short worker`);
+			console.log(`ip route add ${dutIp} via ${workerIp}`)
+			// If the route already exists, do not throw an error
+			try {
+				await exec(`ip route add ${dutIp} via ${workerIp}`)
+			} catch (e){
+				console.log('Route to DUT via docker bridge already configured');
 			}
 		}
 	}
@@ -437,7 +451,7 @@ module.exports = class Worker {
 
 	// add ssh key to the worker, so it cas ssh into prod DUT's
 	async addSSHKey(keyPath) {
-		if (!this.url.includes(`localhost`)) {
+		if (!this.url.includes(`worker`)) {
 			console.log(`Adding dut ssh key to worker...`);
 			const SSH_KEY_PATH = '/tmp/';
 			this.dutSshKey = `${SSH_KEY_PATH}${path.basename(keyPath)}`;
@@ -463,19 +477,54 @@ module.exports = class Worker {
 	 */
 	async pushContainerToDUT(target, source, containerName) {
 		let ip = await this.ip(target);
-		await retry(
-			async () => {
-				// if virtualised worker, push directly wo the DUT
-				await exec(`balena push ${ip} --source ${source} --nolive --detached`);
-			},
-			{
-				max_tries: 10,
-				interval: 5000,
-			},
-		);
+		await utils.waitUntil(async () => {
+			console.log('Waiting for supervisor to be reachable before local push...')
+			return (
+				(await rp({
+					method: 'GET',
+					uri: `http://${ip}:48484/ping`,
+					timeout: 5000
+				})) === 'OK'
+			);
+		}, false);
+		console.log('Pushing container to DUT...')
+		await new Promise(async(resolve, reject) => {
+
+			const pushTimeout = setTimeout(() => {
+				clearTimeout(pushTimeout);
+				pushProc.kill();
+				reject(Error('Push timed out'));
+			}, 1000 * 60 * 10);
+
+			let pushProc = spawn('balena', [
+				'push',
+				ip,
+				'--source',
+				source,
+				'--nolive',
+				'--detached',
+				'--debug'
+			], { stdio: 'inherit'});
+
+			pushProc.on('exit', (code) => {
+				if (code === 0) {
+					resolve();
+				} else {
+					reject()
+				}
+			});
+			pushProc.on('error', (err) => {
+				process.off('SIGINT', handleSignal);
+				process.off('SIGTERM', handleSignal);
+				reject(err);
+			});
+
+			clearTimeout(pushTimeout);
+		});
 		// now wait for new container to be available
 		let state = {};
 		await utils.waitUntil(async () => {
+			console.log(`waiting for container to be available...`)
 			state = await rp({
 				method: 'GET',
 				uri: `http://${ip}:48484/v2/containerId`,
@@ -484,7 +533,6 @@ module.exports = class Worker {
 
 			return state.services[containerName] != null;
 		}, false);
-
 		return state;
 	}
 
