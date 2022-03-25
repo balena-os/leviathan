@@ -1,4 +1,18 @@
 - commits:
+    - subject: enable bridge networking for all containers
+      hash: 6cc7520790b1d1baf04ffd2b9dbca5146c5d1ce1
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+  version: 2.0.4
+  title: "'enable bridge networking for all containers'"
+  date: 2022-03-25T13:01:17.690Z
+- commits:
     - subject: "worker: fix TS2571 errors when importing into TS module"
       hash: cff8659c086d2091d8bfdd4b7308435d75f66404
       body: |
