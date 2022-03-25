@@ -18,21 +18,17 @@ services:
       - core
 
   core:
-    privileged: true
-    build:
-      context: ./core
-      dockerfile: Dockerfile.template
-      args:
-        - BALENA_ARCH=amd64
+    privileged: true # preload requires docker-in-docker
+    build: core
     volumes:
       - core-storage:/data
       - reports-storage:/reports
     tmpfs:
-      - /var/run
-      - /var/lib/docker
-    environment:
-      - UDEV=1
+      - /var/run # use tmpfs docker-in-docker pid files
+      - /var/lib/docker # use tmpfs for docker-in-docker data root
     restart: 'no'
+    devices:
+      - /dev:/dev # required for creating losetup devices during preload
 
 volumes:
   core-storage:

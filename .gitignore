@@ -6,10 +6,6 @@ coverage
 
 .balena/secrets/
 
-# Docker compose file is generated with make, as well as core/worker Dockerfile.
-core/Dockerfile
-worker/Dockerfile
-
 # binaries may be download by the makefile if missing
 bin/
 
