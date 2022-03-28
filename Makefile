@@ -32,9 +32,10 @@ endif
 DOCKERCOMPOSE := ./bin/docker-compose
 
 # install docker-compose as a run script
+# we require a specific release version that correctly supports device_cgroup_rules for the qemu worker
 $(DOCKERCOMPOSE):
 	mkdir -p $(shell dirname "$@")
-	curl -fsSL "https://github.com/docker/compose/releases/download/1.29.2/run.sh" -o $@
+	curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(shell uname -s)-$(shell uname -m)" -o $@
 	chmod +x $@
 
 .NOTPARALLEL: $(DOCKERCOMPOSE)
