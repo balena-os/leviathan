@@ -1,4 +1,46 @@
 - commits:
+    - subject: "Makefile: Install docker-compose binary from releases page"
+      hash: 107fc2ee27481aacb4176c431f7cc03fe426161a
+      body: |
+        The script to run compose as a container only supports x86_64 and
+        we need to run on aarch64.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+    - subject: "Makefile: Build images in parallel before running tests"
+      hash: e2da5117d88c1af4ca2467543655d715b741100b
+      body: |
+        Use WORKER_TYPE to determine which compose files to load,
+        and run the build command with the parallel flag to create
+        all images before running tests.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+    - subject: "core: Switch to dockerHub library node base image"
+      hash: 9073e3f25347a2bce7c51332e19266e3b9d34574
+      body: |
+        This image is multiarch but it does not include udev
+        so we are also bind mounting /dev into the container for
+        losetup support during preloading.
+      footer:
+        Change-type: minor
+        change-type: minor
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.1.0
+  title: "'core: Support local tests on aarch64 hosts'"
+  date: 2022-03-28T16:26:11.894Z
+- commits:
     - subject: enable bridge networking for all containers
       hash: 6cc7520790b1d1baf04ffd2b9dbca5146c5d1ce1
       body: ""
