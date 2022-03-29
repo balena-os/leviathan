@@ -8,17 +8,23 @@ WORKERDIR := ./worker
 
 # optional docker-compose args
 BUILDARGS := --parallel
-UPARGS := --force-recreate --remove-orphans --build
+UPARGS := --force-recreate --remove-orphans
 
 QEMUCOMPOSEFILE := docker-compose.qemu.yml
 CLIENTCOMPOSEFILE := docker-compose.client.yml
 
-# use both compose files by default, targets can override this with -f
+# only use the qemu compose file if worker type is qemu
+ifeq ($(WORKER_TYPE),qemu)
 export COMPOSE_FILE := $(CLIENTCOMPOSEFILE):$(QEMUCOMPOSEFILE)
+else
+export COMPOSE_FILE := $(CLIENTCOMPOSEFILE)
+endif
+
 export COMPOSE_DOCKER_CLI_BUILD := 1
 export DOCKER_BUILDKIT := 1
 export DOCKERD_EXTRA_ARGS :=
 
+# BUILD_TAG is a unique Jenkins environment variable
 ifneq ($(BUILD_TAG),)
 export COMPOSE_PROJECT := $(BUILD_TAG)
 endif
@@ -26,9 +32,10 @@ endif
 DOCKERCOMPOSE := ./bin/docker-compose
 
 # install docker-compose as a run script
+# we require a specific release version that correctly supports device_cgroup_rules for the qemu worker
 $(DOCKERCOMPOSE):
 	mkdir -p $(shell dirname "$@")
-	curl -fsSL "https://github.com/docker/compose/releases/download/1.29.2/run.sh" -o $@
+	curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(shell uname -s)-$(shell uname -m)" -o $@
 	chmod +x $@
 
 .NOTPARALLEL: $(DOCKERCOMPOSE)
@@ -39,15 +46,11 @@ help: ## Print help message
 config: $(DOCKERCOMPOSE) ## Print flattened docker-compose definition
 	$(DOCKERCOMPOSE) config
 
-build: $(DOCKERCOMPOSE) ## Build the core, worker, and client images
+build: $(DOCKERCOMPOSE) ## Build the required images
 	$(DOCKERCOMPOSE) build $(BUILDARGS)
 
-test: $(DOCKERCOMPOSE) ## Run the test suites (expects WORKER_TYPE to be set)
-ifeq ($(WORKER_TYPE),qemu)
+test: $(DOCKERCOMPOSE) build ## Run the test suites
 	$(DOCKERCOMPOSE) up $(UPARGS) --exit-code-from client
-else
-	$(DOCKERCOMPOSE) -f $(CLIENTCOMPOSEFILE) up $(UPARGS) --exit-code-from client
-endif
 
 local-test: ## Alias for 'make test WORKER_TYPE=qemu'
 	$(MAKE) test WORKER_TYPE=qemu
@@ -63,6 +66,8 @@ stop: $(DOCKERCOMPOSE) ## Stop and remove any existing containers and volumes
 
 down: stop ## Alias for 'make stop'
 
-.PHONY: help config build testbot qemu test local-test stop down
+clean: stop ## Alias for 'make stop'
+
+.PHONY: help config build testbot qemu test local-test stop down clean
 
 .DEFAULT_GOAL = help
