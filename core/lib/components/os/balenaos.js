@@ -154,8 +154,16 @@ module.exports = class BalenaOS {
 				return typeof value === 'boolean' ? value : true;
 			}),
 		};
-		if (this.deviceType == 'jetson-nano') {
-			this.bootPartition = 12;
+
+		switch (this.deviceType) {
+			case 'jetson-nano':
+				this.bootPartition = 12;
+				break;
+			case 'rockpi-4b-rk3399':
+				this.bootPartition = 4;
+				break;
+			default:
+				this.bootPartition = 1;
 		}
 		this.logger = logger;
 		this.releaseInfo = { version: null, variant: null };
