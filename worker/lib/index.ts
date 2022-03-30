@@ -17,6 +17,7 @@ const pipeline = util.promisify(Stream.pipeline);
 const execSync = util.promisify(exec);
 import { readFile } from 'fs-extra';
 import { createGzip, createGunzip } from 'zlib';
+import lockfile from 'proper-lockfile';
 
 const balena = getSdk({
 	apiUrl: 'https://api.balena-cloud.com/',
@@ -26,6 +27,36 @@ const workersDict: Dictionary<typeof TestBotWorker | typeof QemuWorker> = {
 	testbot_hat: TestBotWorker,
 	qemu: QemuWorker,
 };
+
+const balenaLockPath = process.env.BALENA_APP_LOCK_PATH?.replace('.lock', '');
+
+const handleCompromised = (err: Error) => {
+	console.warn(`lock compromised: ${err}`);
+};
+
+async function lock(lockPath: string) {
+	const options = { realpath: false, onCompromised: handleCompromised };
+	await lockfile.check(lockPath, options).then(async (isLocked) => {
+		if (!isLocked) {
+			await lockfile
+				.lock(lockPath, options)
+				.catch((err) => console.error(err))
+				.then(() => console.log('updates locked...'));
+		}
+	});
+}
+
+async function unlock(lockPath: string) {
+	const options = { realpath: false, onCompromised: handleCompromised };
+	await lockfile.check(lockPath, options).then(async (isLocked) => {
+		if (isLocked) {
+			await lockfile
+				.unlock(lockPath, options)
+				.catch((err) => console.error(err))
+				.then(() => console.log('updates unlocked...'));
+		}
+	});
+}
 
 let state = 'IDLE';
 let heartbeatTimeout: NodeJS.Timeout;
@@ -84,6 +115,10 @@ async function setup(
 		}
 	} else {
 		console.log(`API key not available...`);
+	}
+
+	if (balenaLockPath != null) {
+		await unlock(balenaLockPath);
 	}
 
 	await worker.setup();
@@ -279,6 +314,9 @@ async function setup(
 					}
 				}
 				state = 'IDLE';
+				if (balenaLockPath != null) {
+					await unlock(balenaLockPath);
+				}
 				clearTimeout(heartbeatTimeout);
 				for (const tunnel of tunnels) {
 					process.kill(tunnel.pid);
@@ -356,12 +394,18 @@ async function setup(
 		try {
 			if (state !== 'BUSY') {
 				state = 'BUSY';
+				if (balenaLockPath != null) {
+					await lock(balenaLockPath);
+				}
 				heartbeatTimeout = setTimeout(async () => {
 					console.log(
 						'Did not receive heartbeat from client - Tearing down...',
 					);
 					await worker.teardown();
 					state = 'IDLE';
+					if (balenaLockPath != null) {
+						await unlock(balenaLockPath);
+					}
 				}, 1000 * 60);
 				res.status(200).send('OK');
 			} else {
