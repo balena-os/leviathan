@@ -7,7 +7,7 @@ WORKERDIR := ./worker
 -include .env
 
 # optional docker-compose args
-BUILDARGS := --parallel
+BUILDARGS := --parallel --progress=plain
 UPARGS := --force-recreate --remove-orphans
 
 QEMUCOMPOSEFILE := docker-compose.qemu.yml
@@ -18,6 +18,13 @@ ifeq ($(WORKER_TYPE),qemu)
 export COMPOSE_FILE := $(CLIENTCOMPOSEFILE):$(QEMUCOMPOSEFILE)
 else
 export COMPOSE_FILE := $(CLIENTCOMPOSEFILE)
+endif
+
+# for qemu workers we need to set the BALENA_ARCH to pull the correct balenalib image
+ifeq ($(shell uname -m),aarch64)
+export BALENA_ARCH ?= aarch64
+else
+export BALENA_ARCH ?= amd64
 endif
 
 export COMPOSE_DOCKER_CLI_BUILD := 1

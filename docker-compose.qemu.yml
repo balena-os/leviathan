@@ -6,7 +6,7 @@ services:
       context: ./worker
       dockerfile: Dockerfile.template
       args:
-        - BALENA_ARCH=amd64
+        - BALENA_ARCH=${BALENA_ARCH:-amd64}
         - SKIP_INSTALL_BINARY=true
     device_cgroup_rules:
       # allow dynamic creation and access of qemu required misc chardev nodes
