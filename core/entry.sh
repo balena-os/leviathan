@@ -7,4 +7,5 @@ rm -f /var/run/docker.pid 2>/dev/null || true
 dockerd &
 
 eval $(ssh-agent)
-node lib/main.js
+
+cd /usr/app/build && node lib/main-alt.js

@@ -145,7 +145,7 @@ class Suite {
 		};
 
 		try {
-			this.deviceType = require(`../../contracts/contracts/hw.device-type/${conf.deviceType}/contract.json`);
+			this.deviceType = require(`/usr/app/contracts/contracts/hw.device-type/${conf.deviceType}/contract.json`);
 		} catch (e) {
 			if (e.code === 'MODULE_NOT_FOUND') {
 				throw new Error(`Invalid/Unsupported device type: ${conf.deviceType}`);

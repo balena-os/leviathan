@@ -1,39 +1,25 @@
 {
   "compilerOptions": {
-    "typeRoots": [
-      "typings",
-      "node_modules/@types"
-    ],
     "module": "commonjs",
-    "target": "es2019",
-    "allowJs": true,
+    "target": "es5",
     "outDir": "build",
-    "strict": true,
-    "preserveConstEnums": true,
-    "declaration": true,
-    "pretty": true,
-    "sourceMap": true,
-    "skipLibCheck": true,
-    "resolveJsonModule": true,
-    "strictNullChecks": true,
     "noImplicitAny": true,
+    "noUnusedParameters": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true
+    "preserveConstEnums": true,
+    "removeComments": true,
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "strictNullChecks": true,
+    "strictBindCallApply": true,
+    "allowJs": true
   },
-  "exclude": [
-    "node_modules/**",
+  "include": [
+    "lib/**/*.*",  
+    "config/**/*.*",
+    "contracts/**/*.*"
   ],
-  "typedocOptions": {
-    "name": "Leviathan Helpers",
-    "entryPoints": ["lib/common", "lib/components"],
-    "out": "../docs/",
-    "theme": "pages-plugin",
-    "excludeExternals": true,
-    "excludePrivate": true,
-    "excludeProtected": true,
-    // "excludeNotDocumented": true,
-    "categorizeByGroup": true,
-    "categoryOrder": ["helper", "*"],
-    "highlightTheme": "slack-ochin",
-  }
+  "exclude": [
+    "node_modules"
+  ]
 }

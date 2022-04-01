@@ -2,6 +2,7 @@
 	"scripts": {
 		"lint:fix": "balena-lint -e js -e ts --fix lib/**/*",
 		"lint": "balena-lint -u -e js -e ts --tests lib/**/*",
+		"build": "tsc",
 		"start": "node lib/main.js",
 		"docs": "rimraf ../docs/ && npx typedoc --tsconfig tsconfig.json"
 	},
@@ -23,6 +24,7 @@
 		"lodash": "^4.17.10",
 		"md5-file": "^4.0.0",
 		"mz": "^2.7.0",
+		"typescript": "^4.4.4",
 		"node-ssh": "^5.1.2",
 		"npm": "^6.14.6",
 		"pensieve-sdk": "^1.0.0",
@@ -41,7 +43,6 @@
 		"@balena/lint": "^6.2.0",
 		"rimraf": "^3.0.2",
 		"typedoc": "^0.21.2",
-		"typedoc-plugin-pages-fork": "0.0.1",
-		"typescript": "^4.4.4"
+		"typedoc-plugin-pages-fork": "0.0.1"
 	}
 }
