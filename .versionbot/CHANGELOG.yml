@@ -1,4 +1,20 @@
 - commits:
+    - subject: "worker: Add application locks when worker is busy"
+      hash: 943df4c14cce16a2f00fcb092927c8736d93a18d
+      body: |
+        This will allow us to deploy testbot fleet updates
+        without interrupting running tests.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.1.1
+  title: "'worker: Add application locks when worker is busy'"
+  date: 2022-03-30T19:40:41.066Z
+- commits:
     - subject: "Makefile: Install docker-compose binary from releases page"
       hash: 107fc2ee27481aacb4176c431f7cc03fe426161a
       body: |
