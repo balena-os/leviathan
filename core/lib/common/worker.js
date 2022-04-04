@@ -232,11 +232,13 @@ module.exports = class Worker {
 		);
 	}
 
-	ip(target) {
+	async ip(target) {
 		// ip of DUT - used to talk to it
 		// if testbot/local testbot, then we dont wan't the ip, as we use SSH tunneling to talk to it - so return 127.0.0.1
 		// if qemu, return the ip - as we talk to the DUT directly
-		return this.url.includes(`worker`) ? this.getDutIp(target) : `127.0.0.1`;
+		return this.url.includes(`worker`)
+			? this.getDutIp(target)
+			: Promise.resolve(`127.0.0.1`);
 	}
 
 	async teardown() {
