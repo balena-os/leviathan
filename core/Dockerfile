@@ -15,6 +15,7 @@ RUN apk add --no-cache \
 		rsync \
 		docker \
 		bind-tools \
+		bridge bridge-utils iproute2 \
 		util-linux
 
 COPY package*.json ./

@@ -58,6 +58,34 @@ function id() {
 	return `${Math.random().toString(36).substring(2, 10)}`;
 }
 
+async function getBridgeIpAddress() {
+	const interfaces = JSON.parse(await exec(`ip -json a`));
+	let subnet = 10;
+	while (subnet < 255) {
+		const subenetAddr = `10.10.${subnet}.1`;
+		let addrUsed = false;
+		interfaces.forEach((iface) => {
+			iface.addr_info.forEach((addr) => {
+				if (subenetAddr === addr.local) {
+					addrUsed = true;
+				}
+			});
+		});
+		if (!addrUsed) {
+			console.log(`Found unused IP subnet address ${subenetAddr}`);
+			break;
+		} else {
+			subnet++;
+		}
+	}
+
+	if (subnet > 254) {
+		throw new Error(`Could not find unused IP address!`);
+	}
+
+	return `10.10.${subnet}.1`;
+}
+
 module.exports = class Worker {
 	constructor(
 		deviceType,
@@ -78,6 +106,10 @@ module.exports = class Worker {
 		this.workerUser = 'root';
 		this.sshPrefix = '';
 		this.uuid = '';
+		this.interface = {
+			address: '',
+			name: ''
+		}
 		if (this.url.includes(`balena-devices.com`)) {
 			// worker is a testbot connected to balena cloud - we ssh into it via the vpn
 			this.uuid = this.url.match(
@@ -234,9 +266,9 @@ module.exports = class Worker {
 
 	ip(target) {
 		// ip of DUT - used to talk to it
-		// if testbot/local testbot, then we dont wan't the ip, as we use SSH tunneling to talk to it - so return 127.0.0.1
+		// if testbot/local testbot, then we dont wan't the ip, as we use SSH tunneling to talk to it - so return the interface me tunnel the ports to
 		// if qemu, return the ip - as we talk to the DUT directly
-		return this.url.includes(`worker`) ? this.getDutIp(target) : `127.0.0.1`;
+		return this.url.includes(`worker`) ? this.getDutIp(target) : this.interface.address;
 	}
 
 	async teardown() {
@@ -394,7 +426,7 @@ module.exports = class Worker {
 		// we must give map the same port on this host and the DUT - so the cli can use it
 		// this will be torn down at the end of the tests when the core is destroyed
 		let argsClient = [
-			`tcp-listen:${dutPort},reuseaddr,fork`,
+			`tcp-listen:${dutPort},reuseaddr,range=${this.interface.address}/24,fork`,
 			`system:ssh ${this.workerUser}@${this.workerHost} -p ${this.workerPort} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${this.sshKey} ${this.sshPrefix}/usr/bin/nc localhost ${workerPort}`,
 		];
 
@@ -409,11 +441,20 @@ module.exports = class Worker {
 				22222, // ssh
 				2375, // engine
 			];
+
+			// create interface to map ports too - this will avoid port conflicts when multiple suites are running in the same container
+			this.interface.name = `br-${id()}`;
+			this.interface.address = await getBridgeIpAddress();
+
+			await exec(`brctl addbr ${this.interface.name}`);
+			await exec(`ip link set dev ${this.interface.name}`);
+			await exec(`ip addr add ${this.interface.address}/24 dev ${this.interface.name}`)
+			console.log(`Created interface ${this.interface.name} at address ${this.interface.address}`)
+
 			let workerPort = 8888;
 			for (let port of DUT_PORTS) {
 				console.log(`creating tunnel to dut port ${port}...`);
 				await this.createTunneltoDUT(target, port, workerPort);
-				workerPort = workerPort + 1;
 			}
 		} else {
 			// set up route to DUT via the worker ip
