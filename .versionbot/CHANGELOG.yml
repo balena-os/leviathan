@@ -1,4 +1,20 @@
 - commits:
+    - subject: "core: worker: make ip() async"
+      hash: 9874c3c21f60a0d8897cad5c5e4641e4afba6a38
+      body: |
+        This method currently returns either a promise or a string, which breaks
+        code expecting a promise. Switch to async, and always return a promise.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+  version: 2.1.2
+  title: "'core: worker: make ip() async'"
+  date: 2022-04-04T17:48:34.776Z
+- commits:
     - subject: "worker: Add application locks when worker is busy"
       hash: 943df4c14cce16a2f00fcb092927c8736d93a18d
       body: |
