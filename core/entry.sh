@@ -8,4 +8,4 @@ dockerd &
 
 eval $(ssh-agent)
 
-cd /usr/app/build && node lib/main-alt.js
+cd /usr/app/build && node lib/main.js

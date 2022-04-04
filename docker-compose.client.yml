@@ -3,16 +3,24 @@ version: "2"
 services:
   core:
     privileged: true
-    build:
-      context: ./core
+    build: core
     volumes:
       - "${WORKSPACE:-./workspace}:/usr/src/app/workspace:rw"
       - "${DATA:-./workspace/data}:/data:rw"
       - "${REPORTS:-./workspace/reports}:/reports:rw"
+    environment:
+      - WORKER_PORT # allow this env var to be used in config.js
+      - BALENACLOUD_API_KEY # allow this env var to be used in config.js
+      - BALENACLOUD_ORG # allow this env var to be used in config.js
+      - BALENACLOUD_APP_NAME # allow this env var to be used in config.js
+      - DEVICE_TYPE # allow this env var to be used in config.js
+      - WORKER_TYPE # allow this env var to be used in config.js
     tmpfs:
       - /var/run # use tmpfs docker-in-docker pid files
       - /var/lib/docker # use tmpfs for docker-in-docker data root
     restart: 'no'
+    devices:
+      - /dev:/dev # required for creating losetup devices during preload
 
 volumes:
   core-storage:
