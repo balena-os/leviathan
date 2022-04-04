@@ -1,4 +1,28 @@
 - commits:
+    - subject: fix comments
+      hash: 75345230b3f38c6608ae5f68ae1961b968ea7522
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+    - subject: delete client
+      hash: 1ad98bab00edaf8e189983a149cd81ee5ed75316
+      body: ""
+      footer:
+        Change-type: minor
+        change-type: minor
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+  version: 2.2.0
+  title: "'delete client'"
+  date: 2022-04-04T13:22:55.124Z
+- commits:
     - subject: "Makefile: Install docker-compose binary from releases page"
       hash: 107fc2ee27481aacb4176c431f7cc03fe426161a
       body: |
