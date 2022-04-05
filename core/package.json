@@ -29,7 +29,7 @@
 		"request": "^2.88.0",
 		"request-promise": "^4.2.4",
 		"resin-image-fs": "^5.0.8",
-		"simple-git": "^1.85.0",
+		"simple-git": "^3.3.0",
 		"ssh-keygen": "^0.4.1",
 		"string-to-stream": "^1.1.1",
 		"tap": "^13.1.1",
