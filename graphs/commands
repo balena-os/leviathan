@@ -1,0 +1,14 @@
+depcruise --output-type dot .  -X "^node_modules"  -x "node_modules" --progress | dot -T svg | depcruise-wrap-stream-in-html > dependency-graph-everything.html
+
+depcruise --include-only "client"  --output-type dot client  -X "^node_modules"  -x "node_modules" --progress | dot -T svg > dependencygraph-client.svg
+
+ depcruise --output-type dot .  -X "^node_modules"  -x "node_modules" --progress | dot -T svg | depcruise-wrap-stream-in-html > dependency-graph-everything.html
+\
+
+
+depcruise --include-only "client"  --output-type dot client  -X "^node_modules"  -x "node_modules" --progress | dot -T svg > dependencygraph-client.svg
+depcruise --include-only "worker"  --output-type dot worker  -X "^node_modules"  -x "node_modules" --progress | dot -T svg > dependencygraph-worker.svg
+depcruise --include-only "core"  --output-type dot core  -X "^node_modules"  -x "node_modules" --progress | dot -T svg > dependencygraph-core.svg
+depcruise --output-type dot "core"  -X "^node_modules"  -x "node_modules" --progress | dot -T svg | depcruise-wrap-stream-in-html > dependency-graph-core.html
+depcruise --output-type dot "client"  -X "^node_modules"  -x "node_modules" --progress | dot -T svg | depcruise-wrap-stream-in-html > dependency-graph-client.html
+depcruise --output-type dot "worker"  -X "^node_modules"  -x "node_modules" --progress | dot -T svg | depcruise-wrap-stream-in-html > dependency-graph-worker.html
