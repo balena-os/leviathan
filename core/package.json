@@ -28,7 +28,7 @@
 		"pensieve-sdk": "^1.0.0",
 		"request": "^2.88.0",
 		"request-promise": "^4.2.4",
-		"resin-image-fs": "^5.0.8",
+		"balena-image-fs": "^7.0.6",
 		"simple-git": "^1.85.0",
 		"ssh-keygen": "^0.4.1",
 		"string-to-stream": "^1.1.1",
