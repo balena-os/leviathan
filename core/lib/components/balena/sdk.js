@@ -99,7 +99,7 @@ module.exports = class BalenaSDK {
 				}
 
 				const result = await utils.executeCommandOverSSH(
-					`host -s ${device} source /etc/profile ; ${command}`,
+					`host -s ${device} source /etc/profile ; systemd-cat -t "[AG]" echo '${command}'; ${command}`,
 					{
 						host: `ssh.${await this.balena.settings.get('proxyUrl')}`,
 						username: await this.balena.auth.whoami(),

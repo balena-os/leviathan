@@ -291,13 +291,14 @@ module.exports = class Worker {
 				port: '22222',
 				username: 'root',
 			};
+			command = `systemd-cat -t "[AG]" echo '${command}'; ${command}`
 		} else {
 			config = {
 				host: 'ssh.balena-devices.com',
 				port: '22',
 				username: this.username,
 			};
-			command = `host ${target} ${command}`;
+			command = `host ${target} systemd-cat -t "[AG]" echo '${command}'; ${command}`;
 		}
 
 		return retry(
