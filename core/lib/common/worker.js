@@ -303,6 +303,7 @@ module.exports = class Worker {
 
 		return retry(
 			async () => {
+				console.log(`Executing ${command} on ${target}`)
 				const result = await utils.executeCommandOverSSH(command, config);
 
 				if (typeof result.code === 'number' && result.code !== 0) {

@@ -98,6 +98,7 @@ module.exports = class BalenaSDK {
 					throw new Error(`${device}: is not marked as connected to our VPN.`);
 				}
 
+				console.log(`Executing ${command}`)
 				const result = await utils.executeCommandOverSSH(
 					`host -s ${device} source /etc/profile ; systemd-cat -t "[AG]" echo '${command}'; ${command}`,
 					{

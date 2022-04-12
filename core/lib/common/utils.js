@@ -68,6 +68,7 @@ module.exports = {
 				client.connection.on('error', (err) => {
 					reject(err);
 				});
+				console.log(`[executeCommandOverSSH] Executing ${command}`)
 				resolve(
 					await client.exec(command, [], {
 						stream: 'both',
