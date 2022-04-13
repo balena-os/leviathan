@@ -70,8 +70,8 @@ class NonInteractiveState {
 	}
 
 	attachPanel(elem) {
-		let workerUrl = elem.workers;
-		let suite = elem.suite.split(`/`).pop();
+		let workerUrl = elem.suiteConfig.workers;
+		let suite = elem.suiteConfig.suite.split(`/`).pop();
 
 		let workerId;
 		try {
@@ -80,7 +80,7 @@ class NonInteractiveState {
 				.substring(0, 7)}-${suite}`;
 		} catch (e) {
 			console.error(e);
-			workerId = elem.workers.toString();
+			workerId = elem.suiteConfig.workers.toString();
 			workerUrl = null;
 		}
 
@@ -317,9 +317,8 @@ class NonInteractiveState {
 			if (runConfig.workers instanceof Array) {
 				runConfig.workers.forEach((worker) => {
 					runQueue.push({
-						...runConfig,
+						suiteConfig: runConfig,
 						matchingDevices: [worker],
-						workers: null,
 						workerPrefix: null,
 						array: true,
 					});
@@ -339,17 +338,15 @@ class NonInteractiveState {
 				}
 
 				runQueue.push({
-					...runConfig,
+					suiteConfig: runConfig,
 					matchingDevices: matchingDevices,
-					workers: null,
 					workerPrefix: null,
 				});
 			}
 		}
-
 		state.info(
 			`[Running Queue] Suites currently in queue: ${runQueue.map(
-				(run) => path.parse(run.suite).base,
+				(run) => path.parse(run.suiteConfig.suite).base,
 			)}`,
 		);
 		const busyWorkers = [];
@@ -391,7 +388,7 @@ class NonInteractiveState {
 				}
 			}
 
-			if (job.workers === null) {
+			if (job.suiteConfig.workers === null) {
 				// No idle workers currently - the job is pushed to the back of the queue
 				await require('bluebird').delay(25000);
 				runQueue.unshift(job);
@@ -401,16 +398,10 @@ class NonInteractiveState {
 				const child = fork(
 					path.join(__dirname, 'single-client'),
 					[
-						'-d',
-						job.deviceType,
-						'-i',
-						job.image,
 						'-c',
-						job.config instanceof Object
-							? JSON.stringify(job.config)
-							: job.config,
-						'-s',
-						job.suite,
+						job.suiteConfig instanceof Object
+						? JSON.stringify(job.suiteConfig)
+						: job.suiteConfig,
 						'-u',
 						job.workers,
 					],
@@ -424,7 +415,7 @@ class NonInteractiveState {
 				);
 
 				// after creating child process, add the worker to the busy workers array
-				busyWorkers.push(job.workers);
+				busyWorkers.push(job.suiteConfig.workers);
 
 				let status = await rp.get(new url.URL('/start', deviceUrl).toString());
 
@@ -432,7 +423,7 @@ class NonInteractiveState {
 				children[child.pid] = {
 					_child: child,
 					outputPath: `${yargs.workdir}/${
-						new url.URL(job.workers).hostname || child.pid
+						new url.URL(job.suiteConfig.workers).hostname || child.pid
 					}.out`,
 					exitCode: 1,
 				};
@@ -458,7 +449,7 @@ class NonInteractiveState {
 				child.stdout.on('data', job.log);
 				child.stderr.on('data', job.log);
 
-				job.info(`WORKER URL: ${job.workers}`);
+				job.info(`WORKER URL: ${job.suiteConfig.workers}`);
 
 				child.on('exit', (code) => {
 					children[child.pid].code = code;
@@ -466,7 +457,7 @@ class NonInteractiveState {
 						job.teardown();
 					}
 					// remove the worker from the busy array once the job is finished
-					busyWorkers.splice(busyWorkers.indexOf(job.workers));
+					busyWorkers.splice(busyWorkers.indexOf(job.suiteConfig.workers));
 				});
 			}
 		}

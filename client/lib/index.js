@@ -288,7 +288,7 @@ module.exports = class Client extends PassThrough {
 	}
 
 	run() {
-		const main = async (deviceType, suite, conf, image) => {
+		const main = async (suiteConfig) => {
 			process.on('SIGINT', async () => {
 				await rp.post(`${this.coreUrl}/stop`).catch(this.log.bind(this));
 				process.exit(128 + constants.signals.SIGINT);
@@ -318,13 +318,13 @@ module.exports = class Client extends PassThrough {
 
 							switch (id) {
 								case 'suite':
-									artifact.path = makePath(suite);
+									artifact.path = makePath(suiteConfig.suite);
 									artifact.type = 'isDirectory';
 									break;
 								case 'image':
 									// [Hack] Upload a fake image if image is false
 									// Remove when https://github.com/balena-os/leviathan/issues/567 is resolved
-									if (image === 'false') {
+									if (suiteConfig.image === false) {
 										// Had to create fake image in home directory otherwise
 										// facing a permission issue since client root is read-only
 										const fakeImagePath = '/home/test-balena.img.gz';
@@ -333,25 +333,24 @@ module.exports = class Client extends PassThrough {
 										artifact.type = 'isFile';
 										break;
 									}
-									artifact.path = makePath(image);
+									artifact.path = makePath(suiteConfig.image);
 									artifact.type = 'isFile';
 									break;
 								case 'config':
 									artifact.type = 'isJSON';
 									artifact.data = null;
-									if (await exists(makePath(conf))) {
-										artifact.data = require(makePath(conf));
+									if (typeof (suiteConfig) === 'object') {
+										artifact.data = suiteConfig
+									} else if (await exists(makePath(suiteConfig))) {
+										artifact.data = require(makePath(suiteConfig));
 									} else {
-										artifact.data = JSON.parse(conf);
+										artifact.data = suiteConfig
 									}
-									artifact.data.deviceType = deviceType;
 									artifact.data.workerUrl = this.uri;
-									artifact.data.image = image;
 									break;
 								default:
 									throw new Error('Unexpected upload request. Panicking...');
 							}
-
 							await this.handleArtifact(artifact, token, attempt);
 							break;
 						case 'log':

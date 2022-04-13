@@ -82,45 +82,45 @@ function cleanObject(object) {
 
 class Suite {
 	constructor() {
-		const conf = require(config.get('leviathan.uploads.config'));
+		const suiteConfig = require(config.get('leviathan.uploads.config'));
 		this.rootPath = path.join(__dirname, '..');
 		const options = {
 			id,
 			packdir: config.get('leviathan.workdir'),
-			tmpdir: conf.tmpdir || tmpdir(),
-			replOnFailure: conf.repl,
+			tmpdir: suiteConfig.config.tmpdir || tmpdir(),
+			replOnFailure: suiteConfig.config.repl,
 			balena: {
 				application: {
 					env: {
-						delta: conf.supervisorDelta || false,
+						delta: suiteConfig.config.supervisorDelta || false,
 					},
 				},
-				apiKey: conf.balenaApiKey,
-				apiUrl: conf.balenaApiUrl,
-				organization: conf.organization,
+				apiKey: suiteConfig.config.balenaApiKey,
+				apiUrl: suiteConfig.config.balenaApiUrl,
+				organization: suiteConfig.config.organization,
 			},
 			balenaOS: {
 				config: {
 					uuid: uid(),
 				},
 				download: {
-					version: conf.downloadVersion,
+					version: suiteConfig.config.downloadVersion,
 				},
 				network: {
-					wired: conf.networkWired,
-					wireless: conf.networkWireless,
+					wired: suiteConfig.config.networkWired,
+					wireless: suiteConfig.config.networkWireless,
 				},
 			},
 		};
 
 		// Setting the correct API environment for CLI calls
-		exec(`echo "balenaUrl: '${conf.balenaApiUrl}'" > ~/.balenarc.yml`);
+		exec(`echo "balenaUrl: '${suiteConfig.config.balenaApiUrl}'" > ~/.balenarc.yml`);
 
-		// In the future, deprecate the options object completely to create a mega-conf
+		// In the future, deprecate the options object completely to create a mega-suiteConfig
 		// Breaking changes will need to be done to both test suites + helpers
 		this.options = {
 			...options,
-			...conf,
+			...suiteConfig,
 		};
 		cleanObject(this.options);
 
@@ -145,10 +145,10 @@ class Suite {
 		};
 
 		try {
-			this.deviceType = require(`../../contracts/contracts/hw.device-type/${conf.deviceType}/contract.json`);
+			this.deviceType = require(`../../contracts/contracts/hw.device-type/${suiteConfig.deviceType}/contract.json`);
 		} catch (e) {
 			if (e.code === 'MODULE_NOT_FOUND') {
-				throw new Error(`Invalid/Unsupported device type: ${conf.deviceType}`);
+				throw new Error(`Invalid/Unsupported device type: ${suiteConfig.deviceType}`);
 			} else {
 				throw e;
 			}
