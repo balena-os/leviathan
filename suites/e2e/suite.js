@@ -110,7 +110,7 @@ module.exports = {
 				{
 					deviceType: this.suite.deviceType.slug,
 					network: this.suite.options.balenaOS.network,
-					image: this.suite.options.image === 'false' ? `${await this.context
+					image: this.suite.options.image === false ? `${await this.context
 						.get()
 						.sdk.fetchOS(
 							this.suite.options.balenaOS.download.version,

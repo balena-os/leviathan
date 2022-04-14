@@ -11,27 +11,9 @@ const yargs = require('yargs')
 		alias: 'help',
 		description: 'display help message',
 	})
-	.option('d', {
-		alias: 'deviceType',
-		description: 'name of the device type we are testing',
-		required: true,
-		type: 'string',
-	})
-	.option('s', {
-		alias: 'suite',
-		description: 'path to test suite',
-		required: true,
-		type: 'string',
-	})
-	.option('i', {
-		alias: 'image',
-		description: 'path to unconfigured OS image',
-		required: true,
-		type: 'string',
-	})
 	.option('c', {
-		alias: 'config',
-		description: 'path to configuration file',
+		alias: 'suiteConfig',
+		description: 'Config for the suite as a JSON string',
 		required: true,
 		type: 'string',
 	})
@@ -56,5 +38,6 @@ const yargs = require('yargs')
 
 	await ensureDir(client.workdir);
 	client.pipe(createWriteStream(join(client.workdir, 'log')));
-	await client.run(yargs.deviceType, yargs.suite, yargs.config, yargs.image);
+
+	await client.run(JSON.parse(yargs.suiteConfig));
 })();
