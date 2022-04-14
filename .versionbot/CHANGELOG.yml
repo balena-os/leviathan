@@ -1,4 +1,16 @@
 - commits:
+    - subject: "minor: Transfer complete suiteConfig to core"
+      hash: f0200655aef61752c8337ea706fc672fc717b605
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.2.0
+  title: "'minor: Transfer complete suiteConfig to core'"
+  date: 2022-04-13T17:25:59.704Z
+- commits:
     - subject: "components/os: Fix injecting configuration in Jetson Nano"
       hash: 78309636e8885d7031cd61978e7a347cce1e6791
       body: |
