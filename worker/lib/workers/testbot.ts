@@ -16,6 +16,7 @@ import * as Stream from 'stream';
 import { manageHandlers } from '../helpers';
 import ScreenCapture from '../helpers/graphics';
 import NetworkManager, { Supported } from '../helpers/nm';
+import { ReadlineParser } from '@serialport/parser-readline';
 
 // TODO: Consider moving network and screen capture logic to testbot SDK.
 
@@ -52,6 +53,7 @@ class TestBotWorker extends EventEmitter implements Leviathan.Worker {
 	private readonly hatBoard: TestBotHat;
 	private readonly deviceInteractor: DeviceInteractor;
 	private dutLogStream: Stream.Writable | null = null;
+	private dutSerialStream: Stream.Duplex | null = null;
 
 	constructor(options: Leviathan.RuntimeConfiguration) {
 		super();
@@ -79,6 +81,10 @@ class TestBotWorker extends EventEmitter implements Leviathan.Worker {
 		return this.internalState;
 	}
 
+	get serialStream() {
+		return this.dutSerialStream;
+	}
+
 	public async setup() {
 		await this.hatBoard.setup();
 	}
@@ -90,10 +96,11 @@ class TestBotWorker extends EventEmitter implements Leviathan.Worker {
 	}
 
 	public async powerOn() {
-		const dutLog = await this.hatBoard.openDutSerial();
-		if (dutLog) {
+		this.dutSerialStream = await this.hatBoard.openDutSerial();
+		if (this.dutSerialStream) {
 			this.dutLogStream = createWriteStream(dutSerialPath);
-			dutLog.pipe(this.dutLogStream);
+			this.dutSerialStream.pipe(this.dutLogStream);
+			this.dutSerialStream.pipe(new ReadlineParser({delimiter: '\n'}))
 		}
 		console.log('Trying to power on DUT...');
 		await this.deviceInteractor.powerOn();
