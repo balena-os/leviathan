@@ -17,7 +17,7 @@ const pipeline = util.promisify(Stream.pipeline);
 const execSync = util.promisify(exec);
 import { readFile } from 'fs-extra';
 import { createGzip, createGunzip } from 'zlib';
-import lockfile from 'proper-lockfile';
+import * as lockfile from 'proper-lockfile';
 
 const balena = getSdk({
 	apiUrl: 'https://api.balena-cloud.com/',
@@ -36,26 +36,30 @@ const handleCompromised = (err: Error) => {
 
 async function lock(lockPath: string) {
 	const options = { realpath: false, onCompromised: handleCompromised };
-	await lockfile.check(lockPath, options).then(async (isLocked) => {
-		if (!isLocked) {
-			await lockfile
-				.lock(lockPath, options)
-				.catch((err) => console.error(err))
-				.then(() => console.log('updates locked...'));
-		}
-	});
+	await lockfile.check(lockPath, options)
+		.then(async (isLocked) => {
+			if (!isLocked) {
+				await lockfile
+					.lock(lockPath, options)
+					.catch((err) => console.error(err))
+					.then(() => console.log('updates locked...'));
+			}
+		})
+		.catch((err) => console.error(err));
 }
 
 async function unlock(lockPath: string) {
 	const options = { realpath: false, onCompromised: handleCompromised };
-	await lockfile.check(lockPath, options).then(async (isLocked) => {
-		if (isLocked) {
-			await lockfile
-				.unlock(lockPath, options)
-				.catch((err) => console.error(err))
-				.then(() => console.log('updates unlocked...'));
-		}
-	});
+	await lockfile.check(lockPath, options)
+		.then(async (isLocked) => {
+			if (isLocked) {
+				await lockfile
+					.unlock(lockPath, options)
+					.catch((err) => console.error(err))
+					.then(() => console.log('updates unlocked...'));
+			}
+		})
+		.catch((err) => console.error(err));
 }
 
 let state = 'IDLE';
