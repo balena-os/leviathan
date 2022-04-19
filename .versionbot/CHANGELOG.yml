@@ -1,4 +1,18 @@
 - commits:
+    - subject: Fixes issue with importing lockfile module
+      hash: cc648090be3200f14a454ab526fa07e8ed4206e3
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Alex Bucknall <alex.bucknall@gmail.com>
+        signed-off-by: Alex Bucknall <alex.bucknall@gmail.com>
+      author: Alex
+      nested: []
+  version: 2.2.1
+  title: "'Fixes issue with importing lockfile module'"
+  date: 2022-04-14T10:12:10.859Z
+- commits:
     - subject: "minor: Transfer complete suiteConfig to core"
       hash: f0200655aef61752c8337ea706fc672fc717b605
       body: ""
