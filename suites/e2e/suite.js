@@ -13,7 +13,7 @@ const { homedir } = require('os');
 const imagefs = require('balena-image-fs');
 const stream = require('stream')
 const pipeline = require('bluebird').promisify(stream.pipeline);
-
+const util = require('util');
 
 // copied from the SV
 // https://github.com/balena-os/balena-supervisor/blob/master/src/config/backends/config-txt.ts
@@ -76,10 +76,10 @@ module.exports = {
 			sdk: new Balena(this.suite.options.balena.apiUrl, this.getLogger()),
 			link: `${this.suite.options.balenaOS.config.uuid.slice(0, 7)}.local`,
 			worker: new Worker(
-				this.suite.deviceType.slug, 
-				this.getLogger(), 
-				this.suite.options.workerUrl, 
-				this.suite.options.balena.organization, 
+				this.suite.deviceType.slug,
+				this.getLogger(),
+				this.suite.options.workerUrl,
+				this.suite.options.balena.organization,
 				join(homedir(), 'id')
 			)
 		});
@@ -195,19 +195,19 @@ module.exports = {
 
 		this.log("Logging into balena with balenaSDK");
 		await this.context
-		  .get()
-		  .sdk.balena.auth.loginWithToken(this.suite.options.balena.apiKey);
+			.get()
+			.sdk.balena.auth.loginWithToken(this.suite.options.balena.apiKey);
 		await this.context
-		.get()
-		.sdk.balena.models.key.create(
-			this.sshKeyLabel,
-			keys.pubKey
-		);
+			.get()
+			.sdk.balena.models.key.create(
+				this.sshKeyLabel,
+				keys.pubKey
+			);
 		this.suite.teardown.register(() => {
 			return Promise.resolve(
 				this.context
-				.get()
-				.sdk.removeSSHKey(this.sshKeyLabel)
+					.get()
+					.sdk.removeSSHKey(this.sshKeyLabel)
 			);
 		});
 
