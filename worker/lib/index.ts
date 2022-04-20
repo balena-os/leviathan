@@ -15,9 +15,15 @@ import * as tar from 'tar-fs';
 import * as util from 'util';
 const pipeline = util.promisify(Stream.pipeline);
 const execSync = util.promisify(exec);
-import { readFile } from 'fs-extra';
+import { readFile, createReadStream, read, open } from 'fs-extra';
 import { createGzip, createGunzip } from 'zlib';
 import * as lockfile from 'proper-lockfile';
+
+async function isGzip(filePath: string) {
+	const buf = Buffer.alloc(3);
+	await read(await open(filePath, 'r'), buf, 0, 3, 0);
+	return buf[0] === 0x1f && buf[1] === 0x8b && buf[2] === 0x08;
+}
 
 const balena = getSdk({
 	apiUrl: 'https://api.balena-cloud.com/',
@@ -341,6 +347,7 @@ async function setup(
 	});
 	app.post(
 		'/dut/flash',
+		jsonParser,
 		async (req: express.Request, res: express.Response) => {
 			function onProgress(progress: multiWrite.MultiDestinationProgress): void {
 				res.write(`progress: ${JSON.stringify(progress)}`);
@@ -357,9 +364,17 @@ async function setup(
 
 			try {
 				worker.on('progress', onProgress);
-				const imageStream = createGunzip();
-				req.pipe(imageStream);
-				await worker.flash(imageStream);
+				const image = createReadStream(req.body.path);
+
+				if (await isGzip(req.body.path)){
+					console.log(`Image is Gzipped, unzipping....`)
+					const imageStream = createGunzip();
+					image.pipe(imageStream);
+					await worker.flash(imageStream);
+				} else {
+					console.log(`Image is not Gzipped!`)
+					await worker.flash(image);
+				}
 			} catch (e) {
 				if (e instanceof Error) {
 					res.write(`error: ${e.message}`);

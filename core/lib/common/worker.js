@@ -106,10 +106,31 @@ module.exports = class Worker {
 			await retry(
 				async () => {
 					attempt++;
-					this.logger.log(`Preparing to flash, attempt ${attempt}...`);
+					// if qemu worker, image is already in volume
+					let flashPath = imagePath;
+					if(!this.url.includes(`worker`)){
+						// otherwise, transfer the file across to the worker first
+						this.logger.log(`Zipping file ${imagePath}...`);
+						await pipeline(
+							fs.createReadStream(imagePath),
+							createGzip({ level: 6 }),
+							fs.createWriteStream(`/tmp/os.img`)
+						)
+					
+						this.logger.log(`Sending image to worker....`);
+						flashPath = `/tmp/os.img`;
+						await this.sendFile(`/tmp/os.img`, `/tmp`, 'worker');
+					}
 
+					this.logger.log(`Preparing to flash, attempt ${attempt}...`);
 					await new Promise(async (resolve, reject) => {
-						const req = rp.post({ uri: `${this.url}/dut/flash` });
+						const req = rp.post({ 
+							uri: `${this.url}/dut/flash`, 
+							body: {
+								path: flashPath
+							},
+							json: true
+						});
 
 						req.catch((error) => {
 							reject(error);
@@ -152,11 +173,6 @@ module.exports = class Worker {
 							}
 						});
 
-						pipeline(
-							fs.createReadStream(imagePath),
-							createGzip({ level: 6 }),
-							req,
-						);
 					});
 					this.logger.log('Flash completed');
 				},
@@ -440,14 +456,41 @@ module.exports = class Worker {
 				`balena ps | grep worker | awk '{print $1}'`,
 			);
 			// todo : replace with npm package
-			await exec(
-				`rsync -av -e "ssh ${this.workerUser}@${this.workerHost} -p ${this.workerPort} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -q ${this.sshPrefix}balena exec -i" ${filePath} ${containerId}:${destination}`,
-			);
+			await new Promise((resolve, reject) => {
+				let sendProc = spawn('rsync', [
+					`-av --progress -e "ssh ${this.workerUser}@${this.workerHost} -p ${this.workerPort} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -q ${this.sshPrefix}balena exec -i" ${filePath} ${containerId}:${destination}`,
+				], { shell: true, stdio: 'inherit'});
+
+				sendProc.on('exit', (code) => {
+					if (code === 0) {
+						resolve();
+					} else {
+						reject()
+					}
+				});
+				sendProc.on('error', (err) => {
+					reject(err);
+				});
+			});
+
 		} else {
 			let ip = await this.ip(target);
-			await exec(
-				`rsync -av -e "ssh -p 22222 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -q -i ${this.sshKey}" ${filePath} root@${ip}:${destination}`,
-			);
+			await new Promise((resolve, reject) => {
+				let sendProc = spawn('rsync', [
+					`-av --progress -e "ssh -p 22222 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -q -i ${this.sshKey}" ${filePath} root@${ip}:${destination}`,
+				], { shell: true, stdio: 'inherit'});
+
+				sendProc.on('exit', (code) => {
+					if (code === 0) {
+						resolve();
+					} else {
+						reject()
+					}
+				});
+				sendProc.on('error', (err) => {
+					reject(err);
+				});
+			});
 		}
 	}
 
