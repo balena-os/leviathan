@@ -1,4 +1,26 @@
 - commits:
+    - subject: "worker: qemu: add option to disable network autoconfiguration"
+      hash: 115872291b87b9109cbfe01e33c316f3f53d021c
+      body: |
+        Network configuration, including creating a bridge, setting iptables
+        rules, and running a DHCP server, requires privileges. This can be done
+        easily in a container, but would otherwise necessitate running the whole
+        test suite privileged, or with CAP_NET_ADMIN at least.
+
+        Allow users to disable network autoconfiguration in favor of manually
+        setting up a bridge and DHCP server separately. This allows the suite to
+        be run unprivileged, if necessary.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+  version: 2.2.3
+  title: "'worker: qemu: add option to disable network autoconfiguration'"
+  date: 2022-04-20T21:12:22.772Z
+- commits:
     - subject: Linting e2e suite.js
       hash: aa5169c5ec02ad77df6c799487d09741212cc43c
       body: ""
