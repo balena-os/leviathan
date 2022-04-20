@@ -17,6 +17,7 @@ module.exports = {
 				memory: process.env.QEMU_MEMORY || '2G',
 				debug: process.env.QEMU_DEBUG || false,
 				network: {
+					autoconfigure: true,
 					bridgeName: process.env.QEMU_BRIDGE_NAME || null,
 					bridgeAddress: process.env.QEMU_BRIDGE_ADDRESS || null,
 					dhcpRange: process.env.QEMU_DHCP_RANGE || null,

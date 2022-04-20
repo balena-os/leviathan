@@ -27,6 +27,7 @@ declare global {
 				vars: string
 			},
 			network: {
+				autoconfigure: boolean;
 				bridgeName: string;
 				bridgeAddress: string;
 				dhcpRange: string;
