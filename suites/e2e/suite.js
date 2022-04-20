@@ -11,15 +11,15 @@ const { homedir } = require('os');
 
 // required for unwrapping images
 const imagefs = require('balena-image-fs');
-const stream = require('stream')
+const stream = require('stream');
 const pipeline = require('bluebird').promisify(stream.pipeline);
-
+const util = require('util');
 
 // copied from the SV
 // https://github.com/balena-os/balena-supervisor/blob/master/src/config/backends/config-txt.ts
 // TODO: retrieve this from the SDK (requires v16.2.0) or future versions of device contracts
 // https://www.balena.io/docs/reference/sdk/node-sdk/#balena.models.config.getConfigVarSchema
-const supportsBootConfig = (deviceType) => {
+const supportsBootConfig = deviceType => {
 	return (
 		[
 			'fincm3',
@@ -32,16 +32,18 @@ const supportsBootConfig = (deviceType) => {
 	);
 };
 
-const enableSerialConsole = async (imagePath) => {
-	const bootConfig = await imagefs.interact(imagePath, 1, async (_fs) => {
-		return util.promisify(_fs.readFile)('/config.txt')
-			.catch((err) => {
+const enableSerialConsole = async imagePath => {
+	const bootConfig = await imagefs.interact(imagePath, 1, async _fs => {
+		return util
+			.promisify(_fs.readFile)('/config.txt')
+			.catch(err => {
+				console.error(err);
 				return undefined;
 			});
 	});
 
 	if (bootConfig) {
-		await imagefs.interact(imagePath, 1, async (_fs) => {
+		await imagefs.interact(imagePath, 1, async _fs => {
 			const regex = /^enable_uart=.*$/m;
 			const value = 'enable_uart=1';
 
@@ -59,7 +61,7 @@ const enableSerialConsole = async (imagePath) => {
 
 module.exports = {
 	title: 'Testbot Diagnositcs',
-	run: async function (test) {
+	run: async function(test) {
 		// The worker class contains methods to interact with the DUT, such as flashing, or executing a command on the device
 		const Worker = this.require('common/worker');
 		// The balenaOS class contains information on the OS image to be flashed, and methods to configure it
@@ -76,12 +78,12 @@ module.exports = {
 			sdk: new Balena(this.suite.options.balena.apiUrl, this.getLogger()),
 			link: `${this.suite.options.balenaOS.config.uuid.slice(0, 7)}.local`,
 			worker: new Worker(
-				this.suite.deviceType.slug, 
-				this.getLogger(), 
-				this.suite.options.workerUrl, 
-				this.suite.options.balena.organization, 
-				join(homedir(), 'id')
-			)
+				this.suite.deviceType.slug,
+				this.getLogger(),
+				this.suite.options.workerUrl,
+				this.suite.options.balena.organization,
+				join(homedir(), 'id'),
+			),
 		});
 
 		// Network definitions - here we check what network configuration is selected for the DUT for the suite, and add the appropriate configuration options (e.g wifi credentials)
@@ -110,18 +112,19 @@ module.exports = {
 				{
 					deviceType: this.suite.deviceType.slug,
 					network: this.suite.options.balenaOS.network,
-					image: this.suite.options.image === false ? `${await this.context
-						.get()
-						.sdk.fetchOS(
-							this.suite.options.balenaOS.download.version,
-							this.suite.deviceType.slug,
-						)}` : undefined,
+					image:
+						this.suite.options.image === false
+							? `${await this.context
+									.get()
+									.sdk.fetchOS(
+										this.suite.options.balenaOS.download.version,
+										this.suite.deviceType.slug,
+									)}`
+							: undefined,
 					configJson: {
 						uuid: this.suite.options.balenaOS.config.uuid,
 						os: {
-							sshKeys: [
-								keys.pubKey
-							],
+							sshKeys: [keys.pubKey],
 						},
 						// Set an API endpoint for the HTTPS time sync service.
 						apiEndpoint: 'https://api.balena-cloud.com',
@@ -147,8 +150,8 @@ module.exports = {
 
 		// Get worker setup info
 		this.suite.context.set({
-			workerContract: await this.worker.getContract()
-		})
+			workerContract: await this.worker.getContract(),
+		});
 
 		// Create network AP on testbot
 		await this.worker.network(this.suite.options.balenaOS.network);
@@ -166,16 +169,12 @@ module.exports = {
 			console.log(`Unwrapping file ${this.os.image.path}`);
 			console.log(`Looking for ${RAW_IMAGE_PATH}`);
 			try {
-				await imagefs.interact(
-					this.os.image.path,
-					2,
-					async (fsImg) => {
-						await pipeline(
-							fsImg.createReadStream(RAW_IMAGE_PATH),
-							fse.createWriteStream(OUTPUT_IMG_PATH),
-						);
-					},
-				);
+				await imagefs.interact(this.os.image.path, 2, async fsImg => {
+					await pipeline(
+						fsImg.createReadStream(RAW_IMAGE_PATH),
+						fse.createWriteStream(OUTPUT_IMG_PATH),
+					);
+				});
 
 				this.os.image.path = OUTPUT_IMG_PATH;
 				console.log(`Unwrapped flasher image!`);
@@ -193,24 +192,18 @@ module.exports = {
 			await enableSerialConsole(this.os.image.path);
 		}
 
-		this.log("Logging into balena with balenaSDK");
+		this.log('Logging into balena with balenaSDK');
 		await this.context
-		  .get()
-		  .sdk.balena.auth.loginWithToken(this.suite.options.balena.apiKey);
+			.get()
+			.sdk.balena.auth.loginWithToken(this.suite.options.balena.apiKey);
 		await this.context
-		.get()
-		.sdk.balena.models.key.create(
-			this.sshKeyLabel,
-			keys.pubKey
-		);
+			.get()
+			.sdk.balena.models.key.create(this.sshKeyLabel, keys.pubKey);
 		this.suite.teardown.register(() => {
 			return Promise.resolve(
-				this.context
-				.get()
-				.sdk.removeSSHKey(this.sshKeyLabel)
+				this.context.get().sdk.removeSSHKey(this.sshKeyLabel),
 			);
 		});
-
 
 		// Configure OS image
 		await this.os.configure();
@@ -224,8 +217,5 @@ module.exports = {
 		// 		.worker.archiveLogs(this.id, this.context.get().link);
 		// });
 	},
-	tests: ['./tests/flash',
-		'./tests/power-cycle',
-		'./tests/serial'
-	],
+	tests: ['./tests/flash', './tests/power-cycle', './tests/serial'],
 };
