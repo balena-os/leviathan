@@ -53,7 +53,15 @@ async function createJsonSummary(suite) {
 }
 
 (async () => {
-	const suite = new Suite();
+	const conf = require(config.get('leviathan.uploads.config'));
+	const suite = new Suite(
+		{
+			suitePath: config.get('leviathan.uploads.suite'),
+			deviceType: conf.deviceType,
+			imagePath: config.get('leviathan.uploads').image,
+		},
+		conf
+	);
 	suite.setup.register(removeArtifacts);
 	suite.setup.register(
 		async () => fs.ensureDir(config.get('leviathan.downloads'))

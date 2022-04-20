@@ -25,7 +25,6 @@
 
 'use strict';
 
-const config = require('config');
 const isEmpty = require('lodash/isEmpty');
 const isObject = require('lodash/isObject');
 const isString = require('lodash/isString');
@@ -80,12 +79,14 @@ function cleanObject(object) {
 }
 
 module.exports = class Suite {
-	constructor() {
-		const suiteConfig = require(config.get('leviathan.uploads.config'));
+	constructor(suiteOptions, suiteConfig) {
+		this.suitePath = suiteOptions.suitePath;
+		this.image = suiteOptions.imagePath;
+		this.deviceTypeSlug = suiteOptions.deviceType;
+		this.workerAddress = suiteOptions.workerAddress;
 		this.rootPath = path.join(__dirname, '..');
 		const options = {
 			id,
-			packdir: config.get('leviathan.workdir'),
 			tmpdir: suiteConfig.config.tmpdir || tmpdir(),
 			replOnFailure: suiteConfig.config.repl,
 			balena: {
@@ -149,10 +150,10 @@ module.exports = class Suite {
 		};
 
 		try {
-			this.deviceType = require(`../../contracts/contracts/hw.device-type/${suiteConfig.deviceType}/contract.json`);
+			this.deviceType = require(`../../contracts/contracts/hw.device-type/${this.deviceTypeSlug}/contract.json`);
 		} catch (e) {
 			if (e.code === 'MODULE_NOT_FOUND') {
-				throw new Error(`Invalid/Unsupported device type: ${suiteConfig.deviceType}`);
+				throw new Error(`Invalid/Unsupported device type: ${this.deviceTypeSlug}`);
 			} else {
 				throw e;
 			}
@@ -164,7 +165,7 @@ module.exports = class Suite {
 			await this.setup.runAll();
 			await this.installDependencies();
 			this.rootTree = this.resolveTestTree(
-				path.join(config.get('leviathan.uploads.suite'), 'suite'),
+				path.join(this.suitePath, 'suite'),
 			);
 			this.testSummary.suite = this.rootTree.title;
 		}).catch(async (error) => {
@@ -265,7 +266,7 @@ module.exports = class Suite {
 					if (isString(test)) {
 						try {
 							test = tests[i] = require(path.join(
-								config.get('leviathan.uploads.suite'),
+								this.suitePath,
 								test,
 							));
 						} catch (error) {
@@ -311,18 +312,18 @@ module.exports = class Suite {
 		await Bluebird.promisify(npm.load)({
 			loglevel: 'silent',
 			progress: false,
-			prefix: config.get('leviathan.uploads.suite'),
+			prefix: this.suitePath,
 			'package-lock': false,
 		});
 		await Bluebird.promisify(npm.install)(
-			config.get('leviathan.uploads.suite'),
+			this.suitePath,
 		);
 	}
 
 	async removeDependencies() {
 		this.state.log(`Removing npm dependencies for suite:`);
 		await Bluebird.promisify(fse.remove)(
-			path.join(config.get('leviathan.uploads.suite'), 'node_modules'),
+			path.join(this.suitePath, 'node_modules'),
 		);
 	}
 }
