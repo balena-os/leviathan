@@ -1,4 +1,18 @@
 - commits:
+    - subject: "worker: rework flash endpoint"
+      hash: 21146a4e707f2150f286db7ddbd7ef88685ca700
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+  version: 2.2.3
+  title: "'worker: rework flash endpoint'"
+  date: 2022-04-20T15:04:46.913Z
+- commits:
     - subject: Linting e2e suite.js
       hash: aa5169c5ec02ad77df6c799487d09741212cc43c
       body: ""
