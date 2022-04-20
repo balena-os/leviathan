@@ -1,4 +1,28 @@
 - commits:
+    - subject: Linting e2e suite.js
+      hash: aa5169c5ec02ad77df6c799487d09741212cc43c
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Alex Bucknall <alex.bucknall@gmail.com>
+        signed-off-by: Alex Bucknall <alex.bucknall@gmail.com>
+      author: Alex
+      nested: []
+    - subject: Adds package for util to e2e suite.js
+      hash: c7058f731264204321873bc96405041b81625dda
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Alex Bucknall <alex.bucknall@gmail.com>
+        signed-off-by: Alex Bucknall <alex.bucknall@gmail.com>
+      author: Alex
+      nested: []
+  version: 2.2.2
+  title: "'Adds package for util to e2e suite.js'"
+  date: 2022-04-20T10:50:00.218Z
+- commits:
     - subject: Fixes issue with importing lockfile module
       hash: cc648090be3200f14a454ab526fa07e8ed4206e3
       body: ""
