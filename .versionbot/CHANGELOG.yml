@@ -1,4 +1,23 @@
 - commits:
+    - subject: Fix links to balenaOS downloads
+      hash: d27cbcfd18779fe4fc250913a30daef6b6010e09
+      body: >
+        They were previously being rendered as relative to the documentation
+
+        page, like
+
+        `https://balena-os.github.io/leviathan/pages/Getting-Started/quickstart/balena.io/os`.
+      footer:
+        Signed-off-by: Leandro Motta Barros <leandro@balena.io>
+        signed-off-by: Leandro Motta Barros <leandro@balena.io>
+        Change-type: patch
+        change-type: patch
+      author: Leandro Motta Barros
+      nested: []
+  version: 2.2.4
+  title: "'Fix links to balenaOS downloads'"
+  date: 2022-04-21T13:04:40.331Z
+- commits:
     - subject: "worker: qemu: add option to disable network autoconfiguration"
       hash: 115872291b87b9109cbfe01e33c316f3f53d021c
       body: |
