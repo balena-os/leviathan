@@ -6,7 +6,7 @@ This is a quick start guide for using the leviathan framework with the QEMU work
 
 For your first test run, we will be running the [e2e test suite](https://github.com/balena-os/leviathan/tree/master/suites/e2e).
 
-A balenaOS image that is used to flash and provision the device under test will be needed for the test. You can download an unmanaged image from [balena.io/os](balena.io/os). Extract the downloaded balenaOS image you want to test with to the `workspace` directory and rename it to `balena.img` file.
+A balenaOS image that is used to flash and provision the device under test will be needed for the test. You can download an unmanaged image from [balena.io/os](https://www.balena.io/os/#download). Extract the downloaded balenaOS image you want to test with to the `workspace` directory and rename it to `balena.img` file.
 
 ## Build your `config.js` file
 
