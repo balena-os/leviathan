@@ -79,13 +79,13 @@
 						<dd><pre><code class="language-js"><span style="color: #0991B6">const</span><span style="color: #002339"> </span><span style="color: #2F86D2">Cloud</span><span style="color: #002339"> </span><span style="color: #7B30D0">=</span><span style="color: #002339"> </span><span style="color: #000000">this</span><span style="color: #002339">.</span><span style="color: #7EB233">require</span><span style="color: #002339">(</span><span style="color: #A44185">&quot;components/balena/sdk&quot;</span><span style="color: #002339">);</span>
 
 <span style="color: #000000">this</span><span style="color: #002339">.</span><span style="color: #2F86D2">suite</span><span style="color: #002339">.</span><span style="color: #2F86D2">context</span><span style="color: #002339">.</span><span style="color: #7EB233">set</span><span style="color: #002339">({</span>
-<span style="color: #002339">    cloud: </span><span style="color: #7B30D0">new</span><span style="color: #002339"> </span><span style="color: #7EB233">Balena</span><span style="color: #002339">(</span><span style="color: #A44185">`https://api.balena-cloud.com/`</span><span style="color: #002339">, </span><span style="color: #000000">this</span><span style="color: #002339">.</span><span style="color: #7EB233">getLogger</span><span style="color: #002339">())</span>
+<span style="color: #002339"> cloud: </span><span style="color: #7B30D0">new</span><span style="color: #002339"> </span><span style="color: #7EB233">Balena</span><span style="color: #002339">(</span><span style="color: #A44185">&quot;https://api.balena-cloud.com/&quot;</span><span style="color: #002339">, </span><span style="color: #000000">this</span><span style="color: #002339">.</span><span style="color: #7EB233">getLogger</span><span style="color: #002339">())</span>
 <span style="color: #002339">});</span>
 
 <span style="color: #357B42">// login</span>
 <span style="color: #7B30D0">await</span><span style="color: #002339"> </span><span style="color: #000000">this</span><span style="color: #002339">.</span><span style="color: #2F86D2">context</span>
-<span style="color: #002339">    .</span><span style="color: #7EB233">get</span><span style="color: #002339">()</span>
-<span style="color: #002339">    .</span><span style="color: #2F86D2">cloud</span><span style="color: #002339">.</span><span style="color: #2F86D2">balena</span><span style="color: #002339">.</span><span style="color: #2F86D2">auth</span><span style="color: #002339">.</span><span style="color: #7EB233">loginWithToken</span><span style="color: #002339">(</span><span style="color: #000000">this</span><span style="color: #002339">.</span><span style="color: #2F86D2">suite</span><span style="color: #002339">.</span><span style="color: #2F86D2">options</span><span style="color: #002339">.</span><span style="color: #2F86D2">balena</span><span style="color: #002339">.</span><span style="color: #2F86D2">apiKey</span><span style="color: #002339">);</span>
+<span style="color: #002339"> .</span><span style="color: #7EB233">get</span><span style="color: #002339">()</span>
+<span style="color: #002339"> .</span><span style="color: #2F86D2">cloud</span><span style="color: #002339">.</span><span style="color: #2F86D2">balena</span><span style="color: #002339">.</span><span style="color: #2F86D2">auth</span><span style="color: #002339">.</span><span style="color: #7EB233">loginWithToken</span><span style="color: #002339">(</span><span style="color: #000000">this</span><span style="color: #002339">.</span><span style="color: #2F86D2">suite</span><span style="color: #002339">.</span><span style="color: #2F86D2">options</span><span style="color: #002339">.</span><span style="color: #2F86D2">balena</span><span style="color: #002339">.</span><span style="color: #2F86D2">apiKey</span><span style="color: #002339">);</span>
 
 <span style="color: #357B42">// create a balena application</span>
 <span style="color: #7B30D0">await</span><span style="color: #002339"> </span><span style="color: #000000">this</span><span style="color: #002339">.</span><span style="color: #2F86D2">context</span><span style="color: #002339">.</span><span style="color: #7EB233">get</span><span style="color: #002339">().</span><span style="color: #2F86D2">cloud</span><span style="color: #002339">.</span><span style="color: #2F86D2">balena</span><span style="color: #002339">.</span><span style="color: #2F86D2">models</span><span style="color: #002339">.</span><span style="color: #2F86D2">application</span><span style="color: #002339">.</span><span style="color: #7EB233">create</span><span style="color: #002339">({</span>
@@ -162,9 +162,6 @@
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="Test.html">Test</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="balena_git_helpers.html">balena git helpers</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="balenaCLI_helpers.html">balenaCLI helpers</a>

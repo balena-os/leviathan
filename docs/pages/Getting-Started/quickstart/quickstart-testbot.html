@@ -84,7 +84,7 @@
 					<h2>Start your first test run</h2>
 				</a>
 				<p>For your first test run, we will be running the <a href="https://github.com/balena-os/leviathan/tree/master/suites/e2e">e2e test suite</a>. </p>
-				<p>A balenaOS image that is used to flash and provision the device under test will be needed for the test. You can download an unmanaged image from <a href="balena.io/os">balena.io/os</a>. Extract the downloaded balenaOS image you want to test with to the <code>workspace</code> directory and rename it to <code>balena.img</code> file. </p>
+				<p>A balenaOS image that is used to flash and provision the device under test will be needed for the test. You can download an unmanaged image from <a href="https://www.balena.io/os/#download">balena.io/os</a>. Extract the downloaded balenaOS image you want to test with to the <code>workspace</code> directory and rename it to <code>balena.img</code> file.</p>
 				<a href="#build-your-configjs-file" id="build-your-configjs-file" style="color: inherit; text-decoration: none;">
 					<h3>Build your <code>config.js</code> file</h3>
 				</a>
@@ -107,10 +107,7 @@
 <span style="color: #002339">        organization: </span><span style="color: #A44185">&#039;BALENACLOUD_ORG_GOES_HERE&#039;</span><span style="color: #002339">,</span>
 <span style="color: #002339">    },</span>
 <span style="color: #002339">    image: </span><span style="color: #A44185">`${</span><span style="color: #2F86D2">__dirname</span><span style="color: #A44185">}/balena.img`</span><span style="color: #002339">,</span>
-<span style="color: #002339">    workers: {</span>
-<span style="color: #002339">        balenaApplication: </span><span style="color: #A44185">&#039;testbot-personal&#039;</span><span style="color: #002339">,</span>
-<span style="color: #002339">        apiKey: </span><span style="color: #2F86D2">process</span><span style="color: #002339">.</span><span style="color: #2F86D2">env</span><span style="color: #002339">.</span><span style="color: #2F86D2">BALENACLOUD_API_KEY</span>
-<span style="color: #002339">    }</span>
+<span style="color: #002339">    workers: [</span><span style="color: #A44185">&#039;&lt;Public device URL of your testbot&gt;&#039;</span><span style="color: #002339">],</span>
 <span style="color: #002339">}</span>
 </code></pre>
 				<p>The suite and the image property points to a valid test suite and balenaOS image that is going to be tested with. </p>
@@ -143,12 +140,13 @@
 <span style="color: #002339">    },</span>
 <span style="color: #002339">    image: </span><span style="color: #A44185">`${</span><span style="color: #2F86D2">__dirname</span><span style="color: #A44185">}/balena.img`</span><span style="color: #002339">,</span>
 <span style="color: #002339">    workers: {</span>
-<span style="color: #002339">        balenaApplication: </span><span style="color: #A44185">&#039;testbot-personal&#039;</span><span style="color: #002339">,</span>
+<span style="color: #002339">        balenaApplication: </span><span style="color: #A44185">&#039;balena/testbot-personal&#039;</span><span style="color: #002339">,</span>
 <span style="color: #002339">        apiKey: </span><span style="color: #2F86D2">process</span><span style="color: #002339">.</span><span style="color: #2F86D2">env</span><span style="color: #002339">.</span><span style="color: #2F86D2">BALENACLOUD_API_KEY</span>
 <span style="color: #002339">    }</span>
 <span style="color: #002339">};</span>
 </code></pre>
 				<ul>
+					<li>Add the slug of the device under test to the testbot. In the Admin Panel &gt; Device Variables add the variable TESTBOT_DUT_TYPE:&lt;DUT_SLUG&gt;, and a testbot Tag named &quot;DUT&quot; that contains the slug of the device under test.</li>
 					<li>Run <code>make test</code> in the root of the project and watch the logs. The logs will start streaming on the terminal for the test run.</li>
 					<li>At the end of the run, reports and logs for the test run will be stored in <code>workspace/reports</code> directory.</li>
 				</ul>
@@ -221,9 +219,6 @@
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="../../../modules/Test.html">Test</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="../../../modules/balena_git_helpers.html">balena git helpers</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="../../../modules/balenaCLI_helpers.html">balenaCLI helpers</a>
