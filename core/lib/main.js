@@ -187,61 +187,60 @@ async function setup() {
 			}
 
 			if (!running || !reconnect) {
-				if (process.env.LOCAL !== `local`) {
-					for (const uploadName in config.get('leviathan.uploads')) {
-						// put retry request here instead
-						upload.attempts = 0;
-						upload.retry = true;
-						upload.success = null;
-						while (upload.retry === true) {
-							upload.attempts = upload.attempts + 1;
-							if (upload.attempts > 3) {
-								throw new Error(
-									`Upload failed too many times: ${upload.attempts}`,
-								);
-							}
-							upload.token = Math.random();
-							ws.send(
-								JSON.stringify({
-									type: 'upload',
-									data: {
-										id: uploadName,
-										name: basename(config.get('leviathan.uploads')[uploadName]),
-										token: upload.token,
-										attempt: upload.attempts,
-									},
-								}),
+				for (const uploadName in config.get('leviathan.uploads')) {
+					// put retry request here instead
+					upload.attempts = 0;
+					upload.retry = true;
+					upload.success = null;
+					while (upload.retry === true) {
+						upload.attempts = upload.attempts + 1;
+						if (upload.attempts > 3) {
+							throw new Error(
+								`Upload failed too many times: ${upload.attempts}`,
 							);
-
-							// Wait for the upload to be received and finished
-							await new Promise((resolve, reject) => {
-								const timeout = setTimeout(() => {
-									clearInterval(interval);
-									clearTimeout(timeout);
-									reject(new Error('Upload timed out'));
-								}, 1200000);
-								const interval = setInterval(() => {
-									// upload.token is deleted when the upload has been done
-									if (upload.token == null) {
-										clearInterval(interval);
-										clearTimeout(timeout);
-										if (upload.success === true) {
-											upload.retry = false;
-											upload.attempts = 0;
-										} else {
-											upload.retry = true;
-										}
-										resolve();
-									}
-								}, 2000);
-								ws.once('close', () => {
-									clearInterval(interval);
-									clearTimeout(timeout);
-								});
-							});
 						}
+						upload.token = Math.random();
+						ws.send(
+							JSON.stringify({
+								type: 'upload',
+								data: {
+									id: uploadName,
+									name: basename(config.get('leviathan.uploads')[uploadName]),
+									token: upload.token,
+									attempt: upload.attempts,
+								},
+							}),
+						);
+
+						// Wait for the upload to be received and finished
+						await new Promise((resolve, reject) => {
+							const timeout = setTimeout(() => {
+								clearInterval(interval);
+								clearTimeout(timeout);
+								reject(new Error('Upload timed out'));
+							}, 1200000);
+							const interval = setInterval(() => {
+								// upload.token is deleted when the upload has been done
+								if (upload.token == null) {
+									clearInterval(interval);
+									clearTimeout(timeout);
+									if (upload.success === true) {
+										upload.retry = false;
+										upload.attempts = 0;
+									} else {
+										upload.retry = true;
+									}
+									resolve();
+								}
+							}, 2000);
+							ws.once('close', () => {
+								clearInterval(interval);
+								clearTimeout(timeout);
+							});
+						});
 					}
 				}
+
 
 				// The reason we need to fork is because many 3rd party libariers output to stdout
 				// so we need to capture that

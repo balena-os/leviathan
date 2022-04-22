@@ -114,7 +114,9 @@ module.exports = class Suite {
 		};
 
 		// Setting the correct API environment for CLI calls
-		exec(`echo "balenaUrl: '${suiteConfig.config.balenaApiUrl}'" > ~/.balenarc.yml`);
+		exec(
+			`echo "balenaUrl: '${suiteConfig.config.balenaApiUrl}'" > ~/.balenarc.yml`,
+		);
 
 		// In the future, deprecate the options object completely to create a mega-suiteConfig
 		// Breaking changes will need to be done to both test suites + helpers
@@ -153,7 +155,9 @@ module.exports = class Suite {
 			this.deviceType = require(`../../contracts/contracts/hw.device-type/${this.deviceTypeSlug}/contract.json`);
 		} catch (e) {
 			if (e.code === 'MODULE_NOT_FOUND') {
-				throw new Error(`Invalid/Unsupported device type: ${this.deviceTypeSlug}`);
+				throw new Error(
+					`Invalid/Unsupported device type: ${suiteConfig.deviceType}`,
+				);
 			} else {
 				throw e;
 			}
@@ -244,6 +248,10 @@ module.exports = class Suite {
 			this.state.log(`Test suite completed. Tearing down now.`);
 			await this.teardown.runAll();
 			await this.removeDependencies();
+			// This env variable can be used to keep a configured, unpacked image for use when developing tests
+			if (this.suiteConfig.preserveDownloads !== true) {
+				await this.removeDownloads();
+			}
 			this.state.log(`Teardown complete.`);
 			this.passing = tap.passing();
 			tap.end();

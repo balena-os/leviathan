@@ -180,23 +180,20 @@ module.exports = class BalenaOS {
 	 * @category helper
 	 */
 	async fetch() {
-		if (process.env.DEBUG_KEEP_IMG) {
-			this.logger.log('[DEBUG] Skip unpacking image');
+		this.logger.log(`Unpacking the file: ${this.image.input}`);
+		const unpack = await isGzip(this.image.input);
+		if (unpack) {
+			await pipeline(
+				fs.createReadStream(this.image.input),
+				zlib.createGunzip(),
+				fs.createWriteStream(this.image.path),
+			);
 		} else {
-			this.logger.log(`Unpacking the file: ${this.image.input}`);
-			const unpack = await isGzip(this.image.input);
-			if (unpack) {
-				await pipeline(
-					fs.createReadStream(this.image.input),
-					zlib.createGunzip(),
-					fs.createWriteStream(this.image.path),
-				);
-			} else {
-				// image is already unzipped, so no need to do anything
-				this.image.path = this.image.input;
-			}
+			// image is already unzipped, so no need to do anything
+			this.image.path = this.image.input;
 		}
 	}
+
 
 	/**
 	 * Parses version and variant from balenaOS images
@@ -261,15 +258,12 @@ module.exports = class BalenaOS {
 	 * @category helper
 	 */
 	async configure() {
-		if (process.env.DEBUG_KEEP_IMG) {
-			this.logger.log('[DEBUG] Skip configuring image');
-		} else {
-			await this.readOsRelease();
-			this.logger.log(`Configuring balenaOS image: ${this.image.input}`);
-			if (this.configJson) {
-				await injectBalenaConfiguration(this.image.path, this.configJson, this.bootPartition);
-			}
-			await injectNetworkConfiguration(this.image.path, this.network, this.bootPartition);
+		await this.readOsRelease();
+		this.logger.log(`Configuring balenaOS image: ${this.image.input}`);
+		if (this.configJson) {
+			await injectBalenaConfiguration(this.image.path, this.configJson, this.bootPartition);
 		}
+		await injectNetworkConfiguration(this.image.path, this.network, this.bootPartition);
 	}
-};
+}
+

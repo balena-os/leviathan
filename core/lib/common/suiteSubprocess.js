@@ -28,7 +28,8 @@
 const Suite = require('./suite');
 const config = require('config');
 const fs = require('fs-extra');
-
+const suiteConfig = require(config.get('leviathan.uploads.config'));
+	
 async function removeArtifacts() {
 	const artifactsPath = config.get('leviathan.artifacts');
 	if (fs.existsSync(artifactsPath)) {
@@ -41,7 +42,7 @@ async function removeDownloads() {
 	const downloadsPath = config.get('leviathan.downloads');
 	// This env variable can be used to keep a configured, unpacked image for use
 	// when developing tests
-	if (fs.existsSync(downloadsPath) && !process.env.DEBUG_KEEP_IMG) {
+	if (fs.existsSync(downloadsPath) && !suiteConfig.debug.preserveDownloads) {
 		console.log('Removing downloads directory...');
 		fs.emptyDirSync(downloadsPath);
 	}
@@ -53,14 +54,13 @@ async function createJsonSummary(suite) {
 }
 
 (async () => {
-	const conf = require(config.get('leviathan.uploads.config'));
 	const suite = new Suite(
 		{
 			suitePath: config.get('leviathan.uploads.suite'),
-			deviceType: conf.deviceType,
+			deviceType: suiteConfig.deviceType,
 			imagePath: config.get('leviathan.uploads').image,
 		},
-		conf
+		suiteConfig
 	);
 	suite.setup.register(removeArtifacts);
 	suite.setup.register(
