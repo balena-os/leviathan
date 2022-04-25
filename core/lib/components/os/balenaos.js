@@ -59,23 +59,25 @@ const mapValues = require('lodash/mapValues');
 
 const Bluebird = require('bluebird');
 const config = require('config');
-const imagefs = require('resin-image-fs');
+const imagefs = require('balena-image-fs');
 const { fs } = require('mz');
 const { join } = require('path');
 const tmp = require('tmp');
 const pipeline = Bluebird.promisify(require('stream').pipeline);
 const zlib = require('zlib');
+const util = require('util');
 
 // TODO: This function should be implemented using Reconfix
-const injectBalenaConfiguration = (image, configuration, partition = 1) => {
-	return imagefs.writeFile(
-		{
-			image,
-			partition: partition,
-			path: '/config.json',
-		},
-		JSON.stringify(configuration),
-	);
+const injectBalenaConfiguration = async (image, configuration, partition = 1) => {
+	await imagefs.interact(image, partition, async (_fs) => {
+		return util.promisify(_fs.writeFile)(
+				'/config.json',
+				JSON.stringify(configuration),
+				{ flag: 'w' }
+			)
+		}).catch((err) => {
+				return undefined;
+		});
 };
 
 // TODO: This function should be implemented using Reconfix
@@ -113,14 +115,15 @@ const injectNetworkConfiguration = async (image, configuration, partition = 1) =
 		]);
 	}
 
-	await imagefs.writeFile(
-		{
-			image,
-			partition: partition,
-			path: '/system-connections/balena-wifi',
-		},
-		wifiConfiguration.join('\n'),
-	);
+	await imagefs.interact(image, partition, async (_fs) => {
+		return util.promisify(_fs.writeFile)(
+				'/system-connections/balena-wifi',
+				wifiConfiguration.join('\n'),
+				{ flag: 'w' }
+			)
+		}).catch((err) => {
+			return undefined;
+	});
 };
 
 async function isGzip(filePath) {
@@ -205,13 +208,14 @@ module.exports = class BalenaOS {
 		const readVersion = async (pattern, field) => {
 			this.logger.log(`Checking ${field} in os-release`);
 			try {
-				const value = pattern.exec(
-					await imagefs.readFile({
-						image: image,
-						partition: this.bootPartition,
-						path: '/os-release',
-					}),
-				);
+				let value = await imagefs.interact(image, this.bootPartition, async (_fs) => {
+					return await util.promisify(_fs.readFile)('/os-release')
+						.catch((err) => {
+							return undefined;
+						});
+				});
+				value = pattern.exec(value.toString());
+
 				if (value !== null) {
 					this.releaseInfo[field] = value[1];
 					this.logger.log(
@@ -220,13 +224,13 @@ module.exports = class BalenaOS {
 				}
 			} catch (e) {
 				try {
-					const value1 = pattern.exec(
-						await imagefs.readFile({
-							image: image,
-							partition: this.bootPartition + 1,
-							path: '/usr/lib/os-release',
-						}),
-					);
+					let value1 = await imagefs.interact(image, this.bootPartition + 1, async (_fs) => {
+						await util.promisify(_fs.readFile)('/usr/lib/os-release')
+							.catch((err) => {
+								return undefined;
+							});
+					});
+					value1 = pattern.exec(value1.toString());
 					if (value1 !== null) {
 						this.releaseInfo[field] = value1[1];
 						this.logger.log(
