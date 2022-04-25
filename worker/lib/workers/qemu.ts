@@ -160,22 +160,23 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 
 			const source = new sdk.sourceDestination.SingleUseStreamSource(stream);
 
-			const destination = new sdk.sourceDestination.File(
-				this.image,
-				sdk.sourceDestination.File.OpenFlags.ReadWrite,
-			);
+			const destination = new sdk.sourceDestination.File({
+				path: this.image,
+				write: true,
+			});
 
-			await sdk.multiWrite.pipeSourceToDestinations(
-				source,
-				[destination],
+			await sdk.multiWrite.pipeSourceToDestinations({
+				source: source,
+				destinations: [destination],
+				onFail:
 				(_destination, error) => {
 					reject(error);
 				},
-				(progress: sdk.multiWrite.MultiDestinationProgress) => {
+				onProgress: (progress: sdk.multiWrite.MultiDestinationProgress) => {
 					this.emit('progress', progress);
 				},
-				true,
-			);
+				verify: true,
+			});
 
 			// Image files must be resized using qemu-img to create space for the data partition
 			console.debug(`Resizing qemu image...`);
