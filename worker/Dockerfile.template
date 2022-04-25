@@ -1,10 +1,10 @@
 ARG BALENA_ARCH=%%BALENA_ARCH%%
-FROM balenalib/${BALENA_ARCH}-alpine-node:12.19.1-3.12-run-20201211 AS node-build
+FROM balenalib/${BALENA_ARCH}-alpine-node:12.19-run AS node-build
 
 WORKDIR /tmp/node
 
 # hadolint ignore=DL3018
-RUN apk add --no-cache libusb-dev dbus-dev python3 make build-base git linux-headers
+RUN apk add --no-cache libusb-dev dbus-dev python3 make build-base git linux-headers eudev-dev
 
 ARG SKIP_INSTALL_BINARY
 
@@ -18,7 +18,7 @@ COPY bin bin
 
 RUN npm run build
 
-FROM balenalib/${BALENA_ARCH}-alpine:3.12-run-20211030
+FROM balenalib/${BALENA_ARCH}-alpine:3.12-run
 
 ENV UDEV 1
 ENV DBUS_SYSTEM_BUS_ADDRESS unix:path=/host/run/dbus/system_bus_socket
@@ -31,7 +31,7 @@ RUN apk add --no-cache \
   bluez \
   socat \
   rsync \
-  libusb-dev dbus-dev \
+  libusb-dev dbus-dev eudev-dev \
   gstreamer-tools gst-plugins-base gst-plugins-bad gst-plugins-good \
   bridge bridge-utils iproute2 dnsmasq iptables \
   qemu-img qemu-system-x86_64 \
