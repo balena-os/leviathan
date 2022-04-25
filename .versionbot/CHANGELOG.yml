@@ -1,4 +1,50 @@
 - commits:
+    - subject: "core: suite: move parameters to constructor"
+      hash: c8ff93ccab3fdb52ba58229b1b73536ac5ae7077
+      body: |
+        Previously, suite parameters were read from a config file exclusively,
+        necessitating the creation of that config file to initialize a Suite
+        object.
+
+        Move the required parameters to the constructor of the Suite object to
+        facilitate initializing this object using other configurations, such as
+        command line arguments.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+    - subject: "core: move setup/teardown tasks to suiteSubprocess"
+      hash: d691c18714e17f8cf82baceff890ee0e7c9e00a5
+      body: |
+        Move setup/teardown tasks specific to the suiteSubprocess module
+        (downloads, artifact management, JSON summary) to that module. Register
+        them under the appropriate task queues to be run on setup and teardown.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+    - subject: "core: create suiteSubprocess module"
+      hash: 3a8ef6a066f1375004d272cf30ddd4b343572f91
+      body: |
+        Move the setup code for the suite subprocess into another module to
+        facilitate importing and using the Suite class directly
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+  version: 2.2.10
+  title: "'Suite subprocess'"
+  date: 2022-04-25T20:41:09.615Z
+- commits:
     - subject: Update deploy-to-balena action to v0.10.7
       hash: be89d9968d3ac759ccbc4013532309488193599e
       body: ""
