@@ -1,4 +1,18 @@
 - commits:
+    - subject: Set QEMU_ARCH for aarch64 workers
+      hash: 6804cfd5bfe586e3c5736525d1895e128af034d1
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.2.7
+  title: "'Set QEMU_ARCH for aarch64 workers'"
+  date: 2022-04-25T16:53:50.043Z
+- commits:
     - subject: Updates resin-image-fs to balena-image-fs for ARM64 compatibility
       hash: c78a13a5668ee7c89494ef6daa239f18675fb349
       body: ""
