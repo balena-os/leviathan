@@ -1,4 +1,18 @@
 - commits:
+    - subject: Updates resin-image-fs to balena-image-fs for ARM64 compatibility
+      hash: c78a13a5668ee7c89494ef6daa239f18675fb349
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Alex Bucknall <alex.bucknall@gmail.com>
+        signed-off-by: Alex Bucknall <alex.bucknall@gmail.com>
+      author: Alex
+      nested: []
+  version: 2.2.6
+  title: "'Updates resin-image-fs to balena-image-fs for ARM64 compatibility'"
+  date: 2022-04-25T15:08:48.281Z
+- commits:
     - subject: "worker: bump etchersdk to 7.1.0"
       hash: 1d824e2c245487f3d52bb4204437f6af71427d12
       body: ""
