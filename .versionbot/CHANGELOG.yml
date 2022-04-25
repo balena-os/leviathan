@@ -1,4 +1,18 @@
 - commits:
+    - subject: Update deploy-to-balena action to v0.10.7
+      hash: be89d9968d3ac759ccbc4013532309488193599e
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.2.9
+  title: "'Update deploy-to-balena action to v0.10.7'"
+  date: 2022-04-25T19:43:26.102Z
+- commits:
     - subject: Remove deprecated env var SKIP_INSTALL_BINARY
       hash: 76e45de1270c4923ae9f46ec09d4446c6e144e7c
       body: ""
