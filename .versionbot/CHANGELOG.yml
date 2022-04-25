@@ -1,4 +1,48 @@
 - commits:
+    - subject: "worker: bump etchersdk to 7.1.0"
+      hash: 1d824e2c245487f3d52bb4204437f6af71427d12
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+    - subject: "worker: bump testbotsdk to 1.9.13"
+      hash: a7612e829ea8253ffcbca220f8bd66fe91819d76
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+    - subject: "worker: Use uname to select worker base image for QEMU"
+      hash: 075d9fabad91c9e945470fb4aa87eca6f16d3b20
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+    - subject: Update docker-compose to v2.3.3 with fixed device_cgroup_rules
+      hash: 870c3f5cf51572c8d6ccff55fdecc80bcce88e86
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.2.5
+  title: "'Enable aarch64 QEMU workers'"
+  date: 2022-04-25T12:46:06.965Z
+- commits:
     - subject: Fix links to balenaOS downloads
       hash: d27cbcfd18779fe4fc250913a30daef6b6010e09
       body: >
