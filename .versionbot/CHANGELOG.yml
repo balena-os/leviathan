@@ -1,4 +1,18 @@
 - commits:
+    - subject: Remove deprecated env var SKIP_INSTALL_BINARY
+      hash: 76e45de1270c4923ae9f46ec09d4446c6e144e7c
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.2.8
+  title: "'Remove deprecated env var SKIP_INSTALL_BINARY'"
+  date: 2022-04-25T18:34:41.135Z
+- commits:
     - subject: Set QEMU_ARCH for aarch64 workers
       hash: 6804cfd5bfe586e3c5736525d1895e128af034d1
       body: ""
