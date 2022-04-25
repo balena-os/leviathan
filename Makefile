@@ -23,8 +23,10 @@ endif
 # for qemu workers we need to set the BALENA_ARCH to pull the correct balenalib image
 ifeq ($(shell uname -m),aarch64)
 export BALENA_ARCH ?= aarch64
+export QEMU_ARCH ?= aarch64
 else
 export BALENA_ARCH ?= amd64
+export QEMU_ARCH ?= x86_64
 endif
 
 export COMPOSE_DOCKER_CLI_BUILD := 1
