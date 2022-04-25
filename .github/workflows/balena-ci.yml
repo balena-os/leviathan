@@ -4,6 +4,9 @@ on:
     branches:
       - master
 
+env:
+  ENVIRONMENT: balena-cloud.com
+
 jobs:
   balena-cloud-build:
     runs-on: ubuntu-20.04
@@ -15,13 +18,9 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: true
-      - uses: balena-io/deploy-to-balena-action@v0.5.4
-        id: build
+      - uses: balena-io/deploy-to-balena-action@v0.10.7
         with:
           balena_token: ${{ secrets.BALENA_TOKEN }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
           fleet: ${{ matrix.fleets }}
           versionbot: true
-          environment: balena-cloud.com
-      - name: Log release ID built
-        run: echo "Built release ID ${{ steps.build.outputs.release_id }}"
+          environment: ${{ env.ENVIRONMENT }}
