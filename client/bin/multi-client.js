@@ -70,7 +70,7 @@ class NonInteractiveState {
 	}
 
 	attachPanel(elem) {
-		let workerUrl = elem.suiteConfig.workers;
+		let workerUrl = elem.workers;
 		let suite = elem.suiteConfig.suite.split(`/`).pop();
 
 		let workerId;
@@ -80,7 +80,7 @@ class NonInteractiveState {
 				.substring(0, 7)}-${suite}`;
 		} catch (e) {
 			console.error(e);
-			workerId = elem.suiteConfig.workers.toString();
+			workerId = elem.workers.toString();
 			workerUrl = null;
 		}
 
@@ -319,6 +319,7 @@ class NonInteractiveState {
 					runQueue.push({
 						suiteConfig: runConfig,
 						matchingDevices: [worker],
+						workers: null,
 						workerPrefix: null,
 						array: true,
 					});
@@ -339,6 +340,7 @@ class NonInteractiveState {
 
 				runQueue.push({
 					suiteConfig: runConfig,
+					workers: null,
 					matchingDevices: matchingDevices,
 					workerPrefix: null,
 				});
@@ -388,7 +390,7 @@ class NonInteractiveState {
 				}
 			}
 
-			if (job.suiteConfig.workers === null) {
+			if (job.workers === null) {
 				// No idle workers currently - the job is pushed to the back of the queue
 				await require('bluebird').delay(25000);
 				runQueue.unshift(job);
@@ -415,7 +417,7 @@ class NonInteractiveState {
 				);
 
 				// after creating child process, add the worker to the busy workers array
-				busyWorkers.push(job.suiteConfig.workers);
+				busyWorkers.push(job.workers);
 
 				let status = await rp.get(new url.URL('/start', deviceUrl).toString());
 
@@ -423,7 +425,7 @@ class NonInteractiveState {
 				children[child.pid] = {
 					_child: child,
 					outputPath: `${yargs.workdir}/${
-						new url.URL(job.suiteConfig.workers).hostname || child.pid
+						new url.URL(job.workers).hostname || child.pid
 					}.out`,
 					exitCode: 1,
 				};
@@ -449,7 +451,7 @@ class NonInteractiveState {
 				child.stdout.on('data', job.log);
 				child.stderr.on('data', job.log);
 
-				job.info(`WORKER URL: ${job.suiteConfig.workers}`);
+				job.info(`WORKER URL: ${job.workers}`);
 
 				child.on('exit', (code) => {
 					children[child.pid].code = code;
@@ -457,7 +459,7 @@ class NonInteractiveState {
 						job.teardown();
 					}
 					// remove the worker from the busy array once the job is finished
-					busyWorkers.splice(busyWorkers.indexOf(job.suiteConfig.workers));
+					busyWorkers.splice(busyWorkers.indexOf(job.workers));
 				});
 			}
 		}
