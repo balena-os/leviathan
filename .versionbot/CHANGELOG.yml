@@ -1,4 +1,18 @@
 - commits:
+    - subject: "client: fix multiple quites on qemu builds"
+      hash: cb40f7d628173acb41135c09458e6168870d2dd3
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+  version: 2.2.11
+  title: "'hotfix: client: fix multiple quites on qemu builds'"
+  date: 2022-04-26T15:26:46.546Z
+- commits:
     - subject: "core: suite: move parameters to constructor"
       hash: c8ff93ccab3fdb52ba58229b1b73536ac5ae7077
       body: |
