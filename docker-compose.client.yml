@@ -23,12 +23,13 @@ services:
     volumes:
       - core-storage:/data
       - reports-storage:/reports
+      - /dev:/dev
     tmpfs:
       - /var/run # use tmpfs docker-in-docker pid files
       - /var/lib/docker # use tmpfs for docker-in-docker data root
     restart: 'no'
-    devices:
-      - /dev:/dev # required for creating losetup devices during preload
+    #devices:
+    #  - /dev:/dev # required for creating losetup devices during preload
 
 volumes:
   core-storage:
