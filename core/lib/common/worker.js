@@ -71,7 +71,7 @@ module.exports = class Worker {
 		this.logger = logger;
 		this.username = username;
 		this.sshKey = sshKey;
-		this.dutSshKey = `/tmp`;
+		this.dutSshKey = `/tmp/id`;
 		this.logger = logger;
 		this.workerHost = new URL(this.url).hostname;
 		this.workerPort = '22222';
@@ -456,7 +456,6 @@ module.exports = class Worker {
 		if (!this.url.includes(`worker`)) {
 			console.log(`Adding dut ssh key to worker...`);
 			const SSH_KEY_PATH = '/tmp/';
-			this.dutSshKey = `${SSH_KEY_PATH}${path.basename(keyPath)}`;
 			await this.sendFile(keyPath, SSH_KEY_PATH, 'worker');
 			await this.sendFile(
 				keyPath,
