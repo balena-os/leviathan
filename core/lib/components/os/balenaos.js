@@ -225,7 +225,7 @@ module.exports = class BalenaOS {
 			} catch (e) {
 				try {
 					let value1 = await imagefs.interact(image, this.bootPartition + 1, async (_fs) => {
-						await util.promisify(_fs.readFile)('/usr/lib/os-release')
+						return await util.promisify(_fs.readFile)('/usr/lib/os-release')
 							.catch((err) => {
 								return undefined;
 							});
