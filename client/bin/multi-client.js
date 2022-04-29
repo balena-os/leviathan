@@ -225,11 +225,13 @@ class NonInteractiveState {
 						case 0:
 							return '0 (success)';
 						case 1:
-							return '1 (error)'; // client/lib/index.js#L401
+							return '1 (error)';
 						case 2:
-							return '2 (test failure)'; // client/lib/index.js#L323
+							return '2 (test failure)';
 						case 3:
-							return '3 (test error)'; // client/lib/index.js#L328
+							return '3 (test error)';
+						case 418:
+							return '777 (global failfast activated)';
 						default:
 							return `${c.code} (exception)`; // For all other outcomes
 					}
@@ -381,10 +383,8 @@ class NonInteractiveState {
 					}
 				} catch (err) {
 					state.info(
-						`Couldn't retrieve ${
-							device.tags ? device.tags.DUT : device
-						} worker's state. Querying ${deviceUrl} and received ${err.name}: ${
-							err.statusCode
+						`Couldn't retrieve ${device.tags ? device.tags.DUT : device
+						} worker's state. Querying ${deviceUrl} and received ${err.name}: ${err.statusCode
 						}`,
 					);
 				}
@@ -402,8 +402,8 @@ class NonInteractiveState {
 					[
 						'-c',
 						job.suiteConfig instanceof Object
-						? JSON.stringify(job.suiteConfig)
-						: job.suiteConfig,
+							? JSON.stringify(job.suiteConfig)
+							: job.suiteConfig,
 						'-u',
 						job.workers,
 					],
@@ -424,9 +424,8 @@ class NonInteractiveState {
 				// child state
 				children[child.pid] = {
 					_child: child,
-					outputPath: `${yargs.workdir}/${
-						new url.URL(job.workers).hostname || child.pid
-					}.out`,
+					outputPath: `${yargs.workdir}/${new url.URL(job.workers).hostname || child.pid
+						}.out`,
 					exitCode: 1,
 				};
 
@@ -457,6 +456,16 @@ class NonInteractiveState {
 					children[child.pid].code = code;
 					if (job.teardown) {
 						job.teardown();
+					}
+					// Global Fail fast configuration: if a child process exits with a non-zero code,
+					if (code !== 0 && job.suiteConfig.debug.globalFailFast) {
+						state.info("Global failfast triggered. Killing all child processes.");
+						Object.values(children).forEach((child) => {
+							child.code = 777
+							child._child.kill();
+						})
+						process.exitCode = 777;
+						process.kill(process.pid, 'SIGINT');
 					}
 					// remove the worker from the busy array once the job is finished
 					busyWorkers.splice(busyWorkers.indexOf(job.workers));
