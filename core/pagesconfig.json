@@ -26,6 +26,10 @@
                     "source": "../documentation/writing-tests.md"
                 },
                 {
+                    "title": "Debugging tests in Leviathan",
+                    "source": "../documentation/debugging.md"
+                },
+                {
                     "title": "Tips and Reference",
                     "source": "../documentation/reference-tips.md"
                 },
