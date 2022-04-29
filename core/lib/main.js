@@ -359,7 +359,7 @@ async function setup() {
 }
 
 (async function main() {
-	const port = config.get('express.port');
+	const port = process.env.CORE_PORT || 2000
 
 	const server = await setup();
 

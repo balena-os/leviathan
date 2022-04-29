@@ -3,9 +3,6 @@ const mapValues = require('lodash/mapValues');
 const { join } = require('path');
 
 module.exports = {
-  express: {
-    port: process.env.CORE_PORT || 2000
-  },
   leviathan: {
     artifacts: '/tmp/artifacts',    // To store artifacts meant to be reported as results at the end of the suite
     downloads: '/data/downloads',    // To store/download assets needed for the suite (non-persistent) 
