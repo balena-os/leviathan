@@ -1,4 +1,16 @@
 - commits:
+    - subject: "patch: Remove Express server port config"
+      hash: 117d32df99b6704e71e3da39d9456aeb752e1bb1
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.2.14
+  title: "'patch: Remove Express server port config'"
+  date: 2022-04-29T21:42:58.975Z
+- commits:
     - subject: "core: fix reading os-release for flasher images"
       hash: e7474dfe12d6bb710a71fe4e291d0a8f9b1f84c6
       body: ""
