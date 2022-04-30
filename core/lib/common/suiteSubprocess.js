@@ -40,9 +40,7 @@ async function removeArtifacts() {
 
 async function removeDownloads() {
 	const downloadsPath = config.get('leviathan.downloads');
-	// This env variable can be used to keep a configured, unpacked image for use
-	// when developing tests
-	if (fs.existsSync(downloadsPath) && !suiteConfig.debug.preserveDownloads) {
+	if (fs.existsSync(downloadsPath) && suiteConfig.debug.preserveDownloads !== true) {
 		console.log('Removing downloads directory...');
 		fs.emptyDirSync(downloadsPath);
 	}

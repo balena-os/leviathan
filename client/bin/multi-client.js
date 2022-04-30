@@ -458,7 +458,7 @@ class NonInteractiveState {
 						job.teardown();
 					}
 					// Global Fail fast configuration: if a child process exits with a non-zero code,
-					if (code !== 0 && job.suiteConfig.debug.globalFailFast) {
+					if (code !== 0 && job.suiteConfig.debug.globalFailFast === true) {
 						state.info("Global failfast triggered. Killing all child processes.");
 						Object.values(children).forEach((child) => {
 							child.code = 777
