@@ -44,6 +44,9 @@ const innerSchema = {
 			],
 		},
 	},
+	debug: {
+		type: 'object',
+	},
 	required: ['deviceType', 'suite', 'config', 'image', 'workers'],
 };
 

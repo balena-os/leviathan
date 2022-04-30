@@ -35,7 +35,16 @@ module.exports = [
 		workers: {
 			balenaApplication: 'testbot-personal',
 			apiKey: process.env.BALENACLOUD_API_KEY
-		}
+		},
+
+		debug: {
+			// Exit the ongoing test suite if a test fails
+			failFast: false,
+			// Exit the ongoing test run if a test fails
+			globalFailFast: false,
+			// Persist downloadeded artifacts
+			preserveDownloads: false,
+		},
 	},
 	// 
 	// {

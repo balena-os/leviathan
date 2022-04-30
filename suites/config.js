@@ -9,6 +9,11 @@ module.exports = [{
     balenaApiUrl: 'balena-cloud.com',
     organization: process.env.BALENACLOUD_ORG
   },
+  debug: {
+    failFast: false,
+    globalFailFast: false,
+    preserveDownloads: false,
+  },
   image: false,
   workers: ['http://worker']
 }];

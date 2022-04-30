@@ -205,7 +205,7 @@ module.exports = class Suite {
 				}),
 				{
 					buffered: false,
-					bail: true,
+					bail: this.options.debug.failFast,
 				},
 				async (t) => {
 					if (run != null) {
