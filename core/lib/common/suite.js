@@ -114,7 +114,9 @@ module.exports = class Suite {
 		};
 
 		// Setting the correct API environment for CLI calls
-		exec(`echo "balenaUrl: '${suiteConfig.config.balenaApiUrl}'" > ~/.balenarc.yml`);
+		exec(
+			`echo "balenaUrl: '${suiteConfig.config.balenaApiUrl}'" > ~/.balenarc.yml`,
+		);
 
 		// In the future, deprecate the options object completely to create a mega-suiteConfig
 		// Breaking changes will need to be done to both test suites + helpers
@@ -153,7 +155,9 @@ module.exports = class Suite {
 			this.deviceType = require(`../../contracts/contracts/hw.device-type/${this.deviceTypeSlug}/contract.json`);
 		} catch (e) {
 			if (e.code === 'MODULE_NOT_FOUND') {
-				throw new Error(`Invalid/Unsupported device type: ${this.deviceTypeSlug}`);
+				throw new Error(
+					`Invalid/Unsupported device type: ${suiteConfig.deviceType}`,
+				);
 			} else {
 				throw e;
 			}
@@ -205,7 +209,7 @@ module.exports = class Suite {
 				}),
 				{
 					buffered: false,
-					bail: this.options.debug.failFast,
+					bail: this.options.debug ? (this.options.debug.failFast ? this.options.debug.failFast : true) : true
 				},
 				async (t) => {
 					if (run != null) {

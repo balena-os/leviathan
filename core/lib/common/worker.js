@@ -98,76 +98,72 @@ module.exports = class Worker {
 	 * @category helper
 	 */
 	async flash(imagePath) {
-		if (process.env.DEBUG_KEEP_IMG) {
-			this.logger.log('[DEBUG] Skip flashing');
-			return 'Skipping flashing';
-		} else {
-			let attempt = 0;
-			await retry(
-				async () => {
-					attempt++;
-					this.logger.log(`Preparing to flash, attempt ${attempt}...`);
+		let attempt = 0;
+		await retry(
+			async () => {
+				attempt++;
+				this.logger.log(`Preparing to flash, attempt ${attempt}...`);
 
-					await new Promise(async (resolve, reject) => {
-						const req = rp.post({ uri: `${this.url}/dut/flash` });
+				await new Promise(async (resolve, reject) => {
+					const req = rp.post({ uri: `${this.url}/dut/flash` });
 
-						req.catch((error) => {
-							reject(error);
-						});
-						req.finally(() => {
-							if (lastStatus !== 'done') {
-								reject(new Error('Unexpected end of TCP connection'));
-							}
-
-							resolve();
-						});
-
-						let lastStatus;
-						req.on('data', (data) => {
-							const computedLine = RegExp('(.+?): (.*)').exec(data.toString());
-
-							if (computedLine) {
-								if (computedLine[1] === 'error') {
-									req.cancel();
-									reject(new Error(computedLine[2]));
-								}
-
-								if (computedLine[1] === 'progress') {
-									once(() => {
-										this.logger.log('Flashing');
-									});
-									// Hide any errors as the lines we get can be half written
-									const state = JSON.parse(computedLine[2]);
-									if (state != null && isNumber(state.percentage)) {
-										this.logger.status({
-											message: 'Flashing',
-											percentage: state.percentage,
-										});
-									}
-								}
-
-								if (computedLine[1] === 'status') {
-									lastStatus = computedLine[2];
-								}
-							}
-						});
-
-						pipeline(
-							fs.createReadStream(imagePath),
-							createGzip({ level: 6 }),
-							req,
-						);
+					req.catch((error) => {
+						reject(error);
 					});
-					this.logger.log('Flash completed');
-				},
-				{
-					max_tries: 5,
-					interval: 1000 * 5,
-					throw_original: true,
-				},
-			);
-		}
+					req.finally(() => {
+						if (lastStatus !== 'done') {
+							reject(new Error('Unexpected end of TCP connection'));
+						}
+
+						resolve();
+					});
+
+					let lastStatus;
+					req.on('data', (data) => {
+						const computedLine = RegExp('(.+?): (.*)').exec(data.toString());
+
+						if (computedLine) {
+							if (computedLine[1] === 'error') {
+								req.cancel();
+								reject(new Error(computedLine[2]));
+							}
+
+							if (computedLine[1] === 'progress') {
+								once(() => {
+									this.logger.log('Flashing');
+								});
+								// Hide any errors as the lines we get can be half written
+								const state = JSON.parse(computedLine[2]);
+								if (state != null && isNumber(state.percentage)) {
+									this.logger.status({
+										message: 'Flashing',
+										percentage: state.percentage,
+									});
+								}
+							}
+
+							if (computedLine[1] === 'status') {
+								lastStatus = computedLine[2];
+							}
+						}
+					});
+
+					pipeline(
+						fs.createReadStream(imagePath),
+						createGzip({ level: 6 }),
+						req,
+					);
+				});
+				this.logger.log('Flash completed');
+			},
+			{
+				max_tries: 5,
+				interval: 1000 * 5,
+				throw_original: true,
+			},
+		);
 	}
+
 
 	/**
 	 * Turn the DUT on
@@ -427,7 +423,7 @@ module.exports = class Worker {
 			// If the route already exists, do not throw an error
 			try {
 				await exec(`ip route add ${dutIp} via ${workerIp}`)
-			} catch (e){
+			} catch (e) {
 				console.log('Route to DUT via docker bridge already configured');
 			}
 		}
@@ -489,7 +485,7 @@ module.exports = class Worker {
 			);
 		}, false);
 		console.log('Pushing container to DUT...')
-		await new Promise(async(resolve, reject) => {
+		await new Promise(async (resolve, reject) => {
 
 			const pushTimeout = setTimeout(() => {
 				clearTimeout(pushTimeout);
@@ -505,7 +501,7 @@ module.exports = class Worker {
 				'--nolive',
 				'--detached',
 				'--debug'
-			], { stdio: 'inherit'});
+			], { stdio: 'inherit' });
 
 			pushProc.on('exit', (code) => {
 				if (code === 0) {
@@ -555,8 +551,7 @@ module.exports = class Worker {
 		});
 
 		const stdout = await this.executeCommandInHostOS(
-			`balena exec ${state.services[containerName]} ${
-				command instanceof Array ? command.join(' ') : command
+			`balena exec ${state.services[containerName]} ${command instanceof Array ? command.join(' ') : command
 			}`,
 			target,
 		);
