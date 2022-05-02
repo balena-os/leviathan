@@ -29,7 +29,7 @@ const Suite = require('./suite');
 const config = require('config');
 const fs = require('fs-extra');
 const suiteConfig = require(config.get('leviathan.uploads.config'));
-	
+
 async function removeArtifacts() {
 	const artifactsPath = config.get('leviathan.artifacts');
 	if (fs.existsSync(artifactsPath)) {
@@ -40,9 +40,11 @@ async function removeArtifacts() {
 
 async function removeDownloads() {
 	const downloadsPath = config.get('leviathan.downloads');
-	if (fs.existsSync(downloadsPath) && suiteConfig.debug.preserveDownloads !== true) {
-		console.log('Removing downloads directory...');
-		fs.emptyDirSync(downloadsPath);
+	if (fs.existsSync(downloadsPath)) {
+		if (suiteConfig.debug ? (suiteConfig.debug.preserveDownloads ? !suiteConfig.debug.preserveDownloads : true) : true) {
+			console.log('Removing downloads directory...');
+			fs.emptyDirSync(downloadsPath);
+		}
 	}
 }
 

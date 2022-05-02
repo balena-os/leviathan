@@ -209,7 +209,7 @@ module.exports = class Suite {
 				}),
 				{
 					buffered: false,
-					bail: this.options.debug.failFast || true,
+					bail: this.options.debug ? (this.options.debug.failFast ? this.options.debug.failFast : true) : true
 				},
 				async (t) => {
 					if (run != null) {
@@ -248,10 +248,6 @@ module.exports = class Suite {
 			this.state.log(`Test suite completed. Tearing down now.`);
 			await this.teardown.runAll();
 			await this.removeDependencies();
-			// This env variable can be used to keep a configured, unpacked image for use when developing tests
-			if (this.suiteConfig.preserveDownloads !== true) {
-				await this.removeDownloads();
-			}
 			this.state.log(`Teardown complete.`);
 			this.passing = tap.passing();
 			tap.end();

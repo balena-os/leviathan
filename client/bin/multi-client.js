@@ -458,14 +458,16 @@ class NonInteractiveState {
 						job.teardown();
 					}
 					// Global Fail fast configuration: if a child process exits with a non-zero code,
-					if (code !== 0 && job.suiteConfig.debug.globalFailFast === true) {
-						state.info("Global failfast triggered. Killing all child processes.");
-						Object.values(children).forEach((child) => {
-							child.code = 777
-							child._child.kill();
-						})
-						process.exitCode = 777;
-						process.kill(process.pid, 'SIGINT');
+					if (job.suiteConfig.debug) {
+						if (code !== 0 && job.suiteConfig.debug.globalFailFast ? job.suiteConfig.debug.globalFailFast : false) {
+							state.info("Global failfast triggered. Killing all child processes.");
+							Object.values(children).forEach((child) => {
+								child.code = 777
+								child._child.kill();
+							})
+							process.exitCode = 777;
+							process.kill(process.pid, 'SIGINT');
+						}
 					}
 					// remove the worker from the busy array once the job is finished
 					busyWorkers.splice(busyWorkers.indexOf(job.workers));

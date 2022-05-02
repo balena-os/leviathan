@@ -46,6 +46,17 @@ const innerSchema = {
 	},
 	debug: {
 		type: 'object',
+		properties: {
+			preserveDownloads: {
+				type: 'boolean',
+			},
+			globalFailFast: {
+				type: 'boolean',
+			},
+			failFast: {
+				type: 'boolean',
+			},
+		},
 	},
 	required: ['deviceType', 'suite', 'config', 'image', 'workers'],
 };
