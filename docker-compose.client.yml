@@ -7,13 +7,8 @@ services:
       - "${WORKSPACE:-./workspace}:/usr/src/app/workspace:ro"
       - "${REPORTS:-./workspace/reports}:/usr/src/app/reports:rw"
       - "${SUITES:-./suites}:/usr/src/app/suites:ro"
-    environment:
-      - WORKER_PORT # allow this env var to be used in config.js
-      - BALENACLOUD_API_KEY # allow this env var to be used in config.js
-      - BALENACLOUD_ORG # allow this env var to be used in config.js
-      - BALENACLOUD_APP_NAME # allow this env var to be used in config.js
-      - DEVICE_TYPE # allow this env var to be used in config.js
-      - WORKER_TYPE # allow this env var to be used in config.js
+    env_file:
+      - .env
     depends_on:
       - core
 
