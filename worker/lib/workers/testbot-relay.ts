@@ -58,7 +58,7 @@ class TestBotRelay extends EventEmitter implements Leviathan.Worker {
 	private readonly hatBoard: TestBotHat;
 	private dutLogStream: Stream.Writable | null = null;
 
-	constructor(options: Leviathan.Options) {
+	constructor(options: Leviathan.RuntimeConfiguration) {
 		super();
 
 		this.hatBoard = new TestBotHat();
