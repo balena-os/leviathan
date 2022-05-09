@@ -1,4 +1,18 @@
 - commits:
+    - subject: Fixes spelling and grammar in e2e
+      hash: dc2ad10263c5b04c58964fe2f37e06a1589092c0
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Alex Bucknall <alex.bucknall@gmail.com>
+        signed-off-by: Alex Bucknall <alex.bucknall@gmail.com>
+      author: Alex
+      nested: []
+  version: 2.3.3
+  title: "'Fixes spelling and grammar in e2e'"
+  date: 2022-05-09T08:48:11.177Z
+- commits:
     - subject: Record environment variables to file for client env
       hash: 86edddf6879686028733cb87dc14110d1cca0ee1
       body: ""
