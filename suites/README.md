@@ -1,6 +1,4 @@
-## Testbot diagnostics suite
+# Testbot Diagnostics Suite
 
-This test suite is a collection of diagnostics tests that can be run on a leviathan worker (testbot or QEMU instance) in order to test if all functionality works.
-
-You can run this test to make sure your testbot is working correctly.
-
+This suite is a collection of diagnostics tests that can be run on a leviathan worker (testbot or QEMU instance) to test if its functionality works correctly.
+You can run this suite to check if your testbot is performing correctly.

@@ -60,8 +60,8 @@ const enableSerialConsole = async imagePath => {
 };
 
 module.exports = {
-	title: 'Testbot Diagnositcs',
-	run: async function(test) {
+	title: 'Testbot Diagnostics',
+	run: async function (test) {
 		// The worker class contains methods to interact with the DUT, such as flashing, or executing a command on the device
 		const Worker = this.require('common/worker');
 		// The balenaOS class contains information on the OS image to be flashed, and methods to configure it
@@ -115,11 +115,11 @@ module.exports = {
 					image:
 						this.suite.options.image === false
 							? `${await this.context
-									.get()
-									.sdk.fetchOS(
-										this.suite.options.balenaOS.download.version,
-										this.suite.deviceType.slug,
-									)}`
+								.get()
+								.sdk.fetchOS(
+									this.suite.options.balenaOS.download.version,
+									this.suite.deviceType.slug,
+								)}`
 							: undefined,
 					configJson: {
 						uuid: this.suite.options.balenaOS.config.uuid,
