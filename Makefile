@@ -4,17 +4,13 @@ COREDIR := ./core
 WORKERDIR := ./worker
 ENV_FILE := .env
 
-# import a local .env file if it exists
--include $(ENV_FILE)
+ifneq (,$(wildcard $(ENV_FILE)))
+# if there is an .env file ensure the command line and env vars take priority
+include $(shell t=$$(mktemp) ; cat $(ENV_FILE) 2>/dev/null > $$t ; printenv >> $$t ; echo $$t)
+endif
 
-# required variables that do not have a BALENA prefix
-export WORKSPACE ?= ./workspace
-export REPORTS ?= ./workspace/reports
-export SUITES ?= ./suites
-export DEVICE_TYPE ?= genericx86-64-ext
-export WORKER_TYPE ?= testbot
-
-ENV_VARS := WORKSPACE REPORTS SUITES DEVICE_TYPE WORKER_TYPE $(filter BALENA%,$(.VARIABLES))
+# export all variables to child processes by default
+export
 
 # optional docker-compose args
 BUILDARGS := --parallel --progress=plain
@@ -48,11 +44,6 @@ ifneq ($(BUILD_TAG),)
 export COMPOSE_PROJECT := $(BUILD_TAG)
 endif
 
-env:
-	$(shell rm $(ENV_FILE))
-	$(foreach v, $(ENV_VARS), $(file >>$(ENV_FILE),$(v)=$($(v))))
-	@cat $(ENV_FILE)
-
 DOCKERCOMPOSE := ./bin/docker-compose
 
 # install docker-compose as a run script
@@ -68,13 +59,16 @@ $(DOCKERCOMPOSE):
 help: ## Print help message
 	@echo -e "$$(grep -hE '^\S+:.*##' $(MAKEFILE_LIST) | sed -e 's/:.*##\s*/:/' -e 's/^\(.\+\):\(.*\)/\\x1b[36m\1\\x1b[m:\2/' | column -c2 -t -s :)"
 
-config: $(DOCKERCOMPOSE) env ## Print flattened docker-compose definition
+printenv:
+	@printenv
+
+config: $(DOCKERCOMPOSE) ## Print flattened docker-compose definition
 	$(DOCKERCOMPOSE) config
 
-build: $(DOCKERCOMPOSE) env ## Build the required images
+build: $(DOCKERCOMPOSE) ## Build the required images
 	$(DOCKERCOMPOSE) build $(BUILDARGS)
 
-test: $(DOCKERCOMPOSE) build env ## Run the test suites
+test: $(DOCKERCOMPOSE) build ## Run the test suites
 	$(DOCKERCOMPOSE) up $(UPARGS) --exit-code-from client
 
 local-test: ## Alias for 'make test WORKER_TYPE=qemu'
@@ -86,7 +80,7 @@ qemu: ## Alias for 'make test WORKER_TYPE=qemu'
 testbot:## Alias for 'make test WORKER_TYPE=testbot'
 	$(MAKE) test WORKER_TYPE=testbot
 
-stop: $(DOCKERCOMPOSE) env ## Stop and remove any existing containers and volumes
+stop: $(DOCKERCOMPOSE) ## Stop and remove any existing containers and volumes
 	$(DOCKERCOMPOSE) down --remove-orphans --rmi all --volumes
 
 down: stop ## Alias for 'make stop'
