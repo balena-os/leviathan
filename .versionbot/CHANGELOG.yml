@@ -1,4 +1,18 @@
 - commits:
+    - subject: "make: Allow passed env vars to replace any .env values"
+      hash: 58041400abb52c41c2a50768e5ae3c8e77f9b5bd
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.3.4
+  title: "'make: Allow passed env vars to replace any .env values'"
+  date: 2022-05-19T17:29:58.874Z
+- commits:
     - subject: Fixes spelling and grammar in e2e
       hash: dc2ad10263c5b04c58964fe2f37e06a1589092c0
       body: ""
