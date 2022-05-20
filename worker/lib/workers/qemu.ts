@@ -343,6 +343,8 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 			args = args.concat(gfxArgs);
 		}
 
+		console.debug("QEMU args:\n", args);
+
 		return new Promise((resolve, reject) => {
 			let options = {};
 			if (this.qemuOptions.debug) {
