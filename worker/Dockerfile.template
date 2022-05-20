@@ -34,9 +34,7 @@ RUN apk add --no-cache \
   libusb-dev dbus-dev eudev-dev \
   gstreamer-tools gst-plugins-base gst-plugins-bad gst-plugins-good \
   bridge bridge-utils iproute2 dnsmasq iptables \
-  qemu-img qemu-system-x86_64 \
-    && rm /usr/share/qemu/edk2* `# remove huge edk2 firmware` \
-  && (apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.12/community ovmf || true)
+  qemu-img qemu-system-x86_64 qemu-system-aarch64
 
 RUN apk add uhubctl --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing || true
 
