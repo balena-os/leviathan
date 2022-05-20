@@ -1,4 +1,20 @@
 - commits:
+    - subject: "worker: qemu: add new qemu firmware paths"
+      hash: 60ffeb39a566d5921f4fea4e589692350f35e41c
+      body: |
+        Search for firmware shipped as part of QEMU package to enable
+        cross-platform emulation with UEFI.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+  version: 2.3.4
+  title: "'worker: qemu: add new qemu firmware paths'"
+  date: 2022-05-20T14:01:26.953Z
+- commits:
     - subject: Fixes spelling and grammar in e2e
       hash: dc2ad10263c5b04c58964fe2f37e06a1589092c0
       body: ""
