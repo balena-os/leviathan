@@ -1,4 +1,18 @@
 - commits:
+    - subject: "worker: install edk2 firmware for aarch64"
+      hash: 11aa6229f83c2d0298dfee98ed76cb9b3a680eeb
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+  version: 2.3.4
+  title: "'worker: install edk2 firmware for aarch64'"
+  date: 2022-05-20T02:22:55.992Z
+- commits:
     - subject: Fixes spelling and grammar in e2e
       hash: dc2ad10263c5b04c58964fe2f37e06a1589092c0
       body: ""
