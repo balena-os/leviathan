@@ -22,13 +22,14 @@ else
 COMPOSE_FILE := $(CLIENTCOMPOSEFILE)
 endif
 
-# for qemu workers we need to set the BALENA_ARCH to pull the correct balenalib image
+# for arm64 hosts we need to set the BALENA_ARCH to pull the correct balenalib worker image
 ifeq ($(shell uname -m),aarch64)
 BALENA_ARCH ?= aarch64
+endif
+
+# for generic-aarch64 we need to set the qemu architecture
+ifeq ($(DEVICE_TYPE),generic-aarch64)
 QEMU_ARCH ?= aarch64
-else
-BALENA_ARCH ?= amd64
-QEMU_ARCH ?= x86_64
 endif
 
 COMPOSE_DOCKER_CLI_BUILD := 1
