@@ -14,7 +14,7 @@ module.exports = {
 			qemu: {
 				architecture: process.env.QEMU_ARCH || 'x86_64',
 				cpus: process.env.QEMU_CPUS || '4',
-				memory: process.env.QEMU_MEMORY || '2G',
+				memory: process.env.QEMU_MEMORY || '512M',
 				debug: process.env.QEMU_DEBUG || false,
 				network: {
 					autoconfigure: true,

@@ -203,6 +203,11 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 					vars: '/usr/share/OVMF/OVMF_VARS.fd',
 				},
 				{
+					// alpine, qemu
+					code: '/usr/share/qemu/edk2-x86_64-code.fd',
+					vars: '/usr/share/qemu/edk2-x86_64-i386-vars.fd',
+				},
+				{
 					// archlinux
 					code: '/usr/share/ovmf/x64/OVMF_CODE.fd',
 					vars: '/usr/share/ovmf/x64/OVMF_VARS.fd',
@@ -210,9 +215,14 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 			],
 			aarch64: [
 				{
-					// alpine
+					// alpine, ovmf
 					code: '/usr/share/OVMF/QEMU_EFI.fd',
 					vars: '/usr/share/OVMF/QEMU_VARS.fd',
+				},
+				{
+					// alpine, qemu
+					code: '/usr/share/qemu/edk2-aarch64-code.fd',
+					vars: '/usr/share/qemu/edk2-arm-vars.fd',
 				},
 				{
 					// fedora
@@ -342,6 +352,8 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 
 			args = args.concat(gfxArgs);
 		}
+
+		console.debug("QEMU args:\n", args);
 
 		return new Promise((resolve, reject) => {
 			let options = {};
