@@ -1,4 +1,62 @@
 - commits:
+    - subject: "worker: helpers: memoize resolveLocalTarget"
+      hash: a08f6839f9550d71274598e0b3228fed49a5f889
+      body: |
+        Test device addresses likely won't change inside of a single test run,
+        and mDNS queries can be time consuming. Memoize the result of the query
+        as an optimization.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+    - subject: "worker: helpers: resolveLocalTarget: increase timeout"
+      hash: 12bca0ab3991b2e7c236224797d3df1051aa49ac
+      body: |
+        mDNS queries commonly take longer than four seconds, so increase the
+        timeout to ten seconds for reliability
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+    - subject: "worker: helpers: simplify resolveLocalTarget"
+      hash: 27b4e90dac5909a59955784c7ae4e00c12f21f19
+      body: |
+        The default behavior of the multicast-dns module is to listen on all
+        interfaces, so remove the code that explicitly creates sockets for every
+        interface with an IPv4 address. This should also allow IPv6 to work.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+    - subject: "worker: bump mdns-resolver to upstream v7.2.5"
+      hash: 29213136e1fad53bec9bd8a19b3165c18a41cf38
+      body: >
+        This was pinned to a forked version of this module [0], which is
+
+        seemingly no longer necessary.
+
+
+        [0] https://github.com/balena-io-modules/multicast-dns/tree/listen-on-all-interfaces
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+  version: 2.3.5
+  title: "'Mdns resolver fixes'"
+  date: 2022-05-25T19:04:03.476Z
+- commits:
     - subject: "worker: qemu: add new qemu firmware paths"
       hash: b19831d5209962eb729ffa55851b593e632a70d8
       body: |
