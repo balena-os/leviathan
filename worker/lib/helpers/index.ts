@@ -3,8 +3,8 @@ import { spawn } from 'child_process';
 import * as config from 'config';
 import * as sdk from 'etcher-sdk';
 import { forEach, isEmpty, isObject } from 'lodash';
-import * as mdns from 'multicast-dns';
 import { networkInterfaces } from 'os';
+var mdns = require('multicast-dns')();
 
 function cleanObject(object: Dictionary<any>) {
 	for (const key in object) {
@@ -130,51 +130,27 @@ export function getIpFromIface(iface: string): string {
 export function resolveLocalTarget(target: string): PromiseLike<string> {
 	return new Bluebird((resolve, reject) => {
 		if (/\.local$/.test(target)) {
-			const sockets: any[] = [];
-
-			for (const interfaces of Object.values(networkInterfaces())) {
-				for (const ni of interfaces) {
-					if (ni.family === 'IPv4') {
-						sockets.push(mdns({ interface: ni.address }));
-					}
-				}
-			}
-
-			if (sockets.length === 0) {
-				throw new Error('Did not find any network interfaces on this device');
-			}
-
-			function destroy(socks: any[]) {
-				socks.forEach((sock) => {
-					sock.destroy();
-				});
-			}
-
 			const timeout = setTimeout(() => {
-				destroy(sockets);
 				reject(new Error(`Could not resolve ${target}`));
 			}, 4000);
 
-			sockets.forEach((socket) => {
-				socket.on('error', () => {
-					clearTimeout(timeout);
-					destroy(sockets);
-					reject();
-				});
-				socket.on('response', function (response: any) {
-					const answer = response.answers.find(
-						(x: any) => x.name === target && x.type === 'A',
-					);
-
-					if (answer != null) {
-						clearTimeout(timeout);
-						destroy(sockets);
-						resolve(answer.data);
-					}
-				});
-
-				socket.query([{ type: 'A', name: target }]);
+			mdns.on('error', (err: Error) => {
+				clearTimeout(timeout);
+				reject(err);
 			});
+
+			mdns.on('response', function (response: any) {
+				const answer = response.answers.find(
+					(x: any) => x.name === target && x.type === 'A',
+				);
+
+				if (answer != null) {
+					clearTimeout(timeout);
+					resolve(answer.data);
+				}
+			});
+
+			mdns.query(target, 'A');
 		} else {
 			resolve(target);
 		}
