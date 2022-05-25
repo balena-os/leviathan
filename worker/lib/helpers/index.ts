@@ -130,51 +130,31 @@ export function getIpFromIface(iface: string): string {
 export function resolveLocalTarget(target: string): PromiseLike<string> {
 	return new Bluebird((resolve, reject) => {
 		if (/\.local$/.test(target)) {
-			const sockets: any[] = [];
-
-			for (const interfaces of Object.values(networkInterfaces())) {
-				for (const ni of interfaces) {
-					if (ni.family === 'IPv4') {
-						sockets.push(mdns({ interface: ni.address }));
-					}
-				}
-			}
-
-			if (sockets.length === 0) {
-				throw new Error('Did not find any network interfaces on this device');
-			}
-
-			function destroy(socks: any[]) {
-				socks.forEach((sock) => {
-					sock.destroy();
-				});
-			}
+			const socket = mdns();
 
 			const timeout = setTimeout(() => {
-				destroy(sockets);
+				socket.destroy();
 				reject(new Error(`Could not resolve ${target}`));
 			}, 4000);
 
-			sockets.forEach((socket) => {
-				socket.on('error', () => {
-					clearTimeout(timeout);
-					destroy(sockets);
-					reject();
-				});
-				socket.on('response', function (response: any) {
-					const answer = response.answers.find(
-						(x: any) => x.name === target && x.type === 'A',
-					);
-
-					if (answer != null) {
-						clearTimeout(timeout);
-						destroy(sockets);
-						resolve(answer.data);
-					}
-				});
-
-				socket.query([{ type: 'A', name: target }]);
+			socket.on('error', (err: Error) => {
+				clearTimeout(timeout);
+				socket.destroy();
+				reject(err);
 			});
+			socket.on('response', function (response: any) {
+				const answer = response.answers.find(
+					(x: any) => x.name === target && x.type === 'A',
+				);
+
+				if (answer != null) {
+					clearTimeout(timeout);
+					socket.destroy();
+					resolve(answer.data);
+				}
+			});
+
+			socket.query([{ type: 'A', name: target }]);
 		} else {
 			resolve(target);
 		}
