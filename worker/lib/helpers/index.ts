@@ -135,7 +135,7 @@ export function resolveLocalTarget(target: string): PromiseLike<string> {
 			const timeout = setTimeout(() => {
 				socket.destroy();
 				reject(new Error(`Could not resolve ${target}`));
-			}, 4000);
+			}, 15000);
 
 			socket.on('error', (err: Error) => {
 				clearTimeout(timeout);
