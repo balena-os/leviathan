@@ -128,6 +128,14 @@ export function getIpFromIface(iface: string): string {
 }
 
 export function resolveLocalTarget(target: string): PromiseLike<string> {
+	if (!resolveLocalTarget.cache) {
+		resolveLocalTarget.cache = {};
+	}
+
+	if (target in resolveLocalTarget.cache) {
+		return Promise.resolve(resolveLocalTarget.cache[target]);
+	}
+
 	return new Bluebird((resolve, reject) => {
 		if (/\.local$/.test(target)) {
 			const timeout = setTimeout(() => {
@@ -146,7 +154,7 @@ export function resolveLocalTarget(target: string): PromiseLike<string> {
 
 				if (answer != null) {
 					clearTimeout(timeout);
-					resolve(answer.data);
+					resolve(resolveLocalTarget.cache[target] = answer.data);
 				}
 			});
 
