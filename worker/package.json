@@ -32,7 +32,7 @@
 		"firmata": "^2.0.0",
 		"fs-extra": "^8.1.0",
 		"lodash": "^4.17.11",
-		"multicast-dns": "git+https://github.com/balena-io-modules/multicast-dns#listen-on-all-interfaces",
+		"multicast-dns": "^7.2.5",
 		"mz": "^2.7.0",
 		"proper-lockfile": "^4.1.2",
 		"tar-fs": "^2.1.1"
