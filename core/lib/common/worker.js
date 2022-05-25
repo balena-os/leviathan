@@ -208,8 +208,8 @@ module.exports = class Worker {
 	async getDutIp(
 		target,
 		timeout = {
-			interval: 10000,
-			tries: 60,
+			interval: 1000,
+			tries: 120,
 		},
 	) {
 		return retry(
