@@ -132,7 +132,7 @@ export function resolveLocalTarget(target: string): PromiseLike<string> {
 		if (/\.local$/.test(target)) {
 			const timeout = setTimeout(() => {
 				reject(new Error(`Could not resolve ${target}`));
-			}, 4000);
+			}, 10000);
 
 			mdns.on('error', (err: Error) => {
 				clearTimeout(timeout);
