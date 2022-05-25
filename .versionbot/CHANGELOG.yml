@@ -1,4 +1,18 @@
 - commits:
+    - subject: "workers: qemu: fix vars path for x86_64"
+      hash: b34b92dde6b9b55e9e8393f61787de6895a6e339
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+  version: 2.3.5
+  title: "'workers: qemu: fix vars path for x86_64'"
+  date: 2022-05-25T21:12:24.421Z
+- commits:
     - subject: "worker: qemu: add new qemu firmware paths"
       hash: b19831d5209962eb729ffa55851b593e632a70d8
       body: |
