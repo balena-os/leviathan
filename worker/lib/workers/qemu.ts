@@ -205,7 +205,7 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 				{
 					// alpine, qemu
 					code: '/usr/share/qemu/edk2-x86_64-code.fd',
-					vars: '/usr/share/qemu/edk2-x86_64-i386-vars.fd',
+					vars: '/usr/share/qemu/edk2-i386-vars.fd',
 				},
 				{
 					// archlinux
