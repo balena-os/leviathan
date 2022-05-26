@@ -1,4 +1,70 @@
 - commits:
+    - subject: "workers: qemu: automatically fill broadcast address in createBridge"
+      hash: 95846cbe637017c5703977f9802c76e55caf928a
+      body: |
+        When assigning an address to the bridge, automatically populate the
+        broadcast address to accept broadcast datagrams. This allows mDNS to
+        work.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+    - subject: "core: worker: shorten getDutIp interval"
+      hash: e8e60170632580212bf8b7f51b4797f8fd9a65b9
+      body: |
+        Waiting ten seconds between retries is onerous, shorten to one second
+        interval with more retries.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+    - subject: "worker: helpers: memoize resolveLocalTarget"
+      hash: 747fca0ef91ac5d5247a3655f5d543b948accee6
+      body: |
+        Device addresses likely won't change during a single test run, and mDNS
+        queries can be time consuming. Memoize the result of the query to save
+        some time.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+    - subject: "worker: helpers: resolveLocalTarget: increase timeout"
+      hash: d025e83fad4193367e5afb906a56270cb9da649b
+      body: |
+        mDNS resolution can take some time, increase the timeout from 4s -> 15s
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+    - subject: "worker: helpers: simplify resolveLocalTarget"
+      hash: 2d0ad6b1b888c6a5a8ba32820d4496aa7f44f61a
+      body: |
+        The default behavior of the multicast-dns module is to listen on all
+        interfaces, so remove the code that explicitly creates sockets for every
+        interface with an IPv4 address. This should also allow IPv6 to work.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+  version: 2.3.6
+  title: "'Mdns resolver fixes v2'"
+  date: 2022-05-26T19:12:45.067Z
+- commits:
     - subject: "workers: qemu: fix vars path for x86_64"
       hash: b34b92dde6b9b55e9e8393f61787de6895a6e339
       body: ""
