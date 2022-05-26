@@ -464,6 +464,8 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 						'addr',
 						'add',
 						`${bridgeAddress}/24`,
+						'brd',
+						'+',
 						'dev',
 						bridgeName,
 					]).on('exit', (code) => {
