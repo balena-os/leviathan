@@ -1,4 +1,18 @@
 - commits:
+    - subject: send image before flashing
+      hash: a73173144a08358738dc94c3373bbcbe6465fa66
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+  version: 2.3.6
+  title: "'send image before flashing'"
+  date: 2022-05-31T12:47:13.115Z
+- commits:
     - subject: "workers: qemu: fix vars path for x86_64"
       hash: b34b92dde6b9b55e9e8393f61787de6895a6e339
       body: ""
