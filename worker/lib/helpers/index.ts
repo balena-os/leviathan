@@ -127,7 +127,13 @@ export function getIpFromIface(iface: string): string {
 	throw new Error(`Could not find connected interface ${iface}`);
 }
 
+var resolverCache: { [target: string]: string } = {};
+
 export function resolveLocalTarget(target: string): PromiseLike<string> {
+	if (target in resolverCache) {
+		return Promise.resolve(resolverCache[target]);
+	}
+
 	return new Bluebird((resolve, reject) => {
 		if (/\.local$/.test(target)) {
 			const sockets: any[] = [];
@@ -153,7 +159,7 @@ export function resolveLocalTarget(target: string): PromiseLike<string> {
 			const timeout = setTimeout(() => {
 				destroy(sockets);
 				reject(new Error(`Could not resolve ${target}`));
-			}, 4000);
+			}, 15000);
 
 			sockets.forEach((socket) => {
 				socket.on('error', () => {
@@ -169,7 +175,7 @@ export function resolveLocalTarget(target: string): PromiseLike<string> {
 					if (answer != null) {
 						clearTimeout(timeout);
 						destroy(sockets);
-						resolve(answer.data);
+						resolve(resolverCache[target] = answer.data);
 					}
 				});
 
