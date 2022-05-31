@@ -15,7 +15,7 @@ import * as tar from 'tar-fs';
 import * as util from 'util';
 const pipeline = util.promisify(Stream.pipeline);
 const execSync = util.promisify(exec);
-import { readFile } from 'fs-extra';
+import { readFile, createReadStream, createWriteStream } from 'fs-extra';
 import { createGzip, createGunzip } from 'zlib';
 import * as lockfile from 'proper-lockfile';
 
@@ -358,8 +358,17 @@ async function setup(
 			try {
 				worker.on('progress', onProgress);
 				const imageStream = createGunzip();
-				req.pipe(imageStream);
-				await worker.flash(imageStream);
+				const fileStream = createWriteStream('/tmp/flashImg.img');
+				console.log(`Streaming image to file...`)
+				await pipeline(
+					req,
+					imageStream,
+					fileStream
+				)
+
+				console.log(`attempting to flash...`)
+				const flashStream = createReadStream('/tmp/flashImg.img');
+				await worker.flash(flashStream);
 			} catch (e) {
 				if (e instanceof Error) {
 					res.write(`error: ${e.message}`);
