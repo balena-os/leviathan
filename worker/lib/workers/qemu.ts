@@ -245,8 +245,6 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 	}
 
 	public async powerOn(): Promise<void> {
-		console.log('QEMU: powerOn');
-
 		let vncport = null;
 		let qmpPort = null;
 
@@ -376,7 +374,6 @@ class QemuWorker extends EventEmitter implements Leviathan.Worker {
 	}
 
 	public async powerOff(): Promise<void> {
-		console.log('QEMU: powerOff');
 		return new Promise((resolve, reject) => {
 			if (this.qemuProc && !this.qemuProc.killed) {
 				// don't return until the process is dead
