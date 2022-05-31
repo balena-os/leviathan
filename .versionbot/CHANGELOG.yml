@@ -1,4 +1,58 @@
 - commits:
+    - subject: make more reliable
+      hash: 1686c6501a138862ad4cf52ae06d0fc140ebf2db
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+    - subject: rename leviathan options
+      hash: 8633f7e1315afc01350fa14756ca2fae6a08ed0a
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+    - subject: add diagnostic endpoint to relay worker
+      hash: cdc201e86ff97b1e25ad014c7f745e0e243e933a
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+    - subject: turn off relay before flashing
+      hash: 693a3d5fc0e0091851e3fc466592ccfe21ee6cc2
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+    - subject: add relay based testbot worker
+      hash: 8b8149ebe4068304ac0e0e478b830aa925001af6
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+  version: 2.3.3
+  title: "'add relay based testbot worker (WIP)'"
+  date: 2022-05-31T11:57:09.605Z
+- commits:
     - subject: Record environment variables to file for client env
       hash: 86edddf6879686028733cb87dc14110d1cca0ee1
       body: ""
