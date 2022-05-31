@@ -18,8 +18,6 @@ const dutSerialPath = '/reports/dut-serial.txt';
 async function checkDutPower(){
     let [stdout, stderr] = await exec(`cat /sys/class/net/eth1/carrier`);
     let file = stdout.toString();
-	console.log(`Number found is: ${file}end`)
-	console.log(typeof(file))
     if (file.includes('1')){
         console.log(`DUT is currently On`);
         return true
@@ -29,19 +27,42 @@ async function checkDutPower(){
     }
 }
 
+
+const POLL_INTERVAL = 1000; // 1 second
+const POLL_TRIES = 20; // 20 tries
 async function waitInternalFlash() {
     // check if the DUT is on first 
+	console.log('Booting DUT with the balenaOS flasher image');
     let dutOn = false;
     while(!dutOn){
         console.log(`waiting for DUT to be on`)
         dutOn = await checkDutPower();
         await Bluebird.delay(1000 * 5) // 5 seconds between checks
     }
+	await Bluebird.delay(1000 * 60);
     // once we confirmed the DUT is on, we wait for it to power down again, which signals the flashing has finished
     while(dutOn){
+		await Bluebird.delay(1000 * 10); // 10 seconds between checks
         console.log(`waiting for DUT to be off`)
         dutOn = await checkDutPower();
-        await Bluebird.delay(1000 * 60) // 60 seconds between checks ( is it enough ) 
+		if (!dutOn) {
+			let offCount = 0;
+			console.log(`detected DUT has powered off - confirming...`);
+			for (let tries = 0; tries < POLL_TRIES; tries++) {
+				await Bluebird.delay(POLL_INTERVAL);
+				dutOn = await checkDutPower();
+				if (!dutOn) {
+					offCount += 1;
+				}
+			}
+			console.log(
+				`DUT stayted off for ${offCount} checks, expected: ${POLL_TRIES}`,
+			);
+			if (offCount !== POLL_TRIES) {
+				// if the DUT didn't stay off, then we must try the loop again
+				dutOn = true;
+			}
+		}
     }
 
     // once the DUT is powered off again, we are done flashing (in theory) - not true, we need a window of time to wait, to confirm its actually a full power off
