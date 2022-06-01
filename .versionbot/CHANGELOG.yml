@@ -1,4 +1,20 @@
 - commits:
+    - subject: "worker: qemu: remove debug print statements"
+      hash: c4f0b0c37fc7a7102f292db61a5271d7c3e23855
+      body: |
+        Log statements for powerOn/powerOff were added for debugging when
+        refactoring the QEMU worker to operate w/out libvirt. Remove these.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+  version: 2.3.7
+  title: "'worker: qemu: remove debug print statements'"
+  date: 2022-05-31T23:32:38.579Z
+- commits:
     - subject: "core: worker: shorten getDutIp interval"
       hash: 37b7347bf63a1acb1b4efd7965e5b764a8f6ce84
       body: |
