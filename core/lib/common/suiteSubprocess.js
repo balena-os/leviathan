@@ -33,7 +33,7 @@ const suiteConfig = require(config.get('leviathan.uploads.config'));
 async function removeArtifacts() {
 	const artifactsPath = config.get('leviathan.artifacts');
 	if (fs.existsSync(artifactsPath)) {
-		this.state.log(`Removing artifacts from previous tests...`);
+		console.log(`Removing artifacts from previous tests...`);
 		fs.emptyDirSync(artifactsPath);
 	}
 }
