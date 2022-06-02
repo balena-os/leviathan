@@ -1,4 +1,20 @@
 - commits:
+    - subject: "core: suiteSubprocess: replace this.state.log w/ console.log"
+      hash: c5fd5673c41b9ad48c818a4895712d8ee6c22729
+      body: |
+        This fixes the error:
+          TypeError: Cannot read property 'state' of undefined
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+  version: 2.3.8
+  title: "'core: suiteSubprocess: replace this.state.log w/ console.log'"
+  date: 2022-06-02T16:35:18.359Z
+- commits:
     - subject: "worker: qemu: remove debug print statements"
       hash: c4f0b0c37fc7a7102f292db61a5271d7c3e23855
       body: |
