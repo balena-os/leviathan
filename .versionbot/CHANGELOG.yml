@@ -1,4 +1,19 @@
 - commits:
+    - subject: "core: bump node 12 -> 14"
+      hash: e40a9484c760fb0292da80c6fe6da46eb4373eec
+      body: |
+        Bump Node 12.19.1 to 14.19.3 in core
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+  version: 2.3.9
+  title: "'core: bump node 12 -> 14'"
+  date: 2022-06-02T19:29:24.315Z
+- commits:
     - subject: "core: suiteSubprocess: replace this.state.log w/ console.log"
       hash: c5fd5673c41b9ad48c818a4895712d8ee6c22729
       body: |
