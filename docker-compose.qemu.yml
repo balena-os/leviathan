@@ -22,6 +22,9 @@ services:
       - SCREEN_CAPTURE=true
       - WORKER_PORT # default 80 and must match client config.js workers
       - QEMU_ARCH=${QEMU_ARCH:-x86_64}
+      - QEMU_CPUS=${QEMU_CPUS}
+      - QEMU_MEMORY=${QEMU_MEMORY}
+      - QEMU_DEBUG=${QEMU_DEBUG}
     restart: 'no'
 
   core:
