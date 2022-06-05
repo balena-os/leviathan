@@ -1,4 +1,18 @@
 - commits:
+    - subject: "worker: Expose additional QEMU runtime args via docker-compose"
+      hash: ee574bb798cafa3e4a0504d2dde72079f8db8eeb
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.3.10
+  title: "'worker: Expose additional QEMU runtime args via docker-compose'"
+  date: 2022-06-05T16:58:48.060Z
+- commits:
     - subject: "core: bump node 12 -> 14"
       hash: e40a9484c760fb0292da80c6fe6da46eb4373eec
       body: |
