@@ -27,15 +27,15 @@
 const Bluebird = require('bluebird');
 const exec = Bluebird.promisify(require('child_process').exec);
 const { fs } = require('mz');
-const keygen = Bluebird.promisify(require('ssh-keygen'));
+const keygen = require('ssh-keygen-lite');
 const path = require('path');
-const SSH = require('node-ssh');
+const { NodeSSH } = require('node-ssh');
 const assignIn = require('lodash/assignIn');
 
 const getSSHClientDisposer = (config) => {
 	const createSSHClient = (conf) => {
 		return Bluebird.resolve(
-			new SSH().connect(
+			new NodeSSH().connect(
 				assignIn(
 					{
 						agent: process.env.SSH_AUTH_SOCK,
@@ -121,6 +121,7 @@ module.exports = {
 			.then(async () => {
 				const keys = await keygen({
 					location: keyPath,
+					type: 'ed25519'
 				});
 				await exec('ssh-add -D');
 				await exec(`ssh-add ${keyPath}`);
