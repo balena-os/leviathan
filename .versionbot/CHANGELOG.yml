@@ -1,4 +1,18 @@
 - commits:
+    - subject: get ssh to work with ed25519 algorithm
+      hash: 6bdaedab27c0a919eddd74cb784bddfd8281d90b
+      body: ""
+      footer:
+        Change-type: minor
+        change-type: minor
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+  version: 2.4.0
+  title: "'get ssh to work with ed25519 algorithm'"
+  date: 2022-06-07T11:26:55.354Z
+- commits:
     - subject: "worker: Expose additional QEMU runtime args via docker-compose"
       hash: ee574bb798cafa3e4a0504d2dde72079f8db8eeb
       body: ""
