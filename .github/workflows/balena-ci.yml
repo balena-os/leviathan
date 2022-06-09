@@ -8,11 +8,13 @@ env:
   ENVIRONMENT: balena-cloud.com
 
 jobs:
-  balena-cloud-build:
+  deploy-rigs:
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: true
       matrix:
+        # functionally the same as leviathan-worker-armv7hf block
+        # do we need to push to fleets and blocks?
         fleets: [balena/testbot-rig, balena/testbot-rig-beta, balena/testbot-personal]
     steps:
       - uses: actions/checkout@v3
@@ -24,3 +26,22 @@ jobs:
           fleet: ${{ matrix.fleets }}
           versionbot: true
           environment: ${{ env.ENVIRONMENT }}
+
+  deploy-blocks:
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: true
+      matrix:
+        arch: [amd64, aarch64, armv7hf]
+        block: [worker, client, core]
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - uses: balena-io/deploy-to-balena-action@v0.11.0
+        with:
+          balena_token: ${{ secrets.BALENA_TOKEN }}
+          fleet: balena/leviathan-${{ matrix.block }}-${{ matrix.arch }}
+          versionbot: true
+          environment: ${{ env.ENVIRONMENT }}
+          source: ./${{ matrix.block }}
