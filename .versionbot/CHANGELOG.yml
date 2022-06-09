@@ -1,4 +1,48 @@
 - commits:
+    - subject: Use the service account balenaio_push_bot for deployments
+      hash: 76f9be9bd3e175257ee6e33bf0ed5923b2dfdb26
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+    - subject: "worker: Fix hadolint warnings"
+      hash: b34cc5ea452c4b9cc40cd0011a90930bf95c93bf
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+    - subject: Add deploy jobs for leviathan blocks
+      hash: 0472049042d884e80c9ecdd77c1af83a3b378e5f
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+    - subject: Update actions versions
+      hash: f1e7a4c2095eeddd6f65ac434f380216771263e3
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.4.2
+  title: "'Deploy leviathan as blocks'"
+  date: 2022-06-09T22:48:38.663Z
+- commits:
     - subject: catch error in executeCommandInhostOs
       hash: db1677995f1cf2f93284dcd35bb173d1cb3e08ca
       body: ""
