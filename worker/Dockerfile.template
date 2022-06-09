@@ -36,7 +36,8 @@ RUN apk add --no-cache \
   bridge bridge-utils iproute2 dnsmasq iptables \
   qemu-img qemu-system-x86_64 qemu-system-aarch64
 
-RUN apk add uhubctl --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing || true
+# hadolint ignore=DL3018
+RUN apk add --no-cache uhubctl --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing || true
 
 # create qemu-bridge-helper ACL file
 # https://wiki.qemu.org/Features/HelperNetworking
@@ -53,4 +54,4 @@ COPY --from=node-build /tmp/node/package.json .
 COPY --from=node-build /tmp/node/node_modules node_modules
 COPY --from=node-build /tmp/node/build build
 
-CMD ./entry.sh
+CMD ["./entry.sh"]
