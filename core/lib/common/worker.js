@@ -300,7 +300,14 @@ module.exports = class Worker {
 
 		return retry(
 			async () => {
-				const result = await utils.executeCommandOverSSH(command, config);
+				let result = {}
+				try {
+					result = await utils.executeCommandOverSSH(command, config);
+				} catch (err){
+					console.error(err)
+					console.log(`Error while performing SSH command "${command}", will retry...`);
+					throw new Error(err);
+				}
 
 				if (typeof result.code === 'number' && result.code !== 0) {
 					throw new Error(
