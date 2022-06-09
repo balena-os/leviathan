@@ -22,7 +22,7 @@ jobs:
           submodules: true
       - uses: balena-io/deploy-to-balena-action@v0.11.0
         with:
-          balena_token: ${{ secrets.BALENA_TOKEN }}
+          balena_token: ${{ secrets.BALENA_API_KEY_PUSH }}
           fleet: ${{ matrix.fleets }}
           versionbot: true
           environment: ${{ env.ENVIRONMENT }}
@@ -40,7 +40,7 @@ jobs:
           submodules: true
       - uses: balena-io/deploy-to-balena-action@v0.11.0
         with:
-          balena_token: ${{ secrets.BALENA_TOKEN }}
+          balena_token: ${{ secrets.BALENA_API_KEY_PUSH }}
           fleet: balena/leviathan-${{ matrix.block }}-${{ matrix.arch }}
           versionbot: true
           environment: ${{ env.ENVIRONMENT }}
