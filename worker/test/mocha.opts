@@ -1,2 +1,0 @@
---timeout 60000
-build/test/*.spec.js
