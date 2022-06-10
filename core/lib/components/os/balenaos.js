@@ -94,6 +94,7 @@ const injectNetworkConfiguration = async (image, configuration, partition = 1) =
 	const wifiConfiguration = [
 		'[connection]',
 		'id=balena-wifi',
+		`${configuration.wireless.interfaceName}`,
 		'type=wifi',
 		'[wifi]',
 		'hidden=true',
@@ -165,6 +166,8 @@ module.exports = class BalenaOS {
 			case 'rockpi-4b-rk3399':
 				this.bootPartition = 4;
 				break;
+			case '243390-rpi3':
+				this.network.wireless.interfaceName = 'interface-name=wlan0';
 			default:
 				this.bootPartition = 1;
 		}
