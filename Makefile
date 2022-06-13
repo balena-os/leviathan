@@ -9,7 +9,7 @@ endif
 export
 
 # optional docker-compose args
-BUILDARGS := --parallel --progress=plain
+BUILDARGS := --progress=plain --parallel --pull
 UPARGS := --force-recreate --remove-orphans
 
 QEMUCOMPOSEFILE := docker-compose.qemu.yml
@@ -32,8 +32,8 @@ ifeq ($(DEVICE_TYPE),generic-aarch64)
 QEMU_ARCH ?= aarch64
 endif
 
-COMPOSE_DOCKER_CLI_BUILD := 1
-DOCKER_BUILDKIT := 1
+COMPOSE_DOCKER_CLI_BUILD := 0
+DOCKER_BUILDKIT := 0
 DOCKERD_EXTRA_ARGS :=
 
 # BUILD_TAG is a unique Jenkins environment variable
