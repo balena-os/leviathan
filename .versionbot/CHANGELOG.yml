@@ -1,4 +1,62 @@
 - commits:
+    - subject: "make: Disable buildkit and add --pull to worker flags"
+      hash: 7ec5f156df5629f65655e019274b94a947056af9
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+    - subject: "patch: Replace worker Dockerfile with bh.cr reference"
+      hash: 57ca536e66406a96992b1e3e4d041e554ebc28e6
+      body: ""
+      footer:
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+    - subject: "patch: Remove testbot worker compose file"
+      hash: eb32e4b95adcd248c9404234bbdbd78dc12c3e87
+      body: ""
+      footer:
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+    - subject: "patch: Remove balena-ci workflow for deploying to rigs"
+      hash: 5aef72775a771319b4ac6fb212b032aa4e40ea10
+      body: ""
+      footer:
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+    - subject: Remove worker references from package.json
+      hash: 31d8ffded5e18201dd02293b7db6eab75d1bb144
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+    - subject: Remove worker source files
+      hash: 78f3d3a5dd80bebfb1b79783e3386c7c122a5132
+      body: ""
+      footer:
+        Change-type: minor
+        change-type: minor
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.5.0
+  title: "'Remove worker source files'"
+  date: 2022-06-13T17:19:02.178Z
+- commits:
     - subject: catch error in executeCommandInhostOs
       hash: db1677995f1cf2f93284dcd35bb173d1cb3e08ca
       body: ""
