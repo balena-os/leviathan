@@ -1,4 +1,18 @@
 - commits:
+    - subject: "core: catch ssh errors correctly"
+      hash: b6d651f78d84bfc9c4e89de01717c2f87e5af2ef
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+  version: 2.5.1
+  title: "'core: catch ssh errors correctly'"
+  date: 2022-06-14T15:10:14.924Z
+- commits:
     - subject: "make: Disable buildkit and add --pull to worker flags"
       hash: 7ec5f156df5629f65655e019274b94a947056af9
       body: ""
