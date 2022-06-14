@@ -304,7 +304,7 @@ module.exports = class Worker {
 				try {
 					result = await utils.executeCommandOverSSH(command, config);
 				} catch (err){
-					console.error(err)
+					console.error(err.message)
 					console.log(`Error while performing SSH command "${command}", will retry...`);
 					throw new Error(err);
 				}
@@ -326,17 +326,39 @@ module.exports = class Worker {
 	}
 
 	async executeCommandInWorkerHost(command) {
-		let config = {};
-		const result = await utils.executeCommandOverSSH(
-			`${this.sshPrefix}${command}`,
+		let config = {
+			host: this.workerHost,
+			port: this.workerPort,
+			username: this.workerUser,
+		}
+
+		return retry(
+			async () => {
+				let result = {}
+				try {
+					result = await utils.executeCommandOverSSH(`${this.sshPrefix}${command}`, config);
+				} catch (err){
+					console.error(err.message)
+					console.log(`Error while performing SSH command "${command}", will retry...`);
+					throw new Error(err);
+				}
+
+				if (typeof result.code === 'number' && result.code !== 0) {
+					throw new Error(
+						`"${command}" failed. stderr: ${result.stderr}, stdout: ${result.stdout}, code: ${result.code}`,
+					);
+				}
+				
+			
+				return result.stdout;	
+		
+			},
 			{
-				host: this.workerHost,
-				port: this.workerPort,
-				username: this.workerUser,
+				max_tries: 30,
+				interval: 5000,
+				throw_original: true,
 			},
 		);
-
-		return result.stdout;
 	}
 
 	// executes command in the worker container
