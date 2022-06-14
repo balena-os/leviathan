@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>export&#x3D; | Leviathan Helpers</title>
+	<title>TaskQueue | Leviathan Helpers</title>
 	<meta name="description" content="Documentation for Leviathan Helpers">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,13 +55,13 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="../modules/State.html">State</a>
+					<a href="../modules/TaskQueue.html">TaskQueue</a>
 				</li>
 				<li>
-					<a href="State.export_.html">export&#x3D;</a>
+					<a href="TaskQueue.TaskQueue-1.html">TaskQueue</a>
 				</li>
 			</ul>
-			<h1>Class export&#x3D;</h1>
+			<h1>Class TaskQueue</h1>
 		</div>
 	</div>
 </header>
@@ -72,7 +72,12 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">export&#x3D;</span>
+						<span class="target">TaskQueue</span>
+						<ul class="tsd-hierarchy">
+							<li>
+								<a href="TaskQueue.Teardown.html" class="tsd-signature-type">Teardown</a>
+							</li>
+						</ul>
 					</li>
 				</ul>
 			</section>
@@ -81,86 +86,83 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="TaskQueue.TaskQueue-1.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="State.export_.html#_info" class="tsd-kind-icon">_info</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="State.export_.html#_log" class="tsd-kind-icon">_log</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="State.export_.html#_status" class="tsd-kind-icon">_status</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="TaskQueue.TaskQueue-1.html#tasks" class="tsd-kind-icon">tasks</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="State.export_.html#info" class="tsd-kind-icon">info</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="State.export_.html#log" class="tsd-kind-icon">log</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="State.export_.html#status" class="tsd-kind-icon">status</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="TaskQueue.TaskQueue-1.html#register" class="tsd-kind-icon">register</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="TaskQueue.TaskQueue-1.html#run" class="tsd-kind-icon">run</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="TaskQueue.TaskQueue-1.html#runAll" class="tsd-kind-icon">run<wbr>All</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Task<wbr>Queue<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="TaskQueue.TaskQueue-1.html" class="tsd-signature-type">TaskQueue</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/taskQueue.js#L73">lib/common/taskQueue.js:73</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <a href="TaskQueue.TaskQueue-1.html" class="tsd-signature-type">TaskQueue</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="_info" class="tsd-anchor"></a>
-					<h3>_info</h3>
-					<div class="tsd-signature tsd-kind-icon">_info<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
+					<a name="tasks" class="tsd-anchor"></a>
+					<h3>tasks</h3>
+					<div class="tsd-signature tsd-kind-icon">tasks<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/state.js#L14">lib/common/state.js:14</a></li>
+							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/taskQueue.js#L74">lib/common/taskQueue.js:74</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-						</ul>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="_log" class="tsd-anchor"></a>
-					<h3>_log</h3>
-					<div class="tsd-signature tsd-kind-icon">_log<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/state.js#L12">lib/common/state.js:12</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="_status" class="tsd-anchor"></a>
-					<h3>_status</h3>
-					<div class="tsd-signature tsd-kind-icon">_status<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/state.js#L13">lib/common/state.js:13</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-						</ul>
-					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="info" class="tsd-anchor"></a>
-					<h3>info</h3>
+					<a name="register" class="tsd-anchor"></a>
+					<h3>register</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">info<span class="tsd-signature-symbol">(</span>info<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">register<span class="tsd-signature-symbol">(</span>fn<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, bucket<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/state.js#L51">lib/common/state.js:51</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/taskQueue.js#L99">lib/common/taskQueue.js:99</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>info: <span class="tsd-signature-type">any</span></h5>
+									<h5>fn: <span class="tsd-signature-type">any</span></h5>
+								</li>
+								<li>
+									<h5>bucket: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#x27;global&#x27;</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -168,48 +170,51 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="log" class="tsd-anchor"></a>
-					<h3>log</h3>
+					<a name="run" class="tsd-anchor"></a>
+					<h3>run</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">log<span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">run<span class="tsd-signature-symbol">(</span>bucket<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, scheduler<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">typeof </span><span class="tsd-signature-type">setImmediate</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/state.js#L17">lib/common/state.js:17</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/taskQueue.js#L83">lib/common/taskQueue.js:83</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>message: <span class="tsd-signature-type">any</span></h5>
+									<h5>bucket: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#x27;global&#x27;</span></h5>
+								</li>
+								<li>
+									<h5>scheduler: <span class="tsd-signature-symbol">typeof </span><span class="tsd-signature-type">setImmediate</span><span class="tsd-signature-symbol"> = ...</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="status" class="tsd-anchor"></a>
-					<h3>status</h3>
+					<a name="runAll" class="tsd-anchor"></a>
+					<h3>run<wbr>All</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">status<span class="tsd-signature-symbol">(</span>status<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">run<wbr>All<span class="tsd-signature-symbol">(</span>scheduler<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">typeof </span><span class="tsd-signature-type">setImmediate</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/state.js#L34">lib/common/state.js:34</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/taskQueue.js#L77">lib/common/taskQueue.js:77</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>status: <span class="tsd-signature-type">any</span></h5>
+									<h5>scheduler: <span class="tsd-signature-symbol">typeof </span><span class="tsd-signature-type">setImmediate</span><span class="tsd-signature-symbol"> = ...</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -260,13 +265,13 @@
 					<li class=" tsd-kind-module">
 						<a href="../modules/Leviathan_Worker_helpers.html">Leviathan <wbr>Worker helpers</a>
 					</li>
-					<li class="current tsd-kind-module">
+					<li class=" tsd-kind-module">
 						<a href="../modules/State.html">State</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="../modules/Suite.html">Suite</a>
 					</li>
-					<li class=" tsd-kind-module">
+					<li class="current tsd-kind-module">
 						<a href="../modules/TaskQueue.html">Task<wbr>Queue</a>
 					</li>
 					<li class=" tsd-kind-module">
@@ -288,30 +293,30 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class tsd-parent-kind-module">
-						<a href="State.export_.html" class="tsd-kind-icon">export&#61;</a>
+						<a href="TaskQueue.TaskQueue-1.html" class="tsd-kind-icon">Task<wbr>Queue</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="State.export_.html#_info" class="tsd-kind-icon">_info</a>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class">
+								<a href="TaskQueue.TaskQueue-1.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="State.export_.html#_log" class="tsd-kind-icon">_log</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="State.export_.html#_status" class="tsd-kind-icon">_status</a>
+								<a href="TaskQueue.TaskQueue-1.html#tasks" class="tsd-kind-icon">tasks</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="State.export_.html#info" class="tsd-kind-icon">info</a>
+								<a href="TaskQueue.TaskQueue-1.html#register" class="tsd-kind-icon">register</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="State.export_.html#log" class="tsd-kind-icon">log</a>
+								<a href="TaskQueue.TaskQueue-1.html#run" class="tsd-kind-icon">run</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="State.export_.html#status" class="tsd-kind-icon">status</a>
+								<a href="TaskQueue.TaskQueue-1.html#runAll" class="tsd-kind-icon">run<wbr>All</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
+					<li class=" tsd-kind-class tsd-parent-kind-module">
+						<a href="TaskQueue.Teardown.html" class="tsd-kind-icon">Teardown</a>
+					</li>
 				</ul>
 			</nav>
 		</div>
@@ -323,6 +328,7 @@
 		<div class="tsd-legend-group">
 			<ul class="tsd-legend">
 				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
 				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
 			</ul>
