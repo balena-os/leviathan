@@ -69,7 +69,7 @@ const isFunction = require('lodash/isFunction');
 const noop = require('lodash/noop');
 const Bluebird = require('bluebird');
 
-class TaskQueue {
+export class TaskQueue {
 	constructor() {
 		this.tasks = new Map();
 	}
@@ -109,7 +109,7 @@ class TaskQueue {
 	}
 }
 
-class Teardown extends TaskQueue {
+export class Teardown extends TaskQueue {
 	constructor() {
 		super();
 
@@ -130,3 +130,4 @@ module.exports = {
 	Setup: TaskQueue,
 	Teardown: Teardown,
 };
+
