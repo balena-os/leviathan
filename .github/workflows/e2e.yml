@@ -1,0 +1,47 @@
+on:
+  pull_request:
+    branches:
+      - master
+
+env:
+  SUITES: ./suites
+  REPORTS: ./reports
+  WORKSPACE: ./workspace
+  BALENACLOUD_ORG: testbot
+  BALENACLOUD_API_KEY: ${{ secrets.BALENA_TOKEN }}
+  BALENACLOUD_APP_NAME: balena/testbot-rig
+  QEMU_CPUS: 1
+  QEMU_MEMORY: 1G
+
+jobs:
+  e2e:
+    runs-on: ubuntu-20.04
+    env:
+      WORKER_TYPE: ${{ matrix.WORKER_TYPE }}
+      DEVICE_TYPE: ${{ matrix.DEVICE_TYPE }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - DEVICE_TYPE: genericx86-64-ext
+            WORKER_TYPE: qemu
+          # - DEVICE_TYPE: genericx-aarch64
+          #   WORKER_TYPE: qemu
+          - DEVICE_TYPE: raspberrypi3
+            WORKER_TYPE: testbot
+          # - DEVICE_TYPE: raspberrypi4-64
+          #   WORKER_TYPE: testbot
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Copy suite config
+        run: cp -a ${{ env.SUITES }}/config.js ${{ env.WORKSPACE }}/config.js
+      - name: Build leviathan images
+        run: make build
+      - name: Run test suite
+        run: make test
+      - uses: actions/upload-artifact@v3
+        with:
+          name: reports-${{ env.WORKER_TYPE }}-${{ env.DEVICE_TYPE }}
+          path: ${{ env.REPORTS }}
