@@ -65,16 +65,22 @@ module.exports = {
 	executeCommandOverSSH: async (command, config) => {
 		return Bluebird.using(getSSHClientDisposer(config), (client) => {
 			return new Bluebird(async (resolve, reject) => {
-				client.connection.on('error', (err) => {
-					reject(err);
-				});
-				resolve(
-					await client.exec(command, [], {
-						stream: 'both',
-					}),
-				);
-			});
-		});
+				try{
+					client.connection.on('error', (err) => {
+						console.log(`Connection err: ${err.message}`)
+						reject(err);
+					});
+
+					resolve(
+						await client.exec(command, [], {
+							stream: 'both',
+						}),
+					);
+				} catch(e){
+					reject(e)
+				}
+			})
+		})
 	},
 
 	/**
