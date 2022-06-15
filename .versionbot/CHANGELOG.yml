@@ -1,4 +1,22 @@
 - commits:
+    - subject: "core: worker: handle all local connections the same"
+      hash: 7b6eee28e6d0db63ca3ec7f6046aad46a12b7eaa
+      body: |
+        Create a directConnect variable that indicates whether we're connecting
+        to a local instance of the worker server, including if the connection is
+        over a unix domain socket. This allows the suite to skip steps that
+        don't pertain to local runs.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+  version: 2.5.2
+  title: "'core: worker: handle all local connections the same'"
+  date: 2022-06-15T19:50:29.158Z
+- commits:
     - subject: "core: catch ssh errors correctly"
       hash: b6d651f78d84bfc9c4e89de01717c2f87e5af2ef
       body: ""
