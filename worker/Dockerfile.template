@@ -1,3 +1,4 @@
 ARG BALENA_ARCH=%%BALENA_ARCH%%
+ARG WORKER_RELEASE=latest
 # https://hub.balena.io/organizations/balena/blocks/leviathan-worker-amd64/releases
-FROM bh.cr/balena/leviathan-worker-${BALENA_ARCH}/2.5.3
+FROM bh.cr/balena/leviathan-worker-${BALENA_ARCH}/${WORKER_RELEASE}
