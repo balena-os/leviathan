@@ -78,6 +78,10 @@ module.exports = class Worker {
 		this.workerUser = 'root';
 		this.sshPrefix = '';
 		this.uuid = '';
+		this.directConnect = (
+			this.url.includes(`worker`)
+			|| this.url.includes('unix:')
+		);
 		if (this.url.includes(`balena-devices.com`)) {
 			// worker is a testbot connected to balena cloud - we ssh into it via the vpn
 			this.uuid = this.url.match(
@@ -232,7 +236,7 @@ module.exports = class Worker {
 		// ip of DUT - used to talk to it
 		// if testbot/local testbot, then we dont wan't the ip, as we use SSH tunneling to talk to it - so return 127.0.0.1
 		// if qemu, return the ip - as we talk to the DUT directly
-		return this.url.includes(`worker`)
+		return this.directConnect
 			? this.getDutIp(target)
 			: Promise.resolve(`127.0.0.1`);
 	}
@@ -430,7 +434,7 @@ module.exports = class Worker {
 
 	// create tunnels to relevant DUT ports to we can access them remotely
 	async createSSHTunnels(target) {
-		if (!this.url.includes(`worker`)) {
+		if (!this.directConnect) {
 			const DUT_PORTS = [
 				48484, // supervisor
 				22222, // ssh
@@ -478,7 +482,7 @@ module.exports = class Worker {
 
 	// add ssh key to the worker, so it cas ssh into prod DUT's
 	async addSSHKey(keyPath) {
-		if (!this.url.includes(`worker`)) {
+		if (!this.directConnect) {
 			console.log(`Adding dut ssh key to worker...`);
 			const SSH_KEY_PATH = '/tmp/';
 			await this.sendFile(keyPath, SSH_KEY_PATH, 'worker');
