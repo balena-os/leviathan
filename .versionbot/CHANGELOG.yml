@@ -1,4 +1,16 @@
 - commits:
+    - subject: "patch: Fix failFast options"
+      hash: 878d4351068945398c1c46e52966283563f06450
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.5.3
+  title: "'Fix failFast debug option'"
+  date: 2022-06-16T11:19:39.675Z
+- commits:
     - subject: "core: worker: handle all local connections the same"
       hash: 7b6eee28e6d0db63ca3ec7f6046aad46a12b7eaa
       body: |
