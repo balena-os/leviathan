@@ -603,15 +603,10 @@ module.exports = class Worker {
 			`touch /tmp/reboot-check && systemd-run --on-active=2 reboot`,
 			target,
 		);
-		await utils.waitUntil(async () => {
-			return (
-				(await this.executeCommandInHostOS(
-					'[[ ! -f /tmp/reboot-check ]] && echo pass',
-					target,
-					{ interval: 10000, tries: 10 },
-				)) === 'pass'
-			);
-		}, false);
+		await this.executeCommandInHostOS(
+			'[[ ! -f /tmp/reboot-check ]] && echo pass',
+			target,
+		);
 		this.logger.log(`DUT has rebooted & is back online`);
 	}
 
