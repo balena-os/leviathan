@@ -322,8 +322,8 @@ module.exports = class Worker {
 				return result.stdout;
 			},
 			{
-				max_tries: 30,
-				interval: 5000,
+				max_tries: 5 * 60,
+				interval: 1000,
 				throw_original: true,
 			},
 		);
