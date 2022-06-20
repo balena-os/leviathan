@@ -16,6 +16,7 @@
 
 const { delay } = require('bluebird');
 const fs = require('fs').promises;
+const SERIAL_PATH = "/reports/dut-serial.txt"
 
 module.exports = {
 	title: 'Serial test',
@@ -25,11 +26,37 @@ module.exports = {
 			run: async function (test) {
 				await this.context.get().worker.on();
 				await delay(20 * 1000);
-				test.not(
-					(await fs.stat('/reports/dut-serial.txt')).size,
-					0,
-					`Should be able to retrieve serial output from DUT`,
-				);
+				await this.context.get().worker.off();
+
+				try {
+					await fs.access(SERIAL_PATH, fs.constants.F_OK)
+					test.comment(`Serial file found at ${SERIAL_PATH}`)
+				} catch (err) {
+					test.comment(await this.context
+						.get()
+						.worker.executeCommandInWorker(`cat ${SERIAL_PATH}`))
+					if (this.workerContract.workerType === `testbot_hat`) {
+						await fs.writeFile(
+							`${SERIAL_PATH}`,
+							(await this.context
+								.get()
+								.worker.executeCommandInWorker(`cat ${SERIAL_PATH}`)).toString(),
+							{ encoding: 'utf8' }
+						)
+						test.comment(`Serial file created at ${SERIAL_PATH}`)
+					}
+				} finally {
+					test.not(
+						(await fs.stat(`${SERIAL_PATH}`)).size,
+						0,
+						`Size of serial output file from DUT shouldn't be 0`,
+					)
+					test.not(
+						(((await fs.readFile(`${SERIAL_PATH}`, 'utf8')).trim()).split('  ')).length,
+						0,
+						`Serial output from DUT shouldn't be empty`,
+					)
+				}
 			}
 		},
 	],
