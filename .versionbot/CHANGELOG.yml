@@ -1,4 +1,36 @@
 - commits:
+    - subject: "core: worker: simplify rebootDut"
+      hash: 55981700fb4c90a1f81192a44725f2c2d49e6135
+      body: |
+        worker.rebootDut() contains retry logic using utils.waitUntil() wrapping
+        this.executeCommandInHostOS(). The latter contains its own retry logic,
+        which will try to execute a given command for up to five minutes before
+        timing out. Remove the retry logic from worker.rebootDut(), as it's
+        redundant and adds latency.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+    - subject: "core: worker: reduce interval in executeCommandInHostOS"
+      hash: 7f8b371b3035eed2b32011295768d5bec19ba1ba
+      body: |
+        The default interval for retrying this command is 5s, with a total
+        timeout of 2m30s. Reduce the timeout to 1s to reduce latency for the
+        successful case, while increasing the total timeout to 5m.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+  version: 2.5.4
+  title: "'Simplify reboot'"
+  date: 2022-06-17T19:55:24.238Z
+- commits:
     - subject: "patch: Fix failFast options"
       hash: 878d4351068945398c1c46e52966283563f06450
       body: ""
