@@ -1,4 +1,20 @@
 - commits:
+    - subject: "core: utils: reduce waitUntil interval"
+      hash: 43dc0a3f41fc1cda36d1c974ba3971da020beb3e
+      body: |
+        Now that most uses of waitUntil() have explicit intervals and timeouts,
+        reduce the default interval to 250ms, and the timeout to 2m, to remove
+        excessive unintentional waits in new tests without explicit options.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+  version: 2.5.5
+  date: 2022-06-20T22:44:47.561Z
+- commits:
     - subject: "core: worker: simplify rebootDut"
       hash: 55981700fb4c90a1f81192a44725f2c2d49e6135
       body: |
