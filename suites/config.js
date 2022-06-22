@@ -9,11 +9,6 @@ module.exports = [{
     balenaApiUrl: 'balena-cloud.com',
     organization: process.env.BALENACLOUD_ORG
   },
-  debug: {
-    failFast: false,
-    globalFailFast: false,
-    preserveDownloads: false,
-  },
   image: false,
   workers: process.env.WORKER_TYPE === 'qemu' ? ['http://worker'] : {
 		balenaApplication: process.env.BALENACLOUD_APP_NAME,

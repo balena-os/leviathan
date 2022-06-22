@@ -24,30 +24,29 @@ module.exports = {
 		{
 			title: 'Recording DUT serial output',
 			run: async function (test) {
-				await this.context.get().worker.on();
-				await delay(20 * 1000);
+				await delay(60 * 1000);
 				await this.context.get().worker.off();
 
 				try {
-					await fs.access(SERIAL_PATH, fs.constants.F_OK)
-					test.comment(`Serial file found at ${SERIAL_PATH}`)
+					await fs.access(SERIAL_PATH)
+					console.log(`Serial file found at ${SERIAL_PATH}`)
 				} catch (err) {
-					test.comment(await this.context
-						.get()
-						.worker.executeCommandInWorker(`cat ${SERIAL_PATH}`))
+					console.log(`${err}`)
 					if (this.workerContract.workerType === `testbot_hat`) {
-						await fs.writeFile(
-							`${SERIAL_PATH}`,
-							(await this.context
-								.get()
-								.worker.executeCommandInWorker(`cat ${SERIAL_PATH}`)).toString(),
-							{ encoding: 'utf8' }
-						)
-						test.comment(`Serial file created at ${SERIAL_PATH}`)
+						try {
+							await fs.writeFile(
+								SERIAL_PATH,
+								(await this.worker.fetchSerial()).toString(),
+								{ encoding: 'utf8' }
+							)
+							console.log(`Serial file created at ${SERIAL_PATH}`)
+						} catch (error) {
+							console.err(`Couldn't find logs: ${error}`)
+						}
 					}
 				} finally {
 					test.not(
-						(await fs.stat(`${SERIAL_PATH}`)).size,
+						(await fs.stat(SERIAL_PATH)).size,
 						0,
 						`Size of serial output file from DUT shouldn't be 0`,
 					)

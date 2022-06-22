@@ -180,6 +180,15 @@ module.exports = class Worker {
 		this.logger.log('DUT powered on');
 	}
 
+	async fetchSerial() {
+		this.logger.log('Pulling Serial logs from DUT');
+		// Logs received were encoding 'UTF-16LE', hence need to convert them right here.
+		return Buffer.from(await rp.get(
+				`${this.url}/dut/serial`),
+				'utf-8'
+			).toString();
+	}
+
 	/**
 	 * Turn the DUT off
 	 *
@@ -307,7 +316,7 @@ module.exports = class Worker {
 				let result = {}
 				try {
 					result = await utils.executeCommandOverSSH(command, config);
-				} catch (err){
+				} catch (err) {
 					console.error(err.message)
 					console.log(`Error while performing SSH command "${command}", will retry...`);
 					throw new Error(err);
@@ -341,7 +350,7 @@ module.exports = class Worker {
 				let result = {}
 				try {
 					result = await utils.executeCommandOverSSH(`${this.sshPrefix}${command}`, config);
-				} catch (err){
+				} catch (err) {
 					console.error(err.message)
 					console.log(`Error while performing SSH command "${command}", will retry...`);
 					throw new Error(err);
@@ -352,10 +361,10 @@ module.exports = class Worker {
 						`"${command}" failed. stderr: ${result.stderr}, stdout: ${result.stdout}, code: ${result.code}`,
 					);
 				}
-				
-			
-				return result.stdout;	
-		
+
+
+				return result.stdout;
+
 			},
 			{
 				max_tries: 30,
