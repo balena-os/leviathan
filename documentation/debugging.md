@@ -16,7 +16,7 @@ The supported debug options available are as follows:
 
 1. `failFast`: Exit the ongoing test suite if a test fails. Type: `Boolean`. Value: `true` or `false`. Default: `true`.
 2. `preserveDownloads`: Persist downloadeded artifacts. Type: `Boolean`. Value: `true` or `false`. Default: `false`.
-3. `globalFailFast`: Exit the ongoing test run if a test fails. Type: `Boolean`. Value: `true` or `false`. No default value.
+3. `globalFailFast`: Exit the entire ongoing test run if a test fails. Type: `Boolean`. Value: `true` or `false`. Default: `false`.
 
 You can use `this.suite.options` to access the `CUSTOM_OPTION` property in your test suite.
 

@@ -209,7 +209,7 @@ module.exports = class Suite {
 				}),
 				{
 					buffered: false,
-					bail: this.options.debug ? (this.options.debug.failFast ? this.options.debug.failFast : true) : true
+					bail: this.options.debug ? (this.options.debug.failFast === false ? this.options.debug.failFast : true) : true
 				},
 				async (t) => {
 					if (run != null) {

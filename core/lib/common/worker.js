@@ -78,6 +78,10 @@ module.exports = class Worker {
 		this.workerUser = 'root';
 		this.sshPrefix = '';
 		this.uuid = '';
+		this.directConnect = (
+			this.url.includes(`worker`)
+			|| this.url.includes('unix:')
+		);
 		if (this.url.includes(`balena-devices.com`)) {
 			// worker is a testbot connected to balena cloud - we ssh into it via the vpn
 			this.uuid = this.url.match(
@@ -232,7 +236,7 @@ module.exports = class Worker {
 		// ip of DUT - used to talk to it
 		// if testbot/local testbot, then we dont wan't the ip, as we use SSH tunneling to talk to it - so return 127.0.0.1
 		// if qemu, return the ip - as we talk to the DUT directly
-		return this.url.includes(`worker`)
+		return this.directConnect
 			? this.getDutIp(target)
 			: Promise.resolve(`127.0.0.1`);
 	}
@@ -304,7 +308,7 @@ module.exports = class Worker {
 				try {
 					result = await utils.executeCommandOverSSH(command, config);
 				} catch (err){
-					console.error(err)
+					console.error(err.message)
 					console.log(`Error while performing SSH command "${command}", will retry...`);
 					throw new Error(err);
 				}
@@ -318,25 +322,47 @@ module.exports = class Worker {
 				return result.stdout;
 			},
 			{
-				max_tries: 30,
-				interval: 5000,
+				max_tries: 5 * 60,
+				interval: 1000,
 				throw_original: true,
 			},
 		);
 	}
 
 	async executeCommandInWorkerHost(command) {
-		let config = {};
-		const result = await utils.executeCommandOverSSH(
-			`${this.sshPrefix}${command}`,
+		let config = {
+			host: this.workerHost,
+			port: this.workerPort,
+			username: this.workerUser,
+		}
+
+		return retry(
+			async () => {
+				let result = {}
+				try {
+					result = await utils.executeCommandOverSSH(`${this.sshPrefix}${command}`, config);
+				} catch (err){
+					console.error(err.message)
+					console.log(`Error while performing SSH command "${command}", will retry...`);
+					throw new Error(err);
+				}
+
+				if (typeof result.code === 'number' && result.code !== 0) {
+					throw new Error(
+						`"${command}" failed. stderr: ${result.stderr}, stdout: ${result.stdout}, code: ${result.code}`,
+					);
+				}
+				
+			
+				return result.stdout;	
+		
+			},
 			{
-				host: this.workerHost,
-				port: this.workerPort,
-				username: this.workerUser,
+				max_tries: 30,
+				interval: 5000,
+				throw_original: true,
 			},
 		);
-
-		return result.stdout;
 	}
 
 	// executes command in the worker container
@@ -408,7 +434,7 @@ module.exports = class Worker {
 
 	// create tunnels to relevant DUT ports to we can access them remotely
 	async createSSHTunnels(target) {
-		if (!this.url.includes(`worker`)) {
+		if (!this.directConnect) {
 			const DUT_PORTS = [
 				48484, // supervisor
 				22222, // ssh
@@ -456,7 +482,7 @@ module.exports = class Worker {
 
 	// add ssh key to the worker, so it cas ssh into prod DUT's
 	async addSSHKey(keyPath) {
-		if (!this.url.includes(`worker`)) {
+		if (!this.directConnect) {
 			console.log(`Adding dut ssh key to worker...`);
 			const SSH_KEY_PATH = '/tmp/';
 			await this.sendFile(keyPath, SSH_KEY_PATH, 'worker');
@@ -577,15 +603,10 @@ module.exports = class Worker {
 			`touch /tmp/reboot-check && systemd-run --on-active=2 reboot`,
 			target,
 		);
-		await utils.waitUntil(async () => {
-			return (
-				(await this.executeCommandInHostOS(
-					'[[ ! -f /tmp/reboot-check ]] && echo pass',
-					target,
-					{ interval: 10000, tries: 10 },
-				)) === 'pass'
-			);
-		}, false);
+		await this.executeCommandInHostOS(
+			'[[ ! -f /tmp/reboot-check ]] && echo pass',
+			target,
+		);
 		this.logger.log(`DUT has rebooted & is back online`);
 	}
 

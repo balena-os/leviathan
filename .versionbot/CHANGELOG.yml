@@ -1,4 +1,80 @@
 - commits:
+    - subject: "core: worker: simplify rebootDut"
+      hash: 55981700fb4c90a1f81192a44725f2c2d49e6135
+      body: |
+        worker.rebootDut() contains retry logic using utils.waitUntil() wrapping
+        this.executeCommandInHostOS(). The latter contains its own retry logic,
+        which will try to execute a given command for up to five minutes before
+        timing out. Remove the retry logic from worker.rebootDut(), as it's
+        redundant and adds latency.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+    - subject: "core: worker: reduce interval in executeCommandInHostOS"
+      hash: 7f8b371b3035eed2b32011295768d5bec19ba1ba
+      body: |
+        The default interval for retrying this command is 5s, with a total
+        timeout of 2m30s. Reduce the timeout to 1s to reduce latency for the
+        successful case, while increasing the total timeout to 5m.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+  version: 2.5.4
+  title: "'Simplify reboot'"
+  date: 2022-06-17T19:55:24.238Z
+- commits:
+    - subject: "patch: Fix failFast options"
+      hash: 878d4351068945398c1c46e52966283563f06450
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.5.3
+  title: "'Fix failFast debug option'"
+  date: 2022-06-16T11:19:39.675Z
+- commits:
+    - subject: "core: worker: handle all local connections the same"
+      hash: 7b6eee28e6d0db63ca3ec7f6046aad46a12b7eaa
+      body: |
+        Create a directConnect variable that indicates whether we're connecting
+        to a local instance of the worker server, including if the connection is
+        over a unix domain socket. This allows the suite to skip steps that
+        don't pertain to local runs.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+  version: 2.5.2
+  title: "'core: worker: handle all local connections the same'"
+  date: 2022-06-15T19:50:29.158Z
+- commits:
+    - subject: "core: catch ssh errors correctly"
+      hash: b6d651f78d84bfc9c4e89de01717c2f87e5af2ef
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+  version: 2.5.1
+  title: "'core: catch ssh errors correctly'"
+  date: 2022-06-14T15:10:14.924Z
+- commits:
     - subject: "make: Disable buildkit and add --pull to worker flags"
       hash: 7ec5f156df5629f65655e019274b94a947056af9
       body: ""
