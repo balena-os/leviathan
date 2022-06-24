@@ -7,6 +7,7 @@ services:
       dockerfile: Dockerfile.template
       args:
         - BALENA_ARCH=${BALENA_ARCH:-amd64}
+        - WORKER_RELEASE=${WORKER_RELEASE:-latest}
     device_cgroup_rules:
       # allow dynamic creation and access of qemu required misc chardev nodes
       # this includes /dev/kvm, and /dev/net/tun
