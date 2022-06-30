@@ -1,4 +1,16 @@
 - commits:
+    - subject: "patch: Limit e2e execution time to 2 hours"
+      hash: e8daaaef99db5476d3d78b370a05d4c08bd4a6cc
+      body: ""
+      footer:
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.5.7
+  title: "'patch: Limit e2e execution time to 2 hours'"
+  date: 2022-06-30T21:19:32.813Z
+- commits:
     - subject: "patch: Use ubuntu-latest GH runners for e2e"
       hash: ee024769aa476e5d5dca66cc8fbc707f1eed37bc
       body: ""
