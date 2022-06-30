@@ -1,4 +1,14 @@
 - commits:
+    - subject: "patch: Use ubuntu-latest GH runners for e2e"
+      hash: ee024769aa476e5d5dca66cc8fbc707f1eed37bc
+      body: ""
+      footer: {}
+      author: Kyle Harding
+      nested: []
+  version: 2.5.6
+  title: "'build(deps): bump minimist from 1.2.5 to 1.2.6 in /core'"
+  date: 2022-06-30T19:30:20.972Z
+- commits:
     - subject: "github: Run e2e tests via github actions"
       hash: 3ef31444872dc701f0efa23cc0a208f0cbcf5155
       body: |
