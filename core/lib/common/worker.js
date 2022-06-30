@@ -46,7 +46,9 @@ const path = require('path');
 const once = require('lodash/once');
 const pipeline = Bluebird.promisify(require('stream').pipeline);
 const request = require('request');
-const rp = require('request-promise');
+const rp = require('request-promise').defaults({
+    timeout: 20 * 1000
+})
 
 const exec = Bluebird.promisify(require('child_process').exec);
 const spawn = require('child_process').spawn;
