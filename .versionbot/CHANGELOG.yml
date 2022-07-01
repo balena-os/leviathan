@@ -1,4 +1,16 @@
 - commits:
+    - subject: "minor: Improve e2e serial test for Leviathan v2"
+      hash: 3cff5f39767dfa507c52a7827e7317fdc07d0be6
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.6.0
+  title: "'minor: Improve e2e serial test for Leviathan v2'"
+  date: 2022-06-30T23:41:09.545Z
+- commits:
     - subject: "patch: Limit e2e execution time to 2 hours"
       hash: e8daaaef99db5476d3d78b370a05d4c08bd4a6cc
       body: ""
