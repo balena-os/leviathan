@@ -1,4 +1,24 @@
 - commits:
+    - subject: "patch: Remove testing step of purging old volumes"
+      hash: ff51ed9846c46cef5733d35414b8952acc83187f
+      body: ""
+      footer:
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+    - subject: "patch: Increase timeout for worker connections"
+      hash: 87a741fd22a78c190bec59fa6628de921ac2809f
+      body: ""
+      footer:
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.6.1
+  title: "'patch: Increase timeout of http requests to worker'"
+  date: 2022-07-01T14:27:56.188Z
+- commits:
     - subject: "minor: Improve e2e serial test for Leviathan v2"
       hash: 3cff5f39767dfa507c52a7827e7317fdc07d0be6
       body: ""
