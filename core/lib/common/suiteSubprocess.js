@@ -38,6 +38,14 @@ async function removeArtifacts() {
 	}
 }
 
+async function removeReports() {
+	const reportsPath = config.get('leviathan.reports');
+	if (fs.existsSync(reportsPath)) {
+		console.log(`Removing reports from previous tests...`);
+		fs.emptyDirSync(reportsPath);
+	}
+}
+
 async function removeDownloads() {
 	const downloadsPath = config.get('leviathan.downloads');
 	if (fs.existsSync(downloadsPath)) {
@@ -63,6 +71,7 @@ async function createJsonSummary(suite) {
 		suiteConfig
 	);
 	suite.setup.register(removeArtifacts);
+	suite.setup.register(removeReports);
 	suite.setup.register(
 		async () => fs.ensureDir(config.get('leviathan.downloads'))
 	);
