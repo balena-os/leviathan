@@ -78,7 +78,7 @@ testbot:## Alias for 'make test WORKER_TYPE=testbot'
 	$(MAKE) test WORKER_TYPE=testbot
 
 stop: $(DOCKERCOMPOSE) ## Stop and remove any existing containers and volumes
-	$(DOCKERCOMPOSE) down --remove-orphans --rmi all --volumes
+	-$(DOCKERCOMPOSE) down --remove-orphans --rmi all --volumes
 
 down: stop ## Alias for 'make stop'
 
