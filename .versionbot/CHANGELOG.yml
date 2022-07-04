@@ -1,4 +1,28 @@
 - commits:
+    - subject: "Makefile: Fix unique container names when running on Jenkins"
+      hash: 59d1f3e41aef5f60b61de27eb05512cec69b7d36
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+    - subject: "Makefile: Ignore failures when cleaning up"
+      hash: 808dd2218755c34f86e849ce9378f1bc8cc540a2
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.6.2
+  title: "'Makefile: Ignore failures when cleaning up'"
+  date: 2022-07-04T19:32:28.939Z
+- commits:
     - subject: "patch: Remove testing step of purging old volumes"
       hash: ff51ed9846c46cef5733d35414b8952acc83187f
       body: ""
