@@ -38,7 +38,7 @@ DOCKERD_EXTRA_ARGS :=
 
 # BUILD_TAG is a unique Jenkins environment variable
 ifneq ($(BUILD_TAG),)
-COMPOSE_PROJECT := $(BUILD_TAG)
+COMPOSE_PROJECT_NAME := $(BUILD_TAG)
 endif
 
 DOCKERCOMPOSE := ./bin/docker-compose
@@ -78,7 +78,7 @@ testbot:## Alias for 'make test WORKER_TYPE=testbot'
 	$(MAKE) test WORKER_TYPE=testbot
 
 stop: $(DOCKERCOMPOSE) ## Stop and remove any existing containers and volumes
-	$(DOCKERCOMPOSE) down --remove-orphans --rmi all --volumes
+	-$(DOCKERCOMPOSE) down --remove-orphans --rmi all --volumes
 
 down: stop ## Alias for 'make stop'
 
