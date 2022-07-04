@@ -38,7 +38,7 @@ DOCKERD_EXTRA_ARGS :=
 
 # BUILD_TAG is a unique Jenkins environment variable
 ifneq ($(BUILD_TAG),)
-COMPOSE_PROJECT := $(BUILD_TAG)
+COMPOSE_PROJECT_NAME := $(BUILD_TAG)
 endif
 
 DOCKERCOMPOSE := ./bin/docker-compose
