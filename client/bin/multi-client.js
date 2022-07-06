@@ -354,124 +354,133 @@ class NonInteractiveState {
 			)}`,
 		);
 		const busyWorkers = [];
+		let suiteRunning = false;
 		// While jobs are present the runQueue
 		while (runQueue.length > 0) {
-			const job = runQueue.pop();
-			// If matching workers for the job are available then allot them a job
-			for (var device of job.matchingDevices) {
-				// check if device is idle & public URL is reachable
-				let deviceUrl = '';
-				if (!job.array) {
-					deviceUrl = await balenaCloud.resolveDeviceUrl(device);
-				} else {
-					deviceUrl = device;
-				}
-				try {
-					let status = await rp.get(
-						new url.URL('/state', deviceUrl).toString(),
-					);
-					if (status === 'IDLE') {
-						// make sure that the worker being targetted isn't already about to be used by another child process
-						if (!busyWorkers.includes(deviceUrl)) {
-							// Create single client and break from loop to job the job 👍
-							job.workers = deviceUrl;
-							if (!job.array) {
-								job.workerPrefix = device.fileNamePrefix();
+			// TEMP WORKAROUND: Only start a suite if one is not already running
+			if(suiteRunning === false){
+				const job = runQueue.pop();
+				// If matching workers for the job are available then allot them a job
+				for (var device of job.matchingDevices) {
+					// check if device is idle & public URL is reachable
+					let deviceUrl = '';
+					if (!job.array) {
+						deviceUrl = await balenaCloud.resolveDeviceUrl(device);
+					} else {
+						deviceUrl = device;
+					}
+					try {
+						let status = await rp.get(
+							new url.URL('/state', deviceUrl).toString(),
+						);
+						if (status === 'IDLE') {
+							// make sure that the worker being targetted isn't already about to be used by another child process
+							if (!busyWorkers.includes(deviceUrl)) {
+								// Create single client and break from loop to job the job 👍
+								job.workers = deviceUrl;
+								if (!job.array) {
+									job.workerPrefix = device.fileNamePrefix();
+								}
+								break;
 							}
-							break;
 						}
+					} catch (err) {
+						state.info(
+							`Couldn't retrieve ${device.tags ? device.tags.DUT : device
+							} worker's state. Querying ${deviceUrl} and received ${err.name}: ${err.statusCode
+							}`,
+						);
 					}
-				} catch (err) {
-					state.info(
-						`Couldn't retrieve ${device.tags ? device.tags.DUT : device
-						} worker's state. Querying ${deviceUrl} and received ${err.name}: ${err.statusCode
-						}`,
-					);
 				}
-			}
 
-			if (job.workers === null) {
-				// No idle workers currently - the job is pushed to the back of the queue
-				await require('bluebird').delay(25000);
-				runQueue.unshift(job);
-			} else {
-				// Start the job on the assigned worker
-				state.attachPanel(job);
-				const child = fork(
-					path.join(__dirname, 'single-client'),
-					[
-						'-c',
-						job.suiteConfig instanceof Object
-							? JSON.stringify(job.suiteConfig)
-							: job.suiteConfig,
-						'-u',
-						job.workers,
-					],
-					{
-						stdio: 'pipe',
-						env: {
-							...process.env,
-							CI: true,
+				if (job.workers === null) {
+					// No idle workers currently - the job is pushed to the back of the queue
+					await require('bluebird').delay(25000);
+					runQueue.unshift(job);
+				} else {
+					// Start the job on the assigned worker
+					state.attachPanel(job);
+					suiteRunning = true;
+					const child = fork(
+						path.join(__dirname, 'single-client'),
+						[
+							'-c',
+							job.suiteConfig instanceof Object
+								? JSON.stringify(job.suiteConfig)
+								: job.suiteConfig,
+							'-u',
+							job.workers,
+						],
+						{
+							stdio: 'pipe',
+							env: {
+								...process.env,
+								CI: true,
+							},
 						},
-					},
-				);
+					);
 
-				// after creating child process, add the worker to the busy workers array
-				busyWorkers.push(job.workers);
+					// after creating child process, add the worker to the busy workers array
+					busyWorkers.push(job.workers);
 
-				let status = await rp.get(new url.URL('/start', deviceUrl).toString());
+					let status = await rp.get(new url.URL('/start', deviceUrl).toString());
 
-				// child state
-				children[child.pid] = {
-					_child: child,
-					outputPath: `${yargs.workdir}/${new url.URL(job.workers).hostname || child.pid
-						}.out`,
-					exitCode: 1,
-				};
+					// child state
+					children[child.pid] = {
+						_child: child,
+						outputPath: `${yargs.workdir}/${new url.URL(job.workers).hostname || child.pid
+							}.out`,
+						exitCode: 1,
+					};
 
-				child.on('message', ({ type, data }) => {
-					switch (type) {
-						case 'log':
-							job.log(data);
-							break;
-						case 'status':
-							job.status(data);
-							break;
-						case 'info':
-							job.info(data);
-							break;
-						case 'error':
-							job.log(data.message);
-							break;
-					}
-				});
-
-				child.on('error', console.error);
-				child.stdout.on('data', job.log);
-				child.stderr.on('data', job.log);
-
-				job.info(`WORKER URL: ${job.workers}`);
-
-				child.on('exit', (code) => {
-					children[child.pid].code = code;
-					if (job.teardown) {
-						job.teardown();
-					}
-					// Global Fail fast configuration: if a child process exits with a non-zero code,
-					if (job.suiteConfig.debug) {
-						if (code !== 0 && job.suiteConfig.debug.globalFailFast ? job.suiteConfig.debug.globalFailFast : false) {
-							state.info("Global failfast triggered. Killing all child processes.");
-							Object.values(children).forEach((child) => {
-								child.code = 777
-								child._child.kill();
-							})
-							process.exitCode = 777;
-							process.kill(process.pid, 'SIGINT');
+					child.on('message', ({ type, data }) => {
+						switch (type) {
+							case 'log':
+								job.log(data);
+								break;
+							case 'status':
+								job.status(data);
+								break;
+							case 'info':
+								job.info(data);
+								break;
+							case 'error':
+								job.log(data.message);
+								break;
 						}
-					}
-					// remove the worker from the busy array once the job is finished
-					busyWorkers.splice(busyWorkers.indexOf(job.workers));
-				});
+					});
+
+					child.on('error', console.error);
+					child.stdout.on('data', job.log);
+					child.stderr.on('data', job.log);
+
+					job.info(`WORKER URL: ${job.workers}`);
+
+					child.on('exit', (code) => {
+						children[child.pid].code = code;
+						if (job.teardown) {
+							job.teardown();
+						}
+						// Global Fail fast configuration: if a child process exits with a non-zero code,
+						if (job.suiteConfig.debug) {
+							if (code !== 0 && job.suiteConfig.debug.globalFailFast ? job.suiteConfig.debug.globalFailFast : false) {
+								state.info("Global failfast triggered. Killing all child processes.");
+								Object.values(children).forEach((child) => {
+									child.code = 777
+									child._child.kill();
+								})
+								process.exitCode = 777;
+								process.kill(process.pid, 'SIGINT');
+							}
+						}
+						// remove the worker from the busy array once the job is finished
+						busyWorkers.splice(busyWorkers.indexOf(job.workers));
+						suiteRunning = false;
+					});
+				}
+			} else {
+				// if suite running, wait before trying again
+				await require('bluebird').delay(25000);
 			}
 		}
 	} catch (e) {
