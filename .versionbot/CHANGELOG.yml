@@ -1,4 +1,18 @@
 - commits:
+    - subject: reduce ssh retries
+      hash: ca1a9238fd59fb3b46321f36a157021c705d1605
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+  version: 2.6.3
+  title: "'reduce ssh retries'"
+  date: 2022-07-06T11:25:17.154Z
+- commits:
     - subject: "Makefile: Fix unique container names when running on Jenkins"
       hash: 59d1f3e41aef5f60b61de27eb05512cec69b7d36
       body: ""
