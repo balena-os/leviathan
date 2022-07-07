@@ -1,4 +1,18 @@
 - commits:
+    - subject: remove parallel suites across multiple workers
+      hash: d3d1558f2f732fc0e559f1b0a46f3e057f37a82e
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+  version: 2.6.4
+  title: "'remove parallel suites across multiple workers'"
+  date: 2022-07-07T10:40:01.869Z
+- commits:
     - subject: reduce ssh retries
       hash: ca1a9238fd59fb3b46321f36a157021c705d1605
       body: ""
