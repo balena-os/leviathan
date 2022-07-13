@@ -1,4 +1,31 @@
 - commits:
+    - subject: "core: Reduce the interval for sdk.executeCommandInHostOS"
+      hash: 72d3ff016213b88f6a552761536a697cbec98b03
+      body: |
+        Maintaining the total time of 600s but reducing the interval
+        from 10s to 1s to catch successful commands faster.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+    - subject: Revert "reduce ssh retries"
+      hash: 47ca4a05ad2c970fa71dc5819c04fbfa46489a3b
+      body: |
+        This reverts commit ca1a9238fd59fb3b46321f36a157021c705d1605.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.6.5
+  title: "'Revert \"reduce ssh retries\"'"
+  date: 2022-07-12T21:38:11.489Z
+- commits:
     - subject: remove parallel suites across multiple workers
       hash: d3d1558f2f732fc0e559f1b0a46f3e057f37a82e
       body: ""
