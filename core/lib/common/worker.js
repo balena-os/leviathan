@@ -293,7 +293,7 @@ module.exports = class Worker {
 	 *
 	 * @category helper
 	 */
-	async executeCommandInHostOS(command, target) {
+	async executeCommandInHostOS(command, target, retryOptions={}) {
 		command = command instanceof Array ? command.join(' ') : command;
 		let config = {};
 		// depending on if the target argument is a .local uuid or not, SSH via the proxy or directly
@@ -336,11 +336,12 @@ module.exports = class Worker {
 				max_tries: 5 * 60,
 				interval: 1000,
 				throw_original: true,
+				...retryOptions,
 			},
 		);
 	}
 
-	async executeCommandInWorkerHost(command) {
+	async executeCommandInWorkerHost(command, retryOptions={}) {
 		let config = {
 			host: this.workerHost,
 			port: this.workerPort,
@@ -372,12 +373,13 @@ module.exports = class Worker {
 				max_tries: 30,
 				interval: 5000,
 				throw_original: true,
+				...retryOptions,
 			},
 		);
 	}
 
 	// executes command in the worker container
-	async executeCommandInWorker(command) {
+	async executeCommandInWorker(command, retryOptions={}) {
 		return retry(
 			async () => {
 				let containerId = await this.executeCommandInWorkerHost(
@@ -392,6 +394,7 @@ module.exports = class Worker {
 				max_tries: 10,
 				interval: 1000,
 				throw_original: true,
+				...retryOptions,
 			},
 		);
 	}
