@@ -1,4 +1,24 @@
 - commits:
+    - subject: "core: worker: add retryOptions to executeCommand methods"
+      hash: 2f2d7a8b99fcaffc22d0032f9102e194160f7e1f
+      body: |
+        The executeCommand family of methods default to retrying on failure. In
+        some cases, such as in the ssh-auth test in the cloud test suite, we
+        expect failures to happen, and want them to be raised immediately. Other
+        situations might demand adjusting the number of retries and interval to
+        fit specific tests. Add a retryOptions object to these methods to allow
+        for this behavior to be configured.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+  version: 2.6.6
+  title: "'core: worker: add retryOptions to executeCommand methods'"
+  date: 2022-07-15T00:04:31.325Z
+- commits:
     - subject: "core: Reduce the interval for sdk.executeCommandInHostOS"
       hash: 72d3ff016213b88f6a552761536a697cbec98b03
       body: |
