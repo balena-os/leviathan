@@ -1,4 +1,32 @@
 - commits:
+    - subject: 'Revert "patch: Increase timeout for worker connections"'
+      hash: 5e98079b8a44b2470c8edc9ac6e4ab65b9a6da96
+      body: |
+        This reverts commit 87a741fd22a78c190bec59fa6628de921ac2809f.
+
+        This change didn't actually help to resolve the original ETIMEDOUT
+        issues so it can be reverted.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+    - subject: "core: Update node-tap to 14.10.8"
+      hash: 9307ec92f4a700e4d3e51aebb812667c3b809fb5
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.6.7
+  title: "'core: Update node-tap to 14.10.8'"
+  date: 2022-07-18T19:00:05.817Z
+- commits:
     - subject: "core: worker: add retryOptions to executeCommand methods"
       hash: 2f2d7a8b99fcaffc22d0032f9102e194160f7e1f
       body: |
