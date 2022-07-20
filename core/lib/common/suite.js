@@ -139,13 +139,11 @@ module.exports = class Suite {
 			stats: {
 				tests: 0,
 				ran: 0,
+				skipped: () => this.testSummary.stats.tests - this.testSummary.stats.ran,
 				passed: 0,
 				failed: 0,
 			},
 			tests: {},
-			get skipped() {
-				this.stats.tests - this.stats.ran;
-			},
 			get dateTime() {
 				return new Date().toString();
 			},
@@ -209,7 +207,12 @@ module.exports = class Suite {
 				}),
 				{
 					buffered: false,
-					bail: this.options.debug ? (this.options.debug.failFast === false ? this.options.debug.failFast : true) : true
+					bail: this.options.debug ? (this.options.debug.failFast === false ? this.options.debug.failFast : true) : true,
+					todo: this.options.debug ? (
+						this.options.debug.unstable ? (
+							this.options.debug.unstable.includes(title) ? true : false)
+							: false)
+						: false
 				},
 				async (t) => {
 					if (run != null) {

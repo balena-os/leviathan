@@ -57,6 +57,7 @@ async function removeDownloads() {
 }
 
 async function createJsonSummary(suite) {
+	suite.testSummary.stats.skipped = suite.testSummary.stats.skipped()
 	let data = JSON.stringify(suite.testSummary, null, 4);
 	return fs.writeFile(`/reports/test-summary.json`, data);
 }

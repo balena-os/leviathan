@@ -84,6 +84,7 @@
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="Leviathan_Worker_helpers.export_.html#deviceType" class="tsd-kind-icon">device<wbr>Type</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="Leviathan_Worker_helpers.export_.html#directConnect" class="tsd-kind-icon">direct<wbr>Connect</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="Leviathan_Worker_helpers.export_.html#dutSshKey" class="tsd-kind-icon">dut<wbr>Ssh<wbr>Key</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="Leviathan_Worker_helpers.export_.html#logger" class="tsd-kind-icon">logger</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="Leviathan_Worker_helpers.export_.html#sshKey" class="tsd-kind-icon">ssh<wbr>Key</a></li>
@@ -118,6 +119,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Leviathan_Worker_helpers.export_.html#diagnostics" class="tsd-kind-icon">diagnostics</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Leviathan_Worker_helpers.export_.html#executeCommandInWorker" class="tsd-kind-icon">execute<wbr>Command<wbr>InWorker</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Leviathan_Worker_helpers.export_.html#executeCommandInWorkerHost" class="tsd-kind-icon">execute<wbr>Command<wbr>InWorker<wbr>Host</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Leviathan_Worker_helpers.export_.html#fetchSerial" class="tsd-kind-icon">fetch<wbr>Serial</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Leviathan_Worker_helpers.export_.html#getContract" class="tsd-kind-icon">get<wbr>Contract</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Leviathan_Worker_helpers.export_.html#getDutIp" class="tsd-kind-icon">get<wbr>Dut<wbr>Ip</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Leviathan_Worker_helpers.export_.html#ip" class="tsd-kind-icon">ip</a></li>
@@ -138,7 +140,17 @@
 					<div class="tsd-signature tsd-kind-icon">device<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/worker.js#L69">lib/common/worker.js:69</a></li>
+							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4c4f4c79/core/lib/common/worker.js#L69">lib/common/worker.js:69</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="directConnect" class="tsd-anchor"></a>
+					<h3>direct<wbr>Connect</h3>
+					<div class="tsd-signature tsd-kind-icon">direct<wbr>Connect<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4c4f4c79/core/lib/common/worker.js#L81">lib/common/worker.js:81</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -148,7 +160,7 @@
 					<div class="tsd-signature tsd-kind-icon">dut<wbr>Ssh<wbr>Key<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/worker.js#L74">lib/common/worker.js:74</a></li>
+							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4c4f4c79/core/lib/common/worker.js#L74">lib/common/worker.js:74</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -158,7 +170,7 @@
 					<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>info<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span><span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span>, <span class="tsd-signature-symbol">...</span>optionalParams<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>log<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span><span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span>, <span class="tsd-signature-symbol">...</span>optionalParams<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>status<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span><span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span>, <span class="tsd-signature-symbol">...</span>optionalParams<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/worker.js#L71">lib/common/worker.js:71</a></li>
+							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4c4f4c79/core/lib/common/worker.js#L71">lib/common/worker.js:71</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -275,7 +287,7 @@
 					<div class="tsd-signature tsd-kind-icon">ssh<wbr>Key<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/worker.js#L73">lib/common/worker.js:73</a></li>
+							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4c4f4c79/core/lib/common/worker.js#L73">lib/common/worker.js:73</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -285,7 +297,7 @@
 					<div class="tsd-signature tsd-kind-icon">ssh<wbr>Prefix<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/worker.js#L79">lib/common/worker.js:79</a></li>
+							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4c4f4c79/core/lib/common/worker.js#L79">lib/common/worker.js:79</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -295,7 +307,7 @@
 					<div class="tsd-signature tsd-kind-icon">url<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/worker.js#L70">lib/common/worker.js:70</a></li>
+							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4c4f4c79/core/lib/common/worker.js#L70">lib/common/worker.js:70</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -305,7 +317,7 @@
 					<div class="tsd-signature tsd-kind-icon">username<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/worker.js#L72">lib/common/worker.js:72</a></li>
+							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4c4f4c79/core/lib/common/worker.js#L72">lib/common/worker.js:72</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -315,7 +327,7 @@
 					<div class="tsd-signature tsd-kind-icon">uuid<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/worker.js#L80">lib/common/worker.js:80</a></li>
+							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4c4f4c79/core/lib/common/worker.js#L80">lib/common/worker.js:80</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -325,7 +337,7 @@
 					<div class="tsd-signature tsd-kind-icon">worker<wbr>Host<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/worker.js#L76">lib/common/worker.js:76</a></li>
+							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4c4f4c79/core/lib/common/worker.js#L76">lib/common/worker.js:76</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -335,7 +347,7 @@
 					<div class="tsd-signature tsd-kind-icon">worker<wbr>Port<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/worker.js#L77">lib/common/worker.js:77</a></li>
+							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4c4f4c79/core/lib/common/worker.js#L77">lib/common/worker.js:77</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -345,7 +357,7 @@
 					<div class="tsd-signature tsd-kind-icon">worker<wbr>User<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/worker.js#L78">lib/common/worker.js:78</a></li>
+							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4c4f4c79/core/lib/common/worker.js#L78">lib/common/worker.js:78</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -362,7 +374,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/worker.js#L627">lib/common/worker.js:627</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4c4f4c79/core/lib/common/worker.js#L660">lib/common/worker.js:660</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -411,7 +423,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/worker.js#L551">lib/common/worker.js:551</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4c4f4c79/core/lib/common/worker.js#L589">lib/common/worker.js:589</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -449,13 +461,13 @@
 					<a name="executeCommandInHostOS" class="tsd-anchor"></a>
 					<h3>execute<wbr>Command<wbr>InHostOS</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">execute<wbr>Command<wbr>InHostOS<span class="tsd-signature-symbol">(</span>command<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span>, target<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+						<li class="tsd-signature tsd-kind-icon">execute<wbr>Command<wbr>InHostOS<span class="tsd-signature-symbol">(</span>command<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span>, target<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, retryOptions<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/worker.js#L281">lib/common/worker.js:281</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4c4f4c79/core/lib/common/worker.js#L294">lib/common/worker.js:294</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -489,6 +501,11 @@
 										<p>local UUID of the DUT, example:<code>${UUID}.local</code></p>
 									</div>
 								</li>
+								<li>
+									<h5>retryOptions: <span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol"> = {}</span></h5>
+									<ul class="tsd-parameters">
+									</ul>
+								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
 							<p>Output of the command that was exected on hostOS of the DUT</p>
@@ -505,7 +522,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/worker.js#L100">lib/common/worker.js:100</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4c4f4c79/core/lib/common/worker.js#L104">lib/common/worker.js:104</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -536,7 +553,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/worker.js#L600">lib/common/worker.js:600</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4c4f4c79/core/lib/common/worker.js#L633">lib/common/worker.js:633</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -570,7 +587,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/worker.js#L184">lib/common/worker.js:184</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4c4f4c79/core/lib/common/worker.js#L197">lib/common/worker.js:197</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -592,7 +609,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/worker.js#L173">lib/common/worker.js:173</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4c4f4c79/core/lib/common/worker.js#L177">lib/common/worker.js:177</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -614,7 +631,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/worker.js#L482">lib/common/worker.js:482</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4c4f4c79/core/lib/common/worker.js#L520">lib/common/worker.js:520</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -658,7 +675,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/worker.js#L574">lib/common/worker.js:574</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4c4f4c79/core/lib/common/worker.js#L612">lib/common/worker.js:612</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -689,7 +706,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/worker.js#L458">lib/common/worker.js:458</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4c4f4c79/core/lib/common/worker.js#L496">lib/common/worker.js:496</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -712,7 +729,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/worker.js#L248">lib/common/worker.js:248</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4c4f4c79/core/lib/common/worker.js#L261">lib/common/worker.js:261</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -735,7 +752,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/worker.js#L410">lib/common/worker.js:410</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4c4f4c79/core/lib/common/worker.js#L448">lib/common/worker.js:448</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -758,7 +775,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/worker.js#L363">lib/common/worker.js:363</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4c4f4c79/core/lib/common/worker.js#L401">lib/common/worker.js:401</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -787,7 +804,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/worker.js#L192">lib/common/worker.js:192</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4c4f4c79/core/lib/common/worker.js#L205">lib/common/worker.js:205</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -803,19 +820,24 @@
 					<a name="executeCommandInWorker" class="tsd-anchor"></a>
 					<h3>execute<wbr>Command<wbr>InWorker</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">execute<wbr>Command<wbr>InWorker<span class="tsd-signature-symbol">(</span>command<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">execute<wbr>Command<wbr>InWorker<span class="tsd-signature-symbol">(</span>command<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, retryOptions<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/worker.js#L343">lib/common/worker.js:343</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4c4f4c79/core/lib/common/worker.js#L380">lib/common/worker.js:380</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>command: <span class="tsd-signature-type">any</span></h5>
+								</li>
+								<li>
+									<h5>retryOptions: <span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol"> = {}</span></h5>
+									<ul class="tsd-parameters">
+									</ul>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -826,13 +848,13 @@
 					<a name="executeCommandInWorkerHost" class="tsd-anchor"></a>
 					<h3>execute<wbr>Command<wbr>InWorker<wbr>Host</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">execute<wbr>Command<wbr>InWorker<wbr>Host<span class="tsd-signature-symbol">(</span>command<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">execute<wbr>Command<wbr>InWorker<wbr>Host<span class="tsd-signature-symbol">(</span>command<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, retryOptions<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/worker.js#L328">lib/common/worker.js:328</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4c4f4c79/core/lib/common/worker.js#L342">lib/common/worker.js:342</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -840,8 +862,30 @@
 								<li>
 									<h5>command: <span class="tsd-signature-type">any</span></h5>
 								</li>
+								<li>
+									<h5>retryOptions: <span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol"> = {}</span></h5>
+									<ul class="tsd-parameters">
+									</ul>
+								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="fetchSerial" class="tsd-anchor"></a>
+					<h3>fetch<wbr>Serial</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">fetch<wbr>Serial<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4c4f4c79/core/lib/common/worker.js#L183">lib/common/worker.js:183</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -855,7 +899,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/worker.js#L244">lib/common/worker.js:244</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4c4f4c79/core/lib/common/worker.js#L257">lib/common/worker.js:257</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -872,7 +916,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/worker.js#L208">lib/common/worker.js:208</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4c4f4c79/core/lib/common/worker.js#L221">lib/common/worker.js:221</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -906,7 +950,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/worker.js#L231">lib/common/worker.js:231</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4c4f4c79/core/lib/common/worker.js#L244">lib/common/worker.js:244</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -929,7 +973,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/worker.js#L196">lib/common/worker.js:196</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4c4f4c79/core/lib/common/worker.js#L209">lib/common/worker.js:209</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -952,7 +996,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/worker.js#L204">lib/common/worker.js:204</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4c4f4c79/core/lib/common/worker.js#L217">lib/common/worker.js:217</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -975,7 +1019,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/worker.js#L440">lib/common/worker.js:440</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4c4f4c79/core/lib/common/worker.js#L478">lib/common/worker.js:478</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1004,7 +1048,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/e975963/core/lib/common/worker.js#L240">lib/common/worker.js:240</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4c4f4c79/core/lib/common/worker.js#L253">lib/common/worker.js:253</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1092,6 +1136,9 @@
 								<a href="Leviathan_Worker_helpers.export_.html#deviceType" class="tsd-kind-icon">device<wbr>Type</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="Leviathan_Worker_helpers.export_.html#directConnect" class="tsd-kind-icon">direct<wbr>Connect</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="Leviathan_Worker_helpers.export_.html#dutSshKey" class="tsd-kind-icon">dut<wbr>Ssh<wbr>Key</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
@@ -1152,6 +1199,9 @@
 								<a href="Leviathan_Worker_helpers.export_.html#executeCommandInWorkerHost" class="tsd-kind-icon">execute<wbr>Command<wbr>InWorker<wbr>Host</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="Leviathan_Worker_helpers.export_.html#fetchSerial" class="tsd-kind-icon">fetch<wbr>Serial</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="Leviathan_Worker_helpers.export_.html#flash" class="tsd-kind-icon">flash</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
@@ -1210,6 +1260,7 @@
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-namespace"><span class="tsd-kind-icon">Namespace</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
 			</ul>
 		</div>
 	</div>
