@@ -317,8 +317,7 @@ module.exports = class Worker {
 				try {
 					result = await utils.executeCommandOverSSH(command, config);
 				} catch (err) {
-					console.error(err.message)
-					console.log(`Error while performing SSH command "${command}", will retry...`);
+					console.error(err.message);
 					throw new Error(err);
 				}
 
@@ -352,8 +351,7 @@ module.exports = class Worker {
 				try {
 					result = await utils.executeCommandOverSSH(`${this.sshPrefix}${command}`, config);
 				} catch (err) {
-					console.error(err.message)
-					console.log(`Error while performing SSH command "${command}", will retry...`);
+					console.error(err.message);
 					throw new Error(err);
 				}
 
