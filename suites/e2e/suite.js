@@ -218,5 +218,5 @@ module.exports = {
 		// 		.worker.archiveLogs(this.id, this.context.get().link);
 		// });
 	},
-	tests: ['./tests/flash', './tests/power-cycle', './tests/serial'],
+	tests: ['./tests/always-fail', './tests/flash', './tests/power-cycle', './tests/serial'],
 };

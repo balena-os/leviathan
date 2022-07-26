@@ -10,6 +10,9 @@ module.exports = [{
     organization: process.env.BALENACLOUD_ORG
   },
   image: false,
+  debug: {
+    unstable: ["Kill the device under test"],
+  },
   workers: process.env.WORKER_TYPE === 'qemu' ? ['http://worker'] : {
 		balenaApplication: process.env.BALENACLOUD_APP_NAME,
 		apiKey: process.env.BALENACLOUD_API_KEY,
