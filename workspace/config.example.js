@@ -44,6 +44,8 @@ module.exports = [
 			globalFailFast: false,
 			// Persist downloadeded artifacts
 			preserveDownloads: false,
+			// Mark unstable tests to be skipped
+			unstable: ["Recording DUT serial output"],
 		},
 	},
 	// 
