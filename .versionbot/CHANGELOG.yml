@@ -1,4 +1,16 @@
 - commits:
+    - subject: "minor: Add Unstable tests debug feature"
+      hash: eb2c583f988056cacc93b761568549988d4f85eb
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.7.0
+  title: "'Add unstable tests debug feature'"
+  date: 2022-07-26T17:56:37.204Z
+- commits:
     - subject: "core: Reduce logging in failed SSH attempts"
       hash: a51082819ea19c25a3e195ef9af420b01e425a55
       body: ""
