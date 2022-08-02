@@ -59,10 +59,10 @@ workers: {
 }
 ```
 
-4. **Specify Localhost for QEMU worker** - Using the following configuration leviathan will run the test suite on a QEMU worker.
+4. **Specify `worker` for QEMU worker** - Using the following configuration leviathan will run the test suite on a QEMU worker.
 
 ```js
-workers: ['http://localhost'],
+workers: ['http://worker'],
 ```
 
 ### `config.js` Examples
