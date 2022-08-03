@@ -99,6 +99,6 @@ module.exports = [
 	// 	image: `${__dirname}/balena.img.gz`,
 	// 	// Worker configuration to run the QEMU worker
 	// 	// https://balena-os.github.io/leviathan/pages/Getting-Started/config-reference.html#different-workers-configurations-available
-	// 	workers: ['http://localhost/']
+	// 	workers: ['http://worker']
 	// }
 ];

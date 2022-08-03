@@ -44,7 +44,7 @@ For example, in the e2e test suite, if you don't upload an image and set `image:
 workers: ['http://<short UUID of your testbot in balenaCloud>.local'],
 ```
 
-1. **Public device URLs** - If the testbot is not on the same network as you, please enable the public URL in balenaCloud and use that in the `workers` array. If multiple URLs are provided, then each URL in the array will run the same test suite listed in the `config.js`.
+2. **Public device URLs** - If the testbot is not on the same network as you, please enable the public URL in balenaCloud and use that in the `workers` array. If multiple URLs are provided, then each URL in the array will run the same test suite listed in the `config.js`.
 
 ```js
 workers: ['Public URL of your testbot'],
@@ -59,10 +59,10 @@ workers: {
 }
 ```
 
-4. **Specify Localhost for QEMU worker** - Using the following configuration leviathan will run the test suite on a QEMU worker.
+4. **Specify `worker` for QEMU worker** - Using the following configuration leviathan will run the test suite on a QEMU worker.
 
 ```js
-workers: ['http://localhost'],
+workers: ['http://worker'],
 ```
 
 ### `config.js` Examples
