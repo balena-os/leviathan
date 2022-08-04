@@ -63,56 +63,62 @@ async function createJsonSummary(suite) {
 }
 
 (async () => {
-	const suite = new Suite(
-		{
-			suitePath: config.get('leviathan.uploads.suite'),
-			deviceType: suiteConfig.deviceType,
-			imagePath: config.get('leviathan.uploads').image,
-		},
-		suiteConfig
-	);
-	suite.setup.register(removeArtifacts);
-	suite.setup.register(removeReports);
-	suite.setup.register(
-		async () => fs.ensureDir(config.get('leviathan.downloads'))
-	);
+	try{
+		const suite = new Suite(
+			{
+				suitePath: config.get('leviathan.uploads.suite'),
+				deviceType: suiteConfig.deviceType,
+				imagePath: config.get('leviathan.uploads').image,
+			},
+			suiteConfig
+		);
+		suite.setup.register(removeArtifacts);
+		suite.setup.register(removeReports);
+		suite.setup.register(
+			async () => fs.ensureDir(config.get('leviathan.downloads'))
+		);
 
-	suite.teardown.register(removeDownloads);
-	suite.teardown.register(
-		async () => createJsonSummary(suite)
-	);
+		suite.teardown.register(removeDownloads);
+		suite.teardown.register(
+			async () => createJsonSummary(suite)
+		);
 
-	process.on('SIGINT', async () => {
-		suite.state.log(`Suite recieved SIGINT`);
-		await suite.teardown.runAll();
-		await createJsonSummary(suite);
-		await suite.removeDependencies();
-		await suite.removeDownloads();
-		process.exit(128);
-	});
+		process.on('SIGINT', async () => {
+			suite.state.log(`Suite recieved SIGINT`);
+			await suite.teardown.runAll();
+			await createJsonSummary(suite);
+			await suite.removeDependencies();
+			await suite.removeDownloads();
+			process.exit(128);
+		});
 
-	const messageHandler = (message) => {
-		const { action } = message;
+		const messageHandler = (message) => {
+			const { action } = message;
 
-		if (action === 'reconnect') {
-			for (const item of ['info', 'log', 'status']) {
-				suite.state[item]();
+			if (action === 'reconnect') {
+				for (const item of ['info', 'log', 'status']) {
+					suite.state[item]();
+				}
 			}
+		};
+		process.on('message', messageHandler);
+
+		await suite.init();
+		suite.printRunQueueSummary();
+		await suite.run();
+
+		suite.state.log(`Suite run complete`);
+		process.off('message', messageHandler);
+		suite.state.log(`Exiting suite child process...`);
+		if (suite.passing) {
+			process.exit();
+		} else {
+			process.exit(1);
 		}
-	};
-	process.on('message', messageHandler);
-
-	await suite.init();
-	suite.printRunQueueSummary();
-	await suite.run();
-
-	suite.state.log(`Suite run complete`);
-	process.off('message', messageHandler);
-	suite.state.log(`Exiting suite child process...`);
-	if (suite.passing) {
-		process.exit();
-	} else {
-		process.exit(1);
-	}
+    } catch (e) {
+		process.exitCode = 4;
+		throw new Error(`Failure starting suite ${e}`);
+	}	
 })();
+	
 
