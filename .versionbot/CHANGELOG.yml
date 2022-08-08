@@ -1,4 +1,18 @@
 - commits:
+    - subject: exit with failure if suite doesn't start
+      hash: 1221cdfa4aaae98e9fadcc961adc574fc6d3ffba
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+  version: 2.7.2
+  title: "'core: exit with failure if suite doesn't start'"
+  date: 2022-08-05T12:37:55.576Z
+- commits:
     - subject: Regenerate docs
       hash: 603564525d93f41d3583f4a9d8f42edd5311827c
       body: ""
