@@ -1,4 +1,19 @@
 - commits:
+    - subject: "compose: qemu: enable loopback and metadata devices"
+      hash: 962a1705b11457c7d9a87c17cc9e3bf1671d2257
+      body: |
+        Copied from https://github.com/balena-os/leviathan-worker/pull/21
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+  version: 2.7.3
+  title: "'compose: qemu: enable loopback and metadata devices'"
+  date: 2022-08-16T17:06:56.295Z
+- commits:
     - subject: exit with failure if suite doesn't start
       hash: 1221cdfa4aaae98e9fadcc961adc574fc6d3ffba
       body: ""
