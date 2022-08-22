@@ -8,6 +8,7 @@ services:
       - "${REPORTS:-./workspace/reports}:/usr/src/app/reports:rw"
       - "${SUITES:-./suites}:/usr/src/app/suites:ro"
     environment:
+      - UDEV=1
       - WORKER_TYPE=${WORKER_TYPE}
       - DEVICE_TYPE=${DEVICE_TYPE}
       - BALENACLOUD_API_KEY=${BALENACLOUD_API_KEY}
