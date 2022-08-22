@@ -1,4 +1,22 @@
 - commits:
+    - subject: "compose: client: explicitly enable udev"
+      hash: b10936958342b941471be33e60c5da1ed58e7519
+      body: |
+        Testbot workers require udev to be running while qemu workers manage
+        devices themselves, and require udev to be disabled. Explicitly add the
+        UDEV env var to the compose file for testbot workers, to be consistent
+        with the qemu compose file.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+  version: 2.7.4
+  title: "'compose: client: explicitly enable udev'"
+  date: 2022-08-22T19:15:34.877Z
+- commits:
     - subject: "compose: qemu: enable loopback and metadata devices"
       hash: 962a1705b11457c7d9a87c17cc9e3bf1671d2257
       body: |
