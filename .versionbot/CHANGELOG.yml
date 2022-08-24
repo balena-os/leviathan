@@ -1,4 +1,25 @@
 - commits:
+    - subject: Fix "Declaration emit" error during `npm run docs`
+      hash: 42c89019bd9d2f423ccf5141ef1b30ecad833868
+      body: ""
+      footer:
+        Signed-off-by: Leandro Motta Barros <leandro@balena.io>
+        signed-off-by: Leandro Motta Barros <leandro@balena.io>
+        Change-type: patch
+        change-type: patch
+      author: Leandro Motta Barros
+      nested: []
+  version: 2.7.4
+  title: |-
+    'Fix "Declaration emit" error during 
+    > leviathan@2.7.3 docs
+    > npm --prefix core run docs
+
+
+    > docs
+    > rimraf ../docs/ && npx typedoc --tsconfig tsconfig.json'
+  date: 2022-08-24T17:59:42.344Z
+- commits:
     - subject: "compose: qemu: enable loopback and metadata devices"
       hash: 962a1705b11457c7d9a87c17cc9e3bf1671d2257
       body: |
