@@ -127,6 +127,13 @@ class Teardown extends TaskQueue {
 }
 
 module.exports = {
+	/**
+	 * @type TaskQueue
+	 */
 	Setup: TaskQueue,
+
+	/**
+	 * @type Teardown
+	 */
 	Teardown: Teardown,
 };

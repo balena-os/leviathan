@@ -7,12 +7,19 @@ services:
       dockerfile: Dockerfile.template
       args:
         - BALENA_ARCH=${BALENA_ARCH:-amd64}
+        - WORKER_RELEASE=${WORKER_RELEASE:-latest}
     device_cgroup_rules:
+      # https://www.kernel.org/doc/Documentation/admin-guide/devices.txt
+      # loopback devices
+      - "b 7:* rmw"
+      # metadata devices
+      - "b 9:* rmw"
       # allow dynamic creation and access of qemu required misc chardev nodes
       # this includes /dev/kvm, and /dev/net/tun
       - "c 10:* rmw"
     cap_add:
       - NET_ADMIN # allow network setup
+      - SYS_ADMIN # privileged IOCTLs, such as used by mdadm
     volumes:
       - "core-storage:/data"
       - "reports-storage:/reports"

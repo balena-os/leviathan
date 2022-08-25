@@ -72,8 +72,8 @@
 				<a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/badge/license-APACHE%202.0-blue.svg" alt="License"></a>  <a href="https://dashboard.balena-cloud.com/deploy?repoUrl=https://github.com/balena-os/leviathan"><img src="https://www.balena.io/deploy.svg" alt="balena deploy button"></a></p>
 				<p>Leviathan can be used to automate, test and control real/virtual devices in production or controlled environments. What can you do:</p>
 				<ol>
-					<li>Stress testing the provisioning process for reliablity, performance &amp; fault tolerance.</li>
-					<li>Testing new balenaOS, balenaEngine and balena supervisor on different board revisions, prod/staging environements for managed and unmanaged scenarios.</li>
+					<li>Stress testing the provisioning process for reliability, performance &amp; fault tolerance.</li>
+					<li>Testing new balenaOS, balenaEngine and balena supervisor on different board revisions, prod/staging environments for managed and unmanaged scenarios.</li>
 					<li>Automate release deployment for balenaCloud fleets by testing codebase on real/virtual devices under test.</li>
 					<li>Automate support for new modems, sensors, components and eventually new boards.</li>
 				</ol>
@@ -106,11 +106,11 @@
 				<a href="#instructions-for-rig-owners" id="instructions-for-rig-owners" style="color: inherit; text-decoration: none;">
 					<h2>Instructions for rig-owners</h2>
 				</a>
-				<p>Leviathan is made up of a client and worker. The client is the test runner while the worker is where tests get executed. For testbot workers, the worker component exists on the testbot device. The testbot devices are part of a <a href="https://balena.io">balenaCloud</a> fleet. In order to update the worker component for testbot workers, you need to <a href="https://www.balena.io/docs/learn/deploy/deployment/">push a new release</a> to the testbot fleet. </p>
+				<p>Leviathan is made up of a client and worker. The client is the test runner while the worker is where tests get executed. For testbot workers, the worker component exists on the testbot device. The testbot devices are part of a <a href="https://balena.io">balenaCloud</a> fleet. In order to update the worker component for testbot workers, you need to <a href="https://www.balena.io/docs/learn/deploy/deployment/">push a new release</a> to the testbot fleet.</p>
 				<p>To push a new release of leviathan to balenaCloud, use the following command:</p>
 				<pre><code class="language-bash"><span style="color: #002339">balena push </span><span style="color: #7B30D0">&lt;</span><span style="color: #002339">fleetName</span><span style="color: #7B30D0">&gt;</span>
 </code></pre>
-				<p>The <code>&lt;fleetName&gt;</code> is the name of the fleet you intend to push a new version of leviathan to. Keep in mind, the client and the test that run are indenpendent of the worker. Hence, updates to the client or the tests don&#39;t need to be pushed to the balenaCloud fleet. In order to change the worker component, you need to push a new release to the balenaCloud fleet.</p>
+				<p>The <code>&lt;fleetName&gt;</code> is the name of the fleet you intend to push a new version of leviathan to. Keep in mind, the client and the test that run are independent of the worker. Hence, updates to the client or the tests don&#39;t need to be pushed to the balenaCloud fleet. In order to change the worker component, you need to push a new release to the balenaCloud fleet.</p>
 				<a href="#documentation-for-leviathan-helpers" id="documentation-for-leviathan-helpers" style="color: inherit; text-decoration: none;">
 					<h2>Documentation for Leviathan Helpers</h2>
 				</a>

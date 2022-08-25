@@ -82,7 +82,6 @@ module.exports = {
 					this.link.split('.')[0],
 					'Device should be reachable',
 				);
-				await this.worker.off();
 			}
 		}
 	],

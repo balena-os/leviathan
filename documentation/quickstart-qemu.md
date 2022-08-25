@@ -32,7 +32,7 @@ module.exports = {
         organization: 'BALENACLOUD_ORG_GOES_HERE',
     },
     image: `${__dirname}/balena.img`,
-    workers: ['http://localhost'],
+    workers: ['http://worker'],
 };
 ```
 
@@ -70,7 +70,7 @@ module.exports = {
         organization: 'BALENACLOUD_ORG_GOES_HERE',
     },
     image: `${__dirname}/balena.img`,
-    workers: ['http://localhost'],
+    workers: ['http://worker'],
 };
 ```
 

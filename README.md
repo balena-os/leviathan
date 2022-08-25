@@ -7,8 +7,8 @@
 
 Leviathan can be used to automate, test and control real/virtual devices in production or controlled environments. What can you do:
 
-1. Stress testing the provisioning process for reliablity, performance & fault tolerance.
-2. Testing new balenaOS, balenaEngine and balena supervisor on different board revisions, prod/staging environements for managed and unmanaged scenarios.
+1. Stress testing the provisioning process for reliability, performance & fault tolerance.
+2. Testing new balenaOS, balenaEngine and balena supervisor on different board revisions, prod/staging environments for managed and unmanaged scenarios.
 3. Automate release deployment for balenaCloud fleets by testing codebase on real/virtual devices under test.
 4. Automate support for new modems, sensors, components and eventually new boards.
 
@@ -35,7 +35,7 @@ Leviathan allows for running tests on a device under test (DUT) connected to and
 
 ## Instructions for rig-owners
 
-Leviathan is made up of a client and worker. The client is the test runner while the worker is where tests get executed. For testbot workers, the worker component exists on the testbot device. The testbot devices are part of a [balenaCloud](https://balena.io) fleet. In order to update the worker component for testbot workers, you need to [push a new release](https://www.balena.io/docs/learn/deploy/deployment/) to the testbot fleet. 
+Leviathan is made up of a client and worker. The client is the test runner while the worker is where tests get executed. For testbot workers, the worker component exists on the testbot device. The testbot devices are part of a [balenaCloud](https://balena.io) fleet. In order to update the worker component for testbot workers, you need to [push a new release](https://www.balena.io/docs/learn/deploy/deployment/) to the testbot fleet.
 
 To push a new release of leviathan to balenaCloud, use the following command:
 
@@ -43,7 +43,7 @@ To push a new release of leviathan to balenaCloud, use the following command:
 balena push <fleetName>
 ```
 
-The `<fleetName>` is the name of the fleet you intend to push a new version of leviathan to. Keep in mind, the client and the test that run are indenpendent of the worker. Hence, updates to the client or the tests don't need to be pushed to the balenaCloud fleet. In order to change the worker component, you need to push a new release to the balenaCloud fleet.
+The `<fleetName>` is the name of the fleet you intend to push a new version of leviathan to. Keep in mind, the client and the test that run are independent of the worker. Hence, updates to the client or the tests don't need to be pushed to the balenaCloud fleet. In order to change the worker component, you need to push a new release to the balenaCloud fleet.
 
 ## Documentation for Leviathan Helpers
 

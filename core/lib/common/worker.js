@@ -180,6 +180,15 @@ module.exports = class Worker {
 		this.logger.log('DUT powered on');
 	}
 
+	async fetchSerial() {
+		this.logger.log('Pulling Serial logs from DUT');
+		// Logs received were encoding 'UTF-16LE', hence need to convert them right here.
+		return Buffer.from(await rp.get(
+				`${this.url}/dut/serial`),
+				'utf-8'
+			).toString();
+	}
+
 	/**
 	 * Turn the DUT off
 	 *
@@ -282,7 +291,7 @@ module.exports = class Worker {
 	 *
 	 * @category helper
 	 */
-	async executeCommandInHostOS(command, target) {
+	async executeCommandInHostOS(command, target, retryOptions={}) {
 		command = command instanceof Array ? command.join(' ') : command;
 		let config = {};
 		// depending on if the target argument is a .local uuid or not, SSH via the proxy or directly
@@ -307,9 +316,8 @@ module.exports = class Worker {
 				let result = {}
 				try {
 					result = await utils.executeCommandOverSSH(command, config);
-				} catch (err){
-					console.error(err.message)
-					console.log(`Error while performing SSH command "${command}", will retry...`);
+				} catch (err) {
+					console.error(err.message);
 					throw new Error(err);
 				}
 
@@ -325,11 +333,12 @@ module.exports = class Worker {
 				max_tries: 5 * 60,
 				interval: 1000,
 				throw_original: true,
+				...retryOptions,
 			},
 		);
 	}
 
-	async executeCommandInWorkerHost(command) {
+	async executeCommandInWorkerHost(command, retryOptions={}) {
 		let config = {
 			host: this.workerHost,
 			port: this.workerPort,
@@ -341,9 +350,8 @@ module.exports = class Worker {
 				let result = {}
 				try {
 					result = await utils.executeCommandOverSSH(`${this.sshPrefix}${command}`, config);
-				} catch (err){
-					console.error(err.message)
-					console.log(`Error while performing SSH command "${command}", will retry...`);
+				} catch (err) {
+					console.error(err.message);
 					throw new Error(err);
 				}
 
@@ -352,21 +360,22 @@ module.exports = class Worker {
 						`"${command}" failed. stderr: ${result.stderr}, stdout: ${result.stdout}, code: ${result.code}`,
 					);
 				}
-				
-			
-				return result.stdout;	
-		
+
+
+				return result.stdout;
+
 			},
 			{
 				max_tries: 30,
 				interval: 5000,
 				throw_original: true,
+				...retryOptions,
 			},
 		);
 	}
 
 	// executes command in the worker container
-	async executeCommandInWorker(command) {
+	async executeCommandInWorker(command, retryOptions={}) {
 		return retry(
 			async () => {
 				let containerId = await this.executeCommandInWorkerHost(
@@ -381,6 +390,7 @@ module.exports = class Worker {
 				max_tries: 10,
 				interval: 1000,
 				throw_original: true,
+				...retryOptions,
 			},
 		);
 	}

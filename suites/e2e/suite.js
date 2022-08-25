@@ -196,6 +196,7 @@ module.exports = {
 		await this.context
 			.get()
 			.sdk.balena.auth.loginWithToken(this.suite.options.balena.apiKey);
+		this.log(`Logged in with ${await this.context.get().sdk.balena.auth.whoami()}'s account on ${this.suite.options.balena.apiUrl} using balenaSDK`);
 		await this.context
 			.get()
 			.sdk.balena.models.key.create(this.sshKeyLabel, keys.pubKey);
@@ -217,5 +218,5 @@ module.exports = {
 		// 		.worker.archiveLogs(this.id, this.context.get().link);
 		// });
 	},
-	tests: ['./tests/flash', './tests/power-cycle', './tests/serial'],
+	tests: ['./tests/always-fail', './tests/flash', './tests/power-cycle', './tests/serial'],
 };

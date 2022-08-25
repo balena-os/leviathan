@@ -16,6 +16,7 @@
 
 const { delay } = require('bluebird');
 const fs = require('fs').promises;
+const SERIAL_PATH = "/reports/dut-serial.txt"
 
 module.exports = {
 	title: 'Serial test',
@@ -23,13 +24,38 @@ module.exports = {
 		{
 			title: 'Recording DUT serial output',
 			run: async function (test) {
-				await this.context.get().worker.on();
-				await delay(20 * 1000);
-				test.not(
-					(await fs.stat('/reports/dut-serial.txt')).size,
-					0,
-					`Should be able to retrieve serial output from DUT`,
-				);
+				await delay(60 * 1000);
+				await this.context.get().worker.off();
+
+				try {
+					await fs.access(SERIAL_PATH)
+					console.log(`Serial file found at ${SERIAL_PATH}`)
+				} catch (err) {
+					console.log(`${err}`)
+					if (this.workerContract.workerType === `testbot_hat`) {
+						try {
+							await fs.writeFile(
+								SERIAL_PATH,
+								(await this.worker.fetchSerial()).toString(),
+								{ encoding: 'utf8' }
+							)
+							console.log(`Serial file created at ${SERIAL_PATH}`)
+						} catch (error) {
+							console.err(`Couldn't find logs: ${error}`)
+						}
+					}
+				} finally {
+					test.not(
+						(await fs.stat(SERIAL_PATH)).size,
+						0,
+						`Size of serial output file from DUT shouldn't be 0`,
+					)
+					test.not(
+						(((await fs.readFile(`${SERIAL_PATH}`, 'utf8')).trim()).split('  ')).length,
+						0,
+						`Serial output from DUT shouldn't be empty`,
+					)
+				}
 			}
 		},
 	],
