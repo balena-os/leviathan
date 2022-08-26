@@ -1,4 +1,24 @@
 - commits:
+    - subject: "patch: Accept 429 HTTP codes using config file"
+      hash: 846773a1aae8677f618660395515be4515a6b6d4
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+    - subject: "minor: Add support for Private Contracts"
+      hash: 3259bc9e08dec07058a11ce189fc261c44479123
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.8.0
+  title: "'minor: Add support for Private Contracts'"
+  date: 2022-08-26T12:39:14.021Z
+- commits:
     - subject: Fix "Declaration emit" error during `npm run docs`
       hash: 42c89019bd9d2f423ccf5141ef1b30ecad833868
       body: ""
