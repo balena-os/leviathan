@@ -150,14 +150,22 @@ module.exports = class Suite {
 		};
 
 		try {
-			this.deviceType = require(`../../contracts/contracts/hw.device-type/${this.deviceTypeSlug}/contract.json`);
+			// Find device type contract in public contracts
+			this.deviceType = require(`../../contracts/contracts/contracts/hw.device-type/${this.deviceTypeSlug}/contract.json`)
 		} catch (e) {
-			if (e.code === 'MODULE_NOT_FOUND') {
-				throw new Error(
-					`Invalid/Unsupported device type: ${suiteConfig.deviceType}`,
-				);
-			} else {
-				throw e;
+			try {
+				// Find device type contract in private contracts
+				this.deviceType = require(`../../contracts/private-contracts/contracts/hw.device-type/${this.deviceTypeSlug}/contract.json`)
+			} catch (error) {
+				if (e.code === 'MODULE_NOT_FOUND') {
+					if (error.code === 'MODULE_NOT_FOUND') {
+						throw new Error(
+							`Invalid/Unsupported device type: ${suiteConfig.deviceType}`,
+						);
+					}
+				} else {
+					throw new Error(`Contracts error: ${e} \nPrivate Contracts error: ${error}`);
+				}
 			}
 		}
 	}

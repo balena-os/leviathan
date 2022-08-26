@@ -490,7 +490,7 @@ module.exports = class Worker {
 		}
 	}
 
-	// add ssh key to the worker, so it cas ssh into prod DUT's
+	// add ssh key to the worker, so it can ssh into prod DUT's
 	async addSSHKey(keyPath) {
 		if (!this.directConnect) {
 			console.log(`Adding dut ssh key to worker...`);
