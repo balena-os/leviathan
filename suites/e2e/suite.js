@@ -18,7 +18,7 @@ const util = require('util');
 // copied from the SV
 // https://github.com/balena-os/balena-supervisor/blob/master/src/config/backends/config-txt.ts
 // TODO: retrieve this from the SDK (requires v16.2.0) or future versions of device contracts
-// https://www.balena.io/docs/reference/sdk/node-sdk/#balena.models.config.getConfigVarSchema
+// https://www.balena.io/docs/reference/sdk/node-sdk/#balena.models.config.nfigVarSchema
 const supportsBootConfig = deviceType => {
 	return (
 		[

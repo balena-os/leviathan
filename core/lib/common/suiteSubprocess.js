@@ -28,10 +28,10 @@
 const Suite = require('./suite');
 const config = require('config');
 const fs = require('fs-extra');
-const suiteConfig = require(config.get('leviathan.uploads.config'));
+const suiteConfig = require(config.leviathan.uploads.config);
 
 async function removeArtifacts() {
-	const artifactsPath = config.get('leviathan.artifacts');
+	const artifactsPath = config.leviathan.artifacts;
 	if (fs.existsSync(artifactsPath)) {
 		console.log(`Removing artifacts from previous tests...`);
 		fs.emptyDirSync(artifactsPath);
@@ -39,7 +39,7 @@ async function removeArtifacts() {
 }
 
 async function removeReports() {
-	const reportsPath = config.get('leviathan.reports');
+	const reportsPath = config.leviathan.reports');
 	if (fs.existsSync(reportsPath)) {
 		console.log(`Removing reports from previous tests...`);
 		fs.emptyDirSync(reportsPath);
@@ -47,7 +47,7 @@ async function removeReports() {
 }
 
 async function removeDownloads() {
-	const downloadsPath = config.get('leviathan.downloads');
+	const downloadsPath = config.leviathan.downloads);
 	if (fs.existsSync(downloadsPath)) {
 		if (suiteConfig.debug ? (suiteConfig.debug.preserveDownloads ? !suiteConfig.debug.preserveDownloads : true) : true) {
 			console.log('Removing downloads directory...');
@@ -66,16 +66,16 @@ async function createJsonSummary(suite) {
 	try{
 		const suite = new Suite(
 			{
-				suitePath: config.get('leviathan.uploads.suite'),
+				suitePath: config.leviathan.uploads.suite,
 				deviceType: suiteConfig.deviceType,
-				imagePath: config.get('leviathan.uploads').image,
+				imagePath: config.leviathan.uploads.image,
 			},
 			suiteConfig
 		);
 		suite.setup.register(removeArtifacts);
 		suite.setup.register(removeReports);
 		suite.setup.register(
-			async () => fs.ensureDir(config.get('leviathan.downloads'))
+			async () => fs.ensureDir(config.leviathan.downloads))
 		);
 
 		suite.teardown.register(removeDownloads);

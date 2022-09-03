@@ -147,9 +147,9 @@ module.exports = class BalenaOS {
 		this.image = {
 			input:
 				options.image === undefined
-					? config.get('leviathan.uploads').image
+					? config.leviathan.uploads.image
 					: options.image,
-			path: join(config.get('leviathan.downloads'), `image-${id()}`),
+			path: join(config.leviathan.downloads), `image-${id()}`),
 		};
 		this.configJson = options.configJson || {};
 		this.contract = {
@@ -175,7 +175,7 @@ module.exports = class BalenaOS {
 	/**
 	 * Prepares the received image/artifact to be used - either unzipping it or moving it to the Leviathan working directory
 	 *
-	 * @remark Leviathan creates a temporary working directory that can referenced using `config.get('leviathan.downloads')`
+	 * @remark Leviathan creates a temporary working directory that can referenced using `config.leviathan.downloads)`
 	 *
 	 * @category helper
 	 */

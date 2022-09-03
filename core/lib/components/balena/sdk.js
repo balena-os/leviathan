@@ -175,7 +175,7 @@ module.exports = class BalenaSDK {
 		const repo = await this.balena.models.application
 			.get(application)
 			.get('slug');
-		const balenaConfig = await this.balena.models.config.getAll();
+		const balenaConfig = await this.balena.models.config.l();
 		const user = await this.balena.auth.whoami();
 		return `${user}@${balenaConfig.gitServerUrl}:${repo}.git`;
 	}
@@ -623,7 +623,7 @@ module.exports = class BalenaSDK {
 		version = version.replace('.prod', '.dev');
 
 		const path = join(
-			config.get('leviathan.downloads'),
+			config.leviathan.downloads),
 			`balenaOs-${version}.img`,
 		);
 

@@ -63,7 +63,7 @@ async function setup() {
 
 			const artifact = {
 				name: req.headers['x-artifact'],
-				path: config.get('leviathan.uploads')[req.headers['x-artifact-id']],
+				path: config.leviathan.uploads[req.headers['x-artifact-id']],
 				hash: req.headers['x-artifact-hash'],
 			};
 			const ignore = ['node_modules'];
@@ -119,7 +119,7 @@ async function setup() {
 				const line = pipeline(
 					req,
 					createGunzip(),
-					tar.extract(config.get('leviathan.workdir')),
+					tar.extract(config.leviathan.workdir),
 				).catch(err => {
 					throw err;
 				});
@@ -187,7 +187,7 @@ async function setup() {
 			}
 
 			if (!running || !reconnect) {
-				for (const uploadName in config.get('leviathan.uploads')) {
+				for (const uploadName in config.leviathan.uploads) {
 					// put retry request here instead
 					upload.attempts = 0;
 					upload.retry = true;
@@ -205,7 +205,7 @@ async function setup() {
 								type: 'upload',
 								data: {
 									id: uploadName,
-									name: basename(config.get('leviathan.uploads')[uploadName]),
+									name: basename(config.leviathan.uploads[uploadName]),
 									token: upload.token,
 									attempt: upload.attempts,
 								},
@@ -317,9 +317,9 @@ async function setup() {
 
 	app.get('/artifacts', async (_req, res) => {
 		try {
-			await ensureDir(config.get('leviathan.artifacts'));
+			await ensureDir(config.leviathan.artifacts);
 			tar
-				.pack(config.get('leviathan.artifacts'), {
+				.pack(config.leviathan.artifacts, {
 					readable: true,
 					writable: true,
 				})
