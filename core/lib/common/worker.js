@@ -39,7 +39,6 @@ const Bluebird = require('bluebird');
 const retry = require('bluebird-retry');
 const utils = require('../common/utils');
 const archiver = require('../common/archiver');
-// const config = require('config');
 const isNumber = require('lodash/isNumber');
 const { fs } = require('mz');
 const path = require('path');

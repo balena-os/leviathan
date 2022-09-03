@@ -56,7 +56,7 @@ const Bluebird = require('bluebird');
 const retry = require('bluebird-retry');
 const utils = require('../../common/utils');
 const exec = Bluebird.promisify(require('child_process').exec);
-const config = require('config');
+const config = require('../../config');
 const { toInteger } = require('lodash');
 const { getSdk } = require('balena-sdk');
 
@@ -175,7 +175,7 @@ module.exports = class BalenaSDK {
 		const repo = await this.balena.models.application
 			.get(application)
 			.get('slug');
-		const balenaConfig = await this.balena.models.config.l();
+		const balenaConfig = await this.balena.models.config.getAll();
 		const user = await this.balena.auth.whoami();
 		return `${user}@${balenaConfig.gitServerUrl}:${repo}.git`;
 	}
@@ -623,7 +623,7 @@ module.exports = class BalenaSDK {
 		version = version.replace('.prod', '.dev');
 
 		const path = join(
-			config.leviathan.downloads),
+			config.leviathan.downloads,
 			`balenaOs-${version}.img`,
 		);
 

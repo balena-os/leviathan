@@ -36,7 +36,6 @@ RUN ln -sf /usr/app/node_modules/balena-cli/bin/balena /usr/bin/balena && \
 
 COPY contracts/ contracts/
 COPY lib lib
-COPY config config
 COPY entry.sh entry.sh
 
 CMD [ "/usr/app/entry.sh" ]

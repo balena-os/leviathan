@@ -47,7 +47,7 @@
 
 'use strict';
 
-const config = require('config');
+const config = require('../config');
 const { createWriteStream } = require('fs');
 const { copy, ensureDir } = require('fs-extra');
 const { basename, join } = require('path');

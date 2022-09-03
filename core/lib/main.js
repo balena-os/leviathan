@@ -19,7 +19,7 @@
 const Bluebird = require('bluebird');
 const { fork } = require('child_process');
 const { getFilesFromDirectory } = require('./common/utils');
-const config = require('config');
+const config = require('./config.js');
 const express = require('express');
 const expressWebSocket = require('express-ws');
 const { ensureDir, pathExists, remove } = require('fs-extra');

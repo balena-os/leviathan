@@ -58,7 +58,7 @@ const assignIn = require('lodash/assignIn');
 const mapValues = require('lodash/mapValues');
 
 const Bluebird = require('bluebird');
-const config = require('config');
+const config = require('../../config');
 const imagefs = require('balena-image-fs');
 const { fs } = require('mz');
 const { join } = require('path');
@@ -149,7 +149,7 @@ module.exports = class BalenaOS {
 				options.image === undefined
 					? config.leviathan.uploads.image
 					: options.image,
-			path: join(config.leviathan.downloads), `image-${id()}`),
+			path: join(config.leviathan.downloads, `image-${id()}`),
 		};
 		this.configJson = options.configJson || {};
 		this.contract = {
