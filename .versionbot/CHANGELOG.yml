@@ -1,4 +1,16 @@
 - commits:
+    - subject: "patch: Fix contracts name"
+      hash: 5f48a749c71bcc2e540a764f633dd823c3fcc35c
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.8.1
+  title: "'patch: Fix contracts name'"
+  date: 2022-09-03T23:38:43.521Z
+- commits:
     - subject: "patch: Accept 429 HTTP codes using config file"
       hash: 846773a1aae8677f618660395515be4515a6b6d4
       body: ""
