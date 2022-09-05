@@ -38,7 +38,6 @@ require('ajv-semver')(ajv);
 const Bluebird = require('bluebird');
 
 const fse = require('fs-extra');
-const npm = require('npm');
 const { tmpdir } = require('os');
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
