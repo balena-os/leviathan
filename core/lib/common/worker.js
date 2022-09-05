@@ -466,7 +466,7 @@ module.exports = class Worker {
 			try {
 				await exec(`ip route add ${dutIp} via ${workerIp}`)
 			} catch (e) {
-				console.log('Route to DUT via docker bridge already configured');
+				console.error(`Failed to add ip route: ${e}`);
 			}
 		}
 	}
