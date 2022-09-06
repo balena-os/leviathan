@@ -123,27 +123,4 @@ module.exports = class CLI {
 			`balena push ${target} --source ${options.source} --nolive --detached`,
 		);
 	}
-
-	/**
-	 * @param {string} token Session key or API token required for the authentication of balena-cli session
-	 *
-	 * @category helper
-	 */
-	loginWithToken(token) {
-		this.logger.log('Login CLI');
-		return exec(`balena login --token ${token}`);
-	}
-
-	/**
-	 * @param {string} target The address/UUID of the target device
-	 * @param {string} service The container/service for which logs are needed
-	 * @returns {string} logs of the service/container running on the target device
-	 *
-	 * @category helper
-	 */
-	logs(target, service) {
-		return exec(
-			`balena logs ${target} ${service ? '--service' + service : ''}`,
-		);
-	}
 };
