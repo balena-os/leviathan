@@ -56,7 +56,7 @@ const Bluebird = require('bluebird');
 const retry = require('bluebird-retry');
 const utils = require('../../common/utils');
 const exec = Bluebird.promisify(require('child_process').exec);
-const config = require('config');
+const config = require('../../config');
 const { toInteger } = require('lodash');
 const { getSdk } = require('balena-sdk');
 
@@ -623,7 +623,7 @@ module.exports = class BalenaSDK {
 		version = version.replace('.prod', '.dev');
 
 		const path = join(
-			config.get('leviathan.downloads'),
+			config.leviathan.downloads,
 			`balenaOs-${version}.img`,
 		);
 
