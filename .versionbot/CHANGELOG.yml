@@ -1,4 +1,30 @@
 - commits:
+    - subject: "core: Copy all files/directories except those in dockerignore"
+      hash: d65bfbb94cab3cbfa676f53b42b85969bde41e58
+      body: |
+        In some situations the contracts submodule may not exist so this
+        will prevent the docker build from failing.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+    - subject: "core: Move contracts submodule back to original path"
+      hash: ed4b658cb327c9133d223c3474bb9d882b8fcb36
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.8.4
+  title: "'core: Move contracts submodule back to original path'"
+  date: 2022-09-07T14:39:45.563Z
+- commits:
     - subject: "patch: Migrate away from config package"
       hash: b04974e51ad26b2b6dfce52ea4897c51276989ef
       body: ""
