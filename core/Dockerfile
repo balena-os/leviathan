@@ -34,8 +34,6 @@ RUN apk add --no-cache --virtual .build-deps \
 RUN ln -sf /usr/app/node_modules/balena-cli/bin/balena /usr/bin/balena && \
     balena version
 
-COPY contracts/ contracts/
-COPY lib lib
-COPY entry.sh entry.sh
+COPY . .
 
 CMD [ "/usr/app/entry.sh" ]
