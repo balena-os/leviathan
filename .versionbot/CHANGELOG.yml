@@ -1,4 +1,16 @@
 - commits:
+    - subject: "patch: Migrate away from config package"
+      hash: b04974e51ad26b2b6dfce52ea4897c51276989ef
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.8.3
+  title: "'build(deps): bump moment from 2.29.1 to 2.29.4 in /core'"
+  date: 2022-09-07T14:14:32.059Z
+- commits:
     - subject: "worker: Pin to stable release 2.5.10 prior to md support"
       hash: 3b6ce13734e98e981492e01bc874c0a439cb1536
       body: |
