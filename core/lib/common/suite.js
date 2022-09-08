@@ -38,7 +38,6 @@ require('ajv-semver')(ajv);
 const Bluebird = require('bluebird');
 
 const fse = require('fs-extra');
-const npm = require('npm');
 const { tmpdir } = require('os');
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
@@ -322,17 +321,8 @@ module.exports = class Suite {
 
 	async installDependencies() {
 		await exec('npm cache clear --silent --force');
-
 		this.state.log(`Install npm dependencies for suite: `);
-		await Bluebird.promisify(npm.load)({
-			loglevel: 'silent',
-			progress: false,
-			prefix: this.suitePath,
-			'package-lock': false,
-		});
-		await Bluebird.promisify(npm.install)(
-			this.suitePath,
-		);
+		await exec(`npm install --prefix ${this.suitePath} --prefer-offline --no-progress &> /dev/null`);
 	}
 
 	async removeDependencies() {

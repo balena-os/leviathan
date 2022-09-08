@@ -45,7 +45,6 @@
 
 'use strict';
 
-const Docker = require('dockerode');
 const { pathExists, ensureFile } = require('fs-extra');
 const { exec, spawn } = require('mz/child_process');
 const { join } = require('path');
