@@ -9,7 +9,6 @@
 		"ajv": "^6.5.0",
 		"ajv-semver": "^1.0.4",
 		"any-promise": "^1.3.0",
-		"balena-cli": "^13.1.10",
 		"balena-image-fs": "^7.0.6",
 		"balena-sdk": "^16.12.1",
 		"bluebird": "^3.5.1",
@@ -42,5 +41,8 @@
 		"typedoc": "^0.21.2",
 		"typedoc-plugin-pages-fork": "0.0.1",
 		"typescript": "^4.4.4"
+	},
+	"engines": {
+		"node": "~14.19.3"
 	}
 }
