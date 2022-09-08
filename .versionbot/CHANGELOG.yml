@@ -1,4 +1,16 @@
 - commits:
+    - subject: "patch: Remove npm package as dependency"
+      hash: 613af06779560bd0ac1c660227a2d2fcd8613dbb
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.9.1
+  title: "'Core: Cleanup dependencies'"
+  date: 2022-09-08T08:03:01.727Z
+- commits:
     - subject: "core: Switch to debian base and install standalone balena-cli"
       hash: b6993366ce72f0c25f14dfeccdf42076fbf8dd50
       body: |
