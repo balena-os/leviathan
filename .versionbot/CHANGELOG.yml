@@ -1,4 +1,16 @@
 - commits:
+    - subject: "patch: Remove unused CLI helpers"
+      hash: 66afc7ec415604bc04fd463c93042dc39bab4ac2
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.9.2
+  title: "'patch: Remove unused CLI helpers'"
+  date: 2022-09-08T11:06:43.780Z
+- commits:
     - subject: "patch: Remove npm package as dependency"
       hash: 613af06779560bd0ac1c660227a2d2fcd8613dbb
       body: ""
