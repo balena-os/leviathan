@@ -1,4 +1,46 @@
 - commits:
+    - subject: "core: Switch to debian base and install standalone balena-cli"
+      hash: b6993366ce72f0c25f14dfeccdf42076fbf8dd50
+      body: |
+        Unfortunately the standalone balena-cli package is linked to glibc
+        and does not work with musl (alpine) so we need to switch to debian.
+
+        The trade-off seems worth it for build times though.
+      footer:
+        Change-type: minor
+        change-type: minor
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+    - subject: "core: Set node engine to match the Dockerfile"
+      hash: 06fcacf6573385aa2709bb2f0deb8a6bee3dd14a
+      body: |
+        This version can likely be increased now that the balena-cli
+        is no longer part of the ndoe dependencies, but for now just
+        publish the current setting.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+    - subject: "core: Remove balena-cli npm dependency"
+      hash: 8b785515f4e4b5d2161f2b84a93a6d162b929875
+      body: |
+        Pave the way for installing balena-cli standalone package.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.9.0
+  title: "'core: Switch to debian base and install standalone balena-cli'"
+  date: 2022-09-07T20:13:19.163Z
+- commits:
     - subject: "core: Copy all files/directories except those in dockerignore"
       hash: d65bfbb94cab3cbfa676f53b42b85969bde41e58
       body: |
