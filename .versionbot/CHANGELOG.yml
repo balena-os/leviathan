@@ -1,4 +1,16 @@
 - commits:
+    - subject: "patch: Remove unused SDK helpers"
+      hash: 459b90b19682cc1670794188fc0c8f8e04e25e57
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.9.3
+  title: "'patch: Remove unused SDK helpers'"
+  date: 2022-09-08T12:30:15.417Z
+- commits:
     - subject: "patch: Remove unused CLI helpers"
       hash: 66afc7ec415604bc04fd463c93042dc39bab4ac2
       body: ""
