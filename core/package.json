@@ -6,7 +6,7 @@
 		"docs": "rimraf ../docs/ && npx typedoc --tsconfig tsconfig.json"
 	},
 	"dependencies": {
-		"@balena/leviathan-test-helpers": "^1.1.1",
+		"@balena/leviathan-test-helpers": "^1.1.4",
 		"ajv": "^6.5.0",
 		"ajv-semver": "^1.0.4",
 		"bluebird": "^3.5.1",
