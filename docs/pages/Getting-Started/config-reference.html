@@ -93,15 +93,15 @@
 					<li><strong><code>deviceType</code></strong> is the Device Under Test (DUT) attached to the testbot. Example: Raspberrypi3 64-bit device, the <code>deviceType</code> property needs to be <code>raspberrypi3-64</code>.</li>
 					<li><strong><code>suite</code></strong> is the absolute path to the test suite directory that you want to execute.  As shown in the example above, <code>${__dirname}</code> expands to the absolute path of the <code>workspace</code> directory, so you can use it to specify a path relative to <code>workspace</code>.</li>
 					<li><strong><code>networkWired</code></strong> and <strong><code>networkWireless</code></strong> properties are configuration for the Network Manager. This sets up the Access Point (AP) created by the testbot for the DUT to use while provisioning.</li>
-					<li><strong><code>balenaApiKey</code></strong> is the balenaCloud API key used when running the cloud release suite.</li>
+					<li><strong><code>balenaApiKey</code></strong> is the balenaCloud API key used when running the cloud release suite. </li>
 					<li><strong><code>balenaApiUrl</code></strong> is the balenaCloud environment you are targetting for your test suite. Production is <code>&#39;balena-cloud.com&#39;</code> and staging is <code>&#39;balena-staging.com&#39;</code>.</li>
 					<li><strong><code>organization</code></strong> is the balenaCloud organization where test applications are created for the cloud suite.</li>
 					<li><strong><code>image</code></strong> is the absolute path to the balenaOS image that is flashed onto the Device Under Test (DUT).  As shown in the example above, <code>${__dirname}</code> expands to the absolute path of the <code>workspace</code> directory, so you can use it to specify a path relative to <code>workspace</code>.</li>
 				</ul>
-				<p>Make sure to rename the image to balena.img. If you provide <code>balena.img</code> as your balenaOS image, then Leviathan will compress it for you in <code>gz</code> format on runtime. We recommend compressing beforehand, as it saves time. For any reason if your tests download an image already and you don&#39;t want to upload an image, then set the <code>image</code> property to <code>false</code> in config.js</p>
-				<p>For example, in the e2e test suite, if you don&#39;t upload an image and set <code>image: false</code>, then the test suite will download the image from balenaCloud. This is test specific, not a leviathan feature.</p>
+				<p>Make sure to rename the image to balena.img. If you provide <code>balena.img</code> as your balenaOS image, then Leviathan will compress it for you in <code>gz</code> format on runtime. We recommend compressing beforehand, as it saves time. For any reason if your tests download an image already and you don&#39;t want to upload an image, then set the <code>image</code> property to <code>false</code> in config.js </p>
+				<p>For example, in the e2e test suite, if you don&#39;t upload an image and set <code>image: false</code>, then the test suite will download the image from balenaCloud. This is test specific, not a leviathan feature. </p>
 				<ul>
-					<li><strong><code>downloadVersion</code></strong>: If you intend to download a balenaOS version for your tests, then you can use the property to specify the balenaOS version semver. The <code>fetchOS</code> helper will use this property to find and download the balenaOS image.</li>
+					<li><strong><code>downloadVersion</code></strong>: If you intend to download a balenaOS version for your tests, then you can use the property to specify the balenaOS version semver. The <code>fetchOS</code> helper will use this property to find and download the balenaOS image. </li>
 					<li><strong><code>workers</code></strong> is the property where we specify precisely where the test suites will be executed on and what type of workers are going to be used. You can specify this in multiple ways as per your requirements:</li>
 				</ul>
 				<a href="#different-workers-configurations-available" id="different-workers-configurations-available" style="color: inherit; text-decoration: none;">
@@ -225,7 +225,7 @@
 				<a href="#running-tests-on-the-development-rig" id="running-tests-on-the-development-rig" style="color: inherit; text-decoration: none;">
 					<h2>Running tests on the development rig</h2>
 				</a>
-				<p>In order to kick off tests on multiple workers in the fleet, extend the configuration present below to run your tests on all available workers.</p>
+				<p>In order to kick off tests on multiple workers in the fleet, extend the configuration present below to run your tests on all available workers. </p>
 				<pre><code class="language-js"><span style="color: #DC3EB7">module</span><span style="color: #002339">.</span><span style="color: #DC3EB7">exports</span><span style="color: #002339"> </span><span style="color: #7B30D0">=</span><span style="color: #002339"> [{</span>
 <span style="color: #002339">        deviceType: </span><span style="color: #A44185">&quot;DEVICETYPE-1&quot;</span><span style="color: #002339">,</span>
 <span style="color: #002339">        suite: </span><span style="color: #A44185">`${</span><span style="color: #2F86D2">__dirname</span><span style="color: #A44185">}/../suites/YOUR-TEST-SUITE`</span><span style="color: #002339">,</span>
@@ -296,19 +296,7 @@
 						<a href="../../modules.html">Modules</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../../modules/Archiver.html">Archiver</a>
-					</li>
-					<li class=" tsd-kind-module">
 						<a href="../../modules/Context.html">Context</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="../../modules/Graphics.html">Graphics</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="../../modules/Leviathan_Utility_helpers.html">Leviathan <wbr>Utility helpers</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="../../modules/Leviathan_Worker_helpers.html">Leviathan <wbr>Worker helpers</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="../../modules/State.html">State</a>
@@ -318,18 +306,6 @@
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="../../modules/TaskQueue.html">Task<wbr>Queue</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="../../modules/Test.html">Test</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="../../modules/balenaCLI_helpers.html">balenaCLI helpers</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="../../modules/balenaOS_helpers.html">balenaOS helpers</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="../../modules/balenaSDK_helpers.html">balenaSDK helpers</a>
 					</li>
 				</ul>
 			</nav>
