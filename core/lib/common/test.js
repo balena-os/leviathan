@@ -23,8 +23,7 @@
 'use strict';
 
 const { join } = require('path');
-
-import { add as Archiver } from '@balena/leviathan-test-helpers';
+const { add } = require('@balena/leviathan-test-helpers');
 const Context = require('./context');
 
 module.exports = class Test {
