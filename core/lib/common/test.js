@@ -24,7 +24,7 @@
 
 const { join } = require('path');
 
-const Archiver = require('./archiver');
+import { add as Archiver } from '@balena/leviathan-test-helpers';
 const Context = require('./context');
 
 module.exports = class Test {
