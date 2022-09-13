@@ -522,7 +522,7 @@ module.exports = class Worker {
 				(await rp({
 					method: 'GET',
 					uri: `http://${ip}:48484/ping`,
-					timeout: 5000
+					timeout: 5000 * 5
 				})) === 'OK'
 			);
 		}, false);
