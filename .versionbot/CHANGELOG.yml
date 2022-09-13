@@ -1,4 +1,18 @@
 - commits:
+    - subject: increase timeout on local push sv ping
+      hash: e767bd998022a5f2f0b4eeec9f99ccc7252bea4d
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+  version: 2.9.4
+  title: "'increase timeout on local push sv ping'"
+  date: 2022-09-13T13:50:43.614Z
+- commits:
     - subject: "patch: Remove unused SDK helpers"
       hash: 459b90b19682cc1670794188fc0c8f8e04e25e57
       body: ""
