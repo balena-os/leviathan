@@ -1,4 +1,18 @@
 - commits:
+    - subject: bump contracts to  v2.0.15
+      hash: 89f6ae542f33f1e9ae533ca40e1902e6dc4f9f25
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+  version: 2.9.5
+  title: "'bump contracts to  v2.0.15'"
+  date: 2022-09-15T07:45:52.354Z
+- commits:
     - subject: increase timeout on local push sv ping
       hash: e767bd998022a5f2f0b4eeec9f99ccc7252bea4d
       body: ""
