@@ -26,12 +26,12 @@
 'use strict';
 
 const Suite = require('./suite');
-const config = require('config');
+const config = require('../config');
 const fs = require('fs-extra');
-const suiteConfig = require(config.get('leviathan.uploads.config'));
+const suiteConfig = require(config.leviathan.uploads.config);
 
 async function removeArtifacts() {
-	const artifactsPath = config.get('leviathan.artifacts');
+	const artifactsPath = config.leviathan.artifacts;
 	if (fs.existsSync(artifactsPath)) {
 		console.log(`Removing artifacts from previous tests...`);
 		fs.emptyDirSync(artifactsPath);
@@ -39,19 +39,17 @@ async function removeArtifacts() {
 }
 
 async function removeReports() {
-	const reportsPath = config.get('leviathan.reports');
-	if (fs.existsSync(reportsPath)) {
+	if (fs.existsSync(config.leviathan.reports)) {
 		console.log(`Removing reports from previous tests...`);
-		fs.emptyDirSync(reportsPath);
+		fs.emptyDirSync(config.leviathan.reports);
 	}
 }
 
 async function removeDownloads() {
-	const downloadsPath = config.get('leviathan.downloads');
-	if (fs.existsSync(downloadsPath)) {
+	if (fs.existsSync(config.leviathan.downloads)) {
 		if (suiteConfig.debug ? (suiteConfig.debug.preserveDownloads ? !suiteConfig.debug.preserveDownloads : true) : true) {
 			console.log('Removing downloads directory...');
-			fs.emptyDirSync(downloadsPath);
+			fs.emptyDirSync(config.leviathan.downloads);
 		}
 	}
 }
@@ -66,16 +64,16 @@ async function createJsonSummary(suite) {
 	try{
 		const suite = new Suite(
 			{
-				suitePath: config.get('leviathan.uploads.suite'),
+				suitePath: config.leviathan.uploads.suite,
 				deviceType: suiteConfig.deviceType,
-				imagePath: config.get('leviathan.uploads').image,
+				imagePath: config.leviathan.uploads.image,
 			},
 			suiteConfig
 		);
 		suite.setup.register(removeArtifacts);
 		suite.setup.register(removeReports);
 		suite.setup.register(
-			async () => fs.ensureDir(config.get('leviathan.downloads'))
+			async () => fs.ensureDir(config.leviathan.downloads)
 		);
 
 		suite.teardown.register(removeDownloads);

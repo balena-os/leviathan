@@ -39,7 +39,6 @@ const Bluebird = require('bluebird');
 const retry = require('bluebird-retry');
 const utils = require('../common/utils');
 const archiver = require('../common/archiver');
-// const config = require('config');
 const isNumber = require('lodash/isNumber');
 const { fs } = require('mz');
 const path = require('path');
@@ -467,7 +466,7 @@ module.exports = class Worker {
 			try {
 				await exec(`ip route add ${dutIp} via ${workerIp}`)
 			} catch (e) {
-				console.log('Route to DUT via docker bridge already configured');
+				console.error(`Failed to add ip route: ${e}`);
 			}
 		}
 	}
@@ -490,7 +489,7 @@ module.exports = class Worker {
 		}
 	}
 
-	// add ssh key to the worker, so it cas ssh into prod DUT's
+	// add ssh key to the worker, so it can ssh into prod DUT's
 	async addSSHKey(keyPath) {
 		if (!this.directConnect) {
 			console.log(`Adding dut ssh key to worker...`);
@@ -523,7 +522,7 @@ module.exports = class Worker {
 				(await rp({
 					method: 'GET',
 					uri: `http://${ip}:48484/ping`,
-					timeout: 5000
+					timeout: 5000 * 5
 				})) === 'OK'
 			);
 		}, false);
