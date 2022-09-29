@@ -30,16 +30,11 @@ module.exports = {
 				try {
           await this.worker.on(); // Ensure DUT is onn before starting tests
 
-          console.log("Waiting for internet...");
-          await new Promise(r => setTimeout(r, 5000));
-
           return checkInternetConnected(config)
             .then((result) => {
-              console.log('There is internet');
               test.true(true, "There's internet");
             })
             .catch((ex) => {
-              console.log("There's no internet");
               test.true(false, "There's no internet");
             });
 				} catch (err) {
