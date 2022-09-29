@@ -5,6 +5,6 @@
 *.docker
 *.zip
 
-reports/
+reports-os/
 saved-images/
 !config.example.js
