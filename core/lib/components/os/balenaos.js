@@ -94,7 +94,6 @@ const injectNetworkConfiguration = async (image, configuration, partition = 1) =
 	const wifiConfiguration = [
 		'[connection]',
 		'id=balena-wifi',
-		`${configuration.wireless.interfaceName}`,
 		'type=wifi',
 		'[wifi]',
 		'hidden=true',
@@ -107,6 +106,10 @@ const injectNetworkConfiguration = async (image, configuration, partition = 1) =
 		'method=auto',
 	];
 
+	if(configuration.wireless.interfaceName){
+		wifiConfiguration.splice(2,0,`${configuration.wireless.interfaceName}`,)
+	}
+
 	if (configuration.wireless.psk) {
 		Reflect.apply(wifiConfiguration.push, wifiConfiguration, [
 			'[wifi-security]',
@@ -115,6 +118,9 @@ const injectNetworkConfiguration = async (image, configuration, partition = 1) =
 			`psk=${configuration.wireless.psk}`,
 		]);
 	}
+
+	console.log('Configuring network configuration with:')
+	console.log(wifiConfiguration);
 
 	await imagefs.interact(image, partition, async (_fs) => {
 		return util.promisify(_fs.writeFile)(
