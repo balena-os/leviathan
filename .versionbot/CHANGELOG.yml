@@ -1,4 +1,31 @@
 - commits:
+    - subject: Switch to Flowzone for CI
+      hash: b4397c12da38c2bfd00be93a3d1f5d666e389ea9
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+    - subject: Remove leftover balena.yml file
+      hash: 376b764d8ee5404f096e8cdcc8b877aa44e30dfd
+      body: |
+        This repo is not deployed as a fleet, instead the
+        balena-os/leviathan-worker is deployed as a block and
+        as a fleet.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.9.8
+  title: ""
+  date: 2022-10-05T23:37:02.507Z
+- commits:
     - subject: Splie interface name into config
       hash: e49a508e0390cb5f89d34c3a6f5d91ff27ee31b0
       body: ""
