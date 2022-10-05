@@ -1,4 +1,19 @@
 - commits:
+    - subject: 'Revert "worker: Pin to stable release 2.5.10 prior to md support"'
+      hash: 4f6f194e231fb1afccb0a86f6f8550e26dbcd142
+      body: |
+        This reverts commit 3b6ce13734e98e981492e01bc874c0a439cb1536.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.9.9
+  title: ""
+  date: 2022-10-05T23:52:50.772Z
+- commits:
     - subject: Switch to Flowzone for CI
       hash: b4397c12da38c2bfd00be93a3d1f5d666e389ea9
       body: ""
