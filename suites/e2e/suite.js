@@ -73,7 +73,7 @@ module.exports = {
 
 		// The suite contex is an object that is shared across all tests. Setting something into the context makes it accessible by every test
 		this.suite.context.set({
-			utils: Utils,
+			utils: new Utils(),
 			sshKeyPath: join(homedir(), 'id'),
 			sshKeyLabel: this.suite.options.id,
 			sdk: new Sdk(this.suite.options.balena.apiUrl, this.getLogger()),

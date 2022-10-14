@@ -51,6 +51,13 @@ RUN npm ci
 
 FROM base as final
 
+RUN apt-get update && apt-get install --no-install-recommends -y \
+	build-essential \
+	make \
+	python && \
+	apt-get clean && \
+	rm -rf /var/lib/apt/lists/*
+
 COPY . .
 
 COPY --from=npm-ci /usr/app/node_modules node_modules
