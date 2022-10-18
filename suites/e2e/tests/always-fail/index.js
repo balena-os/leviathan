@@ -14,12 +14,27 @@
 
 'use strict';
 
+/**
+ * This test is desired result is to FAIL EVERY TIME
+ * It is meant to test the skipping feature to mark tests as unstable & skip them while testing
+ * To correctly run the suite with this test, add the following lines to the config.js file
+ *
+ * ```
+ * debug: {
+ *   unstable: ["Kill the device under test"],
+ * },
+ * ```
+ *
+ * Check out docs for more information: https://balena-os.github.io/leviathan/pages/Getting-Started/debugging.html
+ */
+
 module.exports = {
   title: 'This test should be skipped',
   tests: [
     {
       title: 'Kill the device under test',
       run: async function (test) {
+        // This function doesn't exist anywhere and fails the test every time.
         await this.worker.instantKill("💥");
         test.notOk(
           true,

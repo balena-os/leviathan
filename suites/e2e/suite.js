@@ -8,7 +8,7 @@
 const fse = require('fs-extra');
 const { join } = require('path');
 const { homedir } = require('os');
-const { Worker, BalenaOS, Sdk, Utils } = require('@balena/leviathan-test-helpers');
+const { Worker, BalenaOS, Sdk, utils } = require('@balena/leviathan-test-helpers');
 
 // required for unwrapping images
 const imagefs = require('balena-image-fs');
@@ -73,10 +73,10 @@ module.exports = {
 
 		// The suite contex is an object that is shared across all tests. Setting something into the context makes it accessible by every test
 		this.suite.context.set({
-			utils: new Utils(),
+			utils: utils,
 			sshKeyPath: join(homedir(), 'id'),
 			sshKeyLabel: this.suite.options.id,
-			sdk: new Sdk(this.suite.options.balena.apiUrl, this.getLogger()),
+			sdk: new Sdk(this.suite.options?.balena?.apiUrl, this.getLogger()),
 			link: `${this.suite.options.balenaOS.config.uuid.slice(0, 7)}.local`,
 			worker: new Worker(
 				this.suite.deviceType.slug,
