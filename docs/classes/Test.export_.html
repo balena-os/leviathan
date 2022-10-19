@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>export&#x3D; | Leviathan Helpers</title>
-	<meta name="description" content="Documentation for Leviathan Helpers">
+	<title>export&#x3D; | Leviathan Core</title>
+	<meta name="description" content="Documentation for Leviathan Core">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 	<link rel="stylesheet" href="../assets/css/pages.css">
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">Leviathan Helpers</a>
+					<a href="../index.html" class="title">Leviathan Core</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -109,90 +109,12 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="archiver" class="tsd-anchor"></a>
 					<h3>archiver</h3>
-					<div class="tsd-signature tsd-kind-icon">archiver<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>add<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, artifactPath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>getStream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, artifactPath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">WriteStream</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> }</span></div>
+					<div class="tsd-signature tsd-kind-icon">archiver<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/0165578f/core/lib/common/test.js#L44">lib/common/test.js:44</a></li>
+							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4482393f/core/lib/common/test.js#L44">test.js:44</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter">
-								<h5>add<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, artifactPath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h5>
-								<ul class="tsd-parameters">
-									<li class="tsd-parameter-signature">
-										<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-literal">
-											<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, artifactPath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
-										</ul>
-										<ul class="tsd-descriptions">
-											<li class="tsd-description">
-												<div class="tsd-comment tsd-typography">
-													<div class="lead">
-														<p>Archive a file to be later sent to the client as an artifact.</p>
-													</div>
-												</div>
-												<h4 class="tsd-parameters-title">Parameters</h4>
-												<ul class="tsd-parameters">
-													<li>
-														<h5>id: <span class="tsd-signature-type">string</span></h5>
-														<div class="tsd-comment tsd-typography">
-															<p>The name of the directory in which logs will be archived. Usuallly this value is the name of the
-															test suite (Available in the test using <code>this.id</code>)</p>
-														</div>
-													</li>
-													<li>
-														<h5>artifactPath: <span class="tsd-signature-type">string</span></h5>
-														<div class="tsd-comment tsd-typography">
-															<p>The absolute path of the file needed to be archived.</p>
-														</div>
-													</li>
-												</ul>
-												<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
-											</li>
-										</ul>
-									</li>
-								</ul>
-							</li>
-							<li class="tsd-parameter">
-								<h5>get<wbr>Stream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, artifactPath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">WriteStream</span><span class="tsd-signature-symbol">&gt;</span></h5>
-								<ul class="tsd-parameters">
-									<li class="tsd-parameter-signature">
-										<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-literal">
-											<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, artifactPath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">WriteStream</span><span class="tsd-signature-symbol">&gt;</span></li>
-										</ul>
-										<ul class="tsd-descriptions">
-											<li class="tsd-description">
-												<div class="tsd-comment tsd-typography">
-													<div class="lead">
-														<p>Archive the file as a stream to be later sent to the client as an artifact.</p>
-													</div>
-												</div>
-												<h4 class="tsd-parameters-title">Parameters</h4>
-												<ul class="tsd-parameters">
-													<li>
-														<h5>id: <span class="tsd-signature-type">string</span></h5>
-														<div class="tsd-comment tsd-typography">
-															<p>The name of the directory in which logs will be archived. Usuallly this value is the name of the
-															test suite (Available in the test using <code>this.id</code>)</p>
-														</div>
-													</li>
-													<li>
-														<h5>artifactPath: <span class="tsd-signature-type">string</span></h5>
-														<div class="tsd-comment tsd-typography">
-															<p>The absolute path of the file needed to be archived.</p>
-														</div>
-													</li>
-												</ul>
-												<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">WriteStream</span><span class="tsd-signature-symbol">&gt;</span></h4>
-												<p>stream of the file</p>
-											</li>
-										</ul>
-									</li>
-								</ul>
-							</li>
-						</ul>
-					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="context" class="tsd-anchor"></a>
@@ -200,7 +122,7 @@
 					<div class="tsd-signature tsd-kind-icon">context<span class="tsd-signature-symbol">:</span> <a href="Context.export_.html" class="tsd-signature-type">export&#x3D;</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/0165578f/core/lib/common/test.js#L45">lib/common/test.js:45</a></li>
+							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4482393f/core/lib/common/test.js#L45">test.js:45</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -210,7 +132,7 @@
 					<div class="tsd-signature tsd-kind-icon">id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/0165578f/core/lib/common/test.js#L33">lib/common/test.js:33</a></li>
+							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4482393f/core/lib/common/test.js#L33">test.js:33</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -220,7 +142,7 @@
 					<div class="tsd-signature tsd-kind-icon">suite<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/0165578f/core/lib/common/test.js#L32">lib/common/test.js:32</a></li>
+							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4482393f/core/lib/common/test.js#L32">test.js:32</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -230,7 +152,7 @@
 					<div class="tsd-signature tsd-kind-icon">teardown<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>register<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>fn<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>run<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/0165578f/core/lib/common/test.js#L35">lib/common/test.js:35</a></li>
+							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4482393f/core/lib/common/test.js#L35">test.js:35</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -288,7 +210,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/0165578f/core/lib/common/test.js#L91">lib/common/test.js:91</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4482393f/core/lib/common/test.js#L91">test.js:91</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -305,7 +227,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/0165578f/core/lib/common/test.js#L83">lib/common/test.js:83</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4482393f/core/lib/common/test.js#L83">test.js:83</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">{ </span>info<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>log<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>status<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> }</span></h4>
@@ -387,7 +309,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/0165578f/core/lib/common/test.js#L74">lib/common/test.js:74</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4482393f/core/lib/common/test.js#L74">test.js:74</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -410,7 +332,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/0165578f/core/lib/common/test.js#L66">lib/common/test.js:66</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4482393f/core/lib/common/test.js#L66">test.js:66</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -433,7 +355,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/0165578f/core/lib/common/test.js#L79">lib/common/test.js:79</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4482393f/core/lib/common/test.js#L79">test.js:79</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -456,7 +378,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/0165578f/core/lib/common/test.js#L70">lib/common/test.js:70</a></li>
+									<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/4482393f/core/lib/common/test.js#L70">test.js:70</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -496,25 +418,13 @@
 						<a href="../pages/Getting-Started/learn-more.html">Links, and more links</a>
 					</li>
 					<li class="label pp-nav pp-group">
-						<span>Helper <wbr>Methods</span>
+						<span>Core <wbr>Logic</span>
 					</li>
 					<li class=" ">
 						<a href="../modules.html">Modules</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../modules/Archiver.html">Archiver</a>
-					</li>
-					<li class=" tsd-kind-module">
 						<a href="../modules/Context.html">Context</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="../modules/Graphics.html">Graphics</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="../modules/Leviathan_Utility_helpers.html">Leviathan <wbr>Utility helpers</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="../modules/Leviathan_Worker_helpers.html">Leviathan <wbr>Worker helpers</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="../modules/State.html">State</a>
@@ -527,15 +437,6 @@
 					</li>
 					<li class="current tsd-kind-module">
 						<a href="../modules/Test.html">Test</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="../modules/balenaCLI_helpers.html">balenaCLI helpers</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="../modules/balenaOS_helpers.html">balenaOS helpers</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="../modules/balenaSDK_helpers.html">balenaSDK helpers</a>
 					</li>
 				</ul>
 			</nav>

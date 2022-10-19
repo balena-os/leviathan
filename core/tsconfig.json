@@ -24,8 +24,8 @@
     "node_modules/**",
   ],
   "typedocOptions": {
-    "name": "Leviathan Helpers",
-    "entryPoints": ["lib/common", "lib/components"],
+    "name": "Leviathan Core",
+    "entryPoints": ["lib/common"],
     "out": "../docs/",
     "theme": "pages-plugin",
     "excludeExternals": true,
