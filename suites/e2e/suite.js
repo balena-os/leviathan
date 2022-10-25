@@ -8,6 +8,7 @@
 const fse = require('fs-extra');
 const { join } = require('path');
 const { homedir } = require('os');
+const { Worker, BalenaOS, Sdk, utils } = require('@balena/leviathan-test-helpers');
 
 // required for unwrapping images
 const imagefs = require('balena-image-fs');
@@ -63,19 +64,19 @@ module.exports = {
 	title: 'Testbot Diagnostics',
 	run: async function (test) {
 		// The worker class contains methods to interact with the DUT, such as flashing, or executing a command on the device
-		const Worker = this.require('common/worker');
+		// const Worker = this.require('common/worker');
 		// The balenaOS class contains information on the OS image to be flashed, and methods to configure it
-		const BalenaOS = this.require('components/os/balenaos');
+		// const BalenaOS = this.require('components/os/balenaos');
 		// The `BalenaSDK` class contains an instance of the balena sdk, as well as some helper methods to interact with a device via the cloud.
-		const Balena = this.require('components/balena/sdk');
+		// const Balena = this.require('components/balena/sdk');
 		await fse.ensureDir(this.suite.options.tmpdir);
 
 		// The suite contex is an object that is shared across all tests. Setting something into the context makes it accessible by every test
 		this.suite.context.set({
-			utils: this.require('common/utils'),
+			utils: utils,
 			sshKeyPath: join(homedir(), 'id'),
 			sshKeyLabel: this.suite.options.id,
-			sdk: new Balena(this.suite.options.balena.apiUrl, this.getLogger()),
+			sdk: new Sdk(this.suite.options?.balena?.apiUrl, this.getLogger()),
 			link: `${this.suite.options.balenaOS.config.uuid.slice(0, 7)}.local`,
 			worker: new Worker(
 				this.suite.deviceType.slug,
