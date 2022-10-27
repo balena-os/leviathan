@@ -1,0 +1,8 @@
+ssh:
+  host: ssh.balena-devices.com
+  port: 22
+  username: gh_paulokinho
+  remotePath: /mnt/data/leviathan/images/
+worker:
+  device:
+    uuid: 86eac54c52ed428eecdeaa412a0df27d

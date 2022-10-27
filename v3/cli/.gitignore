@@ -1,0 +1,5 @@
+bin/*.gz
+bin/config.js
+bin/*.log
+build/
+node_modules/

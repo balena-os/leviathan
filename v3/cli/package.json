@@ -1,0 +1,20 @@
+{
+  "name": "leviathan-cli",
+  "version": "1.0.0",
+  "description": "A CLI(Command Line Interface) for Leviathan v3",
+  "main": "bin/index.js",
+  "scripts": {
+    "test": "node test/test.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "bin": {
+    "leviathan": "bin/index.js"
+  },
+  "dependencies": {
+    "yargs": "^17.6.0",
+    "config-yaml": "^1.1.6",
+    "rsync": "^0.6.1",
+    "simple-ssh": "^1.1.0"
+  }
+}
