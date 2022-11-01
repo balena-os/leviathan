@@ -32,10 +32,6 @@ class RsyncUtils {
       }
     });
   }
-
-  createRemoteTree(remotePath) {
-
-  }
 }
 
 module.exports = new RsyncUtils();
