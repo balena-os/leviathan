@@ -328,10 +328,21 @@ class NonInteractiveState {
 				});
 			} else if (runConfig.workers instanceof Object) {
 				await balenaCloud.authenticate(runConfig.workers.apiKey);
-				const matchingDevices = await balenaCloud.selectDevicesWithDUT(
-					runConfig.workers.balenaApplication,
-					runConfig.deviceType,
-				);
+				if (Array.isArray(runConfig.workers.balenaApplication)) {
+					const matchingDevices = runConfig.workers.balenaApplication.map(async () => {
+						await balenaCloud.selectDevicesWithDUT(
+							runConfig.workers.balenaApplication,
+							runConfig.deviceType,
+						)
+					})
+				} else {
+					const matchingDevices = await balenaCloud.selectDevicesWithDUT(
+						runConfig.workers.balenaApplication,
+						runConfig.deviceType,
+					)
+				}
+
+				console.log(matchingDevices)
 
 				//  Throw an error if no matching workers are found.
 				if (matchingDevices.length === 0) {
@@ -358,7 +369,7 @@ class NonInteractiveState {
 		// While jobs are present the runQueue
 		while (runQueue.length > 0) {
 			// TEMP WORKAROUND: Only start a suite if one is not already running
-			if(suiteRunning === false){
+			if (suiteRunning === false) {
 				const job = runQueue.pop();
 				// If matching workers for the job are available then allot them a job
 				for (var device of job.matchingDevices) {
