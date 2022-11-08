@@ -328,21 +328,11 @@ class NonInteractiveState {
 				});
 			} else if (runConfig.workers instanceof Object) {
 				await balenaCloud.authenticate(runConfig.workers.apiKey);
-				if (Array.isArray(runConfig.workers.balenaApplication)) {
-					const matchingDevices = runConfig.workers.balenaApplication.map(async () => {
-						await balenaCloud.selectDevicesWithDUT(
-							runConfig.workers.balenaApplication,
-							runConfig.deviceType,
-						)
-					})
-				} else {
-					const matchingDevices = await balenaCloud.selectDevicesWithDUT(
-						runConfig.workers.balenaApplication,
-						runConfig.deviceType,
-					)
+				let balenaApplications = Array.isArray(runConfig.workers.balenaApplication) ? runConfig.workers.balenaApplication : [runConfig.workers.balenaApplication];
+				let matchingDevices = []
+				for (const balenaApplication of balenaApplications) {
+					matchingDevices = [...(await balenaCloud.selectDevicesWithDUT(balenaApplication, runConfig.deviceType)), ...matchingDevices]
 				}
-
-				console.log(matchingDevices)
 
 				//  Throw an error if no matching workers are found.
 				if (matchingDevices.length === 0) {
