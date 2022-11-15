@@ -31,6 +31,9 @@ module.exports = {
         balenaApiUrl: 'balena-cloud.com',
         organization: 'BALENACLOUD_ORG_GOES_HERE',
     },
+    debug: {
+        unstable: ["Kill the device under test"],
+    }
     image: `${__dirname}/balena.img`,
     workers: ['http://worker'],
 };
