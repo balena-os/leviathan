@@ -12,6 +12,9 @@ Leviathan can be used to automate, test and control real/virtual devices in prod
 3. Automate release deployment for balenaCloud fleets by testing codebase on real/virtual devices under test.
 4. Automate support for new modems, sensors, components and eventually new boards.
 
+
+The high-level overview of the leviathan architecture can be found [here](./documentation/architecture.md)
+
 ## Getting Started
 
 Leviathan allows for running tests on a device controlled by a worker. A worker is a component on which your tests actually runs. The worker can be either real hardware or a virtualised environment. Leviathan is designed to work with multiple workers. At the moment, leviathan supports [testbot][quickstart-testbot] and [qemu][quickstart-qemu] workers. Learn more about [Leviathan](https://balena-os.github.io/leviathan/pages/Getting-Started/learn-more.html).
