@@ -25,6 +25,10 @@ endif
 # for arm64 hosts we need to set the BALENA_ARCH to pull the correct balenalib worker image
 ifeq ($(shell uname -m),aarch64)
 BALENA_ARCH ?= aarch64
+else ifeq ($(shell uname -m),arm64)
+BALENA_ARCH ?= aarch64
+else
+BALENA_ARCH ?= amd64
 endif
 
 # for generic-aarch64 we need to set the qemu architecture
@@ -48,7 +52,11 @@ DOCKERCOMPOSE := ./bin/docker-compose
 # see https://github.com/docker/compose/issues/9059
 $(DOCKERCOMPOSE):
 	mkdir -p $(shell dirname "$@")
-	curl -L "https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-$(shell uname -s)-$(shell uname -m)" -o $@
+ifeq ($(shell uname -m),arm64)
+	curl -fsSL "https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-$(shell uname -s | tr '[:upper:]' '[:lower:]')-aarch64" -o $@
+else
+	curl -fsSL "https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-$(shell uname -s | tr '[:upper:]' '[:lower:]')-$(shell uname -m)" -o $@
+endif
 	chmod +x $@
 
 .NOTPARALLEL: $(DOCKERCOMPOSE)
