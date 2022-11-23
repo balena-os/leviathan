@@ -1,4 +1,18 @@
 - commits:
+    - subject: add high level architecture overview
+      hash: 49fcd08d9b7d8af9a3b1f33c6d758906bf4b63ec
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+  version: 2.10.2
+  title: ""
+  date: 2022-11-23T15:38:40.661Z
+- commits:
     - subject: Add conditions for Apple Silicon workstations
       hash: ff3d9fee035d2aa7a7c04e47dfbddb638c564878
       body: |
