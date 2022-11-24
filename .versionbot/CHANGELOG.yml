@@ -1,4 +1,19 @@
 - commits:
+    - subject: On Apple Silicon we should install balena CLI via npm
+      hash: ccdd4ff5b3255738f24e91ea3202fbf43706acfa
+      body: |
+        On x86 we should use the standalone package to save time.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.10.3
+  title: ""
+  date: 2022-11-24T14:41:23.842Z
+- commits:
     - subject: add high level architecture overview
       hash: 49fcd08d9b7d8af9a3b1f33c6d758906bf4b63ec
       body: ""
