@@ -1,4 +1,18 @@
 - commits:
+    - subject: bump contracts to 2.0.27
+      hash: 3ff1c8e5bf93d185b2f048579ad86539abbfd420
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+  version: 2.10.4
+  title: ""
+  date: 2022-11-25T12:20:52.662Z
+- commits:
     - subject: On Apple Silicon we should install balena CLI via npm
       hash: ccdd4ff5b3255738f24e91ea3202fbf43706acfa
       body: |
