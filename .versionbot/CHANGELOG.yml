@@ -1,4 +1,21 @@
 - commits:
+    - subject: "os/balenaos: Remove hidden attribute from DUT wireless connection file"
+      hash: 5046eaae99fb0ba2edf8c15ef6ad2e34e54260d8
+      body: |
+        The testbot AP is visible and is discovered during a scan.
+        Let's remove the hidden attribute as it may cause problems
+        for the 243390-rpi wireless tests.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Alexandru Costache <alexandru@balena.io>
+        signed-off-by: Alexandru Costache <alexandru@balena.io>
+      author: Alexandru Costache
+      nested: []
+  version: 2.10.6
+  title: ""
+  date: 2022-11-29T15:23:45.559Z
+- commits:
     - subject: "patch: Add debug: unstable to docs"
       hash: ea6fc63f1848540f5af7e011920afe13e18e82d1
       body: ""
