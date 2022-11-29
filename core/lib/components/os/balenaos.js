@@ -96,7 +96,6 @@ const injectNetworkConfiguration = async (image, configuration, partition = 1) =
 		'id=balena-wifi',
 		'type=wifi',
 		'[wifi]',
-		'hidden=true',
 		'mode=infrastructure',
 		`ssid=${configuration.wireless.ssid}`,
 		'[ipv4]',
