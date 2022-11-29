@@ -14,6 +14,9 @@ module.exports = {
         balenaApiUrl: 'balena-cloud.com',
         organization: 'BALENACLOUD_ORG_GOES_HERE',
     },
+    debug: {
+        unstable: ["Kill the device under test"],
+    }
     image: `${__dirname}/balena.img.gz`,
     workers: ['http://<short UUID of your testbot in balenaCloud>.local'],
 };
@@ -27,6 +30,7 @@ Information on properties in `config.js`:
 - **`balenaApiKey`** is the balenaCloud API key used when running the cloud release suite. 
 - **`balenaApiUrl`** is the balenaCloud environment you are targetting for your test suite. Production is `'balena-cloud.com'` and staging is `'balena-staging.com'`.
 - **`organization`** is the balenaCloud organization where test applications are created for the cloud suite.
+- **`debug`** is where debugging properties are stored for test runs. Check out {@page Debugging tests in Leviathan | Debugging documentation} for features you can add. 
 - **`image`** is the absolute path to the balenaOS image that is flashed onto the Device Under Test (DUT).  As shown in the example above, `${__dirname}` expands to the absolute path of the `workspace` directory, so you can use it to specify a path relative to `workspace`.
 
 Make sure to rename the image to balena.img. If you provide `balena.img` as your balenaOS image, then Leviathan will compress it for you in `gz` format on runtime. We recommend compressing beforehand, as it saves time. For any reason if your tests download an image already and you don't want to upload an image, then set the `image` property to `false` in config.js 
