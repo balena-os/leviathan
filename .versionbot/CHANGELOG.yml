@@ -1,4 +1,16 @@
 - commits:
+    - subject: "patch: Add debug: unstable to docs"
+      hash: ea6fc63f1848540f5af7e011920afe13e18e82d1
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.10.5
+  title: ""
+  date: 2022-11-29T11:26:46.125Z
+- commits:
     - subject: bump contracts to 2.0.27
       hash: 3ff1c8e5bf93d185b2f048579ad86539abbfd420
       body: ""
