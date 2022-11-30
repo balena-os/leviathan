@@ -656,7 +656,7 @@ module.exports = class Worker {
 	async archiveLogs(
 		title,
 		target,
-		command = 'journalctl --no-pager --no-hostname -a -b all',
+		command = "journalctl --no-pager --no-hostname --list-boots | awk '{print $1}' | xargs -I{} sh -c 'set -x; journalctl --no-pager --no-hostname -a -b {} || true;'",
 	) {
 		const logFilePath = `/tmp/${command.split(' ')[0]}-${id()}.log`;
 		this.logger.log(
@@ -666,7 +666,7 @@ module.exports = class Worker {
 			const commandOutput = await this.executeCommandInHostOS(
 				`${command}`,
 				target,
-				{ interval: 10000, tries: 3 },
+				{ interval: 5000, max_tries: 3 },
 			);
 			fs.writeFileSync(logFilePath, commandOutput);
 			await archiver.add(title, logFilePath);
