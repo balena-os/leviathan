@@ -1,4 +1,39 @@
 - commits:
+    - subject: "patch: Improve archivelogs journalctl command"
+      hash: 30ba7b601fd06182d4383bb0a5ebb3caadfccc27
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+    - subject: "core: Reduce to 30 the retries number when trying to get the IP
+        address of the DUT"
+      hash: 02b270e1c55429c7316a9c65f70362185bbe3aec
+      body: >
+        Instead of retrying to get the DUT IP address 120 times on a 1 seconds
+        interval,
+
+        let's reduce it to 30 times because the resolveLocalTarget which we call will
+
+        timeout too in 15 seconds:
+
+
+        https://github.com/balena-os/leviathan-worker/blob/master/lib/helpers/index.ts#L162
+
+
+        So reducing the retries number to 30 will effectly bring the total combined timeout to a maximum of 8 minutes.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Florin Sarbu <florin@balena.io>
+        signed-off-by: Florin Sarbu <florin@balena.io>
+      author: Florin Sarbu
+      nested: []
+  version: 2.10.8
+  title: ""
+  date: 2022-11-30T20:29:13.571Z
+- commits:
     - subject: "docker-compose: stop using the default docker bridge"
       hash: eb69ff445fe0cac4f2060e67fa6994e61c3ca4b9
       body: |
