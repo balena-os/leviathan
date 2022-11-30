@@ -1,4 +1,20 @@
 - commits:
+    - subject: "docker-compose: stop using the default docker bridge"
+      hash: eb69ff445fe0cac4f2060e67fa6994e61c3ca4b9
+      body: |
+        This causes problems for make-local tests when the user apps in the
+        DUT also uses the default docker bridge network range.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Alex Gonzalez <alexg@balena.io>
+        signed-off-by: Alex Gonzalez <alexg@balena.io>
+      author: Alex Gonzalez
+      nested: []
+  version: 2.10.7
+  title: ""
+  date: 2022-11-30T13:06:01.741Z
+- commits:
     - subject: "os/balenaos: Remove hidden attribute from DUT wireless connection file"
       hash: 5046eaae99fb0ba2edf8c15ef6ad2e34e54260d8
       body: |
