@@ -220,7 +220,7 @@ module.exports = class Worker {
 		target,
 		timeout = {
 			interval: 1000,
-			tries: 120,
+			tries: 30,
 		},
 	) {
 		return retry(
