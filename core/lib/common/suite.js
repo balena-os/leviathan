@@ -322,7 +322,7 @@ module.exports = class Suite {
 	async installDependencies() {
 		await exec('npm cache clear --silent --force');
 		this.state.log(`Install npm dependencies for suite: `);
-		await exec(`npm install --prefix ${this.suitePath} --prefer-offline --no-progress &> /dev/null`);
+		await exec(`npm install --prefix ${this.suitePath} --prefer-offline --no-progress`);
 	}
 
 	async removeDependencies() {
