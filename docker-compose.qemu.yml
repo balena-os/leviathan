@@ -33,6 +33,8 @@ services:
       - QEMU_MEMORY=${QEMU_MEMORY}
       - QEMU_DEBUG=${QEMU_DEBUG}
     restart: 'no'
+    networks:
+      - default
 
   core:
     depends_on:
