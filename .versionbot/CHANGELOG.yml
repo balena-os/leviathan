@@ -1,4 +1,25 @@
 - commits:
+    - subject: 'Revert "docker-compose: stop using the default docker bridge"'
+      hash: 957acc6a86c610835a9567fca172a812ff1d54bd
+      body: |
+        This reverts commit eb69ff445fe0cac4f2060e67fa6994e61c3ca4b9.
+
+        Hardcoding the bridge address like this results in conflicts
+        when multiple instances are running on one jenkins node.
+
+        A new solution for local workstation testing will have to be
+        considered.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.10.9
+  title: ""
+  date: 2022-12-02T20:15:29.352Z
+- commits:
     - subject: "patch: Improve archivelogs journalctl command"
       hash: 30ba7b601fd06182d4383bb0a5ebb3caadfccc27
       body: ""
