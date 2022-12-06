@@ -513,7 +513,7 @@ module.exports = class Worker {
 	 *
 	 * @category helper
 	 */
-	async pushContainerToDUT(target, source, containerName) {
+	async pushContainerToDUT(target, source, containerName, env) {
 		let ip = await this.ip(target);
 		await utils.waitUntil(async () => {
 			console.log('Waiting for supervisor to be reachable before local push...')
@@ -541,7 +541,9 @@ module.exports = class Worker {
 				source,
 				'--nolive',
 				'--detached',
-				'--debug'
+				'--debug',
+				'--env',
+				env
 			], { stdio: 'inherit' });
 
 			pushProc.on('exit', (code) => {
