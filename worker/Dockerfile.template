@@ -1,4 +1,4 @@
 ARG BALENA_ARCH=%%BALENA_ARCH%%
 ARG WORKER_RELEASE=latest
 # https://hub.balena.io/organizations/balena/blocks/leviathan-worker-amd64/releases
-FROM bh.cr/balena/leviathan-worker-${BALENA_ARCH}/${WORKER_RELEASE}
+FROM jakogut/leviathan-worker:external-storage-broken
