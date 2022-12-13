@@ -1,4 +1,18 @@
 - commits:
+    - subject: Enable external contributions via flowzone
+      hash: 8e2489e75fd2d750dec077699f2410335995a6b2
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.10.10
+  title: ""
+  date: 2022-12-13T19:44:28.072Z
+- commits:
     - subject: 'Revert "docker-compose: stop using the default docker bridge"'
       hash: 957acc6a86c610835a9567fca172a812ff1d54bd
       body: |
