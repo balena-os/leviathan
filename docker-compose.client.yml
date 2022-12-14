@@ -15,6 +15,8 @@ services:
       - BALENACLOUD_APP_NAME=${BALENACLOUD_APP_NAME}
     depends_on:
       - core
+    networks:
+      - default
 
   core:
     privileged: true # preload requires docker-in-docker
@@ -25,10 +27,19 @@ services:
     tmpfs:
       - /var/run # use tmpfs docker-in-docker pid files
       - /var/lib/docker # use tmpfs for docker-in-docker data root
-    restart: 'no'
+    restart: "no"
     devices:
       - /dev:/dev # required for creating losetup devices during preload
+    networks:
+      - default
 
 volumes:
   core-storage:
   reports-storage:
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${WORKER_BRIDGE_SUBNET:-172.56.0.0/16}
