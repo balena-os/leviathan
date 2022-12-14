@@ -1,4 +1,26 @@
 - commits:
+    - subject: Avoid conflicting docker networks
+      hash: 5e04208a9f07567c6aa7fdc55dc95d2cacb6c8c3
+      body: >
+        The `make subnet` command can be called on Jenkins and similar to generate
+
+        a unique subnet that is not in use.
+
+
+        The DinD daemon in the core service will also start with a non-default
+
+        subnet.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.10.11
+  title: ""
+  date: 2022-12-14T14:15:43.765Z
+- commits:
     - subject: Enable external contributions via flowzone
       hash: 8e2489e75fd2d750dec077699f2410335995a6b2
       body: ""
