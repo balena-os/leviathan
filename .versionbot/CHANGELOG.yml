@@ -1,4 +1,19 @@
 - commits:
+    - subject: Update dependency express to 4.17.3 [SECURITY]
+      hash: 4569500767862766a832c8734c895ebe049e6755
+      body: |
+        Update express to 4.17.3
+
+        Update express from 4.17.2 to 4.17.3
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Renovate Bot
+      nested: []
+  version: 2.11.3
+  title: ""
+  date: 2022-12-15T23:01:53.416Z
+- commits:
     - subject: Update Node.js to v12.22.12
       hash: 5ad6ecf5568b267c8d020e559fd95f252d7047c5
       body: |
