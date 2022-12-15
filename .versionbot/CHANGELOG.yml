@@ -1,4 +1,19 @@
 - commits:
+    - subject: Update core/contracts digest to 08f029b
+      hash: a71d3ec968e21f4e681bea08dfc317786dcd4fec
+      body: |
+        Update core/contracts to
+
+        Update core/contracts from  to
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: Renovate Bot
+      nested: []
+  version: 2.11.0
+  title: ""
+  date: 2022-12-15T19:23:14.566Z
+- commits:
     - subject: Revert "Avoid conflicting docker subnets"
       hash: 1f7383da5580a31ee03d6f38de863e48dd047829
       body: ""
