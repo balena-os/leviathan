@@ -2,12 +2,7 @@ version: "2"
 
 services:
   worker:
-    build:
-      context: ./worker
-      dockerfile: Dockerfile.template
-      args:
-        - BALENA_ARCH=${BALENA_ARCH:-amd64}
-        - WORKER_RELEASE=${WORKER_RELEASE:-latest}
+    image: bh.cr/balena/leviathan-worker-${BALENA_ARCH:-amd64}/2.6.11
     device_cgroup_rules:
       # https://www.kernel.org/doc/Documentation/admin-guide/devices.txt
       # loopback devices
