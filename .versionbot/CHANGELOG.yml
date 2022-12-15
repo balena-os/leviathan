@@ -1,4 +1,19 @@
 - commits:
+    - subject: Update Node.js to v12.22.12
+      hash: 5ad6ecf5568b267c8d020e559fd95f252d7047c5
+      body: |
+        Update node to 12.22.12
+
+        Update node from 12.22.7 to 12.22.12
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Renovate Bot
+      nested: []
+  version: 2.11.2
+  title: ""
+  date: 2022-12-15T22:00:38.475Z
+- commits:
     - subject: Remove dependabot as renovate is enabled in balena-io/renovate-config
       hash: a51b4d5ff26b3c770cf69237936aba2119bd5343
       body: ""
