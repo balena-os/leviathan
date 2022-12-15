@@ -1,6 +1,6 @@
 # syntax = docker/dockerfile:1
 
-FROM node:12-alpine AS base
+FROM node:19-alpine AS base
 
 WORKDIR /src
 COPY package*.json ./
