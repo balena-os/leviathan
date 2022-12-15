@@ -1,4 +1,30 @@
 - commits:
+    - subject: Remove dependabot as renovate is enabled in balena-io/renovate-config
+      hash: a51b4d5ff26b3c770cf69237936aba2119bd5343
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+    - subject: Pin worker to a release and add renovate regex template
+      hash: ee8d737587d3ad511c75d0c986825dfa30bba35a
+      body: |
+        This will allow Renovate to bump the worker block reference
+        to point to the latest GitHub tag.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.11.1
+  title: ""
+  date: 2022-12-15T20:00:34.137Z
+- commits:
     - subject: Update core/contracts digest to 08f029b
       hash: a71d3ec968e21f4e681bea08dfc317786dcd4fec
       body: |
