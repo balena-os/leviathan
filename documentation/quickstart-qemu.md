@@ -2,6 +2,11 @@
 
 This is a quick start guide for using the leviathan framework with the QEMU worker.
 
+## Prepare Qemu worker
+
+As a prerequisite: 
+1. Went through the steps listed on the {@page Quickstart | Quickstart Page}
+
 ## Start your first test run
 
 For your first test run, we will be running the [e2e test suite](https://github.com/balena-os/leviathan/tree/master/suites/e2e).

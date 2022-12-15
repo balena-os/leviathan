@@ -3,7 +3,7 @@
 		"lint:fix": "balena-lint -e js -e ts --fix lib/**/*",
 		"lint": "balena-lint -u -e js -e ts --tests lib/**/*",
 		"start": "node lib/main.js",
-		"docs": "rimraf ../docs/ && npx typedoc --tsconfig tsconfig.json"
+		"docs": "rimraf ../docs/ && npx typedoc --tsconfig tsconfig.json && touch ../docs/.nojekyll"
 	},
 	"dependencies": {
 		"ajv": "^6.5.0",

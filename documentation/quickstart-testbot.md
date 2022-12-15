@@ -4,7 +4,9 @@ This is a quick start guide for using the leviathan framework with the testbot w
 
 ## Prepare testbot worker
 
-As a prerequisite, make sure you have built your testbot using the following [guide](https://github.com/balena-io/testbot-hardware/blob/master/documentation/getting-started.md).
+As a prerequisite: 
+1. Make sure you have built your testbot using the following [guide](https://github.com/balena-io/testbot-hardware/blob/master/documentation/getting-started.md)
+2. Went through the steps listed on the {@page Quickstart | Quickstart Page}
 
 ## Start your first test run
 

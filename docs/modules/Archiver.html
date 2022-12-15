@@ -85,10 +85,10 @@
 							<p>To directly archive the output of a command, example: <code>journalctl</code> or <code>dmesg</code> commands. Use the
 							<code>archiveLogs</code> helper accessible through <code>worker</code> context.</p>
 							<ul>
-								<li>@example<pre><code class="language-js"><span style="color: #002339">  </span><span style="color: #7B30D0">await</span><span style="color: #002339"> </span><span style="color: #000000">this</span><span style="color: #002339">.</span><span style="color: #2F86D2">context</span><span style="color: #002339">.</span><span style="color: #7EB233">get</span><span style="color: #002339">().</span><span style="color: #2F86D2">worker</span><span style="color: #002339">.</span><span style="color: #7EB233">archiveLogs</span><span style="color: #002339">(</span><span style="color: #2F86D2">title</span><span style="color: #002339">, </span><span style="color: #2F86D2">target</span><span style="color: #002339">, </span><span style="color: #2F86D2">command</span><span style="color: #002339">);</span>
-</code></pre>
-								</li>
+								<li>@example</li>
 							</ul>
+							<pre><code class="language-js"><span style="color: #002339">    </span><span style="color: #7B30D0">await</span><span style="color: #002339"> </span><span style="color: #000000">this</span><span style="color: #002339">.</span><span style="color: #2F86D2">context</span><span style="color: #002339">.</span><span style="color: #7EB233">get</span><span style="color: #002339">().</span><span style="color: #2F86D2">worker</span><span style="color: #002339">.</span><span style="color: #7EB233">archiveLogs</span><span style="color: #002339">(</span><span style="color: #2F86D2">title</span><span style="color: #002339">, </span><span style="color: #2F86D2">target</span><span style="color: #002339">, </span><span style="color: #2F86D2">command</span><span style="color: #002339">);</span>
+</code></pre>
 							<p>Using this method, at the end of the test, any artifacts added to the archive are compressed and
 								downloaded by the client. These are available in the <code>workspace/reports</code> directory at the end of
 							the test. This can also be helpful when storing artifacts/reports/logs after a test suite run.</p>
@@ -123,7 +123,7 @@
 					<div class="tsd-signature tsd-kind-icon">export&#61;<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>add<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, artifactPath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>getStream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, artifactPath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">WriteStream</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/759b503c/core/lib/common/archiver.js#L55">lib/common/archiver.js:55</a></li>
+							<li>Defined in <a href="https://github.com/balena-os/leviathan/blob/48ffd13a/core/lib/common/archiver.js#L55">lib/common/archiver.js:55</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
