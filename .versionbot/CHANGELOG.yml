@@ -1,4 +1,18 @@
 - commits:
+    - subject: Revert "Avoid conflicting docker subnets"
+      hash: 1f7383da5580a31ee03d6f38de863e48dd047829
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Vipul Gupta
+      nested: []
+  version: 2.10.12
+  title: ""
+  date: 2022-12-15T17:21:51.118Z
+- commits:
     - subject: Avoid conflicting docker networks
       hash: 5e04208a9f07567c6aa7fdc55dc95d2cacb6c8c3
       body: >
