@@ -1,4 +1,16 @@
 - commits:
+    - subject: "patch: Publish improved Getting Started docs"
+      hash: 69dddfdb3668a88625e9dac631d6b29c1420f981
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.10.12
+  title: ""
+  date: 2022-12-15T13:59:40.566Z
+- commits:
     - subject: Avoid conflicting docker networks
       hash: 5e04208a9f07567c6aa7fdc55dc95d2cacb6c8c3
       body: >
