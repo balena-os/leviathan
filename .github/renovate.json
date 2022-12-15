@@ -1,0 +1,13 @@
+{
+  "regexManagers": [
+    {
+      "fileMatch": ["(^|/)(?:docker-)?compose[^/]*\\.ya?ml$"],
+      "matchStrings": [
+        "bh.cr/balena/leviathan-worker(-[^/]+)?/(?<currentValue>.*?)\\n"
+      ],
+      "depNameTemplate": "balena-os/leviathan-worker",
+      "datasourceTemplate": "github-tags",
+      "versioningTemplate": "semver-coerced"
+    }
+  ]
+}
