@@ -88,13 +88,6 @@ testbot:## Alias for 'make test WORKER_TYPE=testbot'
 stop: $(DOCKERCOMPOSE) ## Stop and remove any existing containers and volumes
 	-$(DOCKERCOMPOSE) down --remove-orphans --rmi all --volumes
 
-subnet: ## Generate a unique subnet for the leviathan services network and write it to .env
-	@sed '/WORKER_BRIDGE_SUBNET/d' .env > .env.new
-	@mv .env.new .env
-	echo WORKER_BRIDGE_SUBNET=$(shell for octet in $$(seq 32 56) ; do docker network inspect \
-		$$(docker network ls -q) | jq -r '.[].IPAM.Config[].Subnet' | grep -q "172\.$${octet}\." || \
-		{ echo 172.$${octet}.0.0/16 ; exit 0 ; } ; done) >> .env
-
 down: stop ## Alias for 'make stop'
 
 clean: stop ## Alias for 'make stop'
