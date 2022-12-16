@@ -1,4 +1,18 @@
 - commits:
+    - subject: "renovate: Inherit settings from balena-io/renovate-config"
+      hash: 488ea00e558ba338d2b3abea74457a40686caafa
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.11.5
+  title: ""
+  date: 2022-12-16T16:17:01.461Z
+- commits:
     - subject: add logging and timeout to balena push
       hash: fb354023beadff1151ed3b8acc24817312b68b86
       body: ""
