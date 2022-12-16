@@ -1,5 +1,5 @@
 {
-  "extends": ["github>balena-io/renovate-config"],
+  "extends": ["github>balena-io/renovate-config//.github/renovate"],
   "regexManagers": [
     {
       "fileMatch": ["(^|/)(?:docker-)?compose[^/]*\\.ya?ml$"],
