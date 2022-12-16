@@ -1,4 +1,18 @@
 - commits:
+    - subject: add logging and timeout to balena push
+      hash: fb354023beadff1151ed3b8acc24817312b68b86
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+  version: 2.11.4
+  title: ""
+  date: 2022-12-16T15:07:34.575Z
+- commits:
     - subject: Disable renovate config for now
       hash: f0dd47cafe9fe2addc506a9c3fc2295ef0f483a3
       body: |
