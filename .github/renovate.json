@@ -9,5 +9,6 @@
       "datasourceTemplate": "github-tags",
       "versioningTemplate": "semver-coerced"
     }
-  ]
+  ],
+  "enabled": false
 }
