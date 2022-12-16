@@ -1,4 +1,36 @@
 - commits:
+    - subject: Disable renovate config for now
+      hash: f0dd47cafe9fe2addc506a9c3fc2295ef0f483a3
+      body: |
+        There is a conflict with the balena-os Renovate GitHub App
+        and the balena-io/renovate-config self-hosted job.
+
+        Disable this renovate config for now to stop the
+        GitHub App from processing this repo until the conflict
+        is resolved.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+    - subject: Restore worker release env var
+      hash: 83c46ab5d605f64f2cee2b42f460aa403e95f1e9
+      body: |
+        This env var is still used by the leviathan-worker project
+        for e3e tests against draft worker releases.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.11.3
+  title: ""
+  date: 2022-12-16T00:49:27.820Z
+- commits:
     - subject: Update Node.js to v12.22.12
       hash: 5ad6ecf5568b267c8d020e559fd95f252d7047c5
       body: |
