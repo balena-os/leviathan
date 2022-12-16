@@ -55,6 +55,7 @@ const { join } = require('path');
 const util = require('util');
 const retry = require('bluebird-retry');
 const utils = require('../../common/utils');
+const { spawn } = require('child_process')
 const exec = util.promisify(require('child_process').exec);
 const config = require('../../config');
 const { toInteger } = require('lodash');
@@ -185,7 +186,29 @@ module.exports = class BalenaSDK {
 	 * @category helper
 	 */
 	async pushReleaseToApp(application, directory) {
-		await exec(`balena push ${application} --source ${directory}`);
+		//await exec(`balena push ${application} --source ${directory}`);
+		await new Promise(async (resolve, reject) => {
+			let balenaPush = spawn('balena', [
+				'push',
+				application,
+				'--source',
+				directory,
+				'--debug'
+			], { stdio: 'inherit', timeout: 1000 * 60 * 10 });
+
+			balenaPush.on('exit', (code) => {
+				if (code === 0) {
+					resolve();
+				} else {
+					reject()
+				}
+			});
+			balenaPush.on('error', (err) => {
+				process.off('SIGINT', handleSignal);
+				process.off('SIGTERM', handleSignal);
+				reject(err);
+			});
+		});
 		// check new commit of app
 		let commit = await this.balena.models.application.getTargetReleaseHash(
 			application,
