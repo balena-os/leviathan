@@ -3,11 +3,12 @@
     {
       "fileMatch": ["(^|/)(?:docker-)?compose[^/]*\\.ya?ml$"],
       "matchStrings": [
-        "bh.cr/balena/leviathan-worker(-[^/]+)?/(?<currentValue>.*?)\\n"
+        "{WORKER_RELEASE:-(?<currentValue>.*?)}"
       ],
       "depNameTemplate": "balena-os/leviathan-worker",
       "datasourceTemplate": "github-tags",
       "versioningTemplate": "semver-coerced"
     }
-  ]
+  ],
+  "enabled": false
 }
