@@ -1,14 +1,12 @@
 {
+  "extends": ["github>balena-io/renovate-config"],
   "regexManagers": [
     {
       "fileMatch": ["(^|/)(?:docker-)?compose[^/]*\\.ya?ml$"],
-      "matchStrings": [
-        "{WORKER_RELEASE:-(?<currentValue>.*?)}"
-      ],
+      "matchStrings": ["{WORKER_RELEASE:-(?<currentValue>.*?)}"],
       "depNameTemplate": "balena-os/leviathan-worker",
       "datasourceTemplate": "github-tags",
       "versioningTemplate": "semver-coerced"
     }
-  ],
-  "enabled": false
+  ]
 }
