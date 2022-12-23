@@ -20,5 +20,8 @@
   "private": true,
   "versionist": {
     "publishedAt": "2022-12-16T17:23:35.817Z"
+  },
+  "dependencies": {
+    "extract-zip": "^2.0.1"
   }
 }

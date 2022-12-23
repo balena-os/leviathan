@@ -65,6 +65,7 @@ const { join } = require('path');
 const tmp = require('tmp');
 const pipeline = Bluebird.promisify(require('stream').pipeline);
 const zlib = require('zlib');
+const extractZip = requrie('extract-zip')
 const util = require('util');
 
 // TODO: This function should be implemented using Reconfix
@@ -138,6 +139,13 @@ async function isGzip(filePath) {
 	return buf[0] === 0x1f && buf[1] === 0x8b && buf[2] === 0x08;
 }
 
+
+async function isZip(filepath) {
+	const buf = Buffer.alloc(4);
+	await fs.read(await fs.open(filepath, 'r'), buf, 0, 4, 0)
+	return buf[0] === 0x50 && buf[1] === 0x4B && (buf[2] === 0x03 || buf[2] === 0x05 || buf[2] === 0x07) && (buf[3] === 0x04 || buf[3] === 0x06 || buf[3] === 0x08);
+}
+
 function id() {
 	return `${Math.random().toString(36).substring(2, 10)}`;
 }
@@ -181,23 +189,25 @@ module.exports = class BalenaOS {
 	}
 
 	/**
-	 * Prepares the received image/artifact to be used - either unzipping it or moving it to the Leviathan working directory
+	 * Prepares the received image/artifact to be used - either deflating it or moving it to the Leviathan working directory
 	 *
-	 * @remark Leviathan creates a temporary working directory that can referenced using `config.leviathan.downloads)`
+	 * @remark Leviathan creates a temporary working directory that can referenced using `config.leviathan.downloads)`. Additionally this method supports both Gzip and Zip compression. 
 	 *
 	 * @category helper
 	 */
 	async fetch() {
 		this.logger.log(`Unpacking the file: ${this.image.input}`);
-		const unpack = await isGzip(this.image.input);
-		if (unpack) {
-			await pipeline(
-				fs.createReadStream(this.image.input),
-				zlib.createGunzip(),
-				fs.createWriteStream(this.image.path),
-			);
-		} else {
-			// image is already unzipped, so no need to do anything
+		if (await isGzip(this.image.input)) {
+				await pipeline(
+					fs.createReadStream(this.image.input),
+					zlib.createGunzip(),
+					fs.createWriteStream(this.image.path),
+				)
+		} else if (await isZip(this.image.input)) {
+			await extractZip(this.image.input, {dir: this.image.path})
+		}
+		else {
+			// image is already deflated, so no need to do anything
 			this.image.path = this.image.input;
 		}
 	}
