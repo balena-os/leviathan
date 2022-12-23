@@ -1,4 +1,16 @@
 - commits:
+    - subject: "minor: Add Zip decompression"
+      hash: df5ab74604c3c0fa9bc02484070d920ab71ba641
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.12.0
+  title: ""
+  date: 2022-12-23T18:31:10.806Z
+- commits:
     - subject: Fix renovate extends syntax to include balena-io config
       hash: 79cb0996fcb77d2211eba02d7221d059e98aba03
       body: ""
