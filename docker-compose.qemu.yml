@@ -1,8 +1,18 @@
 version: "2"
 
 services:
+  swtpm:
+    build: swtpm
+    restart: always
+    volumes:
+      - swtpm:/var/tpm0
+    entrypoint:
+      - swtpm
+    command: socket --tpmstate dir=/var/tpm0 --ctrl type=unixio,path=/var/tpm0/swtpm.sock --tpm2
   worker:
-    image: bh.cr/balena/leviathan-worker-${BALENA_ARCH:-amd64}/2.6.13
+    image: bh.cr/balena/leviathan-worker-${BALENA_ARCH:-amd64}/${WORKER_RELEASE:-2.6.13}
+    depends_on:
+      - swtpm
     device_cgroup_rules:
       # https://www.kernel.org/doc/Documentation/admin-guide/devices.txt
       # loopback devices
@@ -18,6 +28,7 @@ services:
     volumes:
       - "core-storage:/data"
       - "reports-storage:/reports"
+      - "swtpm:/var/tpm0"
     environment:
       - UDEV=0
       - WORKER_TYPE=qemu
@@ -34,5 +45,4 @@ services:
       - worker
 
 volumes:
-  core-storage:
-  reports-storage:
+  swtpm:
