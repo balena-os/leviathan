@@ -1,4 +1,19 @@
 - commits:
+    - subject: "chore(deps): update dependency eslint-config-prettier to 8.5.0"
+      hash: af17a52befb96751ed412770397be99609e02273
+      body: |
+        Update eslint-config-prettier to 8.5.0
+
+        Update eslint-config-prettier from 4.3.0 to 8.5.0
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: renovate[bot]
+      nested: []
+  version: 2.11.8
+  title: ""
+  date: 2022-12-28T23:03:27.783Z
+- commits:
     - subject: "renovate: Remove v prefix from leviathan-worker github-tags"
       hash: 80778c4b2ea6f2e225b903b6d0a43000a492701e
       body: ""
