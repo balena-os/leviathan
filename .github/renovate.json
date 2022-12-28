@@ -6,7 +6,7 @@
       "matchStrings": ["{WORKER_RELEASE:-(?<currentValue>.*?)}"],
       "depNameTemplate": "balena-os/leviathan-worker",
       "datasourceTemplate": "github-tags",
-      "versioningTemplate": "semver-coerced"
+      "extractVersionTemplate": "^v(?<version>.*)$"
     }
   ]
 }
