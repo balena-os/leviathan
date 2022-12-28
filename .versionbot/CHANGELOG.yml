@@ -1,4 +1,18 @@
 - commits:
+    - subject: "renovate: Remove v prefix from leviathan-worker github-tags"
+      hash: 80778c4b2ea6f2e225b903b6d0a43000a492701e
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.11.7
+  title: ""
+  date: 2022-12-28T16:49:10.897Z
+- commits:
     - subject: Fix renovate extends syntax to include balena-io config
       hash: 79cb0996fcb77d2211eba02d7221d059e98aba03
       body: ""
