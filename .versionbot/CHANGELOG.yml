@@ -1,4 +1,19 @@
 - commits:
+    - subject: "chore(deps): update core/contracts digest to 4698e4e"
+      hash: 6c174fba4fe4c6020180db70ae56bee1108c50c1
+      body: |
+        Update core/contracts to 
+
+        Update core/contracts from  to 
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: renovate[bot]
+      nested: []
+  version: 2.12.0
+  title: ""
+  date: 2022-12-29T06:59:25.022Z
+- commits:
     - subject: "chore(deps): update dependency balena-os/leviathan-worker to 2.6.13"
       hash: aeb38f8d70e9219dd40697172f25d153d579e474
       body: |
