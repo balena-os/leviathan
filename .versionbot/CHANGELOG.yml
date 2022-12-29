@@ -1,4 +1,19 @@
 - commits:
+    - subject: "chore(deps): update dependency balena-os/leviathan-worker to 2.6.13"
+      hash: aeb38f8d70e9219dd40697172f25d153d579e474
+      body: |
+        Update balena-os/leviathan-worker to 2.6.13
+
+        Update balena-os/leviathan-worker from 2.6.11 to 2.6.13
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: renovate[bot]
+      nested: []
+  version: 2.11.9
+  title: ""
+  date: 2022-12-29T05:19:51.486Z
+- commits:
     - subject: "chore(deps): update dependency eslint-config-prettier to 8.5.0"
       hash: af17a52befb96751ed412770397be99609e02273
       body: |
