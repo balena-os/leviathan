@@ -1,4 +1,19 @@
 - commits:
+    - subject: "chore(deps): update dependency eslint-plugin-jsdoc to 39.6.4"
+      hash: 5e184eaa1262cc9c333d0fc2fbc5a1d2ad30e78a
+      body: |
+        Update eslint-plugin-jsdoc to 39.6.4
+
+        Update eslint-plugin-jsdoc from 3.15.1 to 39.6.4
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: renovate[bot]
+      nested: []
+  version: 2.12.1
+  title: ""
+  date: 2022-12-29T10:36:24.073Z
+- commits:
     - subject: "chore(deps): update core/contracts digest to 4698e4e"
       hash: 6c174fba4fe4c6020180db70ae56bee1108c50c1
       body: |
