@@ -10,7 +10,7 @@
 		"eslint-plugin-import": "^2.16.0",
 		"eslint-plugin-jsdoc": "^39.0.0",
 		"eslint-plugin-lodash": "^2.6.1",
-		"eslint-plugin-node": "^6.0.0",
+		"eslint-plugin-node": "^11.0.0",
 		"eslint-plugin-prettier": "^3.0.1",
 		"eslint-plugin-promise": "^3.6.0",
 		"eslint-plugin-standard": "^3.0.1",
