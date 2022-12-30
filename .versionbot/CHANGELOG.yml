@@ -1,4 +1,19 @@
 - commits:
+    - subject: "chore(deps): update dependency eslint-plugin-standard to 4.1.0"
+      hash: 995006f5df146e6d24d4ba55474938bfe38fdb61
+      body: |
+        Update eslint-plugin-standard to 4.1.0
+
+        Update eslint-plugin-standard from 3.1.0 to 4.1.0
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: renovate[bot]
+      nested: []
+  version: 2.12.4
+  title: ""
+  date: 2022-12-30T10:01:43.057Z
+- commits:
     - subject: "chore(deps): update dependency eslint-plugin-node to 11.1.0"
       hash: 4176dfc47d2dd7abe8c8f556f215481e3935d26b
       body: |
