@@ -1,4 +1,19 @@
 - commits:
+    - subject: "chore(deps): update dependency eslint-plugin-node to 11.1.0"
+      hash: 4176dfc47d2dd7abe8c8f556f215481e3935d26b
+      body: |
+        Update eslint-plugin-node to 11.1.0
+
+        Update eslint-plugin-node from 6.0.1 to 11.1.0
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: renovate[bot]
+      nested: []
+  version: 2.12.3
+  title: ""
+  date: 2022-12-30T05:11:02.619Z
+- commits:
     - subject: Run out-of-band e2e tests after Flowzone passes
       hash: 4c82cc453f44736e05b2917be7357ac24348c212
       body: |
