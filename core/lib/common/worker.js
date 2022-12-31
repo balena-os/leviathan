@@ -57,6 +57,20 @@ function id() {
 	return `${Math.random().toString(36).substring(2, 10)}`;
 }
 
+async function doRequest(options, tries = 5, interval = 1000 * 2) {
+	return retry(
+		async () => {
+			console.log(`${options.method ? options.method : 'GET'} ${options.uri ? options.uri : options}`);
+			return rp(options);
+		},
+		{
+			max_tries: tries,
+			interval: interval,
+			throw_original: true,
+		}
+	)
+}
+
 module.exports = class Worker {
 	constructor(
 		deviceType,
@@ -175,14 +189,14 @@ module.exports = class Worker {
 	 */
 	async on() {
 		this.logger.log('Powering on DUT');
-		await rp.post(`${this.url}/dut/on`);
+		await doRequest({method: 'POST', uri: `${this.url}/dut/on`});
 		this.logger.log('DUT powered on');
 	}
 
 	async fetchSerial() {
 		this.logger.log('Pulling Serial logs from DUT');
 		// Logs received were encoding 'UTF-16LE', hence need to convert them right here.
-		return Buffer.from(await rp.get(
+		return Buffer.from(await doRequest(
 				`${this.url}/dut/serial`),
 				'utf-8'
 			).toString();
@@ -195,18 +209,22 @@ module.exports = class Worker {
 	 */
 	async off() {
 		this.logger.log('Powering off DUT');
-		await rp.post(`${this.url}/dut/off`);
+		await doRequest({method: 'POST', uri: `${this.url}/dut/off`});
+		this.logger.log('DUT powered off');
 	}
 
 	/**
 	 * Gather diagnostics from testbot
 	 */
 	async diagnostics() {
-		return JSON.parse(await rp.get(`${this.url}/dut/diagnostics`));
+		return JSON.parse(
+			await doRequest({uri: `${this.url}/dut/diagnostics`})
+		);
 	}
 
 	async network(network) {
-		await rp.post({
+		await doRequest({
+			method: 'POST',
 			uri: `${this.url}/dut/network`,
 			body: network,
 			json: true,
@@ -214,7 +232,7 @@ module.exports = class Worker {
 	}
 
 	proxy(proxy) {
-		return rp.post({ uri: `${this.url}/proxy`, body: proxy, json: true });
+		return doRequest({ method: 'POST', uri: `${this.url}/proxy`, body: proxy, json: true });
 	}
 
 	async getDutIp(
@@ -226,7 +244,7 @@ module.exports = class Worker {
 	) {
 		return retry(
 			() => {
-				return rp.get({
+				return doRequest({
 					uri: `${this.url}/dut/ip`,
 					body: { target },
 					json: true,
@@ -250,17 +268,17 @@ module.exports = class Worker {
 	}
 
 	async teardown() {
-		await rp.post({ uri: `${this.url}/teardown`, json: true });
+		await doRequest({ method: 'POST', uri: `${this.url}/teardown`, json: true });
 	}
 
 	async getContract() {
-		return rp.get({ uri: `${this.url}/contract`, json: true });
+		return doRequest({ uri: `${this.url}/contract`, json: true });
 	}
 
 	async capture(action) {
 		switch (action) {
 			case 'start':
-				return rp.post({ uri: `${this.url}/dut/capture`, json: true });
+				return doRequest({ method: 'POST', uri: `${this.url}/dut/capture`, json: true });
 			case 'stop':
 				// have to receive tar.gz and unpack them? then return path to directory for the test to consume
 				let capture = request.get({ uri: `${this.url}/dut/capture` });
