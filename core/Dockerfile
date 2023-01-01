@@ -21,24 +21,12 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 	unzip \
 	util-linux \
 	wget \
-	vim && \
-	apt-get clean && \
-	rm -rf /var/lib/apt/lists/*
-
-FROM base as npm-ci
-
-COPY package*.json ./
-
-# install npm ci dependencies in a temporary build stage
-# hadolint ignore=DL3008
-RUN apt-get update && apt-get install --no-install-recommends -y \
+	vim \
 	build-essential \
 	make \
 	python && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*
-
-RUN npm ci
 
 ARG BALENA_CLI_VERSION=v14.3.0
 
@@ -52,16 +40,15 @@ RUN if [ "$(uname -m)" = "arm64" ] || [ "$(uname -m)" = "aarch64" ] ; \
 		unzip balena-cli.zip && rm balena-cli.zip ; \
 	fi
 
-FROM npm-ci as final
-
-COPY . .
-
-COPY --from=npm-ci /usr/app/node_modules node_modules
-COPY --from=npm-ci /usr/app/balena-cli balena-cli
-
 # Add balena-cli to PATH
 ENV PATH /usr/app/balena-cli:$PATH
 
 RUN balena version
+
+COPY package*.json ./
+
+RUN npm ci
+
+COPY . .
 
 CMD [ "/usr/app/entry.sh" ]
