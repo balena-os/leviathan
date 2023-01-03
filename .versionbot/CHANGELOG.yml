@@ -1,4 +1,19 @@
 - commits:
+    - subject: 'Revert "minor: Add @balena/leviathan-test-helpers package"'
+      hash: d662f07d297dc130c1592552f8ef1bcdcdabe37f
+      body: |
+        This reverts PR https://github.com/balena-os/leviathan/pull/826.
+      footer:
+        Change-type: minor
+        change-type: minor
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.13.0
+  title: ""
+  date: 2023-01-03T16:38:27.306Z
+- commits:
     - subject: "chore(deps): update dependency eslint-plugin-standard to 4.1.0"
       hash: 995006f5df146e6d24d4ba55474938bfe38fdb61
       body: |
