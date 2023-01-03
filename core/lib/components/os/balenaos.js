@@ -274,3 +274,4 @@ module.exports = class BalenaOS {
 		await injectNetworkConfiguration(this.image.path, this.network, this.bootPartition);
 	}
 }
+
