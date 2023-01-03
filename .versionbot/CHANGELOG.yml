@@ -1,4 +1,18 @@
 - commits:
+    - subject: "core: Add retries to worker some requests"
+      hash: 3ce891276a83ea6fa4521ba19b20d0540363bcb1
+      body: ""
+      footer:
+        Change-type: minor
+        change-type: minor
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.14.0
+  title: ""
+  date: 2023-01-03T19:12:25.403Z
+- commits:
     - subject: 'Revert "minor: Add @balena/leviathan-test-helpers package"'
       hash: d662f07d297dc130c1592552f8ef1bcdcdabe37f
       body: |
