@@ -1,4 +1,23 @@
 - commits:
+    - subject: "core: Re-order docker build steps to improve caching"
+      hash: f3cb97bd3e21a3179d17109c46ff0eedd7b02266
+      body: |
+        This improves stage when changing node dependencies
+        as it won't need to re-install or re-build the CLI stage.
+
+        We also need to keep build dependencies in the final image
+        as suites can install npm packages at runtime.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.14.1
+  title: ""
+  date: 2023-01-03T19:36:39.741Z
+- commits:
     - subject: "core: Add retries to worker some requests"
       hash: 3ce891276a83ea6fa4521ba19b20d0540363bcb1
       body: ""
