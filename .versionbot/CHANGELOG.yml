@@ -1,4 +1,19 @@
 - commits:
+    - subject: "chore(deps): update dependency eslint to 8.31.0"
+      hash: 3da50c4a3faee39dfb7c816bcdce97a03cd60b89
+      body: |
+        Update eslint to 8.31.0
+
+        Update eslint from 4.19.1 to 8.31.0
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: renovate[bot]
+      nested: []
+  version: 2.14.3
+  title: ""
+  date: 2023-01-04T07:22:54.604Z
+- commits:
     - subject: "chore(deps): update dependency eslint-plugin-prettier to 4.2.1"
       hash: 197b75d6c53b02174e404720a01b23db5d5075d7
       body: |
