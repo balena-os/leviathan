@@ -1,4 +1,19 @@
 - commits:
+    - subject: "chore(deps): update dependency eslint-plugin-prettier to 4.2.1"
+      hash: 197b75d6c53b02174e404720a01b23db5d5075d7
+      body: |
+        Update eslint-plugin-prettier to 4.2.1
+
+        Update eslint-plugin-prettier from 3.4.0 to 4.2.1
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: renovate[bot]
+      nested: []
+  version: 2.14.2
+  title: ""
+  date: 2023-01-04T00:53:54.549Z
+- commits:
     - subject: "core: Re-order docker build steps to improve caching"
       hash: f3cb97bd3e21a3179d17109c46ff0eedd7b02266
       body: |
