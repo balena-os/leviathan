@@ -8,5 +8,14 @@
       "datasourceTemplate": "github-tags",
       "extractVersionTemplate": "^v(?<version>.*)$"
     }
+  ],
+  "packageRules": [
+    {
+      "automerge": false,
+      "matchUpdateTypes": [
+        "major",
+        "minor"
+      ]
+    }
   ]
 }
