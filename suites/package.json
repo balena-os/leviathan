@@ -4,7 +4,7 @@
 		"lint": "eslint --fix -c ./.eslintrc.* e2e"
 	},
 	"devDependencies": {
-		"eslint": "^4.19.1",
+		"eslint": "^8.0.0",
 		"eslint-config-prettier": "^8.0.0",
 		"eslint-config-standard": "^11.0.0",
 		"eslint-plugin-import": "^2.16.0",
