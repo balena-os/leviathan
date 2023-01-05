@@ -1,4 +1,20 @@
 - commits:
+    - subject: "worker: Deprecate the WORKER_RELEASE env var"
+      hash: e2f450f44af3e07d516c0f5308908e2d8f1f46e6
+      body: |
+        Instead the worker e2e suite will use sed to replace
+        the worker release at runtime.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.14.7
+  title: ""
+  date: 2023-01-05T02:23:06.642Z
+- commits:
     - subject: "e2e: Switch from rpi4 to rpi3 for e2e tests"
       hash: 455ccc7f13a0b69e54c48c836086de3df0136d6f
       body: |
