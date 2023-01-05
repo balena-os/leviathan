@@ -1,4 +1,21 @@
 - commits:
+    - subject: "compose: qemu: add swtpm service"
+      hash: 302446a90ceedf0e406ed5edef7600925cf55c8c
+      body: |
+        QEMU is capable of using an emulated software TPM exposed via socket. A
+        TPM is necessary for full disk encryption (FDE), so add a service to
+        provide this to the QEMU worker.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+  version: 2.14.9
+  title: ""
+  date: 2023-01-05T23:53:03.325Z
+- commits:
     - subject: "chore(deps): update dependency eslint-config-standard to 17.0.0"
       hash: 79b20a0922d590ac7fd9e8ed9507923a758975b5
       body: |
