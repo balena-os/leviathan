@@ -1,4 +1,32 @@
 - commits:
+    - subject: "e2e: Switch from rpi4 to rpi3 for e2e tests"
+      hash: 455ccc7f13a0b69e54c48c836086de3df0136d6f
+      body: |
+        The rpi3 devices in the rig seemed more reliable
+        and there are more of them.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+    - subject: "core: Increase the default timeout for worker connections to 30s"
+      hash: 44002ac3e50fbbbf70bbb5abc325da4b92acbf02
+      body: |
+        This is a further attempt to avoid ETIMEOUT errors when running
+        on GH actions and connecting to real testbots.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.14.6
+  title: ""
+  date: 2023-01-05T01:59:02.020Z
+- commits:
     - subject: "renovate: Disable automerge for major and minor updates"
       hash: fee3db4f57f2f10cb5e34605f59448d58306b387
       body: ""
