@@ -1,4 +1,19 @@
 - commits:
+    - subject: "chore(deps): update dependency eslint-config-standard to 17.0.0"
+      hash: 79b20a0922d590ac7fd9e8ed9507923a758975b5
+      body: |
+        Update eslint-config-standard to 17.0.0
+
+        Update eslint-config-standard from 11.0.0 to 17.0.0
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: renovate[bot]
+      nested: []
+  version: 2.14.8
+  title: ""
+  date: 2023-01-05T04:02:09.652Z
+- commits:
     - subject: "worker: Deprecate the WORKER_RELEASE env var"
       hash: e2f450f44af3e07d516c0f5308908e2d8f1f46e6
       body: |
