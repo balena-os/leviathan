@@ -55,7 +55,7 @@ jobs:
             WORKER_TYPE: qemu
           - DEVICE_TYPE: generic-aarch64
             WORKER_TYPE: qemu
-          - DEVICE_TYPE: raspberrypi4-64
+          - DEVICE_TYPE: raspberrypi3
             WORKER_TYPE: testbot
 
     steps:
