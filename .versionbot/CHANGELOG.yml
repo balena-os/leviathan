@@ -1,4 +1,19 @@
 - commits:
+    - subject: "chore(deps): update dependency qs [security]"
+      hash: 71f728e61e26290d1d3f1961288b36dab26f6f67
+      body: |
+        Update qs to 6.5.3
+
+        Update qs from 6.5.2 to 6.5.3
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: renovate[bot]
+      nested: []
+  version: 2.15.0
+  title: ""
+  date: 2023-01-06T01:26:24.958Z
+- commits:
     - subject: "compose: qemu: add swtpm service"
       hash: 302446a90ceedf0e406ed5edef7600925cf55c8c
       body: |
