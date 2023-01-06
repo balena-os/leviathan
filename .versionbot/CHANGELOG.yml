@@ -1,4 +1,19 @@
 - commits:
+    - subject: "fix(deps): update dependency yargs to 17.6.2"
+      hash: 6466446f64539ea80427eba300fba7ea2bbe868c
+      body: |
+        Update yargs to 17.6.2
+
+        Update yargs from 13.3.2 to 17.6.2
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: renovate[bot]
+      nested: []
+  version: 2.15.0
+  title: ""
+  date: 2023-01-06T04:56:29.260Z
+- commits:
     - subject: "compose: qemu: add swtpm service"
       hash: 302446a90ceedf0e406ed5edef7600925cf55c8c
       body: |
