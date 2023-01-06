@@ -1,4 +1,19 @@
 - commits:
+    - subject: "chore(deps): update dependency moment to 2.29.4 [security]"
+      hash: 0b1bb4e7442d33d69cabad1b7b3b270e1007bd48
+      body: |
+        Update moment to 2.29.4
+
+        Update moment from 2.29.1 to 2.29.4
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: renovate[bot]
+      nested: []
+  version: 2.15.0
+  title: ""
+  date: 2023-01-06T01:13:48.659Z
+- commits:
     - subject: "compose: qemu: add swtpm service"
       hash: 302446a90ceedf0e406ed5edef7600925cf55c8c
       body: |
