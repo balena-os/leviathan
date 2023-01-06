@@ -18,7 +18,7 @@
 		"multi-start-es5": "npm run build && cd build && node bin/multi-client.js"
 	},
 	"dependencies": {
-		"ajv": "^6.10.2",
+		"ajv": "^8.0.0",
 		"balena-sdk": "^16.3.0",
 		"bluebird": "^3.5.3",
 		"bluebird-retry": "^0.11.0",
