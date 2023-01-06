@@ -1,4 +1,19 @@
 - commits:
+    - subject: "chore(deps): update node.js"
+      hash: a9155f8802944b71efbba279059da48dbc767375
+      body: |
+        Update node to 14.21.2
+
+        Update node from 14.19.3 to 14.21.2
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: renovate[bot]
+      nested: []
+  version: 2.15.0
+  title: ""
+  date: 2023-01-06T01:30:30.558Z
+- commits:
     - subject: "compose: qemu: add swtpm service"
       hash: 302446a90ceedf0e406ed5edef7600925cf55c8c
       body: |
