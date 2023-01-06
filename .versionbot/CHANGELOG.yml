@@ -1,4 +1,19 @@
 - commits:
+    - subject: "chore(deps): update dependency eslint-plugin-promise to 6.1.1"
+      hash: 6a2395c7f5c0ce06165d048f00a4da68881af3c7
+      body: |
+        Update eslint-plugin-promise to 6.1.1
+
+        Update eslint-plugin-promise from 3.8.0 to 6.1.1
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: renovate[bot]
+      nested: []
+  version: 2.14.10
+  title: ""
+  date: 2023-01-06T01:35:30.811Z
+- commits:
     - subject: "compose: qemu: add swtpm service"
       hash: 302446a90ceedf0e406ed5edef7600925cf55c8c
       body: |
