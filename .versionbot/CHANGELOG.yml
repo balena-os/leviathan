@@ -1,4 +1,19 @@
 - commits:
+    - subject: "chore(deps): update dependency ansi-regex [security]"
+      hash: 795fabd9701bb10b46f80b931648a9ccc50f1a48
+      body: |
+        Update ansi-regex to 4.1.1
+
+        Update ansi-regex from 4.1.0 to 4.1.1
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: renovate[bot]
+      nested: []
+  version: 2.15.0
+  title: ""
+  date: 2023-01-06T00:46:59.653Z
+- commits:
     - subject: "compose: qemu: add swtpm service"
       hash: 302446a90ceedf0e406ed5edef7600925cf55c8c
       body: |
