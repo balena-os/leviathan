@@ -1,4 +1,19 @@
 - commits:
+    - subject: "chore(deps): update dependency semver-regex to 3.1.4 [security]"
+      hash: 4c5dbef35330ed476455dcc866c780f7a44d239b
+      body: |
+        Update semver-regex to 3.1.4
+
+        Update semver-regex from 3.1.3 to 3.1.4
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: renovate[bot]
+      nested: []
+  version: 2.15.0
+  title: ""
+  date: 2023-01-06T01:28:32.911Z
+- commits:
     - subject: "compose: qemu: add swtpm service"
       hash: 302446a90ceedf0e406ed5edef7600925cf55c8c
       body: |
