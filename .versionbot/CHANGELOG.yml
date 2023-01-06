@@ -1,4 +1,19 @@
 - commits:
+    - subject: "chore(deps): update dependency nanoid to 3.1.31 [security]"
+      hash: e5f70dee212c1a69158885f2d921901cb70abafc
+      body: |
+        Update nanoid to 3.1.31
+
+        Update nanoid from 3.1.30 to 3.1.31
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: renovate[bot]
+      nested: []
+  version: 2.15.0
+  title: ""
+  date: 2023-01-06T01:18:04.526Z
+- commits:
     - subject: "compose: qemu: add swtpm service"
       hash: 302446a90ceedf0e406ed5edef7600925cf55c8c
       body: |
