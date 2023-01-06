@@ -1,4 +1,19 @@
 - commits:
+    - subject: "fix(deps): update dependency readable-stream to 4.3.0"
+      hash: 6419ec4d3124edc6838bc9e6f7757ce829d6131f
+      body: |
+        Update readable-stream to 4.3.0
+
+        Update readable-stream from 3.6.0 to 4.3.0
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: renovate[bot]
+      nested: []
+  version: 2.15.0
+  title: ""
+  date: 2023-01-06T04:45:13.534Z
+- commits:
     - subject: "compose: qemu: add swtpm service"
       hash: 302446a90ceedf0e406ed5edef7600925cf55c8c
       body: |
