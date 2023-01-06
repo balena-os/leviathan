@@ -1,4 +1,19 @@
 - commits:
+    - subject: "fix(deps): update dependency ajv to 8.12.0"
+      hash: bbe8db376ba9306beae4ea92c5db58b500dbdb93
+      body: |
+        Update ajv to 8.12.0
+
+        Update ajv from 6.12.6 to 8.12.0
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: renovate[bot]
+      nested: []
+  version: 2.15.0
+  title: ""
+  date: 2023-01-06T04:30:52.534Z
+- commits:
     - subject: "compose: qemu: add swtpm service"
       hash: 302446a90ceedf0e406ed5edef7600925cf55c8c
       body: |
