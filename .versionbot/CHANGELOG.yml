@@ -1,4 +1,19 @@
 - commits:
+    - subject: "fix(deps): update dependency tap to 16.3.2"
+      hash: 72abd790b418757a5d1e9ea2bb89d707b8e477ae
+      body: |
+        Update tap to 16.3.2
+
+        Update tap from 14.10.8 to 16.3.2
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: renovate[bot]
+      nested: []
+  version: 2.15.0
+  title: ""
+  date: 2023-01-06T04:47:35.211Z
+- commits:
     - subject: "compose: qemu: add swtpm service"
       hash: 302446a90ceedf0e406ed5edef7600925cf55c8c
       body: |
