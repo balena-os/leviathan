@@ -1,4 +1,19 @@
 - commits:
+    - subject: "chore(deps): update dependency prettier to 2.8.1"
+      hash: 6466eaef63fb9ad98bce383ff0227735ed3f12d0
+      body: |
+        Update prettier to 2.8.1
+
+        Update prettier from 1.19.1 to 2.8.1
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: renovate[bot]
+      nested: []
+  version: 2.14.10
+  title: ""
+  date: 2023-01-06T04:24:03.025Z
+- commits:
     - subject: "compose: qemu: add swtpm service"
       hash: 302446a90ceedf0e406ed5edef7600925cf55c8c
       body: |
