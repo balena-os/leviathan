@@ -1,4 +1,19 @@
 - commits:
+    - subject: "chore(deps): update dependency typescript to 4.9.4"
+      hash: ebdc26aa0af92437d778666ef9add8aa7a1c0c70
+      body: |
+        Update typescript to 4.9.4
+
+        Update typescript from 3.9.10 to 4.9.4
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: renovate[bot]
+      nested: []
+  version: 2.14.10
+  title: ""
+  date: 2023-01-06T04:26:40.644Z
+- commits:
     - subject: "compose: qemu: add swtpm service"
       hash: 302446a90ceedf0e406ed5edef7600925cf55c8c
       body: |
