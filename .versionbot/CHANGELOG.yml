@@ -1,4 +1,19 @@
 - commits:
+    - subject: "chore(deps): update dependency path-parse to 1.0.7 [security]"
+      hash: ef04b16bfabeb6670e0475bb688df66e2fa6d148
+      body: |
+        Update path-parse to 1.0.7
+
+        Update path-parse from 1.0.6 to 1.0.7
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: renovate[bot]
+      nested: []
+  version: 2.15.0
+  title: ""
+  date: 2023-01-06T01:22:04.286Z
+- commits:
     - subject: "compose: qemu: add swtpm service"
       hash: 302446a90ceedf0e406ed5edef7600925cf55c8c
       body: |
