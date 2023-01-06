@@ -1,4 +1,19 @@
 - commits:
+    - subject: "fix(deps): update dependency ws to 8.11.0"
+      hash: 1d831289842a8df417f77f9b614ed127a938703d
+      body: |
+        Update ws to 8.11.0
+
+        Update ws from 7.5.6 to 8.11.0
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: renovate[bot]
+      nested: []
+  version: 2.15.0
+  title: ""
+  date: 2023-01-06T04:53:59.690Z
+- commits:
     - subject: "compose: qemu: add swtpm service"
       hash: 302446a90ceedf0e406ed5edef7600925cf55c8c
       body: |
