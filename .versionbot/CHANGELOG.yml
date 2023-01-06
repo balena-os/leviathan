@@ -1,4 +1,16 @@
 - commits:
+    - subject: "patch: Automate docs deployment with Flowzone"
+      hash: d5057baed59a29f1f8e9a78ca07a7039bc6928a3
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.14.10
+  title: ""
+  date: 2023-01-06T09:54:41.303Z
+- commits:
     - subject: "compose: qemu: add swtpm service"
       hash: 302446a90ceedf0e406ed5edef7600925cf55c8c
       body: |
