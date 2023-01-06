@@ -1,4 +1,19 @@
 - commits:
+    - subject: "chore(deps): update dependency lodash to 4.17.21 [security]"
+      hash: 23c8cb0f066aa04c7bde18a63c44fef7cbc80a14
+      body: |
+        Update lodash to 4.17.21
+
+        Update lodash from 4.17.19 to 4.17.21
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: renovate[bot]
+      nested: []
+  version: 2.15.0
+  title: ""
+  date: 2023-01-06T00:57:52.321Z
+- commits:
     - subject: "compose: qemu: add swtpm service"
       hash: 302446a90ceedf0e406ed5edef7600925cf55c8c
       body: |
