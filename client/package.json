@@ -28,7 +28,7 @@
 		"md5-file": "^4.0.0",
 		"mz": "^2.7.0",
 		"progress-stream": "^2.0.0",
-		"readable-stream": "^3.4.0",
+		"readable-stream": "^4.0.0",
 		"request": "^2.88.0",
 		"request-promise": "^4.2.4",
 		"tar-fs": "^2.0.0",
