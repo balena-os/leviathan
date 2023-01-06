@@ -1,4 +1,19 @@
 - commits:
+    - subject: "chore(deps): update dependency minimist to 1.2.6 [security]"
+      hash: c1f223e736397b99638aa5966059f4aa6891c06b
+      body: |
+        Update minimist to 1.2.6
+
+        Update minimist from 1.2.5 to 1.2.6
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: renovate[bot]
+      nested: []
+  version: 2.15.0
+  title: ""
+  date: 2023-01-06T01:09:36.475Z
+- commits:
     - subject: "compose: qemu: add swtpm service"
       hash: 302446a90ceedf0e406ed5edef7600925cf55c8c
       body: |
