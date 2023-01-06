@@ -1,4 +1,19 @@
 - commits:
+    - subject: "chore(deps): update dependency minimatch to 3.0.5 [security]"
+      hash: bed13070f8ac2736e2da1c32c4b79279a57dce15
+      body: |
+        Update minimatch to 3.0.5
+
+        Update minimatch from 3.0.4 to 3.0.5
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: renovate[bot]
+      nested: []
+  version: 2.15.0
+  title: ""
+  date: 2023-01-06T01:03:35.715Z
+- commits:
     - subject: "compose: qemu: add swtpm service"
       hash: 302446a90ceedf0e406ed5edef7600925cf55c8c
       body: |
