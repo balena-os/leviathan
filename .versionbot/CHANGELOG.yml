@@ -1,4 +1,19 @@
 - commits:
+    - subject: "chore(deps): update dependency decode-uri-component to 0.2.1 [security]"
+      hash: 75f655ece43844c23672e723bae9aa1c302b706a
+      body: |
+        Update decode-uri-component to 0.2.1
+
+        Update decode-uri-component from 0.2.0 to 0.2.1
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: renovate[bot]
+      nested: []
+  version: 2.15.0
+  title: ""
+  date: 2023-01-06T00:49:47.313Z
+- commits:
     - subject: "compose: qemu: add swtpm service"
       hash: 302446a90ceedf0e406ed5edef7600925cf55c8c
       body: |
