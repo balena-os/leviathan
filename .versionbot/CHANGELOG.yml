@@ -1,4 +1,19 @@
 - commits:
+    - subject: "chore(deps): update dependency eslint-plugin-lodash to 7.4.0"
+      hash: cf2bab1202beb88ebd41a3cdd171e5efc98f35c2
+      body: |
+        Update eslint-plugin-lodash to 7.4.0
+
+        Update eslint-plugin-lodash from 2.7.0 to 7.4.0
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: renovate[bot]
+      nested: []
+  version: 2.14.10
+  title: ""
+  date: 2023-01-06T01:33:03.143Z
+- commits:
     - subject: "compose: qemu: add swtpm service"
       hash: 302446a90ceedf0e406ed5edef7600925cf55c8c
       body: |
