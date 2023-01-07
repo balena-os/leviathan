@@ -1,4 +1,19 @@
 - commits:
+    - subject: "chore(deps): update dependency json5 [security]"
+      hash: 6015c3b2c08c97e9876be137e5fa37ae8537edca
+      body: |
+        Update json5 to 1.0.2
+
+        Update json5 from 1.0.1 to 1.0.2
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: renovate[bot]
+      nested: []
+  version: 2.15.0
+  title: ""
+  date: 2023-01-07T07:56:58.945Z
+- commits:
     - subject: "compose: qemu: add swtpm service"
       hash: 302446a90ceedf0e406ed5edef7600925cf55c8c
       body: |
