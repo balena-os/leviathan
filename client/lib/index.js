@@ -1,6 +1,4 @@
-process.env.NODE_CONFIG_DIR = `${__dirname}/../config`;
-const config = require('config');
-
+const config = require('../config');
 const Bluebird = require('bluebird');
 const retry = require('bluebird-retry');
 const { exists } = require('fs-extra');

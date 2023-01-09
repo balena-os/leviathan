@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 import { BalenaCloudInteractor } from '../lib/balena';
 
-process.env.NODE_CONFIG_DIR = `${__dirname}/../config`;
-const config = require('config');
+const config = require('../config');
 const coreHost = config.core.host;
 const corePort = config.core.port;
 const coreUrl = `http://${coreHost}:${corePort}`;
@@ -11,7 +10,7 @@ const coreUrl = `http://${coreHost}:${corePort}`;
 const ajv = new (require('ajv'))({ allErrors: true });
 const { getSdk } = require('balena-sdk');
 const balena = getSdk({
-	apiurl: config.get('balena.apiUrl'),
+	apiurl: config.balena.apiUrl,
 });
 const { fork } = require('child_process');
 const { ensureDir } = require('fs-extra');

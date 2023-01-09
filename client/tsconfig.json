@@ -17,7 +17,8 @@
   "include": [
     "bin/**/*.*",
     "lib/**/*.*",
-    "test/**/*.*"
+    "test/**/*.*",
+    "config.js"
   ],
   "exclude": [
     "node_modules"

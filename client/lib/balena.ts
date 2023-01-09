@@ -1,4 +1,4 @@
-import { BalenaSDK, DeviceTag } from 'balena-sdk';
+const { BalenaSDK, DeviceTag } = require('balena-sdk')
 
 /**
  * Contains information about the workers with tags that they have
@@ -23,11 +23,11 @@ export class DeviceInfo {
 /**
  * Groups unique devices containing tags with their value into a array containing DeviceInfo objects
  */
-export function groupTagsData(allAppTags: DeviceTag[]): DeviceInfo[] {
+export function groupTagsData(allAppTags: typeof DeviceTag[]): DeviceInfo[] {
 	const value: DeviceInfo[] = [];
 	return allAppTags.reduce((res, tagData) => {
 		const deviceId = (tagData.device as any).__id;
-		let data = res.find((info) => info.deviceId === deviceId);
+		let data = res.find((info: any) => info.deviceId === deviceId);
 		if (data == null) {
 			data = new DeviceInfo(deviceId, {});
 			value.push(data);
@@ -41,7 +41,7 @@ export function groupTagsData(allAppTags: DeviceTag[]): DeviceInfo[] {
  * Interacts with balenaCloud for the client
  */
 export class BalenaCloudInteractor {
-	constructor(private sdk: BalenaSDK) {}
+	constructor(private sdk: typeof BalenaSDK) {}
 	/**
 	 * Authenticate balenaSDK with API key
 	 */
