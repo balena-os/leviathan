@@ -1,25 +1,26 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "target": "es5",
-    "outDir": "build",
-    "noImplicitAny": true,
-    "noUnusedParameters": true,
-    "noUnusedLocals": true,
-    "preserveConstEnums": true,
-    "removeComments": true,
-    "resolveJsonModule": true,
-    "sourceMap": true,
-    "strictNullChecks": true,
-    "strictBindCallApply": true,
-    "allowJs": true
-  },
-  "include": [
-    "bin/**/*.*",
-    "lib/**/*.*",
-    "test/**/*.*"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+    "compilerOptions": {
+      "module": "commonjs",
+      "target": "es5",
+      "outDir": "build",
+      "noImplicitAny": true,
+      "noUnusedParameters": true,
+      "noUnusedLocals": true,
+      "preserveConstEnums": true,
+      "removeComments": true,
+      "resolveJsonModule": true,
+      "sourceMap": true,
+      "strictNullChecks": true,
+      "strictBindCallApply": true,
+      "allowJs": true
+    },
+    "include": [
+      "bin/**/*.*",
+      "lib/**/*.*",
+      "test/**/*.*",
+      "config.js"
+    ],
+    "exclude": [
+      "node_modules"
+    ]
 }
