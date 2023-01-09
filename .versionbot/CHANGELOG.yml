@@ -1,4 +1,16 @@
 - commits:
+    - subject: "patch: Remove config package from client"
+      hash: 03e4b62599b6a296bb15a611b315bc74925e3018
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.14.10
+  title: ""
+  date: 2023-01-09T18:36:27.663Z
+- commits:
     - subject: "compose: qemu: add swtpm service"
       hash: 302446a90ceedf0e406ed5edef7600925cf55c8c
       body: |
