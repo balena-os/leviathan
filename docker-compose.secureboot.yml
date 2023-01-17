@@ -1,0 +1,21 @@
+version: "2"
+
+volumes:
+  swtpm:
+
+services:
+  swtpm:
+    build: swtpm
+    restart: always
+    volumes:
+      - swtpm:/var/tpm0
+    entrypoint:
+      - swtpm
+    command: socket --tpmstate dir=/var/tpm0 --ctrl type=unixio,path=/var/tpm0/swtpm.sock --tpm2
+  worker:
+    volumes:
+      - "swtpm:/var/tpm0"
+    depends_on:
+      - swtpm
+    environment:
+      - QEMU_SECUREBOOT=1

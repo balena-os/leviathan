@@ -1,14 +1,6 @@
 version: "2"
 
 services:
-  swtpm:
-    build: swtpm
-    restart: always
-    volumes:
-      - swtpm:/var/tpm0
-    entrypoint:
-      - swtpm
-    command: socket --tpmstate dir=/var/tpm0 --ctrl type=unixio,path=/var/tpm0/swtpm.sock --tpm2
   worker:
     image: bh.cr/balena/leviathan-worker-${BALENA_ARCH:-amd64}/${WORKER_RELEASE:-2.6.13}
     depends_on:
@@ -28,7 +20,6 @@ services:
     volumes:
       - "core-storage:/data"
       - "reports-storage:/reports"
-      - "swtpm:/var/tpm0"
     environment:
       - UDEV=0
       - WORKER_TYPE=qemu
@@ -43,6 +34,3 @@ services:
   core:
     depends_on:
       - worker
-
-volumes:
-  swtpm:
