@@ -1,4 +1,16 @@
 - commits:
+    - subject: "patch: Drop config NPM package"
+      hash: f4cdd63b1b2976a6699e710e96355250ab439343
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.15.1
+  title: ""
+  date: 2023-01-17T12:42:44.293Z
+- commits:
     - subject: "chore(deps): update dependency ansi-regex [security]"
       hash: 795fabd9701bb10b46f80b931648a9ccc50f1a48
       body: |
