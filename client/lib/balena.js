@@ -1,13 +1,11 @@
-import { BalenaSDK, DeviceTag } from 'balena-sdk';
-
 /**
  * Contains information about the workers with tags that they have
  */
-export class DeviceInfo {
-	constructor(
-		public readonly deviceId: number,
-		public readonly tags: { [key: string]: string },
-	) {}
+class DeviceInfo {
+	constructor(deviceId, tags) {
+		this.deviceId = deviceId
+		this.tags = tags
+	}
 
 	/**
 	 * @returns unique worker prefix by joining values of DUT and model tag. Example: `raspberrypi3-64-RPi3_A`
@@ -23,10 +21,10 @@ export class DeviceInfo {
 /**
  * Groups unique devices containing tags with their value into a array containing DeviceInfo objects
  */
-export function groupTagsData(allAppTags: DeviceTag[]): DeviceInfo[] {
-	const value: DeviceInfo[] = [];
+function groupTagsData(allAppTags) {
+	const value = [];
 	return allAppTags.reduce((res, tagData) => {
-		const deviceId = (tagData.device as any).__id;
+		const deviceId = (tagData.device).__id;
 		let data = res.find((info) => info.deviceId === deviceId);
 		if (data == null) {
 			data = new DeviceInfo(deviceId, {});
@@ -40,22 +38,23 @@ export function groupTagsData(allAppTags: DeviceTag[]): DeviceInfo[] {
 /**
  * Interacts with balenaCloud for the client
  */
-export class BalenaCloudInteractor {
-	constructor(private sdk: BalenaSDK) {}
+class BalenaCloudInteractor {
+	constructor(sdk) {
+		this.sdk = sdk
+	}
+
 	/**
 	 * Authenticate balenaSDK with API key
 	 */
-	async authenticate(apiKey: string) {
+	async authenticate(apiKey) {
 		await this.sdk.auth.loginWithToken(apiKey);
+		console.log(`Logged in with ${await this.sdk.auth.whoami()}'s account using balenaSDK`);
 	}
 
 	/**
 	 * @returns list of online devices containing the DUT tag with device type being tested as the value
 	 */
-	async selectDevicesWithDUT(
-		appName: string,
-		dutType: string,
-	): Promise<DeviceInfo[]> {
+	async selectDevicesWithDUT(appName, dutType) {
 		const selectedDevices = [];
 		const tags = await this.sdk.models.device.tags.getAllByApplication(appName);
 		const taggedDevices = groupTagsData(tags).filter(
@@ -75,7 +74,7 @@ export class BalenaCloudInteractor {
 	/**
 	 * @throws error when public url for the device type is not accessible
 	 */
-	async checkDeviceUrl(device: DeviceInfo) {
+	async checkDeviceUrl(device) {
 		const enabled = await this.sdk.models.device.hasDeviceUrl(device.deviceId);
 		if (!enabled) {
 			throw new Error('Worker not publicly available. Panicking...');
@@ -85,7 +84,13 @@ export class BalenaCloudInteractor {
 	/**
 	 * @returns device's public URL
 	 */
-	async resolveDeviceUrl(device: DeviceInfo): Promise<string> {
-		return this.sdk.models.device.getDeviceUrl(device.deviceId);
+	async resolveDeviceUrl(device) {
+		const deviceUrl = await this.sdk.models.device.getDeviceUrl(device.deviceId)
+		if (Object.keys(deviceUrl).length === 0 && deviceUrl.constructor === Object) {
+			throw new Error(`Public Device URL not found for device ${device.deviceId}`)
+		}
+		return deviceUrl
 	}
 }
+
+module.exports = { BalenaCloudInteractor }
