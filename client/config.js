@@ -4,9 +4,6 @@ module.exports = {
 		port: process.env.CORE_PORT || 2000
 	},
 	balena: {
-		apiUrl: 'https://api.balena-cloud.com',
-	},
-	leviathan: {
-		artifacts: 'artifacts',
-	},
+		apiUrl: 'https://api.balena-cloud.com' || process.env.BALENACLOUD_API_URL
+	}
 };

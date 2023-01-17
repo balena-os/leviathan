@@ -7,7 +7,7 @@ RUN apk add --no-cache bash git
 COPY package* ./
 RUN npm ci
 
-COPY config ./config
+COPY config.js ./
 COPY *config* ./
 COPY lib ./lib
 COPY bin ./bin
