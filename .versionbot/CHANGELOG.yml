@@ -1,4 +1,19 @@
 - commits:
+    - subject: "chore(deps): update core/contracts digest to 8392bb2"
+      hash: ab31953ea1d8e8145be1ee27b876a838c21baa0a
+      body: |
+        Update core/contracts to 
+
+        Update core/contracts from  to 
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: renovate[bot]
+      nested: []
+  version: 2.16.0
+  title: ""
+  date: 2023-01-18T06:30:50.979Z
+- commits:
     - subject: "patch: Drop config NPM package"
       hash: f4cdd63b1b2976a6699e710e96355250ab439343
       body: ""
