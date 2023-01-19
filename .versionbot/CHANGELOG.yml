@@ -1,4 +1,19 @@
 - commits:
+    - subject: "chore(deps): update dependency json5 [security]"
+      hash: 36d7967c770b7929948882f043f03c455416572f
+      body: |
+        Update json5 to 1.0.2
+
+        Update json5 from 1.0.1 to 1.0.2
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: renovate[bot]
+      nested: []
+  version: 2.17.0
+  title: ""
+  date: 2023-01-19T01:06:24.777Z
+- commits:
     - subject: split swtpm service into separate compose file
       hash: 93d0160eb9a07c86c309cb2c0c2f1b709185884d
       body: |
