@@ -13,11 +13,15 @@ BUILDARGS := --progress=plain --parallel --pull
 UPARGS := --force-recreate --remove-orphans
 
 QEMUCOMPOSEFILE := docker-compose.qemu.yml
+SECUREBOOTCOMPOSEFILE := docker-compose.secureboot.yml
 CLIENTCOMPOSEFILE := docker-compose.client.yml
 
 # only use the qemu compose file if worker type is qemu
 ifeq ($(WORKER_TYPE),qemu)
 COMPOSE_FILE := $(CLIENTCOMPOSEFILE):$(QEMUCOMPOSEFILE)
+ifeq ($(QEMU_SECUREBOOT),1)
+COMPOSE_FILE := $(COMPOSE_FILE):$(SECUREBOOTCOMPOSEFILE)
+endif
 else
 COMPOSE_FILE := $(CLIENTCOMPOSEFILE)
 endif
