@@ -1,4 +1,22 @@
 - commits:
+    - subject: split swtpm service into separate compose file
+      hash: 93d0160eb9a07c86c309cb2c0c2f1b709185884d
+      body: |
+        Not all platforms support secure boot, notably aarch64 using tianocore
+        firmware. Additionally, swtpm may not be available for all platforms.
+        Accordingly, move the swtpm service to a separate compose file that is
+        only used when secure boot is enabled.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+  version: 2.16.1
+  title: ""
+  date: 2023-01-19T00:41:15.836Z
+- commits:
     - subject: "chore(deps): update core/contracts digest to 8392bb2"
       hash: ab31953ea1d8e8145be1ee27b876a838c21baa0a
       body: |
