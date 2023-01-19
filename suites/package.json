@@ -9,7 +9,7 @@
 		"eslint-config-standard": "^17.0.0",
 		"eslint-plugin-import": "^2.16.0",
 		"eslint-plugin-jsdoc": "^39.0.0",
-		"eslint-plugin-lodash": "^2.6.1",
+		"eslint-plugin-lodash": "^7.0.0",
 		"eslint-plugin-node": "^11.0.0",
 		"eslint-plugin-prettier": "^4.0.0",
 		"eslint-plugin-promise": "^3.6.0",
