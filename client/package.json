@@ -11,11 +11,11 @@
 		"lint:fix": "balena-lint -e js --fix bin/ lib/ *.js",
 		"lint": "balena-lint -u -e js bin/ lib/ *.js",
 		"test": "exit 0",
-		"build": "tsc",
-		"single-start": "npm run build && cd build && node bin/single-client.js",
-		"single-start-es5": "npm run build && cd build && babel-node --presets @babel/env bin/single-client.js",
-		"multi-start": "npm run build && cd build && node bin/multi-client.js",
-		"multi-start-es5": "npm run build && cd build && node bin/multi-client.js"
+		"build": "exit 0",
+		"single-start": "node bin/single-client.js",
+		"single-start-es5": "babel-node --presets @babel/env bin/single-client.js",
+		"multi-start": "node bin/multi-client.js",
+		"multi-start-es5": "node bin/multi-client.js"
 	},
 	"dependencies": {
 		"ajv": "^6.10.2",

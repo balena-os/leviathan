@@ -2,4 +2,4 @@
 
 mkdir -p ./reports
 
-exec node build/bin/multi-client $@
+exec node bin/multi-client $@
