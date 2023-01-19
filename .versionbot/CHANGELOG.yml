@@ -1,4 +1,19 @@
 - commits:
+    - subject: "chore(deps): update alpine docker tag to v3.17.1"
+      hash: 2de5aacb8b4ba86bf2392e23551f9e865138736e
+      body: |
+        Update alpine to 3.17.1
+
+        Update alpine from 3.17.0 to 3.17.1
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: renovate[bot]
+      nested: []
+  version: 2.17.2
+  title: ""
+  date: 2023-01-19T21:20:13.041Z
+- commits:
     - subject: "patch: Convert balenaCloudInteractor to JS"
       hash: a8da6622d1ba6468f8130a51b260519847625583
       body: ""
