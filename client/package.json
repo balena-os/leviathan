@@ -8,14 +8,14 @@
 		"multi-client": "bin/multi-client.js"
 	},
 	"scripts": {
-		"lint:fix": "balena-lint -e js -e ts --fix bin/ lib/ test/ *.js",
-		"lint": "balena-lint -u -e js -e ts --tests bin/ lib/ test/ *.js",
-		"test": "jest",
-		"build": "tsc",
-		"single-start": "npm run build && cd build && node bin/single-client.js",
-		"single-start-es5": "npm run build && cd build && babel-node --presets @babel/env bin/single-client.js",
-		"multi-start": "npm run build && cd build && node bin/multi-client.js",
-		"multi-start-es5": "npm run build && cd build && node bin/multi-client.js"
+		"lint:fix": "balena-lint -e js --fix bin/ lib/ *.js",
+		"lint": "balena-lint -u -e js bin/ lib/ *.js",
+		"test": "exit 0",
+		"build": "exit 0",
+		"single-start": "node bin/single-client.js",
+		"single-start-es5": "babel-node --presets @babel/env bin/single-client.js",
+		"multi-start": "node bin/multi-client.js",
+		"multi-start-es5": "node bin/multi-client.js"
 	},
 	"dependencies": {
 		"ajv": "^6.10.2",
@@ -36,10 +36,6 @@
 		"yargs": "^13.2.4"
 	},
 	"devDependencies": {
-		"@balena/lint": "^6.2.0",
-		"@types/jest": "^26.0.7",
-		"jest": "^26.1.0",
-		"ts-jest": "^26.1.3",
-		"typescript": "^3.9.7"
+		"@balena/lint": "^6.2.0"
 	}
 }

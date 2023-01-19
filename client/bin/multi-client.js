@@ -1,6 +1,5 @@
 #!/usr/bin/env node
-import { BalenaCloudInteractor } from '../lib/balena';
-
+const { BalenaCloudInteractor } = require('../lib/balena')
 const config = require('../config');
 const coreHost = config.core.host;
 const corePort = config.core.port;
@@ -357,12 +356,12 @@ class NonInteractiveState {
 		// While jobs are present the runQueue
 		while (runQueue.length > 0) {
 			// TEMP WORKAROUND: Only start a suite if one is not already running
-			if(suiteRunning === false){
+			if (suiteRunning === false) {
 				const job = runQueue.pop();
 				// If matching workers for the job are available then allot them a job
 				for (var device of job.matchingDevices) {
 					// check if device is idle & public URL is reachable
-					let deviceUrl = '';
+					var deviceUrl = '';
 					if (!job.array) {
 						deviceUrl = await balenaCloud.resolveDeviceUrl(device);
 					} else {
@@ -484,7 +483,7 @@ class NonInteractiveState {
 		}
 	} catch (e) {
 		state.info(
-			`ERROR ENCOUNTERED: ${e.message}. \n Killing process in 10 seconds...`,
+			`Client Error: ${e} \n Killing process in 10 seconds...`,
 		);
 		await require('bluebird').delay(10000);
 		process.exitCode = process.exitCode || 999;
