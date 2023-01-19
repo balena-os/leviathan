@@ -1,4 +1,16 @@
 - commits:
+    - subject: "patch: Convert balenaCloudInteractor to JS"
+      hash: a8da6622d1ba6468f8130a51b260519847625583
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.17.1
+  title: ""
+  date: 2023-01-19T15:53:32.738Z
+- commits:
     - subject: "chore(deps): update dependency json5 [security]"
       hash: 36d7967c770b7929948882f043f03c455416572f
       body: |
