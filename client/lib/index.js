@@ -3,7 +3,7 @@ const config = require('../config');
 const Bluebird = require('bluebird');
 const retry = require('bluebird-retry');
 const { exists } = require('fs-extra');
-const md5 = require('md5-file/promise');
+const md5 = require('md5-file');
 const { fs, crypto } = require('mz');
 const { constants } = require('os');
 const { basename, dirname, isAbsolute, join } = require('path');
@@ -435,8 +435,8 @@ module.exports = class Client extends PassThrough {
 		return main(...arguments)
 			.catch(async (error) => {
 				process.exitCode = 1;
+				this.log(error);
 				this.log(`Child ${process.pid} got an error:`);
-				this.log(error.stack);
 			})
 			.finally(async () => {
 				console.log(`Exiting client process...`);
