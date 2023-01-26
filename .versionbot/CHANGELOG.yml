@@ -1,4 +1,16 @@
 - commits:
+    - subject: "patch: Update client dependencies"
+      hash: 453e1b5bdd03b724bd8331faa3ea04243efbbfce
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.17.3
+  title: ""
+  date: 2023-01-26T20:41:43.701Z
+- commits:
     - subject: "chore(deps): update alpine docker tag to v3.17.1"
       hash: 2de5aacb8b4ba86bf2392e23551f9e865138736e
       body: |
