@@ -1,4 +1,16 @@
 - commits:
+    - subject: "patch: Upgrade client to v18"
+      hash: 4a29cfca1dc2176bf47d032cfd920b01ca4df3a8
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.17.4
+  title: ""
+  date: 2023-01-28T07:04:28.321Z
+- commits:
     - subject: "patch: Update client dependencies"
       hash: 453e1b5bdd03b724bd8331faa3ea04243efbbfce
       body: ""
