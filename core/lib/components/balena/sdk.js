@@ -326,26 +326,14 @@ module.exports = class BalenaSDK {
 	/**
 	 * Downloads provided version of balenaOS for the provided deviceType using balenaSDK
 	 *
-	 * @param versionOrRange The semver compatible balenaOS version that will be downloaded, example: `2.80.3+rev1`. Default value: `latest` where latest development variant of balenaOS will be downloaded.
+	 * @param version The semver compatible balenaOS version that will be downloaded, example: `2.80.3+rev1`. Default value: `latest` where latest development variant of balenaOS will be downloaded.
 	 * @param deviceType The device type for which balenaOS needs to be downloaded
-	 * @param osType Can be one of 'default', 'esr' or null to include all types
 	 * @remark Stores the downloaded image in `leviathan.downloads` directory,
 	 * @throws Rejects promise if download fails. Retries thrice to download an image before giving up.
 	 *
 	 * @category helper
 	 */
-	async fetchOS(versionOrRange = 'latest', deviceType, osType = 'default') {
-		// normalize the version string/range, supports 'latest', 'recommended', etc
-		let version = await this.balena.models.os.getMaxSatisfyingVersion(
-			deviceType,
-			versionOrRange,
-			osType,
-		);
-
-		// variant is deprecated in recent balenaOS releases but
-		// if prod variant is still present after being normalized, replace it with dev
-		version = version.replace('.prod', '.dev');
-
+	async fetchOS(version = 'latest', deviceType) {
 		const path = join(
 			config.leviathan.downloads,
 			`balenaOs-${version}.img`,
@@ -356,38 +344,35 @@ module.exports = class BalenaSDK {
 		let attempt = 0;
 		const downloadLatestOS = async () => {
 			attempt++;
-			this.logger.log(
-				`Fetching balenaOS version ${version}, attempt ${attempt}...`,
+			console.log(
+				`Downloading balenaOS version ${version}, attempt ${attempt}...`,
 			);
 			return await new Promise(async (resolve, reject) => {
-				await this.balena.models.os.download(
-					deviceType,
-					version,
-					function (error, stream) {
-						if (error) {
-							fs.unlink(path, () => {
-								// Ignore.
-							});
-							reject(`Image download failed: ${error}`);
-						}
-						// Shows progress of image download
-						let progress = 0;
-						stream.on('progress', (data) => {
-							if (data.percentage >= progress + 10) {
-								console.log(
-									`Downloading balenaOS image: ${toInteger(data.percentage) + '%'
-									}`,
-								);
-								progress = data.percentage;
-							}
-						});
-						stream.pipe(fs.createWriteStream(path));
-						stream.on('finish', () => {
-							console.log(`Download Successful: ${path}`);
-							resolve(path);
-						});
-					},
-				);
+				const stream = await this.balena.models.os.download(deviceType, version, { developmentMode: true })
+
+				// Shows progress of image download for debugging purposes
+				let progress = 0;
+				stream.on('progress', (data) => {
+					if (data.percentage >= progress + 10) {
+						console.log(
+							`Downloading balenaOS image: ${toInteger(data.percentage) + '%'
+							}`,
+						);
+						progress = data.percentage;
+					}
+				});
+				stream.pipe(fs.createWriteStream(path));
+				stream.on('error', () => {
+					fs.unlink(path, () => {
+						// ignore 
+					});
+					reject(`Image download failed: ${JSON.stringify(stream)}`);
+				})
+				stream.on('finish', () => {
+					console.log(`Download Successful: ${path}`);
+					resolve(path);
+				});
+
 			});
 		};
 		return retry(downloadLatestOS, { max_tries: 3, interval: 500 });
