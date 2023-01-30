@@ -60,6 +60,7 @@ const exec = util.promisify(require('child_process').exec);
 const config = require('../../config');
 const { toInteger } = require('lodash');
 const { getSdk } = require('balena-sdk');
+const pipeline = util.promisify(require('stream').pipeline)
 
 module.exports = class BalenaSDK {
 	constructor(
@@ -353,43 +354,46 @@ module.exports = class BalenaSDK {
 
 		// Caching implementation if needed - Check https://github.com/balena-os/leviathan/issues/441
 
-		let attempt = 0;
-		const downloadLatestOS = async () => {
-			attempt++;
-			this.logger.log(
-				`Fetching balenaOS version ${version}, attempt ${attempt}...`,
-			);
-			return await new Promise(async (resolve, reject) => {
-				await this.balena.models.os.download(
-					deviceType,
-					version,
-					function (error, stream) {
-						if (error) {
-							fs.unlink(path, () => {
-								// Ignore.
-							});
-							reject(`Image download failed: ${error}`);
+		
+		this.logger.log(
+			`Fetching balenaOS version ${version}`,
+		);
+		await new Promise(async (resolve, reject) => {
+			await this.balena.models.os.download(
+				deviceType,
+				version,
+				async function(error, stream) {
+					if (error) {
+						fs.unlink(path, () => {
+							// Ignore.
+						});
+						reject(`Image download failed: ${error}`);
+					}
+					// Shows progress of image download
+					let progress = 0;
+					stream.on('progress', (data) => {
+						if (data.percentage >= progress + 10) {
+							console.log(
+								`Downloading balenaOS image: ${toInteger(data.percentage) + '%'
+								}`,
+							);
+							progress = data.percentage;
 						}
-						// Shows progress of image download
-						let progress = 0;
-						stream.on('progress', (data) => {
-							if (data.percentage >= progress + 10) {
-								console.log(
-									`Downloading balenaOS image: ${toInteger(data.percentage) + '%'
-									}`,
-								);
-								progress = data.percentage;
-							}
-						});
-						stream.pipe(fs.createWriteStream(path));
-						stream.on('finish', () => {
-							console.log(`Download Successful: ${path}`);
-							resolve(path);
-						});
-					},
-				);
-			});
-		};
-		return retry(downloadLatestOS, { max_tries: 3, interval: 500 });
+					});
+					stream.on('error', (data) => {
+						console.log(`error: ${data}`)
+					});
+					const writeStream = fs.createWriteStream(path)
+					await pipeline(
+						stream,
+						writeStream
+					).catch((err => {
+						console.log(err)
+					}))
+					resolve();
+				},
+			);
+		});
+		return path
 	}
 };
