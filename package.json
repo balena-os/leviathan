@@ -6,6 +6,7 @@
     "lint": "for component in 'core' 'client'; do npm --prefix $component run lint; done",
     "preinstall": "for component in 'core' 'client'; do npm --prefix $component install; done",
     "docs": "npm --prefix core run docs",
+    "doc": "npm run docs",
     "test": "exit 0"
   },
   "repository": {
