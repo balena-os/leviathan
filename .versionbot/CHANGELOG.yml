@@ -1,4 +1,24 @@
 - commits:
+    - subject: "patch: Update client lockfile"
+      hash: 515a6883a0aa236ecdf3846721af4524205d70b7
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+    - subject: "patch: Update core lockfile"
+      hash: da7fd4ea8c75c41a02e542bbb56b907ebfdb0545
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.17.6
+  title: ""
+  date: 2023-02-07T07:44:52.573Z
+- commits:
     - subject: "patch: Update core dependencies"
       hash: 2b91fb5147f662dfa11cd4413982c9427c06f37d
       body: ""
