@@ -1,4 +1,19 @@
 - commits:
+    - subject: Update core/contracts digest to 7797750
+      hash: 397528cd30ec8bba1f65ab8ce4234204ab544bb4
+      body: |
+        Update core/contracts to
+
+        Update core/contracts from  to
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: Renovate Bot
+      nested: []
+  version: 2.18.0
+  title: ""
+  date: 2023-02-07T08:53:50.875Z
+- commits:
     - subject: "patch: Update client lockfile"
       hash: 515a6883a0aa236ecdf3846721af4524205d70b7
       body: ""
