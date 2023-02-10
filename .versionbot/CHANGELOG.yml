@@ -1,4 +1,19 @@
 - commits:
+    - subject: Update core/contracts digest to 35f4223
+      hash: e961e26202498739b02e204ac20783b304274835
+      body: |
+        Update core/contracts to
+
+        Update core/contracts from  to
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: Renovate Bot
+      nested: []
+  version: 2.19.0
+  title: ""
+  date: 2023-02-10T06:55:02.463Z
+- commits:
     - subject: "patch: Automate docs deployment with Flowzone"
       hash: 80e54cfbf70f33393e2727d244f02e29355d2da4
       body: ""
