@@ -1,9 +1,10 @@
-# Leviathan high level architecture
+# Architecture
 
 Leviathan consists of 3 containers, `Client`, `Core`, and `Worker`
 
 ```mermaid
 stateDiagram-v2
+  direction LR
     Client --> Core
     Core --> Client
     Core --> Worker
@@ -28,28 +29,28 @@ The `Core` container is the container that runs the tests that are sent to it by
 
 - awaits tests and artifacts from client
 - contains helper functions to be used in the tests. Notably this includes bindings to interact with the `Worker` and SSH helpers to interact with the DUT
-- tests must be in a specific format to be executed by the core. See the [e2e suite](../suites/e2e/) and the [guide to writing tests](./writing-tests.md)
+- tests must be in a specific format to be executed by the core. See the [e2e suite](../suites/e2e/) and the [guide to writing tests](./writing-tests/new-tests.md)
 - checks that a test should be executed before running it, by checking its contract against the [device type contract](https://github.com/balena-io/contracts/tree/master/contracts/hw.device-type)
 
 ## Worker
 
-The `Worker` is the container that provides a common interface to the DUT's "physical" interfaces. 
+The `Worker` is the container that provides a common interface to the DUT's "physical" interfaces.
 
 - It has a HTTP webserver interface
 - Contains endpoints to power on/off the DUT, flash the DUT, set up the networking environment, capture video output
 - Can be used to interface to a physical DUT via a `testbot` or `autokit`, or a virtualised DUT via `qemu`, using the same interface
-- The worker can be found in its own [github repo](https://github.com/balena-os/leviathan-worker) 
+- The worker can be found in its own [github repo](https://github.com/balena-os/leviathan-worker)
 
 ### Testbot/Autokit workers / Physical DUT
 
 When being used to interface with a physical DUT, the worker container will be on a testbot or autokit balena device, in a balena fleet.
 
-#### Communication 
+#### Communication
 
 - The `Core` and `Client` containers always are on a local or cloud host (i.e laptop, jenkins servers), while the `Worker` container is on a balena device
 - The core container accesses the worker container http api via the balena devices public url, as it and the `Worker` are on different hosts
 - The worker creates a network AP for the DUT to connect to, and provides its internet access. However this results in the DUT and the `Core`, which is running the tests, being on different networks
-- The core container, running the tests, can access the DUT via SSH. 
+- The core container, running the tests, can access the DUT via SSH.
   - Due to the `Core` and DUT being on different networks, this requires the `Core` to use the `Worker` as a jumping point
   - To set up a tunnel to the DUT, via the `Worker`, the `Core` will SSH into the `Worker` via the balena cloud proxy
   - It will then SSH from the worker into the DUT, and set up port forwarding to forward port `22222` of the DUT (the ssh port on a balena device), to an unused port on the worker

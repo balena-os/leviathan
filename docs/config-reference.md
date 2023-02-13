@@ -27,22 +27,22 @@ Information on properties in `config.js`:
 - **`deviceType`** is the Device Under Test (DUT) attached to the testbot. Example: Raspberrypi3 64-bit device, the `deviceType` property needs to be `raspberrypi3-64`.
 - **`suite`** is the absolute path to the test suite directory that you want to execute.  As shown in the example above, `${__dirname}` expands to the absolute path of the `workspace` directory, so you can use it to specify a path relative to `workspace`.
 - **`networkWired`** and **`networkWireless`** properties are configuration for the Network Manager. This sets up the Access Point (AP) created by the testbot for the DUT to use while provisioning.
-- **`balenaApiKey`** is the balenaCloud API key used when running the cloud release suite. 
+- **`balenaApiKey`** is the balenaCloud API key used when running the cloud release suite.
 - **`balenaApiUrl`** is the balenaCloud environment you are targetting for your test suite. Production is `'balena-cloud.com'` and staging is `'balena-staging.com'`.
 - **`organization`** is the balenaCloud organization where test applications are created for the cloud suite.
-- **`debug`** is where debugging properties are stored for test runs. Check out {@page Debugging tests in Leviathan | Debugging documentation} for features you can add. 
+- **`debug`** is where debugging properties are stored for test runs. Check out {@page Debugging tests in Leviathan | Debugging documentation} for features you can add.
 - **`image`** is the absolute path to the balenaOS image that is flashed onto the Device Under Test (DUT).  As shown in the example above, `${__dirname}` expands to the absolute path of the `workspace` directory, so you can use it to specify a path relative to `workspace`.
 
-Make sure to rename the image to balena.img. If you provide `balena.img` as your balenaOS image, then Leviathan will compress it for you in `gz` format on runtime. We recommend compressing beforehand, as it saves time. For any reason if your tests download an image already and you don't want to upload an image, then set the `image` property to `false` in config.js 
+Make sure to rename the image to balena.img. If you provide `balena.img` as your balenaOS image, then Leviathan will compress it for you in `gz` format on runtime. We recommend compressing beforehand, as it saves time. For any reason if your tests download an image already and you don't want to upload an image, then set the `image` property to `false` in config.js
 
-For example, in the e2e test suite, if you don't upload an image and set `image: false`, then the test suite will download the image from balenaCloud. This is test specific, not a leviathan feature. 
+For example, in the e2e test suite, if you don't upload an image and set `image: false`, then the test suite will download the image from balenaCloud. This is test specific, not a leviathan feature.
 
-- **`downloadVersion`**: If you intend to download a balenaOS version for your tests, then you can use the property to specify the balenaOS version semver. The `fetchOS` helper will use this property to find and download the balenaOS image. 
-- **`workers`** is the property where we specify precisely where the test suites will be executed on and what type of workers are going to be used. You can specify this in multiple ways as per your requirements: 
+- **`downloadVersion`**: If you intend to download a balenaOS version for your tests, then you can use the property to specify the balenaOS version semver. The `fetchOS` helper will use this property to find and download the balenaOS image.
+- **`workers`** is the property where we specify precisely where the test suites will be executed on and what type of workers are going to be used. You can specify this in multiple ways as per your requirements:
 
 ## Different `workers` configurations available
 
-1. **<UUID>.local** - The last line in the `config.json` above assumes you are on the same network with the testbot worker. Note that on some Linux distributions, the container will not be able to resolve `.local` addresses. If you face this problem until we find a proper solution, you can replace this address with your device's local IP (copy it from the device summary page on balenaCloud).
+1. **`<UUID>.local`** - The last line in the `config.json` above assumes you are on the same network with the testbot worker. Note that on some Linux distributions, the container will not be able to resolve `.local` addresses. If you face this problem until we find a proper solution, you can replace this address with your device's local IP (copy it from the device summary page on balenaCloud).
 
 ```js
 workers: ['http://<short UUID of your testbot in balenaCloud>.local'],
@@ -128,7 +128,6 @@ module.exports = [{
         }
     }]
 ```
-<br>
 
 ## Running the same test suite on 2 separate workers
 
@@ -165,7 +164,7 @@ module.exports = [{
 
 ## Running tests on the development rig
 
-In order to kick off tests on multiple workers in the fleet, extend the configuration present below to run your tests on all available workers. 
+In order to kick off tests on multiple workers in the fleet, extend the configuration present below to run your tests on all available workers.
 
 ```js
 module.exports = [{

@@ -1,10 +1,14 @@
-# Writing new tests in Leviathan
+---
+sidebar_position: 1
+---
+# Adding New Tests
 
 The leviathan framework runs 'suites'. A suite is a collection of tests and a configuration for the environment. The current suite that runs on meta-balena & balena-raspberrypi PRs can be found [here on GitHub](https://github.com/balena-os/meta-balena/tree/master/tests/suites/os).
 
 Leviathan comprises a client, which sends test suites, and a testbot, which will listen for and execute suites. The client is a container that you can run on your laptop, or within an automated workflow to send tests to a testbot.
 
 As you can see from the linked meta-balena directory, we can set up a directory containing a test suite as follows:
+
 - `tests` - Folder containing actual tests
 - `conf.js` - File assigning configuration options
 - `package.json` - File containing the node dependencies to install for the test suite
@@ -32,13 +36,14 @@ For reference, an old PR [adding a test](https://github.com/balena-os/leviathan/
 
 ### Adding a test/tests to an existing suite
 
-1. Navigate to the suite folder where the test needs to be added (for example https://github.com/balena-os/meta-balena/tree/master/tests/suites/os). 
+1. Navigate to the suite folder where the test needs to be added (for example <https://github.com/balena-os/meta-balena/tree/master/tests/suites/os>).
 2. Navigate to the `/tests` directory inside that suite.
 3. Create a new directory `<MY_NEw_TEST>`, with an appropriate name for your test.
 4. Inside this new directory, create an `index.js` file
 5. Inside `index.js`, test logic lives (details about writing the test logic are explained in the next section)
 6. Going back to the suite directory, navigate to `suite.js`
 7. Inside `suite.js`, towards the botton of the file, there will be an array named `tests`, add your new test to it like this:
+
 ```js
 tests: [
     './tests/fingerprint',
@@ -48,12 +53,12 @@ tests: [
     './tests/<MY_NEw_TEST>',
     ],
 ```
-8. Ensure that any new dependencies used in your test are added to the `package.json`
 
+8. Ensure that any new dependencies used in your test are added to the `package.json`
 
 ### Writing the test logic
 
-Tests must be written in node, and are ingested by a framework called [node-tap](https://node-tap.org/docs/api/asserts/). 
+Tests must be written in node, and are ingested by a framework called [node-tap](https://node-tap.org/docs/api/asserts/).
 To write a new test, inside `tests/<MY_NEw_TEST>/index.js` , we can use the following template (note that this file can contain a set of tests - you just have to have multiple objects in the `tests` array!)
 
 Each test is an asychnronous function, assigned to the `run` attribute of a test.
@@ -82,9 +87,10 @@ module.exports = {
     ],
 };
 ```
-The supported assertions can be found here: https://node-tap.org/docs/api/asserts/
 
-More examples of test logic can be seen here: https://github.com/balena-os/meta-balena/blob/master/tests/suites/os/tests/fingerprint/index.js for a very simple test, and here: https://github.com/balena-os/meta-balena/blob/master/tests/suites/os/tests/connectivity/index.js for more complex tests. 
+The supported assertions can be found here: <https://node-tap.org/docs/api/asserts/>
+
+More examples of test logic can be seen here: <https://github.com/balena-os/meta-balena/blob/master/tests/suites/os/tests/fingerprint/index.js> for a very simple test, and here: <https://github.com/balena-os/meta-balena/blob/master/tests/suites/os/tests/connectivity/index.js> for more complex tests.
 
 ### Writing a new suite
 

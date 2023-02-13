@@ -1,4 +1,7 @@
-# Debugging tests in Leviathan
+---
+sidebar_position: 3
+---
+# Debugging Tests
 
 To improve workflow and write tests faster on Levaithan, the following debug options can be triggered to alter the behavior of test runs. A `debug` object can be added to the `config.js` file right with the existing suite's config. Additionally, the `debug` object can also have custom options as per the need of the test suite. These properties will become available during the test run and can be used to further customize the test run as needed. Example of a debug object:
 

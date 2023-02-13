@@ -1,9 +1,13 @@
+---
+sidebar_position: 1
+sidebar_label: Introduction
+---
 # Leviathan
 
 [![GitHub Issues](https://img.shields.io/github/issues/balena-io/leviathan.svg)](https://github.com/balena-io/leviathan/issues)
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/balena-io/leviathan.svg)](https://github.com/balena-io/leviathan/pulls)
 [![node](https://img.shields.io/badge/node-v12.0.0-green.svg)](https://nodejs.org/download/release/v12.0.0/)
-[![License](https://img.shields.io/badge/license-APACHE%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)  [![balena deploy button](https://www.balena.io/deploy.svg)](https://dashboard.balena-cloud.com/deploy?repoUrl=https://github.com/balena-os/leviathan)
+[![License](https://img.shields.io/badge/license-APACHE%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 Leviathan can be used to automate, test and control real/virtual devices in production or controlled environments. What can you do:
 
@@ -12,8 +16,7 @@ Leviathan can be used to automate, test and control real/virtual devices in prod
 3. Automate release deployment for balenaCloud fleets by testing codebase on real/virtual devices under test.
 4. Automate support for new modems, sensors, components and eventually new boards.
 
-
-The high-level overview of the leviathan architecture can be found [here](./documentation/architecture.md)
+[![balena deploy button](https://www.balena.io/deploy.svg)](https://dashboard.balena-cloud.com/deploy?repoUrl=https://github.com/balena-os/leviathan)
 
 ## Getting Started
 
@@ -71,8 +74,6 @@ If you're having any problem, please [raise an issue][newissue] on GitHub and th
 
 The project is licensed under the Apache 2.0 license.
 
-[issues]: https://github.com/balena-io/leviathan/issues
 [newissue]: https://github.com/balena-io/leviathan/issues/new
-[source]: https://github.com/balena-io/leviathan
 [quickstart-qemu]: https://balena-os.github.io/leviathan/pages/Getting-Started/quickstart/quickstart-qemu.html
 [quickstart-testbot]: https://balena-os.github.io/leviathan/pages/Getting-Started/quickstart/quickstart-testbot.html

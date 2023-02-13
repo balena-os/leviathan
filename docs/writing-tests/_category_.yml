@@ -1,0 +1,4 @@
+position: 3.5 # float position is supported
+label: "Writing Tests"
+collapsible: true # make the category collapsible
+collapsed: false # keep the category open by default
