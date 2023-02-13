@@ -19,6 +19,8 @@ jobs:
       (github.event.pull_request.head.repo.full_name == github.repository && github.event_name == 'pull_request') ||
       (github.event.pull_request.head.repo.full_name != github.repository && github.event_name == 'pull_request_target')
     secrets: inherit
+    with:
+      cloudflare_website: "leviathan"
 
   e2e:
     needs: [flowzone]
@@ -27,7 +29,6 @@ jobs:
       (github.event.pull_request.head.repo.full_name != github.repository && github.event_name == 'pull_request_target')) &&
       github.event.action != 'closed'
     runs-on: ubuntu-22.04
-
     env:
       SUITES: ./suites
       REPORTS: ./reports
@@ -69,7 +70,7 @@ jobs:
       - name: Build leviathan images
         run: |
           make build
-      
+
       - name: Run test suite
         run: |
           make config
