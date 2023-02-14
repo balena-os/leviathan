@@ -1,4 +1,18 @@
 - commits:
+    - subject: "docker-compose: qemu: remove dep on swtpm"
+      hash: 6d47df092a224b74251d6159f1e57796cc229c3d
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+  version: 2.19.1
+  title: ""
+  date: 2023-02-14T01:24:14.769Z
+- commits:
     - subject: Update core/contracts digest to 35f4223
       hash: e961e26202498739b02e204ac20783b304274835
       body: |
