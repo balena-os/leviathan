@@ -76,24 +76,29 @@
 					<h1>Getting Started with QEMU Worker</h1>
 				</a>
 				<p>This is a quick start guide for using the leviathan framework with the QEMU worker.</p>
+				<a href="#prepare-qemu-worker" id="prepare-qemu-worker" style="color: inherit; text-decoration: none;">
+					<h2>Prepare Qemu worker</h2>
+				</a>
+				<p>As a prerequisite: </p>
+				<ol>
+					<li>Go through the steps listed on the <a href="../quickstart.html">Quickstart Page</a></li>
+				</ol>
 				<a href="#start-your-first-test-run" id="start-your-first-test-run" style="color: inherit; text-decoration: none;">
 					<h2>Start your first test run</h2>
 				</a>
 				<p>For your first test run, we will be running the <a href="https://github.com/balena-os/leviathan/tree/master/suites/e2e">e2e test suite</a>.</p>
-				<p>A balenaOS image that is used to flash and provision the device under test will be needed for the test. You can download an unmanaged image from <a href="https://www.balena.io/os/#download">balena.io/os</a>. Extract the downloaded balenaOS image you want to test with to the <code>workspace</code> directory and rename it to <code>balena.img</code> file.</p>
+				<p>A balenaOS image that is used to flash and provision the device under test will be needed for the test. You can download an unmanaged genericx86-64-ext balenaOS image from <a href="https://www.balena.io/os/#download">balena.io/os</a> and place it in the workspace folder. Leviathan support OS images uncompressed or compressed in <code>.gz</code> or <code>.zip</code> format.</p>
 				<a href="#build-your-configjs-file" id="build-your-configjs-file" style="color: inherit; text-decoration: none;">
-					<h2>Build your <code>config.js</code> file</h2>
+					<h3>Build your <code>config.js</code> file</h3>
 				</a>
-				<p>The config.js file is the master configuration file for your test run. The QEMU worker spins up and configures your device under test (DUT) accordingly with the settings provided in the <code>config.js</code> file. To know more about each property, refer to the <a href="../config-reference.html">Config.js reference</a>.</p>
-				<p>To get started,</p>
+				<p>The config.js file is the master configuration file for your test runs in leviathan. The QEMU worker spins up and configures your device under test (DUT) according to the settings provided in the <code>config.js</code> file. To know more about each property, refer to the <a href="../config-reference.html">Config.js reference</a>.</p>
+				<p>Create your own config.js file</p>
 				<ul>
 					<li>Navigate to the <code>workspace</code> directory in leviathan.</li>
-					<li>Create a <code>config.js</code> file in the <code>workspace</code> directory using the <code>config.example.js</code> file.</li>
-					<li>The config.js file should look close to the following:</li>
+					<li>Create a <code>config.js</code> file in the <code>workspace</code> directory and paste the contents below.</li>
 				</ul>
 				<pre><code class="language-js"><span style="color: #DC3EB7">module</span><span style="color: #002339">.</span><span style="color: #DC3EB7">exports</span><span style="color: #002339"> </span><span style="color: #7B30D0">=</span><span style="color: #002339"> {</span>
 <span style="color: #002339">    deviceType: </span><span style="color: #A44185">&#039;genericx86-64-ext&#039;</span><span style="color: #002339">,</span>
-<span style="color: #002339">    </span><span style="color: #357B42">// Multiple suites can be run on the same worker when specified as an array.</span>
 <span style="color: #002339">    suite: </span><span style="color: #A44185">`${</span><span style="color: #2F86D2">__dirname</span><span style="color: #A44185">}/../suites/e2e`</span><span style="color: #002339">,</span>
 <span style="color: #002339">    config: {</span>
 <span style="color: #002339">        networkWired: </span><span style="color: #174781">false</span><span style="color: #002339">,</span>
@@ -101,19 +106,26 @@
 <span style="color: #002339">        downloadVersion: </span><span style="color: #A44185">&#039;latest&#039;</span><span style="color: #002339">,</span>
 <span style="color: #002339">        balenaApiKey: </span><span style="color: #2F86D2">process</span><span style="color: #002339">.</span><span style="color: #2F86D2">env</span><span style="color: #002339">.</span><span style="color: #2F86D2">BALENACLOUD_API_KEY</span><span style="color: #002339">,</span>
 <span style="color: #002339">        balenaApiUrl: </span><span style="color: #A44185">&#039;balena-cloud.com&#039;</span><span style="color: #002339">,</span>
-<span style="color: #002339">        organization: </span><span style="color: #A44185">&#039;BALENACLOUD_ORG_GOES_HERE&#039;</span><span style="color: #002339">,</span>
+<span style="color: #002339">        organization: </span><span style="color: #2F86D2">process</span><span style="color: #002339">.</span><span style="color: #2F86D2">env</span><span style="color: #002339">.</span><span style="color: #2F86D2">BALENACLOUD_ORG</span><span style="color: #002339">,</span>
 <span style="color: #002339">    },</span>
 <span style="color: #002339">    debug: {</span>
 <span style="color: #002339">        unstable: [</span><span style="color: #A44185">&quot;Kill the device under test&quot;</span><span style="color: #002339">],</span>
 <span style="color: #002339">    }</span>
-<span style="color: #002339">    </span><span style="color: #2F86D2">image</span><span style="color: #002339">: </span><span style="color: #A44185">`${</span><span style="color: #2F86D2">__dirname</span><span style="color: #A44185">}/balena.img`</span><span style="color: #002339">,</span>
+<span style="color: #002339">    </span><span style="color: #2F86D2">image</span><span style="color: #002339">: </span><span style="color: #A44185">`${</span><span style="color: #2F86D2">__dirname</span><span style="color: #A44185">}/path/to/image`</span><span style="color: #002339">,</span>
 <span style="color: #002339">    workers: [</span><span style="color: #A44185">&#039;http://worker&#039;</span><span style="color: #002339">],</span>
 <span style="color: #002339">};</span>
 </code></pre>
-				<p>Here, we are assuming that the device under test (DUT) is a <code>raspberrypi3</code>. The suite and the image property points to a valid test suite and balenaOS image that is going to be tested with. </p>
-				<a href="#start-your-first-test-run-1" id="start-your-first-test-run-1" style="color: inherit; text-decoration: none;">
-					<h2>Start your first test run</h2>
-				</a>
+				<p>To provide values of environment variables easily, you can create a <code>.env</code> file in the root of the leviathan directory. Use the format below as boilerplate. </p>
+				<pre><code><span style="color: #2F86D2">WORKSPACE</span><span style="color: #7B30D0">=</span><span style="color: #002339">.</span><span style="color: #7B30D0">/</span><span style="color: #2F86D2">workspace</span>
+<span style="color: #2F86D2">REPORTS</span><span style="color: #7B30D0">=</span><span style="color: #002339">.</span><span style="color: #7B30D0">/</span><span style="color: #2F86D2">workspace</span><span style="color: #7B30D0">/</span><span style="color: #2F86D2">reports</span>
+<span style="color: #2F86D2">SUITES</span><span style="color: #7B30D0">=/</span><span style="color: #2F86D2">path</span><span style="color: #7B30D0">/</span><span style="color: #2F86D2">to</span><span style="color: #7B30D0">/</span><span style="color: #2F86D2">suites</span>
+<span style="color: #2F86D2">DEVICE_TYPE</span><span style="color: #7B30D0">=</span><span style="color: #2F86D2">intel</span><span style="color: #7B30D0">-</span><span style="color: #2F86D2">nuc</span>
+<span style="color: #2F86D2">WORKER_TYPE</span><span style="color: #7B30D0">=</span><span style="color: #2F86D2">qemu</span>
+<span style="color: #2F86D2">BALENACLOUD_API_KEY</span><span style="color: #7B30D0">=</span><span style="color: #002339">&lt;</span><span style="color: #0444AC">api</span><span style="color: #002339"> </span><span style="color: #0444AC">key</span><span style="color: #002339">&gt;</span>
+<span style="color: #2F86D2">BALENACLOUD_ORG</span><span style="color: #7B30D0">=</span><span style="color: #002339">&lt;</span><span style="color: #0444AC">org</span><span style="color: #002339">&gt;</span>
+<span style="color: #2F86D2">BALENA_ARCH</span><span style="color: #7B30D0">=</span><span style="color: #2F86D2">amd64</span>
+<span style="color: #2F86D2">BALENACLOUD_APP_NAME</span><span style="color: #7B30D0">=</span><span style="color: #002339">&lt;</span><span style="color: #0444AC">app</span><span style="color: #002339">-</span><span style="color: #0444AC">name</span><span style="color: #002339">&gt;</span>
+</code></pre>
 				<p>To start the test run, navigate to the root of the leviathan directory and run the following command:</p>
 				<pre><code><span style="color: #2F86D2">make</span><span style="color: #002339"> </span><span style="color: #2F86D2">local</span><span style="color: #7B30D0">-</span><span style="color: #2F86D2">test</span>
 </code></pre>
