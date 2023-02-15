@@ -1,4 +1,16 @@
 - commits:
+    - subject: "patch: Improve Getting Started instructions"
+      hash: 50dfd8d30591dfd7a513e8b135d8866413cf5982
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.19.2
+  title: ""
+  date: 2023-02-15T20:15:38.071Z
+- commits:
     - subject: "docker-compose: qemu: remove dep on swtpm"
       hash: 6d47df092a224b74251d6159f1e57796cc229c3d
       body: ""
