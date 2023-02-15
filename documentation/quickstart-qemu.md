@@ -2,26 +2,29 @@
 
 This is a quick start guide for using the leviathan framework with the QEMU worker.
 
+## Prepare Qemu worker
+
+As a prerequisite: 
+1. Go through the steps listed on the {@page Quickstart | Quickstart Page}
+
 ## Start your first test run
 
 For your first test run, we will be running the [e2e test suite](https://github.com/balena-os/leviathan/tree/master/suites/e2e).
 
-A balenaOS image that is used to flash and provision the device under test will be needed for the test. You can download an unmanaged image from [balena.io/os](https://www.balena.io/os/#download). Extract the downloaded balenaOS image you want to test with to the `workspace` directory and rename it to `balena.img` file.
+A balenaOS image that is used to flash and provision the device under test will be needed for the test. You can download an unmanaged genericx86-64-ext balenaOS image from [balena.io/os](https://www.balena.io/os/#download) and place it in the workspace folder. Leviathan support OS images uncompressed or compressed in `.gz` or `.zip` format.
 
-## Build your `config.js` file
+### Build your `config.js` file
 
-The config.js file is the master configuration file for your test run. The QEMU worker spins up and configures your device under test (DUT) accordingly with the settings provided in the `config.js` file. To know more about each property, refer to the {@page Config.js Reference | Config.js reference}.
+The config.js file is the master configuration file for your test runs in leviathan. The QEMU worker spins up and configures your device under test (DUT) according to the settings provided in the `config.js` file. To know more about each property, refer to the {@page Config.js Reference | Config.js reference}.
 
-To get started,
+Create your own config.js file
 
 - Navigate to the `workspace` directory in leviathan.
-- Create a `config.js` file in the `workspace` directory using the `config.example.js` file.
-- The config.js file should look close to the following:
+- Create a `config.js` file in the `workspace` directory and paste the contents below.
 
 ```js
 module.exports = {
     deviceType: 'genericx86-64-ext',
-    // Multiple suites can be run on the same worker when specified as an array.
     suite: `${__dirname}/../suites/e2e`,
     config: {
         networkWired: false,
@@ -29,19 +32,29 @@ module.exports = {
         downloadVersion: 'latest',
         balenaApiKey: process.env.BALENACLOUD_API_KEY,
         balenaApiUrl: 'balena-cloud.com',
-        organization: 'BALENACLOUD_ORG_GOES_HERE',
+        organization: process.env.BALENACLOUD_ORG,
     },
     debug: {
         unstable: ["Kill the device under test"],
     }
-    image: `${__dirname}/balena.img`,
+    image: `${__dirname}/path/to/image`,
     workers: ['http://worker'],
 };
 ```
 
-Here, we are assuming that the device under test (DUT) is a `raspberrypi3`. The suite and the image property points to a valid test suite and balenaOS image that is going to be tested with. 
+To provide values of environment variables easily, you can create a `.env` file in the root of the leviathan directory. Use the format below as boilerplate. 
 
-## Start your first test run
+```
+WORKSPACE=./workspace
+REPORTS=./workspace/reports
+SUITES=/path/to/suites
+DEVICE_TYPE=intel-nuc
+WORKER_TYPE=qemu
+BALENACLOUD_API_KEY=<api key>
+BALENACLOUD_ORG=<org>
+BALENA_ARCH=amd64
+BALENACLOUD_APP_NAME=<app-name>
+```
 
 To start the test run, navigate to the root of the leviathan directory and run the following command:
 

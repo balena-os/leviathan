@@ -9,6 +9,7 @@ Leviathan allows for running tests on a device controlled by a worker. A worker 
 ### Prerequisites 
 
 - Install Docker, node and npm in your system. We recommend installing [LTS versions from NVM](https://github.com/nvm-sh/nvm#install--update-script).
+- After installing Docker, do follow the post-installation steps listed to [manage Docker as a non-root user](https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user).
 - Download the balenaOS image you want to test on your DUT from [balena.io/os](https://balena.io/os#download).
   
 ## Worker setup
