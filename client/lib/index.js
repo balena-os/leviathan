@@ -18,14 +18,6 @@ const { parse } = require('url');
 const WebSocket = require('ws');
 const zlib = require('zlib');
 
-async function isGzip(filePath) {
-	const buf = Buffer.alloc(3);
-
-	await fs.read(await fs.open(filePath, 'r'), buf, 0, 3, 0);
-
-	return buf[0] === 0x1f && buf[1] === 0x8b && buf[2] === 0x08;
-}
-
 async function getFilesFromDirectory(basePath, ignore = []) {
 	let files = [];
 
@@ -97,31 +89,6 @@ module.exports = class Client extends PassThrough {
 				const stat = await fs.stat(artifact.path);
 				if (!stat[artifact.type]()) {
 					throw new Error(`${artifact.path} does not satisfy ${artifact.type}`);
-				}
-
-				if (artifact.name === 'os.img' && !(await isGzip(artifact.path))) {
-					const str = progStream({
-						length: stat.size,
-						time: 100,
-					});
-					str.on('progress', (progress) => {
-						this.status({
-							message: 'Gzipping Image',
-							percentage: progress.percentage,
-							eta: progress.eta,
-						});
-					});
-
-					const gzippedPath = join(this.workdir, artifact.name);
-
-					await pipeline(
-						fs.createReadStream(artifact.path),
-						str,
-						zlib.createGzip({ level: 6 }),
-						fs.createWriteStream(gzippedPath),
-					);
-
-					artifact.path = gzippedPath;
 				}
 			} catch (err) {
 				console.log(err);
@@ -319,21 +286,6 @@ module.exports = class Client extends PassThrough {
 								case 'suite':
 									artifact.path = makePath(suiteConfig.suite);
 									artifact.type = 'isDirectory';
-									break;
-								case 'image':
-									// [Hack] Upload a fake image if image is false
-									// Remove when https://github.com/balena-os/leviathan/issues/567 is resolved
-									if (suiteConfig.image === false) {
-										// Had to create fake image in home directory otherwise
-										// facing a permission issue since client root is read-only
-										const fakeImagePath = '/home/test-balena.img.gz';
-										await fs.writeFile(fakeImagePath, '');
-										artifact.path = makePath(fakeImagePath);
-										artifact.type = 'isFile';
-										break;
-									}
-									artifact.path = makePath(suiteConfig.image);
-									artifact.type = 'isFile';
 									break;
 								case 'config':
 									artifact.type = 'isJSON';
