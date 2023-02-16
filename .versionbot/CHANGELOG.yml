@@ -1,4 +1,19 @@
 - commits:
+    - subject: Update core/contracts digest to 9b8811f
+      hash: 377606d77cee69fff7f272b58e597f111e99de78
+      body: |
+        Update core/contracts to
+
+        Update core/contracts from  to
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: Renovate Bot
+      nested: []
+  version: 2.20.0
+  title: ""
+  date: 2023-02-16T07:39:32.419Z
+- commits:
     - subject: "patch: Improve Getting Started instructions"
       hash: 50dfd8d30591dfd7a513e8b135d8866413cf5982
       body: ""
