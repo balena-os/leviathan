@@ -11,8 +11,6 @@ This is a quick start guide for using the leviathan framework with the testbot w
 
 For your first test run, we will be running the [e2e test suite](https://github.com/balena-os/leviathan/tree/master/suites/e2e). 
 
-A balenaOS image that is used to flash and provision the device under test will be needed for the test. You can download an unmanaged genericx86-64-ext balenaOS image from [balena.io/os](https://www.balena.io/os/#download) and place it in the workspace folder. Leviathan support OS images uncompressed or compressed in `.gz` or `.zip` format.
-
 ### Build your `config.js` file
 
 The `config.js` file is the master configuration file for your test run. The testbot runs and configures your device under test (DUT) accordingly with the settings provided in the `config.js` file. To know more about each property, refer to the {@page Config.js Reference | Config.js reference}.
@@ -37,7 +35,7 @@ module.exports = {
     debug: {
         unstable: ["Kill the device under test"],
     }
-    image: `${__dirname}/path/to/image`,
+    image: `https://URL-OF-THE-IMAGE-TO-TEST/`, // Or balenaOS version to download
     workers: ['<Public device URL of your testbot>'],
 }
 ```
@@ -85,7 +83,7 @@ module.exports = {
         balenaApiUrl: 'balena-cloud.com',
         organization: 'BALENACLOUD_ORG_GOES_HERE',
     },
-    image: `${__dirname}/path/to/image`,
+    image: `https://URL-OF-THE-IMAGE-TO-TEST/`, // Or balenaOS version to download
     workers: {
         balenaApplication: 'balena/testbot-personal',
         apiKey: process.env.BALENACLOUD_API_KEY
