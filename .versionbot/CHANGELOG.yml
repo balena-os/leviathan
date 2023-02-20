@@ -1,4 +1,23 @@
 - commits:
+    - subject: "client: throw errors instead of blanket handling"
+      hash: 0f4b4b55b01bbfb023bcddba0ea585bcbe968a07
+      body: |
+        Remove try/catch block surrounding client code that blanket handles all
+        exceptions, and makes debugging and log messages worse.
+
+        When we don't have a valid way to handle an exception, just throw it.
+        The traceback is more useful than the handler.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+  version: 2.20.1
+  title: ""
+  date: 2023-02-20T06:55:01.314Z
+- commits:
     - subject: Update core/contracts digest to 9b8811f
       hash: 377606d77cee69fff7f272b58e597f111e99de78
       body: |
