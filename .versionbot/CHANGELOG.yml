@@ -1,4 +1,19 @@
 - commits:
+    - subject: Update core/contracts digest to f32bce9
+      hash: 706772d47b5b3665b1c9aaea1e164a8fa6607975
+      body: |
+        Update core/contracts to
+
+        Update core/contracts from  to
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: Renovate Bot
+      nested: []
+  version: 2.23.0
+  title: ""
+  date: 2023-02-21T13:48:19.657Z
+- commits:
     - subject: Update core/contracts digest to 93ba80c
       hash: af30f3eac9c532f57ddb2dc4abb5f06c63bc8877
       body: |
