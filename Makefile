@@ -50,7 +50,7 @@ ifneq ($(BUILD_TAG),)
 COMPOSE_PROJECT_NAME := $(BUILD_TAG)
 endif
 
-DOCKERCOMPOSE := docker-compose
+DOCKERCOMPOSE := /usr/local/bin/docker-compose
 
 # install docker-compose as a run script
 # we require a specific release version that correctly supports device_cgroup_rules for the qemu worker
