@@ -15,12 +15,15 @@ UPARGS := --force-recreate --remove-orphans
 QEMUCOMPOSEFILE := docker-compose.qemu.yml
 SECUREBOOTCOMPOSEFILE := docker-compose.secureboot.yml
 CLIENTCOMPOSEFILE := docker-compose.client.yml
+AUTOKITCOMPOSEFILE := docker-compose.autokit.yml
 
 # only use the qemu compose file if worker type is qemu
 ifeq ($(WORKER_TYPE),qemu)
 COMPOSE_FILE := $(CLIENTCOMPOSEFILE):$(QEMUCOMPOSEFILE)
 ifeq ($(QEMU_SECUREBOOT),1)
 COMPOSE_FILE := $(COMPOSE_FILE):$(SECUREBOOTCOMPOSEFILE)
+ifeq ($(WORKER_TYPE),autokit)
+COMPOSE_FILE := $(COMPOSE_FILE):$(AUTOKITCOMPOSEFILE)
 endif
 else
 COMPOSE_FILE := $(CLIENTCOMPOSEFILE)
@@ -49,19 +52,19 @@ ifneq ($(BUILD_TAG),)
 COMPOSE_PROJECT_NAME := $(BUILD_TAG)
 endif
 
-DOCKERCOMPOSE := ./bin/docker-compose
+DOCKERCOMPOSE := docker-compose
 
 # install docker-compose as a run script
 # we require a specific release version that correctly supports device_cgroup_rules for the qemu worker
 # see https://github.com/docker/compose/issues/9059
-$(DOCKERCOMPOSE):
-	mkdir -p $(shell dirname "$@")
-ifeq ($(shell uname -m),arm64)
-	curl -fsSL "https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-$(shell uname -s | tr '[:upper:]' '[:lower:]')-aarch64" -o $@
-else
-	curl -fsSL "https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-$(shell uname -s | tr '[:upper:]' '[:lower:]')-$(shell uname -m)" -o $@
-endif
-	chmod +x $@
+# $(DOCKERCOMPOSE):
+# 	mkdir -p $(shell dirname "$@")
+# ifeq ($(shell uname -m),arm64)
+# 	curl -fsSL "https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-$(shell uname -s | tr '[:upper:]' '[:lower:]')-aarch64" -o $@
+# else
+# 	curl -fsSL "https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-$(shell uname -s | tr '[:upper:]' '[:lower:]')-$(shell uname -m)" -o $@
+# endif
+# 	chmod +x $@
 
 .NOTPARALLEL: $(DOCKERCOMPOSE)
 

@@ -95,6 +95,7 @@ module.exports = class Worker {
 		this.directConnect = (
 			this.url.includes(`worker`)
 			|| this.url.includes('unix:')
+			|| this.url.includes('localhost:')
 		);
 		if (this.url.includes(`balena-devices.com`)) {
 			// worker is a testbot connected to balena cloud - we ssh into it via the vpn
@@ -474,20 +475,21 @@ module.exports = class Worker {
 				await this.createTunneltoDUT(target, port, workerPort);
 				workerPort = workerPort + 1;
 			}
-		} else {
-			// set up route to DUT via the worker ip
-			console.log(`Getting ip of dut`)
-			let dutIp = await this.ip(target);
-			console.log(`getting ip of worker`)
-			let workerIp = await exec(`dig +short worker`);
-			console.log(`ip route add ${dutIp} via ${workerIp}`)
-			// If the route already exists, do not throw an error
-			try {
-				await exec(`ip route add ${dutIp} via ${workerIp}`)
-			} catch (e) {
-				console.error(`Failed to add ip route: ${e}`);
-			}
 		}
+		// } else {
+		// 	// set up route to DUT via the worker ip
+		// 	console.log(`Getting ip of dut`)
+		// 	let dutIp = await this.ip(target);
+		// 	console.log(`getting ip of worker`)
+		// 	let workerIp = await exec(`dig +short worker`);
+		// 	console.log(`ip route add ${dutIp} via ${workerIp}`)
+		// 	// If the route already exists, do not throw an error
+		// 	try {
+		// 		await exec(`ip route add ${dutIp} via ${workerIp}`)
+		// 	} catch (e) {
+		// 		console.error(`Failed to add ip route: ${e}`);
+		// 	}
+		// }
 	}
 
 	// sends file over rsync

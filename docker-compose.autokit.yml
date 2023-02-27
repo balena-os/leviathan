@@ -1,0 +1,20 @@
+version: "2"
+
+services:
+  worker:
+    network_mode: host
+    privileged: true 
+    image: bh.cr/balena/leviathan-worker-${BALENA_ARCH:-aarch64}/${WORKER_RELEASE:-2.8.1}
+    volumes:
+      - "core-storage:/data/leviathan-core"
+      - "reports-storage:/reports"
+    environment:
+      - UDEV=0
+      - WORKER_TYPE=autokit
+      - SCREEN_CAPTURE=false
+      - WORKER_PORT=80
+    restart: 'no'
+
+  core:
+    depends_on:
+      - worker

@@ -3,6 +3,7 @@ version: "2"
 services:
   client:
     build: ./client
+    network_mode: host
     volumes:
       - "${WORKSPACE:-./workspace}:/usr/src/app/workspace:ro"
       - "${REPORTS:-./workspace/reports}:/usr/src/app/reports:rw"
@@ -19,8 +20,9 @@ services:
   core:
     privileged: true # preload requires docker-in-docker
     build: core
+    network_mode: host
     volumes:
-      - core-storage:/data
+      - core-storage:/data/leviathan-core
       - reports-storage:/reports
     tmpfs:
       - /var/run # use tmpfs docker-in-docker pid files
