@@ -20,8 +20,6 @@ AUTOKITCOMPOSEFILE := docker-compose.autokit.yml
 # only use the qemu compose file if worker type is qemu
 ifeq ($(WORKER_TYPE),qemu)
 COMPOSE_FILE := $(CLIENTCOMPOSEFILE):$(QEMUCOMPOSEFILE)
-ifeq ($(QEMU_SECUREBOOT),1)
-COMPOSE_FILE := $(COMPOSE_FILE):$(SECUREBOOTCOMPOSEFILE)
 ifeq ($(WORKER_TYPE),autokit)
 COMPOSE_FILE := $(COMPOSE_FILE):$(AUTOKITCOMPOSEFILE)
 endif
