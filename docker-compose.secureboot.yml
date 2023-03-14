@@ -10,8 +10,17 @@ services:
     volumes:
       - swtpm:/var/tpm0
     entrypoint:
-      - swtpm
-    command: socket --tpmstate dir=/var/tpm0 --ctrl type=unixio,path=/var/tpm0/swtpm.sock --tpm2
+      - /bin/sh
+      - -c
+    command:
+      - |
+        while true; do
+          swtpm socket \
+            --tpmstate dir=/var/tpm0 \
+            --ctrl type=unixio,path=/var/tpm0/swtpm.sock \
+            --tpm2
+        done
+
   worker:
     volumes:
       - "swtpm:/var/tpm0"
