@@ -1,4 +1,41 @@
 - commits:
+    - subject: "compose: qemu: add FLASHER_SECUREBOOT var"
+      hash: 51977e109069f08f0364eed208fab2e01c104284
+      body: |
+        This environment variable is passed through to the suite to preconfigure
+        a flasher image to enable secure boot for testing.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+    - subject: "swtpm: fix abort on exit"
+      hash: fc65360ae7896545bdcaad0d37f1345a447251f4
+      body: |
+        Some incoming tests require QEMU to exit, simulating a device powering
+        off, before starting QEMU again. This is used to "reflash" a virtualized
+        device before continuing with testing, for instance after tampering with
+        boot files on a secure boot enabled device to verify secure boot checks.
+
+        However, swtpm will exit when QEMU disconnects. The `--exit-code-from`
+        compose argument implies `--abort-on-container-exit`, so this results
+        in the test run aborting prematurely.
+
+        Adapt the entrypoint and command of the swtpm container to always
+        restart the program without exiting the container.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+  version: 2.23.1
+  title: ""
+  date: 2023-03-14T01:58:44.771Z
+- commits:
     - subject: Update core/contracts digest to f32bce9
       hash: 706772d47b5b3665b1c9aaea1e164a8fa6607975
       body: |
