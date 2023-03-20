@@ -65,6 +65,8 @@ module.exports = class Client extends PassThrough {
 		super();
 		this.uri = uri;
 		let uriParsed = parse(uri);
+		console.log(`parsed URI:`)
+		console.log(uriParsed)
 		this.workdir = join(workdir, uriParsed.hostname);
 		this.coreHost = config.core.host;
 		this.corePort = config.core.port;

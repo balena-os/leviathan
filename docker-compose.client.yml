@@ -13,22 +13,7 @@ services:
       - BALENACLOUD_API_KEY=${BALENACLOUD_API_KEY}
       - BALENACLOUD_ORG=${BALENACLOUD_ORG}
       - BALENACLOUD_APP_NAME=${BALENACLOUD_APP_NAME}
-    depends_on:
-      - core
-
-  core:
-    privileged: true # preload requires docker-in-docker
-    build: core
-    volumes:
-      - core-storage:/data
-      - reports-storage:/reports
-    tmpfs:
-      - /var/run # use tmpfs docker-in-docker pid files
-      - /var/lib/docker # use tmpfs for docker-in-docker data root
-    restart: 'no'
-    devices:
-      - /dev:/dev # required for creating losetup devices during preload
-
+    
 volumes:
   core-storage:
   reports-storage:

@@ -3,18 +3,7 @@ version: "2"
 services:
   worker:
     image: bh.cr/balena/leviathan-worker-${BALENA_ARCH:-amd64}/${WORKER_RELEASE:-2.6.13}
-    device_cgroup_rules:
-      # https://www.kernel.org/doc/Documentation/admin-guide/devices.txt
-      # loopback devices
-      - "b 7:* rmw"
-      # metadata devices
-      - "b 9:* rmw"
-      # allow dynamic creation and access of qemu required misc chardev nodes
-      # this includes /dev/kvm, and /dev/net/tun
-      - "c 10:* rmw"
-    cap_add:
-      - NET_ADMIN # allow network setup
-      - SYS_ADMIN # privileged IOCTLs, such as used by mdadm
+    network_mode: host
     volumes:
       - "core-storage:/data"
       - "reports-storage:/reports"
@@ -32,6 +21,7 @@ services:
   core:
     privileged: true # preload requires docker-in-docker
     build: core
+    network_mode: host
     volumes:
       - core-storage:/data
       - reports-storage:/reports
@@ -39,7 +29,3 @@ services:
       - /var/run # use tmpfs docker-in-docker pid files
       - /var/lib/docker # use tmpfs for docker-in-docker data root
     restart: 'no'
-    devices:
-      - /dev:/dev # required for creating losetup devices during preload
-    depends_on:
-      - worker
