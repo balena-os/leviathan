@@ -1,4 +1,14 @@
 - commits:
+    - subject: "patch: Update path to balena-io/renovate-config"
+      hash: 2698c25cb7bf70920b5025f941ea57b16532285c
+      body: ""
+      footer: {}
+      author: Kyle Harding
+      nested: []
+  version: 2.23.2
+  title: ""
+  date: 2023-03-28T17:08:00.960Z
+- commits:
     - subject: "compose: qemu: add FLASHER_SECUREBOOT var"
       hash: 51977e109069f08f0364eed208fab2e01c104284
       body: |
