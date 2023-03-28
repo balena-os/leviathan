@@ -1,5 +1,5 @@
 {
-  "extends": ["github>balena-io/renovate-config//.github/renovate"],
+  "extends": ["github>balena-io/renovate-config"],
   "regexManagers": [
     {
       "fileMatch": [
