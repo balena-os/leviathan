@@ -9,14 +9,17 @@ services:
     restart: always
     volumes:
       - swtpm:/var/tpm0
+    tmpfs:
+      - /tmp
     entrypoint:
       - /bin/sh
       - -c
     command:
       - |
+        mkdir -p /tmp/tpm0
         while true; do
           swtpm socket \
-            --tpmstate dir=/var/tpm0 \
+            --tpmstate dir=/tmp/tpm0 \
             --ctrl type=unixio,path=/var/tpm0/swtpm.sock \
             --tpm2
         done
