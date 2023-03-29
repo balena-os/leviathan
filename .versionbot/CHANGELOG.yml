@@ -1,4 +1,25 @@
 - commits:
+    - subject: "swtpm: store state in tmpfs"
+      hash: 25460508d5477dd27a4743b4684e97e6d0f8529a
+      body: |
+        swtpm stores state in the directory specified in the --tpmstate argument
+
+        If the same state directory/files are used for multiple installations,
+        the available space can be filled, and the installer will fail with the
+        error "insufficient space for NV allocation".
+
+        Move swtpm state to tmpfs to create new state files every run.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+  version: 2.23.4
+  title: ""
+  date: 2023-03-29T22:31:39.865Z
+- commits:
     - subject: Update core/contracts digest to fa51fae
       hash: 10e156b48610903182257493aea812f8d8893b84
       body: |
