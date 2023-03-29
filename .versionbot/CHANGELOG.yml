@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update core/contracts digest to fa51fae
+      hash: 10e156b48610903182257493aea812f8d8893b84
+      body: |
+        Update core/contracts
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Renovate Bot
+      nested: []
+  version: 2.23.3
+  title: ""
+  date: 2023-03-29T20:32:23.397Z
+- commits:
     - subject: "patch: Update path to balena-io/renovate-config"
       hash: 2698c25cb7bf70920b5025f941ea57b16532285c
       body: ""
