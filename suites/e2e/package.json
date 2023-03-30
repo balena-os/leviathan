@@ -1,8 +1,9 @@
 {
 	"dependencies": {
-		"balena-image-fs": "^7.0.6",
-		"bluebird": "^3.5.3",
-		"fs-extra": "^8.1.0",
+		"@balena/leviathan-test-helpers": "^1.4.1",
+		"balena-image-fs": "^7.2.0",
+		"bluebird": "^3.7.2",
+		"fs-extra": "^11.1.1",
 		"assert": "^2.0.0"
 	}
 }
