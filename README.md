@@ -48,21 +48,6 @@ balena push <fleetName>
 
 The `<fleetName>` is the name of the fleet you intend to push a new version of leviathan to. Keep in mind, the client and the test that run are independent of the worker. Hence, updates to the client or the tests don't need to be pushed to the balenaCloud fleet. In order to change the worker component, you need to push a new release to the balenaCloud fleet.
 
-## Documentation for Leviathan Helpers
-
-Documentation for Leviathan helpers can be found on [https://balena-os.github.io/leviathan](https://balena-os.github.io/leviathan). To generate the documentation, run the following command from either the root of the repository or the `core` directory.
-
-```bash
-npm install
-npm run docs
-```
-
-If the docs are generated successfully, you will be getting the success line as:
-
-```bash
-Info: Documentation generated at /path/to/documentation
-```
-
 ## Support
 
 If you're having any problem, please [raise an issue][newissue] on GitHub and the balena team will be happy to help.
