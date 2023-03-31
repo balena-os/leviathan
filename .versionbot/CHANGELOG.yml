@@ -1,4 +1,16 @@
 - commits:
+    - subject: "patch: Output final-result in the end"
+      hash: eacad86187f72586ddbcd36041f619fb40c5b7ad
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipulgupta2048@gmail.com>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipulgupta2048@gmail.com>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.23.6
+  title: ""
+  date: 2023-03-31T13:18:07.076Z
+- commits:
     - subject: update default worker version
       hash: 5b659e8a3d0921f01f1cf493373a97f909d60d26
       body: ""
