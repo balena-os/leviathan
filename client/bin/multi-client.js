@@ -250,6 +250,10 @@ class NonInteractiveState {
 			`reports/final-result.json`,
 			JSON.stringify(summaries, null, 2),
 		);
+
+		// Output the final result in the end
+		console.log(`*******  Final Test Result of Leviathan Run  *******`)
+		console.log(nativeFs.readFileSync(`reports/final-result.json`, {encoding:'utf8', flag:'r'}))
 	});
 
 	const signalHandler = once(async (sig) => {
