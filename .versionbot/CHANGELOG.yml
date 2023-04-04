@@ -1,4 +1,20 @@
 - commits:
+    - subject: Deprecate worker release env var (again)
+      hash: cb7f600321dc11cc7481bc3ffd111155f763e621
+      body: |
+        This env var breaks Renovate parsing, and it is
+        no longer used by Jenkins or leviathan-worker e2e tests.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.24.1
+  title: ""
+  date: 2023-04-04T21:10:17.519Z
+- commits:
     - subject: "minor: Add Leviathan Test Helpers"
       hash: f3f2752cb25fca9ad851de96cc246916f84012ce
       body: ""
