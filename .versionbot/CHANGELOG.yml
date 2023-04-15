@@ -1,4 +1,21 @@
 - commits:
+    - subject: "docker-compose-qemu: allow to configure internal disk"
+      hash: 24778477fe25c36558d36e619f14e2755f8d1eab
+      body: |
+        Whether the internal disk is attached or not will be defined by the
+        environment. This allows to test the migrator that requires booting only
+        the external disk.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Alex Gonzalez <alexg@balena.io>
+        signed-off-by: Alex Gonzalez <alexg@balena.io>
+      author: Alex Gonzalez
+      nested: []
+  version: 2.24.2
+  title: ""
+  date: 2023-04-15T14:20:36.020Z
+- commits:
     - subject: Deprecate worker release env var (again)
       hash: cb7f600321dc11cc7481bc3ffd111155f763e621
       body: |
