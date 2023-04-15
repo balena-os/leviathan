@@ -27,6 +27,7 @@ services:
       - QEMU_CPUS=${QEMU_CPUS}
       - QEMU_MEMORY=${QEMU_MEMORY}
       - QEMU_DEBUG=${QEMU_DEBUG}
+      - QEMU_INTERNAL_STORAGE=${QEMU_INTERNAL_STORAGE}
     restart: 'no'
 
   core:
