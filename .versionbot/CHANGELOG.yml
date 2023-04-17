@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update balena-os/leviathan-worker to v2.9.2
+      hash: 6028bb0b206db9fbb4b796058867e3496af54cbd
+      body: |
+        Update balena-os/leviathan-worker from 2.9.1 to 2.9.2
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Renovate Bot
+      nested: []
+  version: 2.24.3
+  title: ""
+  date: 2023-04-17T13:55:54.890Z
+- commits:
     - subject: "docker-compose-qemu: allow to configure internal disk"
       hash: 24778477fe25c36558d36e619f14e2755f8d1eab
       body: |
