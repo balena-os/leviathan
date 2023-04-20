@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update Node.js to v18.16.0
+      hash: 2f2d14f3919f306c1ff3add08caff08ee7b7a8e9
+      body: |
+        Update node from 18.13.0 to 18.16.0
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: Renovate Bot
+      nested: []
+  version: 2.25.0
+  title: ""
+  date: 2023-04-20T23:53:28.826Z
+- commits:
     - subject: Update alpine Docker tag to v3.17.3
       hash: 0b2f18af6469d216a003c2ac8078b035064160cc
       body: |
