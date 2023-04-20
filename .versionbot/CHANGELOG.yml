@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update alpine Docker tag to v3.17.3
+      hash: 0b2f18af6469d216a003c2ac8078b035064160cc
+      body: |
+        Update alpine from 3.17.1 to 3.17.3
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Renovate Bot
+      nested: []
+  version: 2.24.5
+  title: ""
+  date: 2023-04-20T22:45:55.982Z
+- commits:
     - subject: Update core/contracts digest to 777cd35
       hash: 997f3e27ac0dc6143f5dc7371078e8e3b5e796ae
       body: |
