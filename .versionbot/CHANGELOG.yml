@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update balena-os/leviathan-worker to v2.9.4
+      hash: 669aa2e1cb3ebc3286483912981eac3a25a9b7e0
+      body: |
+        Update balena-os/leviathan-worker from 2.9.2 to 2.9.4
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Renovate Bot
+      nested: []
+  version: 2.25.1
+  title: ""
+  date: 2023-04-25T18:48:00.802Z
+- commits:
     - subject: Update Node.js to v18.16.0
       hash: 2f2d14f3919f306c1ff3add08caff08ee7b7a8e9
       body: |
@@ -959,7 +972,8 @@
     - subject: Avoid conflicting docker networks
       hash: 5e04208a9f07567c6aa7fdc55dc95d2cacb6c8c3
       body: >
-        The `make subnet` command can be called on Jenkins and similar to generate
+        The `make subnet` command can be called on Jenkins and similar to
+        generate
 
         a unique subnet that is not in use.
 
@@ -7197,8 +7211,8 @@
     - subject: Remove unused jenkins download type
 - commits:
     - body: >-
-        We currently don't use the jenkins download type (and don't plan to use it
-        as is).
+        We currently don't use the jenkins download type (and don't plan to use
+        it as is).
 
         This also removes unzip package dependency with security problems.
 - commits:
@@ -7864,8 +7878,8 @@
         value
 - commits:
     - body: >-
-        Allow for `-p` option, where we can print the whole output to console.log
-        regardless
+        Allow for `-p` option, where we can print the whole output to
+        console.log regardless
 
         of the runtime display; usefull for CI/CD.
 - commits:
