@@ -88,6 +88,7 @@ module.exports = class Suite {
 			id,
 			tmpdir: suiteConfig.config.tmpdir || tmpdir(),
 			replOnFailure: suiteConfig.config.repl,
+			installerForceMigration: suiteConfig.config.installerForceMigration,
 			balena: {
 				application: {
 					env: {
