@@ -1,4 +1,31 @@
 - commits:
+    - subject: "suite: add installerForceMigration configuration"
+      hash: 70674774a7652a9e7766710bc74a829cd1156aa0
+      body: >
+        Read the suite configuration for the force migration flag which
+        configures
+
+        the flasher image to force an installer migration.
+
+
+        With the current QEMU setting, `installerForceMigration` alone is not
+
+        enough and the QEMU_INTERNAL_STORAGE also needs to be set to false in
+
+        the worker's environment so only a single external disk is attached to
+
+        the emulator.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Alex Gonzalez <alexg@balena.io>
+        signed-off-by: Alex Gonzalez <alexg@balena.io>
+      author: Alex Gonzalez
+      nested: []
+  version: 2.25.2
+  title: ""
+  date: 2023-04-26T12:24:07.524Z
+- commits:
     - subject: Update balena-os/leviathan-worker to v2.9.4
       hash: 669aa2e1cb3ebc3286483912981eac3a25a9b7e0
       body: |
