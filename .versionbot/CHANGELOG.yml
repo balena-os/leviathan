@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update core/contracts digest to 6c6ed28
+      hash: 940ba252779573f7dcef0b99d163de94ca934e3d
+      body: |
+        Update core/contracts
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Renovate Bot
+      nested: []
+  version: 2.25.3
+  title: ""
+  date: 2023-05-01T18:07:18.096Z
+- commits:
     - subject: "suite: add installerForceMigration configuration"
       hash: 70674774a7652a9e7766710bc74a829cd1156aa0
       body: >
