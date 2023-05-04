@@ -1,4 +1,18 @@
 - commits:
+    - subject: "suite: move installer configuration to balenaOS configuration section"
+      hash: 342f30a9f5665ac70fcc648af28e6751c50c6ef5
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Alex Gonzalez <alexg@balena.io>
+        signed-off-by: Alex Gonzalez <alexg@balena.io>
+      author: Alex Gonzalez
+      nested: []
+  version: 2.25.6
+  title: ""
+  date: 2023-05-04T10:24:35.420Z
+- commits:
     - subject: Update core/contracts digest to 75cd5e9
       hash: 6b45662a5ec0dde4d499ecaf7a4ef3d119e626c6
       body: |
