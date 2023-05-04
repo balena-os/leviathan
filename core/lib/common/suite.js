@@ -88,7 +88,6 @@ module.exports = class Suite {
 			id,
 			tmpdir: suiteConfig.config.tmpdir || tmpdir(),
 			replOnFailure: suiteConfig.config.repl,
-			installerForceMigration: suiteConfig.config.installerForceMigration,
 			balena: {
 				application: {
 					env: {
@@ -102,6 +101,7 @@ module.exports = class Suite {
 			balenaOS: {
 				config: {
 					uuid: uid(),
+					installerForceMigration: suiteConfig.config.installerForceMigration,
 				},
 				download: {
 					version: suiteConfig.config.downloadVersion,
