@@ -160,7 +160,7 @@ module.exports = class Suite {
 				if (e.code === 'MODULE_NOT_FOUND') {
 					if (error.code === 'MODULE_NOT_FOUND') {
 						throw new Error(
-							`Invalid/Unsupported device type: ${suiteConfig.deviceType}`,
+							`Invalid/Unsupported device type: ${suiteOptions.deviceType}`,
 						);
 					}
 				} else {
