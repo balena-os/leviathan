@@ -5,6 +5,7 @@
       "node_modules/@types"
     ],
     "lib": ["es2021"],
+    "esModuleInterop": true,
     "module": "commonjs",
     "target": "es2019",
     "allowJs": true,
