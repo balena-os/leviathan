@@ -149,11 +149,10 @@ module.exports = class BalenaOS {
 		this.deviceType = options.deviceType;
 		this.network = options.network;
 		this.image = {
-			input:
+			path:
 				options.image === undefined
 					? config.leviathan.uploads.image
 					: options.image,
-			path: join(config.leviathan.downloads, `image-${id()}`),
 		};
 		this.configJson = options.configJson || {};
 		this.contract = {
@@ -177,29 +176,6 @@ module.exports = class BalenaOS {
 		this.logger = logger;
 		this.releaseInfo = { version: null, variant: null };
 	}
-
-	/**
-	 * Prepares the received image/artifact to be used - either unzipping it or moving it to the Leviathan working directory
-	 *
-	 * @remark Leviathan creates a temporary working directory that can referenced using `config.leviathan.downloads)`
-	 *
-	 * @category helper
-	 */
-	async fetch() {
-		this.logger.log(`Unpacking the file: ${this.image.input}`);
-		const unpack = await isGzip(this.image.input);
-		if (unpack) {
-			await pipeline(
-				fs.createReadStream(this.image.input),
-				zlib.createGunzip(),
-				fs.createWriteStream(this.image.path),
-			);
-		} else {
-			// image is already unzipped, so no need to do anything
-			this.image.path = this.image.input;
-		}
-	}
-
 
 	/**
 	 * Parses version and variant from balenaOS images
