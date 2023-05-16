@@ -151,11 +151,11 @@ module.exports = class Suite {
 
 		try {
 			// Find device type contract in public contracts
-			this.deviceType = require(`../../contracts/contracts/hw.device-type/${this.deviceTypeSlug}/contract.json`)
+			this.deviceType = require(`../../../contracts/contracts/hw.device-type/${this.deviceTypeSlug}/contract.json`)
 		} catch (e) {
 			try {
 				// Find device type contract in private contracts
-				this.deviceType = require(`../../private-contracts/contracts/hw.device-type/${this.deviceTypeSlug}/contract.json`)
+				this.deviceType = require(`../../../private-contracts/contracts/hw.device-type/${this.deviceTypeSlug}/contract.json`)
 			} catch (error) {
 				if (e.code === 'MODULE_NOT_FOUND') {
 					if (error.code === 'MODULE_NOT_FOUND') {
