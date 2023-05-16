@@ -4,6 +4,7 @@
       "typings",
       "node_modules/@types"
     ],
+    "lib": ["es2021"],
     "module": "commonjs",
     "target": "es2019",
     "allowJs": true,
