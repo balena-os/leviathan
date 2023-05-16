@@ -75,8 +75,6 @@ const injectBalenaConfiguration = async (image, configuration, partition = 1) =>
 				JSON.stringify(configuration),
 				{ flag: 'w' }
 			)
-		}).catch((err) => {
-				return undefined;
 		});
 };
 
