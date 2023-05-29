@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update alpine Docker tag to v3.18.0
+      hash: 17174d8a1f5e61e03ccd71bc0dd1c3247cc33b79
+      body: |
+        Update alpine from 3.17.3 to 3.18.0
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: Self-hosted Renovate Bot
+      nested: []
+  version: 2.27.0
+  title: ""
+  date: 2023-05-29T22:58:52.645Z
+- commits:
     - subject: Update core/contracts digest to fd4af4e
       hash: 7b44fe1af6900656ec56a52122d7f61f39e494c8
       body: |
