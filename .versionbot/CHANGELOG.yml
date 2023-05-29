@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update core/contracts digest to fd4af4e
+      hash: 7b44fe1af6900656ec56a52122d7f61f39e494c8
+      body: |
+        Update core/contracts
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Self-hosted Renovate Bot
+      nested: []
+  version: 2.26.1
+  title: ""
+  date: 2023-05-29T21:57:30.744Z
+- commits:
     - subject: Update balena-cli to v16.1.0 with arm64 binaries
       hash: 6ee61795d23f48be83fd9404835e9641d8c65271
       body: ""
