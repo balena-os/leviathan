@@ -1,4 +1,18 @@
 - commits:
+    - subject: Update balena-cli to v16.1.0 with arm64 binaries
+      hash: 6ee61795d23f48be83fd9404835e9641d8c65271
+      body: ""
+      footer:
+        Change-type: minor
+        change-type: minor
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.26.0
+  title: ""
+  date: 2023-05-29T08:42:40.808Z
+- commits:
     - subject: "suite: move installer configuration to balenaOS configuration section"
       hash: 342f30a9f5665ac70fcc648af28e6751c50c6ef5
       body: ""
