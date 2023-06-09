@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update Pin dependencies
+      hash: 1a8858c782269f69ae99a3984eeaa4f91d70efe9
+      body: |
+        Pin actions/checkout
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Self-hosted Renovate Bot
+      nested: []
+  version: 2.27.1
+  title: ""
+  date: 2023-06-09T16:29:10.820Z
+- commits:
     - subject: Update alpine Docker tag to v3.18.0
       hash: 17174d8a1f5e61e03ccd71bc0dd1c3247cc33b79
       body: |
