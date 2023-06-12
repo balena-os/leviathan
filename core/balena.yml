@@ -1,0 +1,8 @@
+name: leviathan-core
+type: sw.block
+description: 'Leviathan-core is the testrunner for leviathan'
+assets:
+  repository:
+    type: blob.asset
+    data:
+      url: 'https://github.com/balena-os/leviathan'
