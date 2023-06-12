@@ -1,4 +1,6 @@
-FROM node:14.19.3-bullseye-slim as base
+ARG BALENA_ARCH=%%BALENA_ARCH%%
+
+FROM balenalib/armv7hf-node:14-bullseye as base
 
 WORKDIR /usr/app
 
@@ -36,6 +38,11 @@ RUN if [ "$(uname -m)" = "arm64" ] || [ "$(uname -m)" = "aarch64" ] ; \
 	then \
 		wget -q -O balena-cli.zip "https://github.com/balena-io/balena-cli/releases/download/${BALENA_CLI_REF}/balena-cli-v${BALENA_CLI_VERSION}-linux-arm64-standalone.zip" && \
 		unzip balena-cli.zip && rm balena-cli.zip ; \
+	elif [ "$(uname -m)" = "armv7l" ] || [ "$(uname -m)" = "armv7hf" ] ; \
+	then \
+		npm i balena-cli@12.51.3 ; \
+		mkdir /usr/app/cli/ ; \
+		cp -R /usr/app/node_modules/balena-cli/ /usr/app ; \
 	else \
 		wget -q -O balena-cli.zip "https://github.com/balena-io/balena-cli/releases/download/${BALENA_CLI_REF}/balena-cli-v${BALENA_CLI_VERSION}-linux-x64-standalone.zip" && \
 		unzip balena-cli.zip && rm balena-cli.zip ; \
@@ -43,6 +50,9 @@ RUN if [ "$(uname -m)" = "arm64" ] || [ "$(uname -m)" = "aarch64" ] ; \
 
 # Add balena-cli to PATH
 ENV PATH /usr/app/balena-cli:$PATH
+RUN ls /usr/app/balena-cli
+RUN ls /usr/app/balena-cli/bin
+ENV PATH $PATH:/usr/app/balena-cli/bin
 
 RUN balena version
 
