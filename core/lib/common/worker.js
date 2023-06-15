@@ -52,6 +52,7 @@ const exec = Bluebird.promisify(require('child_process').exec);
 const spawn = require('child_process').spawn;
 const { createGzip, createGunzip } = require('zlib');
 const tar = require('tar-fs');
+const { getSdk } = require('balena-sdk');
 
 function id() {
 	return `${Math.random().toString(36).substring(2, 10)}`;

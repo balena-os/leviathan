@@ -36,7 +36,6 @@ module.exports = {
     {
       title: 'Kill the device under test',
       run: async function (test) {
-        // This function doesn't exist anywhere and should be failing the test every time.
         await this.worker.instantKill("💥");
         test.notOk(
           true,
