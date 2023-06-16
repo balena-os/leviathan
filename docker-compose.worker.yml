@@ -5,10 +5,12 @@ services:
     build: ./client
     network_mode: host
     volumes:
-      - "${WORKSPACE:-./workspace}:/usr/src/app/workspace:ro"
-      - "${REPORTS:-./workspace/reports}:/usr/src/app/reports:rw"
-      - "${SUITES:-./suites}:/usr/src/app/suites:ro"
-      - core-storage:/data
+      # - "${WORKSPACE:-./workspace}:/usr/src/app/workspace:ro"
+      # - "${REPORTS:-./workspace/reports}:/usr/src/app/reports:rw"
+      # - "${SUITES:-./suites}:/usr/src/app/suites:ro"
+      - "${SUITES:-./suites}:/data/suites"
+      - "${REPORTS:-./workspace/reports}:/data/reports"
+      - "${WORKSPACE:-./workspace}:/data/workspace"  
     environment:
       - WORKER_TYPE=${WORKER_TYPE}
       - DEVICE_TYPE=${DEVICE_TYPE}
@@ -25,8 +27,10 @@ services:
     image: bh.cr/gh_rcooke_warwick/leviathan-core-armv7hf
     network_mode: host
     volumes:
-      - core-storage:/data
       - reports-storage:/reports
+      - "${SUITES:-./suites}:/data/suites"
+      - "${REPORTS:-./workspace/reports}:/data/reports"
+      - "${WORKSPACE:-./workspace}:/data/workspace"
     tmpfs:
       - /var/run # use tmpfs docker-in-docker pid files
       - /var/lib/docker # use tmpfs for docker-in-docker data root
@@ -39,8 +43,10 @@ services:
     network_mode: host
     ipc: host
     volumes:
-      - 'core-storage:/data'
       - 'reports-storage:/reports'
+      - "${SUITES:-./suites}:/data/suites"
+      - "${REPORTS:-./workspace/reports}:/data/reports"
+      - "${WORKSPACE:-./workspace}:/data/workspace"
       - /host/run/dbus:/host/run/dbus
       - /lib/modules:/lib/modules
     environment:
@@ -51,8 +57,4 @@ services:
       - TESTBOT_DUT_TYPE=raspberrypi4-64
 
 volumes:
-  core-storage:
   reports-storage:
-
-
-
