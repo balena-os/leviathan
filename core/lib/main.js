@@ -18,6 +18,7 @@
 
 const Bluebird = require('bluebird');
 const { fork } = require('child_process');
+const { getFilesFromDirectory } = require('./common/utils');
 const config = require('./config.js');
 const express = require('express');
 const expressWebSocket = require('express-ws');
@@ -33,32 +34,6 @@ const { createGzip, createGunzip } = require('zlib');
 const setReportsHandler = require('./reports');
 const MachineState = require('./state');
 const { createWriteStream } = require('fs');
-
-async function getFilesFromDirectory(basePath, ignore = []) {
-	let files = [];
-
-	const entries = await fs.readdir(basePath);
-
-	for (const entry of entries) {
-		if (ignore.includes(entry)) {
-			continue;
-		}
-
-		const stat = await fs.stat(join(basePath, entry));
-
-		if (stat.isFile()) {
-			files.push(join(basePath, entry));
-		}
-
-		if (stat.isDirectory()) {
-			files = files.concat(
-				await getFilesFromDirectory(join(basePath, entry), ignore),
-			);
-		}
-	}
-
-	return files;
-}
 
 async function setup() {
 	let suite = null;
