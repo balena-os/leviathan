@@ -1,28 +1,18 @@
-FROM node:14.19.3-bullseye-slim as base
-ENV DBUS_SYSTEM_BUS_ADDRESS unix:path=/host/run/dbus/system_bus_socket
+# avoid alpine 3.13 or later due to this issue on armv7
+# https://wiki.alpinelinux.org/wiki/Release_Notes_for_Alpine_3.13.0#time64_requirements
+FROM alpine:3.12
 
-WORKDIR /usr/app
+WORKDIR /usr/src/app
 
-ENV DEBCONF_NONINTERACTIVE_SEEN true
-ENV DEBIAN_FRONTEND noninteractive
-
-# install docker, balena-cli dependencies, and suite dependencies
 # https://github.com/balena-io/balena-cli/blob/master/INSTALL-LINUX.md#additional-dependencies
-# hadolint ignore=DL3008
-RUN apt-get update && apt-get install --no-install-recommends -y \
-	ca-certificates \
-    docker.io \
-	git \
-	rsync \
-	unzip \
-	util-linux \
-	wget \
-	nano \
-	build-essential \
-	make  \
-    curl
+# hadolint ignore=DL3018
+RUN apk add --no-cache bash git ca-certificates docker nano make curl
 
-COPY . .
+# fail if binaries are missing or won't run
+RUN dockerd --version && docker --version
+
+# install entrypoint script
+COPY entry.sh ./
+
 RUN chmod +x entry.sh
-
-CMD [ "/usr/app/entry.sh" ]
+CMD [ "/usr/src/app/entry.sh" ]

@@ -1,6 +1,6 @@
 ARG BALENA_ARCH=%%BALENA_ARCH%%
 
-FROM balenalib/armv7hf-node:14-bullseye as base
+FROM balenalib/armv7hf-node:16-bullseye as base
 
 WORKDIR /usr/app
 
@@ -10,6 +10,7 @@ ENV DEBIAN_FRONTEND noninteractive
 # install docker, balena-cli dependencies, and suite dependencies
 # https://github.com/balena-io/balena-cli/blob/master/INSTALL-LINUX.md#additional-dependencies
 # hadolint ignore=DL3008
+
 RUN apt-get update && apt-get install --no-install-recommends -y \
 	bind9-dnsutils \
 	ca-certificates \
@@ -19,14 +20,13 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 	jq \
 	openssh-client \
 	socat \
+	libudev-dev \
 	rsync \
 	unzip \
 	util-linux \
-	wget \
-	vim \
 	build-essential \
 	make \
-	python && \
+	python3 && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*
 
@@ -40,7 +40,7 @@ RUN if [ "$(uname -m)" = "arm64" ] || [ "$(uname -m)" = "aarch64" ] ; \
 		unzip balena-cli.zip && rm balena-cli.zip ; \
 	elif [ "$(uname -m)" = "armv7l" ] || [ "$(uname -m)" = "armv7hf" ] ; \
 	then \
-		npm i balena-cli@12.51.3 ; \
+		npm i balena-cli@latest ; \
 		mkdir /usr/app/cli/ ; \
 		cp -R /usr/app/node_modules/balena-cli/ /usr/app ; \
 	else \
@@ -50,15 +50,14 @@ RUN if [ "$(uname -m)" = "arm64" ] || [ "$(uname -m)" = "aarch64" ] ; \
 
 # Add balena-cli to PATH
 ENV PATH /usr/app/balena-cli:$PATH
-RUN ls /usr/app/balena-cli
-RUN ls /usr/app/balena-cli/bin
+RUN ls /usr/app/balena-cli && ls /usr/app/balena-cli/bin
 ENV PATH $PATH:/usr/app/balena-cli/bin
 
 RUN balena version
 
 COPY package*.json ./
 
-RUN npm ci
+RUN npm ci --only=production
 
 COPY . .
 
