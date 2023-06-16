@@ -431,12 +431,14 @@ module.exports = class Worker {
 	async executeCommandInWorker(command, retryOptions={}) {
 		return retry(
 			async () => {
-				let containerId = await this.executeCommandInWorkerHost(
-					`balena ps | grep worker | awk '{print $1}'`,
-				);
-				let result = await this.executeCommandInWorkerHost(
-					`balena exec ${containerId} ${command}`,
-				);
+				// let containerId = await this.executeCommandInWorkerHost(
+				// 	`balena ps | grep worker | awk '{print $1}'`,
+				// );
+				// let result = await this.executeCommandInWorkerHost(
+				// 	`balena exec ${containerId} ${command}`,
+				// );
+				let result = await exec(command);
+				console.log(`Exec call: ${command}, Result: ${result}`)
 				return result;
 			},
 			{
