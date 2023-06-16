@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update core/contracts digest to c777910
+      hash: 4e53b2c01825ba15b9da03b3d76c8b19da7d4a94
+      body: |
+        Update core/contracts
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Self-hosted Renovate Bot
+      nested: []
+  version: 2.27.3
+  title: ""
+  date: 2023-06-16T11:05:22.184Z
+- commits:
     - subject: 'patch: Revert "minor: Add Leviathan Test Helpers"'
       hash: 691f2b21428bc9920c2bf03f982e3f1e2b6963fd
       body: ""
