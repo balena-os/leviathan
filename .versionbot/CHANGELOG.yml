@@ -1,4 +1,28 @@
 - commits:
+    - subject: "tests: only do serial file read with testbot"
+      hash: a947d2a02aed6125d3ec406152c7ee2d670ee2aa
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+    - subject: "core: enable serial executeCommandinHostOS"
+      hash: 95d11c34f427479c5adee718029169af3db3e68c
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+  version: 2.27.5
+  title: ""
+  date: 2023-06-19T13:36:32.892Z
+- commits:
     - subject: Update alpine Docker tag to v3.18.2
       hash: a25d1904ff9ecc703d5b5ed17253bf7c153b1083
       body: |
