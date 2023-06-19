@@ -1,6 +1,6 @@
 {
   "name": "leviathan",
-  "version": "2.27.5",
+  "version": "2.27.6",
   "scripts": {
     "lint:fix": "for component in 'core' 'client'; do npm --prefix $component run lint:fix; done",
     "lint": "for component in 'core' 'client'; do npm --prefix $component run lint; done",
@@ -20,6 +20,6 @@
   "homepage": "https://github.com/balena-os/leviathan",
   "private": true,
   "versionist": {
-    "publishedAt": "2023-06-19T13:36:33.596Z"
+    "publishedAt": "2023-06-19T15:04:06.571Z"
   }
 }
