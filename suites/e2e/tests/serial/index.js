@@ -23,6 +23,16 @@ module.exports = {
 	tests: [
 		{
 			title: 'Recording DUT serial output',
+			workerContract: {
+				type: 'object',
+				required: ['workerType'],
+				properties: {
+					workerType: {
+						type: 'string',
+						const: 'testbot_hat'
+					},
+				},
+			},
 			run: async function (test) {
 				await delay(60 * 1000);
 				await this.context.get().worker.off();

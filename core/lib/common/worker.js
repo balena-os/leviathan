@@ -310,50 +310,70 @@ module.exports = class Worker {
 	 * @category helper
 	 */
 	async executeCommandInHostOS(command, target, retryOptions={}) {
-		command = command instanceof Array ? command.join(' ') : command;
-		let config = {};
-		// depending on if the target argument is a .local uuid or not, SSH via the proxy or directly
-		if (/.*\.local/.test(target)) {
-			let ip = await this.ip(target);
-			config = {
-				host: ip,
-				port: '22222',
-				username: 'root',
-			};
+		if (target === 'serial'){
+			let result = await doRequest({
+				method: 'POST', 
+				uri: `${this.url}/dut/serial/exec`,
+				body: {cmd:command},
+				json: true
+			});
+			return result
 		} else {
-			config = {
-				host: 'ssh.balena-devices.com',
-				port: '22',
-				username: this.username,
-			};
-			command = `host ${target} ${command}`;
+			command = command instanceof Array ? command.join(' ') : command;
+			let config = {};
+			// depending on if the target argument is a .local uuid or not, SSH via the proxy or directly
+			if (/.*\.local/.test(target)) {
+				let ip = await this.ip(target);
+				config = {
+					host: ip,
+					port: '22222',
+					username: 'root',
+				};
+			} else {
+				config = {
+					host: 'ssh.balena-devices.com',
+					port: '22',
+					username: this.username,
+				};
+				command = `host ${target} ${command}`;
+			}
+
+			return retry(
+				async () => {
+					let result = {}
+					try {
+						result = await utils.executeCommandOverSSH(command, config);
+					} catch (err) {
+						console.error(err.message);
+						throw new Error(err);
+					}
+
+					if (typeof result.code === 'number' && result.code !== 0) {
+						throw new Error(
+							`"${command}" failed. stderr: ${result.stderr}, stdout: ${result.stdout}, code: ${result.code}`,
+						);
+					}
+
+					return result.stdout;
+				},
+				{
+					max_tries: 5 * 60,
+					interval: 1000,
+					throw_original: true,
+					...retryOptions,
+				},
+			);
 		}
+	}
 
-		return retry(
-			async () => {
-				let result = {}
-				try {
-					result = await utils.executeCommandOverSSH(command, config);
-				} catch (err) {
-					console.error(err.message);
-					throw new Error(err);
-				}
-
-				if (typeof result.code === 'number' && result.code !== 0) {
-					throw new Error(
-						`"${command}" failed. stderr: ${result.stderr}, stdout: ${result.stdout}, code: ${result.code}`,
-					);
-				}
-
-				return result.stdout;
-			},
-			{
-				max_tries: 5 * 60,
-				interval: 1000,
-				throw_original: true,
-				...retryOptions,
-			},
-		);
+	async executeCommandOverSerial(command){
+		let result = await doRequest({
+			method: 'POST', 
+			uri: `${this.url}/dut/serial/exec`,
+			body: {cmd:command},
+			json: true
+		});
+		return result
 	}
 
 	async executeCommandInWorkerHost(command, retryOptions={}) {
