@@ -66,47 +66,7 @@ module.exports = class CLI {
 	 * @category helper
 	 */
 	async preload(image, options) {
-		this.logger.log('--Preloading image--');
-		this.logger.log(`Image path: ${image}`);
-		this.logger.log(`Fleet: ${options.app}`);
-		this.logger.log(`Commit: ${options.commit}`);
-		await new Promise((resolve, reject) => {
-			const output = [];
-			const child = spawn(
-				'balena',
-				[
-					`preload ${image} --fleet ${options.app} --commit ${
-						options.commit
-					} ${options.pin ? '--pin-device-to-release ' : ''}`,
-					'--debug'
-				],
-				{
-					stdio: 'inherit',
-					shell: true,
-				},
-			);
-
-			function handleSignal(signal) {
-				child.kill(signal);
-			}
-
-			process.on('SIGINT', handleSignal);
-			process.on('SIGTERM', handleSignal);
-			child.on('exit', (code) => {
-				process.off('SIGINT', handleSignal);
-				process.off('SIGTERM', handleSignal);
-				if (code === 0) {
-					resolve();
-				} else {
-					reject()
-				}
-			});
-			child.on('error', (err) => {
-				process.off('SIGINT', handleSignal);
-				process.off('SIGTERM', handleSignal);
-				reject(err);
-			});
-		});
+		// Trigger preload on the worker for the image it already has
 	}
 
 	/**
@@ -118,6 +78,9 @@ module.exports = class CLI {
 	 * @category helper
 	 */
 	push(target, options) {
+		
+		//  Reconsider this, I forgot why we used to local push from core on unmanaged OS tests. 
+
 		this.logger.log('Performing local push');
 		return exec(
 			`balena push ${target} --source ${options.source} --nolive --detached`,

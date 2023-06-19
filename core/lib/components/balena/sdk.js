@@ -335,61 +335,7 @@ module.exports = class BalenaSDK {
 	 * @category helper
 	 */
 	async fetchOS(versionOrRange = 'latest', deviceType, osType = 'default') {
-		// normalize the version string/range, supports 'latest', 'recommended', etc
-		let version = await this.balena.models.os.getMaxSatisfyingVersion(
-			deviceType,
-			versionOrRange,
-			osType,
-		);
+		// 	Code to trigger download of production balenaOS on the worker 
 
-		// variant is deprecated in recent balenaOS releases but
-		// if prod variant is still present after being normalized, replace it with dev
-		version = version.replace('.prod', '.dev');
-
-		const path = join(
-			config.leviathan.downloads,
-			`balenaOs-${version}.img`,
-		);
-
-		// Caching implementation if needed - Check https://github.com/balena-os/leviathan/issues/441
-
-		let attempt = 0;
-		const downloadLatestOS = async () => {
-			attempt++;
-			this.logger.log(
-				`Fetching balenaOS version ${version}, attempt ${attempt}...`,
-			);
-			return await new Promise(async (resolve, reject) => {
-				await this.balena.models.os.download(
-					deviceType,
-					version,
-					function (error, stream) {
-						if (error) {
-							fs.unlink(path, () => {
-								// Ignore.
-							});
-							reject(`Image download failed: ${error}`);
-						}
-						// Shows progress of image download
-						let progress = 0;
-						stream.on('progress', (data) => {
-							if (data.percentage >= progress + 10) {
-								console.log(
-									`Downloading balenaOS image: ${toInteger(data.percentage) + '%'
-									}`,
-								);
-								progress = data.percentage;
-							}
-						});
-						stream.pipe(fs.createWriteStream(path));
-						stream.on('finish', () => {
-							console.log(`Download Successful: ${path}`);
-							resolve(path);
-						});
-					},
-				);
-			});
-		};
-		return retry(downloadLatestOS, { max_tries: 3, interval: 500 });
 	}
-};
+}

@@ -111,75 +111,14 @@ module.exports = class Worker {
 	/**
 	 * Flash the provided OS image onto the connected DUT
 	 *
-	 * @param {string} imagePath path of the image to be flashed onto the DUT
+	 * @param {string} imageUrl url of the image to be flashed onto the DUT
 	 *
 	 * @category helper
 	 */
-	async flash(imagePath) {
-		let attempt = 0;
-		await retry(
-			async () => {
-				attempt++;
-				this.logger.log(`Preparing to flash, attempt ${attempt}...`);
-
-				await new Promise(async (resolve, reject) => {
-					const req = rp.post({ uri: `${this.url}/dut/flash` });
-
-					req.catch((error) => {
-						reject(error);
-					});
-					req.finally(() => {
-						if (lastStatus !== 'done') {
-							reject(new Error('Unexpected end of TCP connection'));
-						}
-
-						resolve();
-					});
-
-					let lastStatus;
-					req.on('data', (data) => {
-						const computedLine = RegExp('(.+?): (.*)').exec(data.toString());
-
-						if (computedLine) {
-							if (computedLine[1] === 'error') {
-								req.cancel();
-								reject(new Error(computedLine[2]));
-							}
-
-							if (computedLine[1] === 'progress') {
-								once(() => {
-									this.logger.log('Flashing');
-								});
-								// Hide any errors as the lines we get can be half written
-								const state = JSON.parse(computedLine[2]);
-								if (state != null && isNumber(state.percentage)) {
-									this.logger.status({
-										message: 'Flashing',
-										percentage: state.percentage,
-									});
-								}
-							}
-
-							if (computedLine[1] === 'status') {
-								lastStatus = computedLine[2];
-							}
-						}
-					});
-
-					pipeline(
-						fs.createReadStream(imagePath),
-						createGzip({ level: 6 }),
-						req,
-					);
-				});
-				this.logger.log('Flash completed');
-			},
-			{
-				max_tries: 5,
-				interval: 1000 * 5,
-				throw_original: true,
-			},
-		);
+	async flash(imageUrl) {
+		// Do we even need to send the url of the image if the download is being done by the fetch function in balenaOS 
+		// Something to think about for sure. 
+		// The tests would need to change if we don't add any argument
 	}
 
 
@@ -507,24 +446,6 @@ module.exports = class Worker {
 			} catch (e) {
 				console.error(`Failed to add ip route: ${e}`);
 			}
-		}
-	}
-
-	// sends file over rsync
-	async sendFile(filePath, destination, target) {
-		if (target === 'worker') {
-			let containerId = await this.executeCommandInWorkerHost(
-				`balena ps | grep worker | awk '{print $1}'`,
-			);
-			// todo : replace with npm package
-			await exec(
-				`rsync -av -e "ssh ${this.workerUser}@${this.workerHost} -p ${this.workerPort} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -q ${this.sshPrefix}balena exec -i" ${filePath} ${containerId}:${destination}`,
-			);
-		} else {
-			let ip = await this.ip(target);
-			await exec(
-				`rsync -av -e "ssh -p 22222 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -q -i ${this.sshKey}" ${filePath} root@${ip}:${destination}`,
-			);
 		}
 	}
 

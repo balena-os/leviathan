@@ -17,7 +17,7 @@ module.exports = {
     debug: {
         unstable: ["Kill the device under test"],
     }
-    image: `${__dirname}/balena.img.gz`,
+    image: `https://URL-OF-THE-IMAGE-TO-TEST/`, // Or balenaOS version to download
     workers: ['http://<short UUID of your testbot in balenaCloud>.local'],
 };
 ```
@@ -31,12 +31,7 @@ Information on properties in `config.js`:
 - **`balenaApiUrl`** is the balenaCloud environment you are targetting for your test suite. Production is `'balena-cloud.com'` and staging is `'balena-staging.com'`.
 - **`organization`** is the balenaCloud organization where test applications are created for the cloud suite.
 - **`debug`** is where debugging properties are stored for test runs. Check out {@page Debugging tests in Leviathan | Debugging documentation} for features you can add. 
-- **`image`** is the absolute path to the balenaOS image that is flashed onto the Device Under Test (DUT).  As shown in the example above, `${__dirname}` expands to the absolute path of the `workspace` directory, so you can use it to specify a path relative to `workspace`.
-
-Make sure to rename the image to balena.img. If you provide `balena.img` as your balenaOS image, then Leviathan will compress it for you in `gz` format on runtime. We recommend compressing beforehand, as it saves time. For any reason if your tests download an image already and you don't want to upload an image, then set the `image` property to `false` in config.js 
-
-For example, in the e2e test suite, if you don't upload an image and set `image: false`, then the test suite will download the image from balenaCloud. This is test specific, not a leviathan feature. 
-
+- **`image`** is the URL of the balenaOS image that is flashed onto the Device Under Test (DUT). If you want to test a production available balenaOS image, then provide a semver-compatible version of the image to be downloaded.
 - **`downloadVersion`**: If you intend to download a balenaOS version for your tests, then you can use the property to specify the balenaOS version semver. The `fetchOS` helper will use this property to find and download the balenaOS image. 
 - **`workers`** is the property where we specify precisely where the test suites will be executed on and what type of workers are going to be used. You can specify this in multiple ways as per your requirements: 
 
@@ -87,7 +82,7 @@ module.exports = [{
             balenaApiUrl: 'balena-cloud.com',
             organization: 'BALENACLOUD_ORG_GOES_HERE',
         },
-        image: `${__dirname}/balena.img.gz`,
+        image: `https://URL-OF-THE-IMAGE-TO-TEST/`, // Or balenaOS version to download
         workers: {
             balenaApplication: 'testbot-vipul',
             apiKey: process.env.BALENACLOUD_API_KEY,
@@ -104,7 +99,7 @@ module.exports = [{
             balenaApiUrl: 'balena-cloud.com',
             organization: 'BALENACLOUD_ORG_GOES_HERE',
         },
-        image: `${__dirname}/balena.img.gz`,
+        image: `https://URL-OF-THE-IMAGE-TO-TEST/`, // Or balenaOS version to download
         workers: {
             balenaApplication: 'testbot-vipul',
             apiKey: process.env.BALENACLOUD_API_KEY,
@@ -121,7 +116,7 @@ module.exports = [{
             balenaApiUrl: 'balena-cloud.com',
             organization: 'BALENACLOUD_ORG_GOES_HERE',
         },
-        image: `${__dirname}/balena.img.gz`,
+        image: `https://URL-OF-THE-IMAGE-TO-TEST/`, // Or balenaOS version to download
         workers: {
             balenaApplication: 'testbot-vipul',
             apiKey: process.env.BALENACLOUD_API_KEY,
@@ -144,7 +139,7 @@ module.exports = [{
             balenaApiUrl: 'balena-cloud.com',
             organization: 'BALENACLOUD_ORG_GOES_HERE',
         },
-        image: `${__dirname}/balena.img.gz`,
+        image: `https://URL-OF-THE-IMAGE-TO-TEST/`, // Or balenaOS version to download
         workers: ['https://6ad523252f8288bdff15bda320485237.balena-devices.com/']
     },
     {
@@ -158,7 +153,7 @@ module.exports = [{
             balenaApiUrl: 'balena-cloud.com',
             organization: 'BALENACLOUD_ORG_GOES_HERE',
         },
-        image: `${__dirname}/balena.img.gz`,
+        image: `https://URL-OF-THE-IMAGE-TO-TEST/`, // Or balenaOS version to download
         workers: ['https://123213bda32048sgd5dfw223423723324.balena-devices.com/']
     }]
 ```
@@ -179,7 +174,7 @@ module.exports = [{
             balenaApiUrl: 'balena-cloud.com',
             organization: 'BALENACLOUD_ORG_GOES_HERE',
         },
-        image: `${__dirname}/balena-DEVICETYPE-1.img.gz`,
+        image: `https://URL-OF-THE-IMAGE-TO-TEST/`, // Or balenaOS version to download
         workers: {
             balenaApplication: 'testbot-personal',
             apiKey: process.env.BALENACLOUD_API_KEY,
@@ -196,7 +191,7 @@ module.exports = [{
             balenaApiUrl: 'balena-cloud.com',
             organization: 'BALENACLOUD_ORG_GOES_HERE',
         },
-        image: `${__dirname}/balena-DEVICETYPE-2.img.gz`,
+        image: `https://URL-OF-THE-IMAGE-TO-TEST/`, // Or balenaOS version to download
         workers: {
             balenaApplication: 'testbot-personal',
             apiKey: process.env.BALENACLOUD_API_KEY,
