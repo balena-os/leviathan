@@ -131,62 +131,6 @@ module.exports = class Worker {
 					},
 					json: true,
 				});
-				// await new Promise(async (resolve, reject) => {
-				// 	const req = rp.post({ 
-				// 		uri: `${this.url}/dut/flash`,
-				// 		body: {
-				// 			path: imagePath
-				// 		},
-				// 		json: true
-				// 	 });
-
-				// 	req.catch((error) => {
-				// 		reject(error);
-				// 	});
-				// 	req.finally(() => {
-				// 		if (lastStatus !== 'done') {
-				// 			reject(new Error('Unexpected end of TCP connection'));
-				// 		}
-
-				// 		resolve();
-				// 	});
-
-				// 	let lastStatus;
-				// 	req.on('data', (data) => {
-				// 		const computedLine = RegExp('(.+?): (.*)').exec(data.toString());
-
-				// 		if (computedLine) {
-				// 			if (computedLine[1] === 'error') {
-				// 				req.cancel();
-				// 				reject(new Error(computedLine[2]));
-				// 			}
-
-				// 			if (computedLine[1] === 'progress') {
-				// 				once(() => {
-				// 					this.logger.log('Flashing');
-				// 				});
-				// 				// Hide any errors as the lines we get can be half written
-				// 				const state = JSON.parse(computedLine[2]);
-				// 				if (state != null && isNumber(state.percentage)) {
-				// 					this.logger.status({
-				// 						message: 'Flashing',
-				// 						percentage: state.percentage,
-				// 					});
-				// 				}
-				// 			}
-
-				// 			if (computedLine[1] === 'status') {
-				// 				lastStatus = computedLine[2];
-				// 			}
-				// 		}
-				// 	});
-
-				// 	pipeline(
-				// 		fs.createReadStream(imagePath),
-				// 		createGzip({ level: 6 }),
-				// 		req,
-				// 	);
-				// });
 				this.logger.log('Flash completed');
 			},
 			{
@@ -431,12 +375,6 @@ module.exports = class Worker {
 	async executeCommandInWorker(command, retryOptions={}) {
 		return retry(
 			async () => {
-				// let containerId = await this.executeCommandInWorkerHost(
-				// 	`balena ps | grep worker | awk '{print $1}'`,
-				// );
-				// let result = await this.executeCommandInWorkerHost(
-				// 	`balena exec ${containerId} ${command}`,
-				// );
 				let result = await exec(command);
 				console.log(`Exec call: ${command}, Result: ${result}`)
 				return result;

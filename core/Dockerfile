@@ -1,6 +1,4 @@
-ARG BALENA_ARCH=%%BALENA_ARCH%%
-
-FROM balenalib/armv7hf-node:16-bullseye as base
+FROM node:16-bullseye-slim as base
 
 WORKDIR /usr/app
 
@@ -15,13 +13,10 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 	bind9-dnsutils \
 	ca-certificates \
 	docker.io \
-	git \
 	iproute2 \
-	jq \
+	wget \
 	openssh-client \
-	socat \
-	libudev-dev \
-	rsync \
+	libudev-dev \	
 	unzip \
 	util-linux \
 	build-essential \
@@ -42,7 +37,8 @@ RUN if [ "$(uname -m)" = "arm64" ] || [ "$(uname -m)" = "aarch64" ] ; \
 	then \
 		npm i balena-cli@latest ; \
 		mkdir /usr/app/cli/ ; \
-		cp -R /usr/app/node_modules/balena-cli/ /usr/app ; \
+		mv /usr/app/node_modules/balena-cli/ /usr/app ; \
+		rm -rf /usr/app/node_modules/ ; \
 	else \
 		wget -q -O balena-cli.zip "https://github.com/balena-io/balena-cli/releases/download/${BALENA_CLI_REF}/balena-cli-v${BALENA_CLI_VERSION}-linux-x64-standalone.zip" && \
 		unzip balena-cli.zip && rm balena-cli.zip ; \
