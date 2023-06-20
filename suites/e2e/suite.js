@@ -119,7 +119,7 @@ module.exports = {
 								.sdk.fetchOS(
 									this.suite.options.balenaOS.download.version,
 									this.suite.deviceType.slug,
-								)}` 
+								)}`
 							: undefined,
 					configJson: {
 						uuid: this.suite.options.balenaOS.config.uuid,

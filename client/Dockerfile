@@ -1,6 +1,4 @@
-ARG BALENA_ARCH=%%BALENA_ARCH%%
-
-FROM balenalib/armv7hf-alpine-node:16-run
+FROM node:18.16.0-alpine3.16
 WORKDIR /usr/src/app
 
 # hadolint ignore=DL3018

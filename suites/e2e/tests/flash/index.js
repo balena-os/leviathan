@@ -22,7 +22,6 @@ module.exports = {
 			run: async function (test) {
 				try {
 					await this.worker.off(); // Ensure DUT is off before starting tests
-					console.log(`suite image path: ${this.os.image.path}`)
 					await this.worker.flash(this.os.image.path);
 				} catch (err) {
 					throw new Error(`Flashing failed with error: ${err}`);
