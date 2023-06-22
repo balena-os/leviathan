@@ -62,9 +62,10 @@ async function createJsonSummary(suite) {
 
 (async () => {
 	try{
+		console.log(suiteConfig)
 		const suite = new Suite(
 			{
-				suitePath: config.leviathan.uploads.suite,
+				suitePath: suiteConfig.suite,
 				deviceType: suiteConfig.deviceType,
 				imagePath: config.leviathan.uploads.image,
 			},

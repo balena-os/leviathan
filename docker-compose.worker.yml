@@ -1,26 +1,6 @@
 version: "2"
 
 services:
-  client:
-    build: ./client
-    network_mode: host
-    volumes:
-      # - "${WORKSPACE:-./workspace}:/usr/src/app/workspace:ro"
-      # - "${REPORTS:-./workspace/reports}:/usr/src/app/reports:rw"
-      # - "${SUITES:-./suites}:/usr/src/app/suites:ro"
-      - "${SUITES:-./suites}:/data/suites"
-      - "${REPORTS:-./workspace/reports}:/data/reports"
-      - "${WORKSPACE:-./workspace}:/data/workspace"  
-    environment:
-      - WORKER_TYPE=${WORKER_TYPE}
-      - DEVICE_TYPE=${DEVICE_TYPE}
-      - BALENACLOUD_API_KEY=${BALENACLOUD_API_KEY}
-      - BALENACLOUD_ORG=${BALENACLOUD_ORG}
-      - BALENACLOUD_APP_NAME=${BALENACLOUD_APP_NAME}
-      - CORE_HOST=localhost
-    depends_on:
-      - core
-
   core:
     privileged: true # preload requires docker-in-docker
     #build: core
