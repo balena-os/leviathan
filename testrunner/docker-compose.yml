@@ -1,0 +1,23 @@
+version: "2.1"
+
+volumes:
+  docker:
+
+services:
+  main:
+    build: .
+    privileged: true
+    pid: host
+    network_mode: host
+    ipc: host
+    volumes:
+      - docker:/var/lib/docker
+    tmpfs:
+      - /tmp
+      #- /var/run
+      - /var/log
+    cpu_shares: 512
+    labels:
+      io.balena.features.dbus: '1'
+      io.balena.features.balena-api: '1'
+      io.balena.features.kernel-modules: '1'

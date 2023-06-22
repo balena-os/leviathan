@@ -1,0 +1,41 @@
+version: "2"
+
+services:
+  core:
+    privileged: true # preload requires docker-in-docker
+    #build: core
+    image: bh.cr/gh_rcooke_warwick/leviathan-core-armv7hf
+    network_mode: host
+    volumes:
+      - reports-storage:/reports
+      - "${SUITES:-./suites}:/data/suites"
+      - "${REPORTS:-./workspace/reports}:/data/reports"
+      - "${WORKSPACE:-./workspace}:/data/workspace"
+      - docker-fs:/var/lib/docker #docker data directory must be in a volume to avoid running out of space
+    tmpfs:
+      - /var/run # use tmpfs docker-in-docker pid files
+    restart: 'no'
+
+  worker:
+    image: bh.cr/gh_rcooke_warwick/leviathan-worker-amrv7hf
+    privileged: true
+    pid: host
+    network_mode: host
+    ipc: host
+    volumes:
+      - 'reports-storage:/reports'
+      - "${SUITES:-./suites}:/data/suites"
+      - "${REPORTS:-./workspace/reports}:/data/reports"
+      - "${WORKSPACE:-./workspace}:/data/workspace"
+      - /host/run/dbus:/host/run/dbus
+      - /lib/modules:/lib/modules
+    environment:
+      - UDEV=1
+      - BALENA_API_KEY=${BALENA_API_KEY}
+      - WORKER_TYPE=autokit
+      - DIGITAL_RELAY=dummyPower
+      - TESTBOT_DUT_TYPE=raspberrypi4-64
+
+volumes:
+  reports-storage:
+  docker-fs:

@@ -15,6 +15,7 @@ UPARGS := --force-recreate --remove-orphans
 QEMUCOMPOSEFILE := docker-compose.qemu.yml
 SECUREBOOTCOMPOSEFILE := docker-compose.secureboot.yml
 CLIENTCOMPOSEFILE := docker-compose.client.yml
+WORKERCOMPOSEFILE := docker-compose.worker.yml
 
 # only use the qemu compose file if worker type is qemu
 ifeq ($(WORKER_TYPE),qemu)
@@ -23,12 +24,14 @@ ifeq ($(QEMU_SECUREBOOT),1)
 COMPOSE_FILE := $(COMPOSE_FILE):$(SECUREBOOTCOMPOSEFILE)
 endif
 else
-COMPOSE_FILE := $(CLIENTCOMPOSEFILE)
+COMPOSE_FILE := $(WORKERCOMPOSEFILE)
 endif
 
 # for arm64 hosts we need to set the BALENA_ARCH to pull the correct balenalib worker image
 ifeq ($(shell uname -m),aarch64)
 BALENA_ARCH ?= aarch64
+else ifeq ($(shell uname -m),armv7l)
+BALENA_ARCH ?= armv7hf
 else ifeq ($(shell uname -m),arm64)
 BALENA_ARCH ?= aarch64
 else
@@ -58,6 +61,8 @@ $(DOCKERCOMPOSE):
 	mkdir -p $(shell dirname "$@")
 ifeq ($(shell uname -m),arm64)
 	curl -fsSL "https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-$(shell uname -s | tr '[:upper:]' '[:lower:]')-aarch64" -o $@
+else ifeq ($(shell uname -m),armv7l)
+	curl -fsSL "https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-$(shell uname -s | tr '[:upper:]' '[:lower:]')-armv7" -o $@
 else
 	curl -fsSL "https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-$(shell uname -s | tr '[:upper:]' '[:lower:]')-$(shell uname -m)" -o $@
 endif
@@ -78,10 +83,13 @@ build: $(DOCKERCOMPOSE) ## Build the required images
 	$(DOCKERCOMPOSE) build $(BUILDARGS)
 
 test: $(DOCKERCOMPOSE) build ## Run the test suites
-	$(DOCKERCOMPOSE) up $(UPARGS) --exit-code-from client
+	$(DOCKERCOMPOSE) up $(UPARGS) --exit-code-from core
 
 local-test: ## Alias for 'make test WORKER_TYPE=qemu'
 	$(MAKE) test WORKER_TYPE=qemu
+
+local-test-autokit: ## Alias for 'make test WORKER_TYPE=qemu'
+	$(MAKE) test WORKER_TYPE=autokit
 
 qemu: ## Alias for 'make test WORKER_TYPE=qemu'
 	$(MAKE) test WORKER_TYPE=qemu
