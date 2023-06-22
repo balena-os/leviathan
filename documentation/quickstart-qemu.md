@@ -1,17 +1,16 @@
 # Getting Started with QEMU Worker
 
-This is a quick start guide for using the leviathan framework with the QEMU worker.
+This is a quick start guide for using the Leviathan testing framework with a virtualized QEMU Device Under Test (DUT) called the QEMU worker. This workflow is particularly helpful for debugging, faster tester runs than actual hardware or if you don't have hardware on hand. 
 
-## Prepare Qemu worker
-
-As a prerequisite: 
-1. Go through the steps listed on the {@page Quickstart | Quickstart Page}
+Before beginning, make sure you completed the Leviathan pre-requisted listed on the {@page Quickstart | Quickstart Page}.
 
 ## Start your first test run
 
-For your first test run, we will be running the [e2e test suite](https://github.com/balena-os/leviathan/tree/master/suites/e2e).
+For your first test run, we will be running the [e2e test suite](https://github.com/balena-os/leviathan/tree/master/suites/e2e). This is a basic testing suite to test your worker configuration and if the setup is correct. Each Levaithan test run needs the following to start testing that the user has to provide:
 
-A balenaOS image that is used to flash and provision the device under test will be needed for the test. You can download an unmanaged genericx86-64-ext balenaOS image from [balena.io/os](https://www.balena.io/os/#download) and place it in the workspace folder. Leviathan support OS images uncompressed or compressed in `.gz` or `.zip` format.
+1. **The test suite you want to run**: [e2e test suite](https://github.com/balena-os/leviathan/tree/master/suites/e2e) (already provided)
+2. **A balenaOS image used to flash, provision and test the DUT**. The test will automatically download an OS image this time. So no need to provide your own image.  
+3. **A test configuration using the `config.js` file**: Let's create one.
 
 ### Build your `config.js` file
 
@@ -37,12 +36,12 @@ module.exports = {
     debug: {
         unstable: ["Kill the device under test"],
     }
-    image: `${__dirname}/path/to/image`,
+    image: false, 
     workers: ['http://worker'],
 };
 ```
 
-To provide values of environment variables easily, you can create a `.env` file in the root of the leviathan directory. Use the format below as boilerplate. 
+To provide values of environment variables easily, you can create a `.env` file in the root of the leviathan directory. Use the format below as boilerplate. No need to do this for this test run. 
 
 ```
 WORKSPACE=./workspace
@@ -56,13 +55,15 @@ BALENA_ARCH=amd64
 BALENACLOUD_APP_NAME=<app-name>
 ```
 
-To start the test run, navigate to the root of the leviathan directory and run the following command:
+### Start the run
+
+To start the test run, navigate to the root of the Leviathan directory and run the following command:
 
 ```
 make local-test
 ```
 
-This will first build the core and worker services and run the worker using docker-compose. Then, the test will run and the logs will start streaming on the terminal. Wait for the test scenario to finish and check the device logs on the dashboard in the meantime. 
+This will trigger a build of client and core services using docker-compose and begin the test. The logs by various componenet will start streaming on the terminal. Wait for the test scenario to finish and check the device logs on the dashboard in the meantime. 
 
 A successful run of the e2e test suite without any errors makes sure that your QEMU worker is set up correctly and can be used for further tests.
 
@@ -71,12 +72,12 @@ A successful run of the e2e test suite without any errors makes sure that your Q
 We will start with a test run of the [balenaOS unmanaged testing suite](https://github.com/balena-os/meta-balena/tree/master/tests/suites). To get the tests, clone the meta-balena repository. The OS tests are located in the `tests/` directory.
 
 - Either copy the `OS test suite` directory from meta-balena to the `workspace` directory 
-- or point the `suite` property to the path of the OS test suite in the meta-balena directory.
+- or point the `suite` property in your config.js file to the relative path of the OS test suite like mentioned below.
 
 ```js
 module.exports = {
     deviceType: 'genericx86-64-ext',
-    suite: `${__dirname}/../suites/os`,
+    suite: `${__dirname}/../suites/os`, // this path is relative to the workspace directory
     config: {
         networkWired: false,
         networkWireless: false,
@@ -90,11 +91,15 @@ module.exports = {
 };
 ```
 
-- Run `make local-test` in the root of the project and watch the logs. The logs will start streaming on the terminal for the test run.
-- At the end of the run, reports and logs for the test run will be stored in `workspace/reports` directory.
+- This time you can provide your own OS image to test. You can download an unmanaged genericx86-64-ext balenaOS image from [balena.io/os](https://www.balena.io/os/#download) and place it in the workspace folder if you need to provide one. Change the value of the `image` property to the path of the image you downloaded. 
 
+### Start the OS test
 
-That's the end of the quick start guide, you successfully setup your QEMu worker and ran your first test suite.
+Run `make local-test` in the root of the project and watch the logs. 
+
+The logs will start streaming on the terminal for the test run. At the end of the run, reports and logs for the test run will be stored in `workspace/reports` directory.
+
+That's the end of the quick start guide, you successfully setup your QEMU worker and ran your first test suite.
 
 ## Where do you go from here?
 

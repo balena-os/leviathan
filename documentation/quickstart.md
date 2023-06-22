@@ -14,7 +14,7 @@ Leviathan allows for running tests on a device controlled by a worker. A worker 
   
 ## Worker setup
 
-Following are quick start guides into setting up each type of worker:
+Select which type of worker you want to use:
 
-1. {@page Testbot worker | Testbot worker}
-2. {@page QEMU worker | QEMU worker}
+1. {@page Testbot worker | Testbot worker} - Connect an actual device to your testbot and test on it
+2. {@page QEMU worker | QEMU worker} - Create a virtual device and run tests on that that.
