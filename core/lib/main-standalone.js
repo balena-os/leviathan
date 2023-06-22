@@ -47,7 +47,7 @@ async function main() {
 
     // The reason we need to fork is because many 3rd party libariers output to stdout
     // so we need to capture that
-    suite = fork('./lib/common/suiteSubprocess', {
+    let suite = fork('./lib/common/suiteSubprocess', {
         stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
     });
     suiteStarted = true;
