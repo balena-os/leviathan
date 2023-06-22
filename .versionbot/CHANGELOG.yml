@@ -1,4 +1,16 @@
 - commits:
+    - subject: "patch: Update QEMU getting started guide"
+      hash: 04333e2ffabf3044ad288c6588470373d6a97b6f
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipulgupta2048@gmail.com>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipulgupta2048@gmail.com>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.27.7
+  title: ""
+  date: 2023-06-22T12:30:58.563Z
+- commits:
     - subject: Update balena-os/leviathan-worker to v2.9.7
       hash: 2c1ab4511f9c1f65460ac182527b99a25681a27e
       body: |
