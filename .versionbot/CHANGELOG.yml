@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update core/contracts digest to 6c4386a
+      hash: 18ddcf64b3db0ac97051e86e9efaf63f5a183d2a
+      body: |
+        Update core/contracts
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Self-hosted Renovate Bot
+      nested: []
+  version: 2.27.8
+  title: ""
+  date: 2023-06-27T12:08:02.856Z
+- commits:
     - subject: "patch: Update QEMU getting started guide"
       hash: 04333e2ffabf3044ad288c6588470373d6a97b6f
       body: ""
