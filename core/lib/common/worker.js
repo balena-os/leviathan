@@ -79,6 +79,7 @@ module.exports = class Worker {
 		url,
 		username,
 		sshKey,
+		sshConfig = {}
 	) {
 		this.deviceType = deviceType;
 		this.url = url;
@@ -96,16 +97,15 @@ module.exports = class Worker {
 			this.url.includes(`worker`)
 			|| this.url.includes('unix:')
 		);
-		if (this.url.includes(`balena-devices.com`)) {
-			// worker is a testbot connected to balena cloud - we ssh into it via the vpn
+		if(!this.directConnect){
 			this.uuid = this.url.match(
-				/(?<=https:\/\/)(.*)(?=.balena-devices.com)/,
+				/https:\/\/([^\.]+)\./,
 			)[1];
-			this.workerHost = `ssh.balena-devices.com`;
-			this.workerUser = this.username;
-			this.workerPort = '22';
 			this.sshPrefix = `host ${this.uuid} `;
-		}
+			this.workerUser = this.username;
+			this.workerPort = sshConfig.port || 22;
+			this.workerHost = sshConfig.host || 'ssh.balena-devices.com'
+		}	
 	}
 
 	/**

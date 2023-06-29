@@ -65,12 +65,18 @@ module.exports = class BalenaSDK {
 	constructor(
 		apiUrl,
 		logger = { log: console.log, status: console.log, info: console.log },
+		sshConfig = {}
 	) {
 		this.balena = getSdk({
 			apiUrl: `https://api.${apiUrl}`,
 		});
+		this.apiUrl = apiUrl
 		this.pine = this.balena.pine;
 		this.logger = logger;
+		this.sshConfig = {
+			host: sshConfig.host || 'ssh.balena-devices.com',
+			port: sshConfig.port || 22
+		}
 	}
 
 	/**
@@ -91,7 +97,6 @@ module.exports = class BalenaSDK {
 			tries: 600,
 		},
 	) {
-		const sshPort = 22;
 
 		return retry(
 			async () => {
@@ -102,9 +107,9 @@ module.exports = class BalenaSDK {
 				const result = await utils.executeCommandOverSSH(
 					`host -s ${device} source /etc/profile ; ${command}`,
 					{
-						host: `ssh.${await this.balena.settings.get('proxyUrl')}`,
+						host: this.sshConfig.host,
 						username: await this.balena.auth.whoami(),
-						port: sshPort,
+						port: this.sshConfig.sshPort,
 					},
 				);
 
@@ -126,7 +131,7 @@ module.exports = class BalenaSDK {
 
 	/**
 	 * Creates application for a devicetype with the required config
-	 * 
+	 *
 	 * @param {string} name Name of the application that needs to be created
 	 * @param {string} deviceType The device type for which application needs to be created
 	 * @param {object} config specify configuration needed for the application
@@ -157,9 +162,9 @@ module.exports = class BalenaSDK {
 
 	/**
 		* Removes SSH key from balenaCloud account
-		* 
-		* @param {string} label SSH key label 
-		* 
+		*
+		* @param {string} label SSH key label
+		*
 		* @category helper
 		*/
 	async removeSSHKey(label) {
@@ -336,7 +341,11 @@ module.exports = class BalenaSDK {
 	 */
 	async fetchOS(versionOrRange = 'latest', deviceType, osType = 'default') {
 		// normalize the version string/range, supports 'latest', 'recommended', etc
-		let version = await this.balena.models.os.getMaxSatisfyingVersion(
+		const balenaSdkProd = getSdk({
+			apiUrl: "https://api.balena-cloud.com",
+		});
+
+		let version = await balenaSdkProd.models.os.getMaxSatisfyingVersion(
 			deviceType,
 			versionOrRange,
 			osType,
@@ -352,15 +361,15 @@ module.exports = class BalenaSDK {
 		);
 
 		// Caching implementation if needed - Check https://github.com/balena-os/leviathan/issues/441
-
 		let attempt = 0;
 		const downloadLatestOS = async () => {
 			attempt++;
 			this.logger.log(
 				`Fetching balenaOS version ${version}, attempt ${attempt}...`,
 			);
+
 			return await new Promise(async (resolve, reject) => {
-				await this.balena.models.os.download(
+				await balenaSdkProd.models.os.download(
 					deviceType,
 					version,
 					function (error, stream) {
