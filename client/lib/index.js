@@ -297,9 +297,20 @@ module.exports = class Client extends PassThrough {
 				process.exit(128 + constants.signals.SIGTERM);
 			});
 
+			let heartbeatFailCounter = 0
 			const heartbeat = setInterval(async () => {
-				await rp.get(`${this.uri}/heartbeat`);
+				try{
+					await rp.get(`${this.uri}/heartbeat`);
+					heartbeatFailCounter = 0
+				} catch{
+					console.log(`Failed to ping worker hearbeat: ${heartbeatFailCounter} failures in a row`)
+					heartbeatFailCounter += 1
+					if(heartbeatFailCounter === 10){
+						throw new Error(`Lost communication with worker! `)
+					}
+				}
 			}, 1000 * 20);
+
 
 			let capturedError = null;
 			const wsMessageHandler = (wsConnection) => async (pkg) => {

@@ -1,3 +1,5 @@
+const { getSdk } = require('balena-sdk');
+
 /**
  * Contains information about the workers with tags that they have
  */
@@ -39,16 +41,19 @@ function groupTagsData(allAppTags) {
  * Interacts with balenaCloud for the client
  */
 class BalenaCloudInteractor {
-	constructor(sdk) {
-		this.sdk = sdk
+	constructor(balenaApiUrl) {
+		this.balenaApiUrl = balenaApiUrl
+		this.sdk = getSdk({
+			apiUrl: `https://api.${balenaApiUrl}`,
+		});
 	}
 
 	/**
 	 * Authenticate balenaSDK with API key
 	 */
-	async authenticate(apiKey) {
-		await this.sdk.auth.loginWithToken(apiKey);
-		console.log(`Logged in with ${await this.sdk.auth.whoami()}'s account using balenaSDK`);
+	async authenticate(balenaApiKey) {
+		await this.sdk.auth.loginWithToken(balenaApiKey);
+		console.log(`Logged in with ${await this.sdk.auth.whoami()}'s account on ${this.balenaApiUrl} using balenaSDK`);
 	}
 
 	/**

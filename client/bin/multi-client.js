@@ -5,12 +5,7 @@ const coreHost = config.core.host;
 const corePort = config.core.port;
 const coreUrl = `http://${coreHost}:${corePort}`;
 
-
 const ajv = new (require('ajv'))({ allErrors: true });
-const { getSdk } = require('balena-sdk');
-const balena = getSdk({
-	apiurl: config.balena.apiUrl,
-});
 const { fork } = require('child_process');
 const { ensureDir } = require('fs-extra');
 const { fs } = require('mz');
@@ -314,7 +309,7 @@ class NonInteractiveState {
 
 	state.info('Computing Run Queue');
 
-	const balenaCloud = new BalenaCloudInteractor(balena);
+	
 	// Iterates through test jobs and pushes jobs to available testbot workers
 	for (const runConfig of runConfigs) {
 		if (runConfig.workers instanceof Array) {
@@ -325,10 +320,13 @@ class NonInteractiveState {
 					workers: null,
 					workerPrefix: null,
 					array: true,
+					deviceUrl: worker
 				});
 			});
 		} else if (runConfig.workers instanceof Object) {
-			await balenaCloud.authenticate(runConfig.workers.apiKey);
+			const balenaCloud = new BalenaCloudInteractor(runConfig.config.balenaApiUrl);
+			await balenaCloud.authenticate(runConfig.config.balenaApiKey);
+			
 			const matchingDevices = await balenaCloud.selectDevicesWithDUT(
 				runConfig.workers.balenaApplication,
 				runConfig.deviceType,
@@ -346,6 +344,7 @@ class NonInteractiveState {
 				workers: null,
 				matchingDevices: matchingDevices,
 				workerPrefix: null,
+				balenaCloud: balenaCloud
 			});
 		}
 	}
@@ -364,13 +363,13 @@ class NonInteractiveState {
 			// If matching workers for the job are available then allot them a job
 			for (var device of job.matchingDevices) {
 				// check if device is idle & public URL is reachable
-				var deviceUrl = '';
-				if (!job.array) {
-					deviceUrl = await balenaCloud.resolveDeviceUrl(device);
-				} else {
-					deviceUrl = device;
-				}
 				try {
+					var deviceUrl = '';
+					if (!job.array) {
+						deviceUrl = await job.balenaCloud.resolveDeviceUrl(device);
+					} else {
+						deviceUrl = device;
+					}
 					let status = await rp.get(
 						new url.URL('/state', deviceUrl).toString(),
 					);
