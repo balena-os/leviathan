@@ -1,4 +1,16 @@
 - commits:
+    - subject: "minor: Make client work with different balenaCloud environments"
+      hash: d975cfff5f15cfdffffa81202de5ad6fd8d41d87
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipulgupta2048@gmail.com>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipulgupta2048@gmail.com>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.28.0
+  title: ""
+  date: 2023-06-30T15:07:41.244Z
+- commits:
     - subject: Update balena-os/leviathan-worker to v2.9.8
       hash: 2a3757973579a8beeaa1aca0f226a58857d28e32
       body: |
