@@ -109,7 +109,7 @@ module.exports = class BalenaSDK {
 					{
 						host: this.sshConfig.host,
 						username: await this.balena.auth.whoami(),
-						port: this.sshConfig.sshPort,
+						port: this.sshConfig.port,
 					},
 				);
 

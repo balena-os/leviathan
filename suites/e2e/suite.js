@@ -75,7 +75,7 @@ module.exports = {
 			utils: this.require('common/utils'),
 			sshKeyPath: join(homedir(), 'id'),
 			sshKeyLabel: this.suite.options.id,
-			sdk: new Balena(this.suite.options.balena.apiUrl, this.getLogger()),
+			sdk: new Balena(this.suite.options.balena.apiUrl, this.getLogger(), this.suite.options.config.sshConfig),
 			link: `${this.suite.options.balenaOS.config.uuid.slice(0, 7)}.local`,
 			worker: new Worker(
 				this.suite.deviceType.slug,
@@ -83,6 +83,7 @@ module.exports = {
 				this.suite.options.workerUrl,
 				this.suite.options.balena.organization,
 				join(homedir(), 'id'),
+				this.suite.options.config.sshConfig
 			),
 		});
 

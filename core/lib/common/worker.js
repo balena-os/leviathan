@@ -88,8 +88,8 @@ module.exports = class Worker {
 		this.sshKey = sshKey;
 		this.dutSshKey = `/tmp/id`;
 		this.logger = logger;
-		this.workerHost = new URL(this.url).hostname;
-		this.workerPort = '22222';
+		this.workerHost = sshConfig.host || 'ssh.balena-devices.com'
+		this.workerPort = sshConfig.port || 22;
 		this.workerUser = 'root';
 		this.sshPrefix = '';
 		this.uuid = '';
@@ -103,8 +103,6 @@ module.exports = class Worker {
 			)[1];
 			this.sshPrefix = `host ${this.uuid} `;
 			this.workerUser = this.username;
-			this.workerPort = sshConfig.port || 22;
-			this.workerHost = sshConfig.host || 'ssh.balena-devices.com'
 		}	
 	}
 
@@ -331,10 +329,12 @@ module.exports = class Worker {
 				};
 			} else {
 				config = {
-					host: 'ssh.balena-devices.com',
-					port: '22',
+					host: this.workerHost,
+					port: this.workerPort,
 					username: this.username,
 				};
+				console.log('local ssh attempt')
+				console.log(config)
 				command = `host ${target} ${command}`;
 			}
 
