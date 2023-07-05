@@ -1,4 +1,16 @@
 - commits:
+    - subject: "patch: Pass env variables to client"
+      hash: 09086c9c1c3471c8c803e6a91cbd72b09f1c9210
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipulgupta2048@gmail.com>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipulgupta2048@gmail.com>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.28.1
+  title: ""
+  date: 2023-07-05T09:00:56.929Z
+- commits:
     - subject: "minor: Make client work with different balenaCloud environments"
       hash: d975cfff5f15cfdffffa81202de5ad6fd8d41d87
       body: ""
