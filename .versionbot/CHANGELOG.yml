@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update core/contracts digest to 6e3d563
+      hash: cf53ba6f0d58dce5b6d8e94a799600f52dbfe75d
+      body: |
+        Update core/contracts
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Self-hosted Renovate Bot
+      nested: []
+  version: 2.28.2
+  title: ""
+  date: 2023-07-05T10:03:26.492Z
+- commits:
     - subject: "patch: Pass env variables to client"
       hash: 09086c9c1c3471c8c803e6a91cbd72b09f1c9210
       body: ""
