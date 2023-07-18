@@ -1,4 +1,28 @@
 - commits:
+    - subject: update e2e tests to use sshconfig
+      hash: 1f44580c2010f0e88eb395da951cb539b6afbcdb
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+    - subject: "core: allow configurable ssh target"
+      hash: 3b72e4963586aa9687aad5f6339910f587201fc2
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+  version: 2.28.7
+  title: ""
+  date: 2023-07-18T14:08:01.343Z
+- commits:
     - subject: Update balena-os/leviathan-worker to v2.9.12
       hash: 5cf43a3e84d16110d16df6a9d740781294a10879
       body: |
