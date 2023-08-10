@@ -649,7 +649,7 @@ module.exports = class Worker {
 	async rebootDut(target) {
 		this.logger.log(`Rebooting the DUT`);
 		await this.executeCommandInHostOS(
-			`touch /tmp/reboot-check && systemd-run --on-active=2 reboot`,
+			`touch /tmp/reboot-check && systemd-run --on-active=5 reboot`,
 			target,
 		);
 		await this.executeCommandInHostOS(
