@@ -344,6 +344,7 @@ module.exports = class Worker {
 					try {
 						result = await utils.executeCommandOverSSH(command, config);
 					} catch (err) {
+						console.log(`Failed to execute command: ${command}`)
 						console.error(err.message);
 						throw new Error(err);
 					}
