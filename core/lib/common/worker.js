@@ -468,7 +468,7 @@ module.exports = class Worker {
 			`tcp-listen:${workerPort},reuseaddr,fork "system:ssh ${ip} -p 22222 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${this.dutSshKey} /usr/bin/nc localhost ${dutPort}"`,
 		]);
 
-		let tunnelProWorker = spawn(`ssh`, argsWorker);
+		let tunnelProWorker = spawn(`ssh`, argsWorker, {stdio: 'inherit'});
 
 		// setup a listener from this host to worker must be a sub process...
 		// we must give map the same port on this host and the DUT - so the cli can use it
@@ -478,7 +478,7 @@ module.exports = class Worker {
 			`system:ssh ${this.workerUser}@${this.workerHost} -p ${this.workerPort} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${this.sshKey} ${this.sshPrefix}/usr/bin/nc localhost ${workerPort}`,
 		];
 
-		let tunnelProcClient = spawn(`socat`, argsClient);
+		let tunnelProcClient = spawn(`socat`, argsClient, {stdio: 'inherit'});
 	}
 
 	// create tunnels to relevant DUT ports to we can access them remotely
@@ -649,7 +649,7 @@ module.exports = class Worker {
 	async rebootDut(target) {
 		this.logger.log(`Rebooting the DUT`);
 		await this.executeCommandInHostOS(
-			`touch /tmp/reboot-check && systemd-run --on-active=5 reboot`,
+			`touch /tmp/reboot-check && systemd-run --on-active=2 reboot`,
 			target,
 		);
 		await this.executeCommandInHostOS(
