@@ -1,4 +1,16 @@
 - commits:
+    - subject: "patch: Add balenaCloud configurable environments to e2e"
+      hash: e1858f52a46fc154644352ae9d85d22959523e22
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipulgupta2048@gmail.com>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipulgupta2048@gmail.com>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.28.9
+  title: ""
+  date: 2023-08-18T10:12:14.545Z
+- commits:
     - subject: Update balena-os/leviathan-worker to v2.9.13
       hash: ea149d835fd8b170ae9a8554e063e964c4b34af6
       body: |
