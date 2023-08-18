@@ -12,22 +12,22 @@
  * limitations under the License.
  */
 
-'use strict';
+"use strict";
 
-const { delay } = require('bluebird');
+const { delay } = require("bluebird");
 
 module.exports = {
-	title: 'Power Cycle Tests',
+	title: "Power Cycle Tests",
 	tests: [
 		{
-			title: 'Power cycling the DUT',
+			title: "Power cycling the DUT",
 			workerContract: {
-				type: 'object',
-				required: ['workerType'],
+				type: "object",
+				required: ["workerType"],
 				properties: {
 					workerType: {
-						type: 'string',
-						const: 'testbot_hat'
+						type: "string",
+						const: "testbot_hat",
 					},
 				},
 			},
@@ -40,49 +40,42 @@ module.exports = {
 
 				test.true(
 					testbot.vout >= testbot.deviceVoltage * maxDeviation,
-					`Output voltage (${testbot.vout}) should be >= expected minimum voltage (${testbot.deviceVoltage * maxDeviation})`,
+					`Output voltage (${testbot.vout}) should be >= expected minimum voltage (${
+						testbot.deviceVoltage * maxDeviation
+					})`,
 				);
 
 				test.true(
 					testbot.vout < testbot.deviceVoltage * (1 + maxDeviation),
-					`Output Voltage ${testbot.vout} should be < expected maximum voltage (${testbot.deviceVoltage * (1 + maxDeviation)})`,
+					`Output Voltage ${testbot.vout} should be < expected maximum voltage (${
+						testbot.deviceVoltage * (1 + maxDeviation)
+					})`,
 				);
 
 				// The lowest power device we currently have drew 0.03A when tested
-				test.true(
-					testbot.amperage > 0.03,
-					`Output current ${testbot.amperage} should be above the 0.03 limit`,
-				);
+				test.true(testbot.amperage > 0.03, `Output current ${testbot.amperage} should be above the 0.03 limit`);
 
 				await this.worker.off();
-				test.true(true, 'Device should be able to power cycle properly.');
+				test.true(true, "Device should be able to power cycle properly.");
 			},
 		},
 		{
-			title: 'Is the DUT reachable?',
+			title: "Is the DUT reachable?",
 			run: async function (test) {
-
 				await this.worker.on();
 				await this.worker.addSSHKey(this.sshKeyPath);
 
 				// create tunnels
-				this.log('Creating SSH tunnels to DUT');
-				await this.worker.createSSHTunnels(
-					this.link,
-				);
+				this.log("Creating SSH tunnels to DUT");
+				await this.worker.createSSHTunnels(this.link);
 
-				this.log('Waiting for device to be reachable');
+				this.log("Waiting for device to be reachable");
 				test.equal(
-					await this.context
-						.get()
-						.worker.executeCommandInHostOS(
-							'cat /etc/hostname',
-							this.link,
-						),
-					this.link.split('.')[0],
-					'Device should be reachable',
+					await this.context.get().worker.executeCommandInHostOS("cat /etc/hostname", this.link),
+					this.link.split(".")[0],
+					"Device should be reachable",
 				);
-			}
-		}
+			},
+		},
 	],
 };

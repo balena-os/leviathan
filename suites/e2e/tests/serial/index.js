@@ -12,24 +12,24 @@
  * limitations under the License.
  */
 
-'use strict';
+"use strict";
 
-const { delay } = require('bluebird');
-const fs = require('fs').promises;
-const SERIAL_PATH = "/reports/dut-serial.txt"
+const { delay } = require("bluebird");
+const fs = require("fs").promises;
+const SERIAL_PATH = "/reports/dut-serial.txt";
 
 module.exports = {
-	title: 'Serial test',
+	title: "Serial test",
 	tests: [
 		{
-			title: 'Recording DUT serial output',
+			title: "Recording DUT serial output",
 			workerContract: {
-				type: 'object',
-				required: ['workerType'],
+				type: "object",
+				required: ["workerType"],
 				properties: {
 					workerType: {
-						type: 'string',
-						const: 'testbot_hat'
+						type: "string",
+						const: "testbot_hat",
 					},
 				},
 			},
@@ -38,35 +38,27 @@ module.exports = {
 				await this.context.get().worker.off();
 
 				try {
-					await fs.access(SERIAL_PATH)
-					console.log(`Serial file found at ${SERIAL_PATH}`)
+					await fs.access(SERIAL_PATH);
+					console.log(`Serial file found at ${SERIAL_PATH}`);
 				} catch (err) {
-					console.log(`${err}`)
+					console.log(`${err}`);
 					if (this.workerContract.workerType === `testbot_hat`) {
 						try {
-							await fs.writeFile(
-								SERIAL_PATH,
-								(await this.worker.fetchSerial()).toString(),
-								{ encoding: 'utf8' }
-							)
-							console.log(`Serial file created at ${SERIAL_PATH}`)
+							await fs.writeFile(SERIAL_PATH, (await this.worker.fetchSerial()).toString(), { encoding: "utf8" });
+							console.log(`Serial file created at ${SERIAL_PATH}`);
 						} catch (error) {
-							console.err(`Couldn't find logs: ${error}`)
+							console.err(`Couldn't find logs: ${error}`);
 						}
 					}
 				} finally {
+					test.not((await fs.stat(SERIAL_PATH)).size, 0, `Size of serial output file from DUT shouldn't be 0`);
 					test.not(
-						(await fs.stat(SERIAL_PATH)).size,
-						0,
-						`Size of serial output file from DUT shouldn't be 0`,
-					)
-					test.not(
-						(((await fs.readFile(`${SERIAL_PATH}`, 'utf8')).trim()).split('  ')).length,
+						(await fs.readFile(`${SERIAL_PATH}`, "utf8")).trim().split("  ").length,
 						0,
 						`Serial output from DUT shouldn't be empty`,
-					)
+					);
 				}
-			}
+			},
 		},
 	],
 };
