@@ -1,4 +1,18 @@
 - commits:
+    - subject: improve autokit quickstart
+      hash: fb7005cb55d91ce5b0713af9e534803d0841ff57
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+  version: 2.28.11
+  title: ""
+  date: 2023-08-18T14:21:19.299Z
+- commits:
     - subject: "patch: Update suites dependencies to latest"
       hash: 6b20fa345404169da50b3b9bd853c41105448e67
       body: ""
