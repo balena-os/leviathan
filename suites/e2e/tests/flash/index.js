@@ -12,13 +12,13 @@
  * limitations under the License.
  */
 
-'use strict';
+"use strict";
 
 module.exports = {
-	title: 'Flashing tests',
+	title: "Flashing tests",
 	tests: [
 		{
-			title: 'Flashing an image',
+			title: "Flashing an image",
 			run: async function (test) {
 				try {
 					await this.worker.off(); // Ensure DUT is off before starting tests
@@ -26,10 +26,7 @@ module.exports = {
 				} catch (err) {
 					throw new Error(`Flashing failed with error: ${err}`);
 				}
-				test.true(
-					true,
-					`${this.os.image.path} should be flashed properly`,
-				);
+				test.true(true, `${this.os.image.path} should be flashed properly`);
 			},
 		},
 	],
