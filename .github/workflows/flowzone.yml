@@ -35,6 +35,12 @@ jobs:
       BALENACLOUD_ORG: testbot
       BALENACLOUD_API_KEY: ${{ secrets.BALENA_TOKEN }}
       BALENACLOUD_APP_NAME: balena/testbot-rig
+      BALENACLOUD_API_URL: balena-cloud.com
+      ENVIRONMENT: ${{ matrix.ENVIRONMENT }}
+      BALENAMACHINE_API_KEY: ${{ secrets.BALENAMACHINE_API_KEY }}
+      BALENAMACHINE_API_URL: bm.balena-dev.com
+      BALENACLOUD_SSH_URL: ssh.devices.bm.balena-dev.com
+      BALENACLOUD_SSH_PORT: 222
       QEMU_CPUS: 1
       QEMU_MEMORY: 1G
       WORKER_TYPE: ${{ matrix.WORKER_TYPE }}
@@ -51,12 +57,16 @@ jobs:
         include:
           - DEVICE_TYPE: genericx86-64-ext
             WORKER_TYPE: qemu
+            ENVIRONMENT: balena-cloud
           - DEVICE_TYPE: generic-amd64
             WORKER_TYPE: qemu
+            ENVIRONMENT: balena-cloud
           - DEVICE_TYPE: generic-aarch64
             WORKER_TYPE: qemu
+            ENVIRONMENT: balena-machine
           - DEVICE_TYPE: raspberrypi3
             WORKER_TYPE: testbot
+            ENVIRONMENT: balena-machine
 
     steps:
       - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3
@@ -69,7 +79,7 @@ jobs:
       - name: Build leviathan images
         run: |
           make build
-      
+
       - name: Run test suite
         run: |
           make config

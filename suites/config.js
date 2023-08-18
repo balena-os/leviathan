@@ -5,9 +5,13 @@ module.exports = [{
     networkWired: false,
     networkWireless: process.env.WORKER_TYPE === 'qemu' ? false : true,
     downloadVersion: 'latest',
-    balenaApiKey: process.env.BALENACLOUD_API_KEY,
-    balenaApiUrl: 'balena-cloud.com',
-    organization: process.env.BALENACLOUD_ORG
+    balenaApiKey: process.env.ENVIRONMENT === 'balena-machine' ? process.env.BALENAMACHINE_API_KEY : process.env.BALENACLOUD_API_KEY,
+    balenaApiUrl: process.env.ENVIRONMENT === 'balena-machine' ? process.env.BALENAMACHINE_API_URL : process.env.BALENACLOUD_API_URL,
+    organization: process.env.BALENACLOUD_ORG,
+    sshConfig: {
+			host: process.env.BALENACLOUD_SSH_URL,
+			port: process.env.BALENACLOUD_SSH_PORT,
+		}
   },
   image: false,
   debug: {
@@ -15,6 +19,6 @@ module.exports = [{
   },
   workers: process.env.WORKER_TYPE === 'qemu' ? ['http://worker'] : {
 		balenaApplication: process.env.BALENACLOUD_APP_NAME,
-		apiKey: process.env.BALENACLOUD_API_KEY,
+		apiKey: process.env.ENVIRONMENT === 'balena-machine' ? process.env.BALENAMACHINE_API_KEY : process.env.BALENACLOUD_API_KEY,
 	},
 }];
