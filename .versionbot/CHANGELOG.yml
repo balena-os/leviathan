@@ -1,4 +1,16 @@
 - commits:
+    - subject: "patch: Exit GH job if tests fails"
+      hash: ecadbe90faa5b52f2b643f4d5293ec4954980772
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipulgupta2048@gmail.com>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipulgupta2048@gmail.com>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.28.13
+  title: ""
+  date: 2023-08-25T07:43:04.108Z
+- commits:
     - subject: Update balena-os/leviathan-worker to v2.9.18
       hash: 2b27e7a539bd30b96ffb02e0491f720095e0c484
       body: |
