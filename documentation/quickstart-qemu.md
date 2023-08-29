@@ -35,7 +35,7 @@ module.exports = {
     },
     debug: {
         unstable: ["Kill the device under test"],
-    }
+    },
     image: false, 
     workers: ['http://worker'],
 };
