@@ -8,6 +8,10 @@
                     "source": "../documentation/quickstart.md",
                     "children": [
                         {
+                            "title": "Autokit worker",
+                            "source": "../documentation/quickstart-autokit.md"
+                        },
+                        {
                             "title": "Testbot worker",
                             "source": "../documentation/quickstart-testbot.md"
                         },

@@ -35,6 +35,7 @@ Leviathan allows for running tests on a device under test (DUT) connected to and
 
 1. [Testbot worker][quickstart-testbot]
 2. [QEMU worker][quickstart-qemu]
+3. [Autokit worker][quickstart-autokit]
 
 ## Instructions for rig-owners
 
@@ -76,3 +77,4 @@ The project is licensed under the Apache 2.0 license.
 [source]: https://github.com/balena-io/leviathan
 [quickstart-qemu]: https://balena-os.github.io/leviathan/pages/Getting-Started/quickstart/quickstart-qemu.html
 [quickstart-testbot]: https://balena-os.github.io/leviathan/pages/Getting-Started/quickstart/quickstart-testbot.html
+[quickstart-autokit]: https://balena-os.github.io/leviathan/pages/Getting-Started/quickstart/quickstart-autokit.html
