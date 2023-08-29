@@ -9,8 +9,14 @@ Before beginning, make sure you completed the Leviathan pre-requisted listed on 
 For your first test run, we will be running the [e2e test suite](https://github.com/balena-os/leviathan/tree/master/suites/e2e). This is a basic testing suite to test your worker configuration and if the setup is correct. Each Levaithan test run needs the following to start testing that the user has to provide:
 
 1. **The test suite you want to run**: [e2e test suite](https://github.com/balena-os/leviathan/tree/master/suites/e2e) (already provided)
-2. **A balenaOS image used to flash, provision and test the DUT**. The test will automatically download an OS image this time. So no need to provide your own image.  
-3. **A test configuration using the `config.js` file**: Let's create one.
+2. **A balenaOS image used to flash, provision and test the DUT**. The test will automatically download an OS image this time. So no need to provide your own image.
+3. To run QEMU tests, we need the TUN interface. Run the following commands to activate the TUN module. 
+
+```
+sudo modprobe tun
+```
+
+4. **A test configuration using the `config.js` file**: Let's create one.
 
 ### Build your `config.js` file
 
