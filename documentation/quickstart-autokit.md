@@ -77,20 +77,22 @@ module.exports = {
 }
 ```
 
-Ensure that the `organization` matches the username that owns the `balenaApiKey` - otherwise it will lead to authentication errors.
+Ensure that you fill all fields in the `config.js` file before proceeding. Refer to the {@page Config.js Reference | Config.js reference} for more information
 
-To provide values of environment variables easily, you can create a `.env` file in the root of the leviathan directory. Use the format below as boilerplate. 
+You can either modify the `config.js` file or provide values using environment variables. To provide values of environment variables easily, you can create a `.env` file in the root of the leviathan directory. Use the format below as boilerplate. 
 
-```
+
+```bash
 WORKSPACE=./workspace
 REPORTS=./workspace/reports
-SUITES=/path/to/meta-balena/tests/suites
+SUITES=./path/to/suites
 DEVICE_TYPE=raspberrypi3
-BALENACLOUD_API_KEY=<api key>
-BALENACLOUD_ORG=<org>
-BALENA_ARCH=amd64
-BALENACLOUD_APP_NAME=<app-name>
+WORKER_TYPE=autokit
+BALENACLOUD_API_KEY=SAMPLEKEYuhfuwehfewiuf[...]LLJA
+BALENACLOUD_ORG=g_username_of_the_user
 ```
+
+Refer to the {@page Config.js Reference | Environment Variables Reference} for more values you can specify.
 
 ### Start the run
 
@@ -107,10 +109,11 @@ A successful run of the e2e test suite without any errors makes sure that your a
 
 ## Let's run some "real" tests
 
-We will start with a test run of the [balenaOS unmanaged testing suite](https://github.com/balena-os/meta-balena/tree/master/tests/suites). To get the tests, clone the meta-balena repository. The OS tests are located in the `tests/` directory.
 
-- Either copy the `OS test suite` directory from meta-balena to the `workspace` directory 
-- or point the `suite` property to the path of the OS test suite in the meta-balena directory.
+We will start with a test run of the [balenaOS unmanaged testing suite](https://github.com/balena-os/meta-balena/tree/master/tests/suites). To get the tests, clone the [meta-balena](https://github.com/balena-os/meta-balena/) repository. The OS tests are located in the `tests/suites/` directory.
+
+- Either copy the `OS` test suite directory from meta-balena to the `suites` directory 
+- or point the `suite` property in your config.js file to the relative path of the OS test suite like mentioned below.
 
 ```js
 module.exports = {
@@ -132,7 +135,7 @@ module.exports = {
 };
 ```
 
-- This time you can provide your own OS image to test. You can download an unmanaged genericx86-64-ext balenaOS image from [balena.io/os](https://www.balena.io/os/#download) and place it in the workspace folder if you need to provide one. Change the value of the `image` property to the path of the image you downloaded. 
+This time you can provide your own OS image to test. You can download an unmanaged genericx86-64-ext balenaOS image from [balena.io/os](https://www.balena.io/os/#download) and place it in the `workspace` directory. Change the value of the `image` property to the path of the image you downloaded. This will be the OS image used by the OS tests in Leviathan.
 
 ### Start the OS test
 
