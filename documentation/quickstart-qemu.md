@@ -47,7 +47,7 @@ module.exports = {
 };
 ```
 
-To provide values of environment variables easily, you can create a `.env` file in the root of the leviathan directory. Use the format below as boilerplate. No need to do this for this test run. 
+You should at least provide **balenaApiKey** and **organization** (or user). You can either modify the file above or provide values using environment variables. To provide values of environment variables easily, you can create a `.env` file in the root of the leviathan directory. Use the format below as boilerplate. No need to do this for this test run.
 
 ```
 WORKSPACE=./workspace
@@ -59,6 +59,13 @@ BALENACLOUD_API_KEY=<api key>
 BALENACLOUD_ORG=<org>
 BALENA_ARCH=amd64
 BALENACLOUD_APP_NAME=<app-name>
+```
+
+As an example you could [get a key](https://docs.balena.io/learn/manage/account/#api-keys) and set your organization/user like:
+
+```
+BALENACLOUD_API_KEY=YEATV[...]LLJA
+BALENACLOUD_ORG=g_my_user_or_org
 ```
 
 ### Start the run
