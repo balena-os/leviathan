@@ -1,4 +1,16 @@
 - commits:
+    - subject: "patch: Resolve dead links in README"
+      hash: 2ad20d6b91a9dd8e0201343f2bc63b9d39c9793f
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipulgupta2048@gmail.com>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipulgupta2048@gmail.com>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.28.18
+  title: ""
+  date: 2023-08-29T15:54:14.475Z
+- commits:
     - subject: Update core/contracts digest to ca46c34
       hash: aac3e01e14b350ad08b4c31bc24b3a4a4648634a
       body: |
