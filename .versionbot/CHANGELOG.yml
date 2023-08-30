@@ -1,4 +1,16 @@
 - commits:
+    - subject: "patch: Add .nojekyll file to docs"
+      hash: 9673e6b5415ca80148ddca294715a3bbc8458db7
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipulgupta2048@gmail.com>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipulgupta2048@gmail.com>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.28.19
+  title: ""
+  date: 2023-08-30T07:17:29.891Z
+- commits:
     - subject: "patch: Resolve dead links in README"
       hash: 2ad20d6b91a9dd8e0201343f2bc63b9d39c9793f
       body: ""
