@@ -1,4 +1,18 @@
 - commits:
+    - subject: add nocache flash to balena push
+      hash: daf54b5efbbbd66dd71a3c9478c813b8780293ee
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+  version: 2.28.22
+  title: ""
+  date: 2023-08-30T09:42:49.965Z
+- commits:
     - subject: "patch: Update client dependencies"
       hash: 1a152c49d67f4760cfcac68a4fa945a722ba836c
       body: ""
