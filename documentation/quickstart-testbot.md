@@ -1,4 +1,4 @@
-# Getting Started with Testbot Worker 
+# [Deprecated] Getting Started with Testbot Worker 
 
 This is a quick start guide for using the leviathan framework with the testbot worker. 
 
@@ -68,10 +68,10 @@ A successful run of the e2e test suite without any errors makes sure that your t
 
 ## Let's run some "real" tests
 
-We will start with a test run of the [balenaOS unmanaged testing suite](https://github.com/balena-os/meta-balena/tree/master/tests/suites). To get the tests, clone the meta-balena repository. The OS tests are located in the `tests/` directory.
+We will start with a test run of the [balenaOS unmanaged testing suite](https://github.com/balena-os/meta-balena/tree/master/tests/suites). To get the tests, clone the [meta-balena](https://github.com/balena-os/meta-balena/) repository. The OS tests are located in the `tests/suites/` directory.
 
-- Either copy the `OS test suite` directory from meta-balena to the `workspace` directory 
-- or point the `suite` property to the path of the OS test suite in the meta-balena directory.
+- Either copy the `OS` test suite directory from meta-balena to the `suites` directory 
+- or point the `suite` property in your config.js file to the relative path of the OS test suite like mentioned below.
 
 ```js
 module.exports = {
@@ -83,11 +83,11 @@ module.exports = {
         downloadVersion: 'latest',
         balenaApiKey: process.env.BALENACLOUD_API_KEY,
         balenaApiUrl: 'balena-cloud.com',
-        organization: 'BALENACLOUD_ORG_GOES_HERE',
+        organization: process.env.BALENACLOUD_ORG,
     },
     image: `${__dirname}/path/to/image`,
     workers: {
-        balenaApplication: 'balena/testbot-personal',
+        balenaApplication: 'your-fleet-slug',
         apiKey: process.env.BALENACLOUD_API_KEY
     }
 };

@@ -27,9 +27,9 @@ Information on properties in `config.js`:
 - **`deviceType`** is the Device Under Test (DUT) attached to the testbot. Example: Raspberrypi3 64-bit device, the `deviceType` property needs to be `raspberrypi3-64`.
 - **`suite`** is the absolute path to the test suite directory that you want to execute.  As shown in the example above, `${__dirname}` expands to the absolute path of the `workspace` directory, so you can use it to specify a path relative to `workspace`.
 - **`networkWired`** and **`networkWireless`** properties are configuration for the Network Manager. This sets up the Access Point (AP) created by the testbot for the DUT to use while provisioning.
-- **`balenaApiKey`** is the balenaCloud API key used when running the cloud release suite. 
+- **`balenaApiKey`** is the balenaCloud API key of the user running the test. You can generate a new [balena API key](https://docs.balena.io/learn/manage/account/#api-keys) for this field.
 - **`balenaApiUrl`** is the balenaCloud environment you are targetting for your test suite. Production is `'balena-cloud.com'` and staging is `'balena-staging.com'`.
-- **`organization`** is the balenaCloud organization where test applications are created for the cloud suite.
+- **`organization`** is the balenaCloud organization where test applications are created for the cloud suite. Add the `username` of the user who owns the `balenaApiKey` - otherwise it will lead to authentication errors. You can find the `username` of the user from the top right section of the dashboard. 
 - **`debug`** is where debugging properties are stored for test runs. Check out {@page Debugging tests in Leviathan | Debugging documentation} for features you can add. 
 - **`image`** is the absolute path to the balenaOS image that is flashed onto the Device Under Test (DUT).  As shown in the example above, `${__dirname}` expands to the absolute path of the `workspace` directory, so you can use it to specify a path relative to `workspace`.
 
@@ -207,3 +207,25 @@ module.exports = [{
 Add more objects to the array for as many workers that you need to target in the development rig to run your tests. Do make sure to specify the balenaOS images or assets correctly needed for each test suite you run for each worker.
 
 `config.js` files are validated using this [schema](https://github.com/balena-os/leviathan/blob/master/client/lib/schemas/multi-client-config.js). Some properties are optional with the ability to add new properties as required. After adding data to config.js, the properties will be available throughout the execution of the test suite.
+
+## Environment Variables Reference
+
+To provide values of environment variables for config.js, makefile or for docker-compose, you can create a `.env` file in the root of the leviathan directory. Below is an exhaustive list of environment variables that can be set `.env`
+
+| Environment Variable    | Description                                                                                                    | Example Value                    |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------- | -------------------------------- |
+| `WORKSPACE`             | Path to the workspace directory                                                                                | `./workspace`                    |
+| `REPORTS`               | Path to the reports directory within workspace                                                                 | `./workspace/reports`            |
+| `SUITES`                | Path to the test suites                                                                                        | `./path/to/suites`               |
+| `DEVICE_TYPE`           | The Device under test - [slug of the device](https://docs.balena.io/reference/hardware/devices/) to be tested. | `raspberrypi3`                   |
+| `WORKER_TYPE`           | Type of the worker                                                                                             | `autokit`                        |
+| `BALENACLOUD_API_KEY`   | API key for BalenaCloud                                                                                        | `SAMPLEKEYuhfuwehfewiuf...`      |
+| `BALENACLOUD_API_URL`   | API URL for BalenaCloud to reach the API                                                                       | `https://api.balena-cloud.com`   |
+| `BALENACLOUD_ORG`       | Username for the user owning the API key                                                                       | `g_username_of_the_user`         |
+| `BALENA_ARCH`           | Architecture of the device you are using as the autokit/testbot                                                | `amd64`                          |
+| `BALENACLOUD_APP_NAME`  | Name of the fleet in BalenaCloud hosting all autokits connected to their respective DUTs for testing           | `MyApp`                          |
+| `BALENACLOUD_SSH_PORT`  | SSH port for BalenaMachine                                                                                     | `22222`                          |
+| `BALENACLOUD_SSH_URL`   | SSH URL for BalenaMachine                                                                                      | `ssh.balena-cloud.com`           |
+| `BALENAMACHINE_API_KEY` | API key for BalenaMachine                                                                                      | `ANOTHERKEY12345...`             |
+| `BALENAMACHINE_API_URL` | API URL for BalenaMachine                                                                                      | `https://api.balena-machine.com` |
+| `ENVIRONMENT`           | Specifies the environment (only value: balena-machine)                                                         | `balena-machine`                 |

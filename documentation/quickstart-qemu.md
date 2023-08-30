@@ -47,19 +47,22 @@ module.exports = {
 };
 ```
 
-To provide values of environment variables easily, you can create a `.env` file in the root of the leviathan directory. Use the format below as boilerplate. No need to do this for this test run. 
+Ensure that you fill all fields in the `config.js` file before proceeding. Refer to the {@page Config.js Reference | Config.js reference} for more information
 
-```
+You can either modify the `config.js` file or provide values using environment variables. To provide values of environment variables easily, you can create a `.env` file in the root of the leviathan directory. Use the format below as boilerplate.
+
+```bash
 WORKSPACE=./workspace
 REPORTS=./workspace/reports
 SUITES=/path/to/suites
 DEVICE_TYPE=intel-nuc
 WORKER_TYPE=qemu
-BALENACLOUD_API_KEY=<api key>
-BALENACLOUD_ORG=<org>
-BALENA_ARCH=amd64
-BALENACLOUD_APP_NAME=<app-name>
+BALENACLOUD_API_KEY=SAMPLEKEYuhfuwehfewiuf[...]LLJA
+BALENACLOUD_ORG=g_username_of_the_user
 ```
+
+Refer to the {@page Config.js Reference | Environment Variables Reference} for more values you can specify.
+
 
 ### Start the run
 
@@ -75,9 +78,9 @@ A successful run of the e2e test suite without any errors makes sure that your Q
 
 ## Let's run some "real" tests
 
-We will start with a test run of the [balenaOS unmanaged testing suite](https://github.com/balena-os/meta-balena/tree/master/tests/suites). To get the tests, clone the meta-balena repository. The OS tests are located in the `tests/` directory.
+We will start with a test run of the [balenaOS unmanaged testing suite](https://github.com/balena-os/meta-balena/tree/master/tests/suites). To get the tests, clone the [meta-balena](https://github.com/balena-os/meta-balena/) repository. The OS tests are located in the `tests/suites/` directory.
 
-- Either copy the `OS test suite` directory from meta-balena to the `workspace` directory 
+- Either copy the `OS` test suite directory from meta-balena to the `suites` directory 
 - or point the `suite` property in your config.js file to the relative path of the OS test suite like mentioned below.
 
 ```js
@@ -92,12 +95,12 @@ module.exports = {
         balenaApiUrl: 'balena-cloud.com',
         organization: 'BALENACLOUD_ORG_GOES_HERE',
     },
-    image: `${__dirname}/balena.img`,
+    image: `${__dirname}/path/to/image`,
     workers: ['http://worker'],
 };
 ```
 
-- This time you can provide your own OS image to test. You can download an unmanaged genericx86-64-ext balenaOS image from [balena.io/os](https://www.balena.io/os/#download) and place it in the workspace folder if you need to provide one. Change the value of the `image` property to the path of the image you downloaded. 
+This time you can provide your own OS image to test. You can download an unmanaged genericx86-64-ext balenaOS image from [balena.io/os](https://www.balena.io/os/#download) and place it in the `workspace` directory. Change the value of the `image` property to the path of the image you downloaded. This will be the OS image used by the OS tests in Leviathan.
 
 ### Start the OS test
 
@@ -117,7 +120,7 @@ That's the end of the quick start guide, you successfully setup your QEMU worker
 
 ## Advanced
 
-Worker configuration variables can be specified in `docker-compose.local.yml`, under `environment`. The default configuration should suffice in most cases.
+Worker configuration variables can be specified in `docker-compose.qemu.yml`, under `environment`. The default configuration should suffice in most cases.
 
 | Variable            | Description                                         |
 | ------------------- | --------------------------------------------------- |
