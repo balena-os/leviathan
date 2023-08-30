@@ -191,14 +191,14 @@ module.exports = class BalenaSDK {
 	 * @category helper
 	 */
 	async pushReleaseToApp(application, directory) {
-		//await exec(`balena push ${application} --source ${directory}`);
 		await new Promise(async (resolve, reject) => {
 			let balenaPush = spawn('balena', [
 				'push',
 				application,
 				'--source',
 				directory,
-				'--debug'
+				'--debug', 
+				'-c'
 			], { stdio: 'inherit', timeout: 1000 * 60 * 10 });
 
 			balenaPush.on('exit', (code) => {
