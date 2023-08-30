@@ -72,8 +72,8 @@
 	<div class="row">
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
-				<a href="#getting-started-with-testbot-worker" id="getting-started-with-testbot-worker" style="color: inherit; text-decoration: none;">
-					<h1>Getting Started with Testbot Worker</h1>
+				<a href="#deprecated-getting-started-with-testbot-worker" id="deprecated-getting-started-with-testbot-worker" style="color: inherit; text-decoration: none;">
+					<h1>[Deprecated] Getting Started with Testbot Worker</h1>
 				</a>
 				<p>This is a quick start guide for using the leviathan framework with the testbot worker. </p>
 				<a href="#as-a-prerequisite" id="as-a-prerequisite" style="color: inherit; text-decoration: none;">
@@ -133,10 +133,10 @@
 				<a href="#let39s-run-some-quotrealquot-tests" id="let39s-run-some-quotrealquot-tests" style="color: inherit; text-decoration: none;">
 					<h2>Let&#39;s run some &quot;real&quot; tests</h2>
 				</a>
-				<p>We will start with a test run of the <a href="https://github.com/balena-os/meta-balena/tree/master/tests/suites">balenaOS unmanaged testing suite</a>. To get the tests, clone the meta-balena repository. The OS tests are located in the <code>tests/</code> directory.</p>
+				<p>We will start with a test run of the <a href="https://github.com/balena-os/meta-balena/tree/master/tests/suites">balenaOS unmanaged testing suite</a>. To get the tests, clone the <a href="https://github.com/balena-os/meta-balena/">meta-balena</a> repository. The OS tests are located in the <code>tests/suites/</code> directory.</p>
 				<ul>
-					<li>Either copy the <code>OS test suite</code> directory from meta-balena to the <code>workspace</code> directory </li>
-					<li>or point the <code>suite</code> property to the path of the OS test suite in the meta-balena directory.</li>
+					<li>Either copy the <code>OS</code> test suite directory from meta-balena to the <code>suites</code> directory </li>
+					<li>or point the <code>suite</code> property in your config.js file to the relative path of the OS test suite like mentioned below.</li>
 				</ul>
 				<pre><code class="language-js"><span style="color: #DC3EB7">module</span><span style="color: #002339">.</span><span style="color: #DC3EB7">exports</span><span style="color: #002339"> </span><span style="color: #7B30D0">=</span><span style="color: #002339"> {</span>
 <span style="color: #002339">     deviceType: </span><span style="color: #A44185">&quot;raspberrypi3&quot;</span><span style="color: #002339">,</span>
@@ -147,11 +147,11 @@
 <span style="color: #002339">        downloadVersion: </span><span style="color: #A44185">&#039;latest&#039;</span><span style="color: #002339">,</span>
 <span style="color: #002339">        balenaApiKey: </span><span style="color: #2F86D2">process</span><span style="color: #002339">.</span><span style="color: #2F86D2">env</span><span style="color: #002339">.</span><span style="color: #2F86D2">BALENACLOUD_API_KEY</span><span style="color: #002339">,</span>
 <span style="color: #002339">        balenaApiUrl: </span><span style="color: #A44185">&#039;balena-cloud.com&#039;</span><span style="color: #002339">,</span>
-<span style="color: #002339">        organization: </span><span style="color: #A44185">&#039;BALENACLOUD_ORG_GOES_HERE&#039;</span><span style="color: #002339">,</span>
+<span style="color: #002339">        organization: </span><span style="color: #2F86D2">process</span><span style="color: #002339">.</span><span style="color: #2F86D2">env</span><span style="color: #002339">.</span><span style="color: #2F86D2">BALENACLOUD_ORG</span><span style="color: #002339">,</span>
 <span style="color: #002339">    },</span>
 <span style="color: #002339">    image: </span><span style="color: #A44185">`${</span><span style="color: #2F86D2">__dirname</span><span style="color: #A44185">}/path/to/image`</span><span style="color: #002339">,</span>
 <span style="color: #002339">    workers: {</span>
-<span style="color: #002339">        balenaApplication: </span><span style="color: #A44185">&#039;balena/testbot-personal&#039;</span><span style="color: #002339">,</span>
+<span style="color: #002339">        balenaApplication: </span><span style="color: #A44185">&#039;your-fleet-slug&#039;</span><span style="color: #002339">,</span>
 <span style="color: #002339">        apiKey: </span><span style="color: #2F86D2">process</span><span style="color: #002339">.</span><span style="color: #2F86D2">env</span><span style="color: #002339">.</span><span style="color: #2F86D2">BALENACLOUD_API_KEY</span>
 <span style="color: #002339">    }</span>
 <span style="color: #002339">};</span>

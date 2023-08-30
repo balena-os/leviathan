@@ -118,17 +118,17 @@
 <span style="color: #002339">    workers: [</span><span style="color: #A44185">&#039;http://worker&#039;</span><span style="color: #002339">],</span>
 <span style="color: #002339">};</span>
 </code></pre>
-				<p>To provide values of environment variables easily, you can create a <code>.env</code> file in the root of the leviathan directory. Use the format below as boilerplate. No need to do this for this test run. </p>
-				<pre><code><span style="color: #2F86D2">WORKSPACE</span><span style="color: #7B30D0">=</span><span style="color: #002339">.</span><span style="color: #7B30D0">/</span><span style="color: #2F86D2">workspace</span>
-<span style="color: #2F86D2">REPORTS</span><span style="color: #7B30D0">=</span><span style="color: #002339">.</span><span style="color: #7B30D0">/</span><span style="color: #2F86D2">workspace</span><span style="color: #7B30D0">/</span><span style="color: #2F86D2">reports</span>
-<span style="color: #2F86D2">SUITES</span><span style="color: #7B30D0">=/</span><span style="color: #2F86D2">path</span><span style="color: #7B30D0">/</span><span style="color: #2F86D2">to</span><span style="color: #7B30D0">/</span><span style="color: #2F86D2">suites</span>
-<span style="color: #2F86D2">DEVICE_TYPE</span><span style="color: #7B30D0">=</span><span style="color: #2F86D2">intel</span><span style="color: #7B30D0">-</span><span style="color: #2F86D2">nuc</span>
-<span style="color: #2F86D2">WORKER_TYPE</span><span style="color: #7B30D0">=</span><span style="color: #2F86D2">qemu</span>
-<span style="color: #2F86D2">BALENACLOUD_API_KEY</span><span style="color: #7B30D0">=</span><span style="color: #002339">&lt;</span><span style="color: #0444AC">api</span><span style="color: #002339"> </span><span style="color: #0444AC">key</span><span style="color: #002339">&gt;</span>
-<span style="color: #2F86D2">BALENACLOUD_ORG</span><span style="color: #7B30D0">=</span><span style="color: #002339">&lt;</span><span style="color: #0444AC">org</span><span style="color: #002339">&gt;</span>
-<span style="color: #2F86D2">BALENA_ARCH</span><span style="color: #7B30D0">=</span><span style="color: #2F86D2">amd64</span>
-<span style="color: #2F86D2">BALENACLOUD_APP_NAME</span><span style="color: #7B30D0">=</span><span style="color: #002339">&lt;</span><span style="color: #0444AC">app</span><span style="color: #002339">-</span><span style="color: #0444AC">name</span><span style="color: #002339">&gt;</span>
+				<p>Ensure that you fill all fields in the <code>config.js</code> file before proceeding. Refer to the <a href="../config-reference.html">Config.js reference</a> for more information</p>
+				<p>You can either modify the <code>config.js</code> file or provide values using environment variables. To provide values of environment variables easily, you can create a <code>.env</code> file in the root of the leviathan directory. Use the format below as boilerplate.</p>
+				<pre><code class="language-bash"><span style="color: #002339">WORKSPACE=./workspace</span>
+<span style="color: #002339">REPORTS=./workspace/reports</span>
+<span style="color: #002339">SUITES=/path/to/suites</span>
+<span style="color: #002339">DEVICE_TYPE=intel-nuc</span>
+<span style="color: #002339">WORKER_TYPE=qemu</span>
+<span style="color: #002339">BALENACLOUD_API_KEY=SAMPLEKEYuhfuwehfewiuf[...]LLJA</span>
+<span style="color: #002339">BALENACLOUD_ORG=g_username_of_the_user</span>
 </code></pre>
+				<p>Refer to the <a href="../config-reference.html">Environment Variables Reference</a> for more values you can specify.</p>
 				<a href="#start-the-run" id="start-the-run" style="color: inherit; text-decoration: none;">
 					<h3>Start the run</h3>
 				</a>
@@ -140,9 +140,9 @@
 				<a href="#let39s-run-some-quotrealquot-tests" id="let39s-run-some-quotrealquot-tests" style="color: inherit; text-decoration: none;">
 					<h2>Let&#39;s run some &quot;real&quot; tests</h2>
 				</a>
-				<p>We will start with a test run of the <a href="https://github.com/balena-os/meta-balena/tree/master/tests/suites">balenaOS unmanaged testing suite</a>. To get the tests, clone the meta-balena repository. The OS tests are located in the <code>tests/</code> directory.</p>
+				<p>We will start with a test run of the <a href="https://github.com/balena-os/meta-balena/tree/master/tests/suites">balenaOS unmanaged testing suite</a>. To get the tests, clone the <a href="https://github.com/balena-os/meta-balena/">meta-balena</a> repository. The OS tests are located in the <code>tests/suites/</code> directory.</p>
 				<ul>
-					<li>Either copy the <code>OS test suite</code> directory from meta-balena to the <code>workspace</code> directory </li>
+					<li>Either copy the <code>OS</code> test suite directory from meta-balena to the <code>suites</code> directory </li>
 					<li>or point the <code>suite</code> property in your config.js file to the relative path of the OS test suite like mentioned below.</li>
 				</ul>
 				<pre><code class="language-js"><span style="color: #DC3EB7">module</span><span style="color: #002339">.</span><span style="color: #DC3EB7">exports</span><span style="color: #002339"> </span><span style="color: #7B30D0">=</span><span style="color: #002339"> {</span>
@@ -156,13 +156,11 @@
 <span style="color: #002339">        balenaApiUrl: </span><span style="color: #A44185">&#039;balena-cloud.com&#039;</span><span style="color: #002339">,</span>
 <span style="color: #002339">        organization: </span><span style="color: #A44185">&#039;BALENACLOUD_ORG_GOES_HERE&#039;</span><span style="color: #002339">,</span>
 <span style="color: #002339">    },</span>
-<span style="color: #002339">    image: </span><span style="color: #A44185">`${</span><span style="color: #2F86D2">__dirname</span><span style="color: #A44185">}/balena.img`</span><span style="color: #002339">,</span>
+<span style="color: #002339">    image: </span><span style="color: #A44185">`${</span><span style="color: #2F86D2">__dirname</span><span style="color: #A44185">}/path/to/image`</span><span style="color: #002339">,</span>
 <span style="color: #002339">    workers: [</span><span style="color: #A44185">&#039;http://worker&#039;</span><span style="color: #002339">],</span>
 <span style="color: #002339">};</span>
 </code></pre>
-				<ul>
-					<li>This time you can provide your own OS image to test. You can download an unmanaged genericx86-64-ext balenaOS image from <a href="https://www.balena.io/os/#download">balena.io/os</a> and place it in the workspace folder if you need to provide one. Change the value of the <code>image</code> property to the path of the image you downloaded.</li>
-				</ul>
+				<p>This time you can provide your own OS image to test. You can download an unmanaged genericx86-64-ext balenaOS image from <a href="https://www.balena.io/os/#download">balena.io/os</a> and place it in the <code>workspace</code> directory. Change the value of the <code>image</code> property to the path of the image you downloaded. This will be the OS image used by the OS tests in Leviathan.</p>
 				<a href="#start-the-os-test" id="start-the-os-test" style="color: inherit; text-decoration: none;">
 					<h3>Start the OS test</h3>
 				</a>
@@ -182,7 +180,7 @@
 				<a href="#advanced" id="advanced" style="color: inherit; text-decoration: none;">
 					<h2>Advanced</h2>
 				</a>
-				<p>Worker configuration variables can be specified in <code>docker-compose.local.yml</code>, under <code>environment</code>. The default configuration should suffice in most cases.</p>
+				<p>Worker configuration variables can be specified in <code>docker-compose.qemu.yml</code>, under <code>environment</code>. The default configuration should suffice in most cases.</p>
 				<table>
 					<thead>
 						<tr>
