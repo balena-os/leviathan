@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update actions/upload-artifact digest to a8a3f3a
+      hash: a0872927995592524673167c1bc33ad587ff50a6
+      body: |
+        Update actions/upload-artifact
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Self-hosted Renovate Bot
+      nested: []
+  version: 2.28.27
+  title: ""
+  date: 2023-09-06T19:51:32.877Z
+- commits:
     - subject: Update core/contracts digest to 518a1d4
       hash: 10a961344aeff9113d7674cd7a98a0e493f115e5
       body: |
