@@ -4,9 +4,9 @@ services:
   client:
     build: ./client
     volumes:
-      - "${WORKSPACE:-./workspace}:/usr/src/app/workspace:ro"
+      - "${WORKSPACE:-./workspace}:/usr/src/app/workspace:Z"
       - "${REPORTS:-./workspace/reports}:/usr/src/app/reports:rw"
-      - "${SUITES:-./suites}:/usr/src/app/suites:ro"
+      - "${SUITES:-./suites}:/usr/src/app/suites:Z"
     environment:
       - WORKER_TYPE=${WORKER_TYPE}
       - DEVICE_TYPE=${DEVICE_TYPE}
