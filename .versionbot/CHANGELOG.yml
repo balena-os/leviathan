@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update actions/checkout action to v4
+      hash: eb892035fb8c34e2a87ebf37f2b7f8bd8b00a61c
+      body: |
+        Update actions/checkout from 3 to 4
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Self-hosted Renovate Bot
+      nested: []
+  version: 2.28.30
+  title: ""
+  date: 2023-09-25T14:25:17.184Z
+- commits:
     - subject: Update balena-os/leviathan-worker to v2.9.23
       hash: 7c2d1e6651350949eafa17fd038018bae40df8d7
       body: |
