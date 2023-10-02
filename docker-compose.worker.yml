@@ -3,6 +3,7 @@ version: "2"
 services:
   client:
     build: ./client
+    network_mode: host
     volumes:
       # - "${WORKSPACE:-./workspace}:/usr/src/app/workspace:ro"
       # - "${REPORTS:-./workspace/reports}:/usr/src/app/reports:rw"
@@ -13,31 +14,47 @@ services:
     environment:
       - WORKER_TYPE=${WORKER_TYPE}
       - DEVICE_TYPE=${DEVICE_TYPE}
-      - BALENACLOUD_API_URL=${BALENACLOUD_API_URL}
       - BALENACLOUD_API_KEY=${BALENACLOUD_API_KEY}
       - BALENACLOUD_ORG=${BALENACLOUD_ORG}
       - BALENACLOUD_APP_NAME=${BALENACLOUD_APP_NAME}
-      - BALENACLOUD_SSH_PORT=${BALENACLOUD_SSH_PORT}
-      - BALENACLOUD_SSH_URL=${BALENACLOUD_SSH_URL}
-      - BALENAMACHINE_API_KEY=${BALENAMACHINE_API_KEY}
-      - BALENAMACHINE_API_URL=${BALENAMACHINE_API_URL}
-      - ENVIRONMENT=${ENVIRONMENT}
+      - CORE_HOST=localhost
     depends_on:
       - core
 
   core:
     privileged: true # preload requires docker-in-docker
-    build: core
+    #build: core
+    image: bh.cr/gh_rcooke_warwick/leviathan-core-armv7hf
+    network_mode: host
     volumes:
-      - core-storage:/data
       - reports-storage:/reports
+      - "${SUITES:-./suites}:/data/suites"
+      - "${REPORTS:-./workspace/reports}:/data/reports"
+      - "${WORKSPACE:-./workspace}:/data/workspace"
     tmpfs:
       - /var/run # use tmpfs docker-in-docker pid files
       - /var/lib/docker # use tmpfs for docker-in-docker data root
     restart: 'no'
-    devices:
-      - /dev:/dev # required for creating losetup devices during preload
+
+  worker:
+    image: bh.cr/gh_rcooke_warwick/leviathan-worker-amrv7hf
+    privileged: true
+    pid: host
+    network_mode: host
+    ipc: host
+    volumes:
+      - 'reports-storage:/reports'
+      - "${SUITES:-./suites}:/data/suites"
+      - "${REPORTS:-./workspace/reports}:/data/reports"
+      - "${WORKSPACE:-./workspace}:/data/workspace"
+      - /host/run/dbus:/host/run/dbus
+      - /lib/modules:/lib/modules
+    environment:
+      - UDEV=1
+      - BALENA_API_KEY=${BALENA_API_KEY}
+      - WORKER_TYPE=autokit
+      - DIGITAL_RELAY=dummyPower
+      - TESTBOT_DUT_TYPE=raspberrypi4-64
 
 volumes:
-  core-storage:
   reports-storage:
