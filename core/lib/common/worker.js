@@ -346,7 +346,17 @@ module.exports = class Worker {
 			command = command instanceof Array ? command.join(' ') : command;
 			let config = {};
 			// depending on if the target argument is a .local uuid or not, SSH via the proxy or directly
-			if (/.*\.local/.test(target)) {
+			
+			if (/^(\d{1,3}\.){3}\d{1,3}$/.test(target)){
+				console.log(`using local ip: ${target}`)
+				let ip = target
+				config = {
+					host: ip,
+					port: '22222',
+					username: 'root',
+				};
+			}
+			else if (/.*\.local/.test(target)) {
 				let ip = await this.ip(target);
 				config = {
 					host: ip,
