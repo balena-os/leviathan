@@ -66,18 +66,19 @@ const tmp = require('tmp');
 const pipeline = Bluebird.promisify(require('stream').pipeline);
 const zlib = require('zlib');
 const util = require('util');
+const unzipper = require('unzipper');
 
 // TODO: This function should be implemented using Reconfix
 const injectBalenaConfiguration = async (image, configuration, partition = 1) => {
 	await imagefs.interact(image, partition, async (_fs) => {
 		return util.promisify(_fs.writeFile)(
-				'/config.json',
-				JSON.stringify(configuration),
-				{ flag: 'w' }
-			)
-		}).catch((err) => {
-				return undefined;
-		});
+			'/config.json',
+			JSON.stringify(configuration),
+			{ flag: 'w' }
+		)
+	}).catch((err) => {
+		return undefined;
+	});
 };
 
 // TODO: This function should be implemented using Reconfix
@@ -105,8 +106,8 @@ const injectNetworkConfiguration = async (image, configuration, partition = 1) =
 		'method=auto',
 	];
 
-	if(configuration.wireless.interfaceName){
-		wifiConfiguration.splice(2,0,`${configuration.wireless.interfaceName}`,)
+	if (configuration.wireless.interfaceName) {
+		wifiConfiguration.splice(2, 0, `${configuration.wireless.interfaceName}`,)
 	}
 
 	if (configuration.wireless.psk) {
@@ -123,12 +124,12 @@ const injectNetworkConfiguration = async (image, configuration, partition = 1) =
 
 	await imagefs.interact(image, partition, async (_fs) => {
 		return util.promisify(_fs.writeFile)(
-				'/system-connections/balena-wifi',
-				wifiConfiguration.join('\n'),
-				{ flag: 'w' }
-			)
-		}).catch((err) => {
-			return undefined;
+			'/system-connections/balena-wifi',
+			wifiConfiguration.join('\n'),
+			{ flag: 'w' }
+		)
+	}).catch((err) => {
+		return undefined;
 	});
 };
 
@@ -136,6 +137,15 @@ async function isGzip(filePath) {
 	const buf = Buffer.alloc(3);
 	await fs.read(await fs.open(filePath, 'r'), buf, 0, 3, 0);
 	return buf[0] === 0x1f && buf[1] === 0x8b && buf[2] === 0x08;
+}
+
+async function isZip(filepath) {
+	const buf = Buffer.alloc(4);
+
+	await fs.read(await fs.open(filepath, 'r'), buf, 0, 4, 0)
+
+	// Referencing ZIP file signatures https://www.garykessler.net/library/file_sigs.html
+	return buf[0] === 0x50 && buf[1] === 0x4B && (buf[2] === 0x03 || buf[2] === 0x05 || buf[2] === 0x07) && (buf[3] === 0x04 || buf[3] === 0x06 || buf[3] === 0x08);
 }
 
 function id() {
@@ -189,13 +199,18 @@ module.exports = class BalenaOS {
 	 */
 	async fetch() {
 		this.logger.log(`Unpacking the file: ${this.image.input}`);
-		const unpack = await isGzip(this.image.input);
-		if (unpack) {
+		if (await isGzip(this.image.input)) {
 			await pipeline(
 				fs.createReadStream(this.image.input),
 				zlib.createGunzip(),
 				fs.createWriteStream(this.image.path),
 			);
+		} else if (await isZip(this.image.input)) {
+			await pipeline(
+				fs.createReadStream(this.image.input),
+				unzipper.ParseOne(),
+				fs.createWriteStream(this.image.path),
+			)
 		} else {
 			// image is already unzipped, so no need to do anything
 			this.image.path = this.image.input;
