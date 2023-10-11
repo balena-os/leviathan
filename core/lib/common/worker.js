@@ -353,7 +353,7 @@ module.exports = class Worker {
 				config = {
 					host: ip,
 					port: '22222',
-					username: 'root',
+					username: this.username,
 				};
 			}
 			else if (/.*\.local/.test(target)) {
