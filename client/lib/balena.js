@@ -59,18 +59,22 @@ class BalenaCloudInteractor {
 	/**
 	 * @returns list of online devices containing the DUT tag with device type being tested as the value
 	 */
-	async selectDevicesWithDUT(appName, dutType) {
+	async selectDevicesWithDUT(appNames, dutType) {
 		const selectedDevices = [];
-		const tags = await this.sdk.models.device.tags.getAllByApplication(appName);
-		const taggedDevices = groupTagsData(tags).filter(
-			(device) => device.tags['DUT'] === dutType,
-		);
-		for (const taggedDevice of taggedDevices) {
-			const online = await this.sdk.models.device.isOnline(
-				taggedDevice.deviceId,
+		// runConfig needs to be iterable to handle scenarios even when only one config is provided in config.js
+		appNames = Array.isArray(appNames) ? appNames : [appNames];
+		for (let appName of appNames) {
+			const tags = await this.sdk.models.device.tags.getAllByApplication(appName);
+			const taggedDevices = groupTagsData(tags).filter(
+				(device) => device.tags['DUT'] === dutType,
 			);
-			if (online) {
-				selectedDevices.push(taggedDevice);
+			for (const taggedDevice of taggedDevices) {
+				const online = await this.sdk.models.device.isOnline(
+					taggedDevice.deviceId,
+				);
+				if (online) {
+					selectedDevices.push(taggedDevice);
+				}
 			}
 		}
 		return selectedDevices;
