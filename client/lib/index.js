@@ -26,6 +26,15 @@ async function isGzip(filePath) {
 	return buf[0] === 0x1f && buf[1] === 0x8b && buf[2] === 0x08;
 }
 
+async function isZip(filepath) {
+	const buf = Buffer.alloc(4);
+
+	await fs.read(await fs.open(filepath, 'r'), buf, 0, 4, 0)
+	
+	// Referencing ZIP file signatures https://www.garykessler.net/library/file_sigs.html
+	return buf[0] === 0x50 && buf[1] === 0x4B && (buf[2] === 0x03 || buf[2] === 0x05 || buf[2] === 0x07) && (buf[3] === 0x04 || buf[3] === 0x06 || buf[3] === 0x08);
+}
+
 async function getFilesFromDirectory(basePath, ignore = []) {
 	let files = [];
 
@@ -99,7 +108,8 @@ module.exports = class Client extends PassThrough {
 					throw new Error(`${artifact.path} does not satisfy ${artifact.type}`);
 				}
 
-				if (artifact.name === 'os.img' && !(await isGzip(artifact.path))) {
+				// Not a zip file or gzip file, then default to gzip compression for file upload
+				if (artifact.name === 'os.img' && !(await isGzip(artifact.path)) && !(await isZip(artifact.path))) {
 					const str = progStream({
 						length: stat.size,
 						time: 100,
