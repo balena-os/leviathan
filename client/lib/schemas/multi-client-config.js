@@ -33,7 +33,17 @@ const innerSchema = {
 					type: 'object',
 					properties: {
 						balenaApplication: {
-							type: 'string',
+							oneOf: [
+								{
+									type: 'string',
+								},
+								{
+									type: 'array',
+									items: {
+										type: 'string'
+									}
+								}
+							]
 						},
 						apiKey: {
 							type: 'string',
