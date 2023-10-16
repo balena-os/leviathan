@@ -1,4 +1,16 @@
 - commits:
+    - subject: "minor: Add Zip Compression support"
+      hash: 3fc402a6b4ea7de55a3092454e9682d098fd8a61
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipulgupta2048@gmail.com>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipulgupta2048@gmail.com>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.29.0
+  title: ""
+  date: 2023-10-16T20:52:51.445Z
+- commits:
     - subject: "client: enable searching multiple apps for worker"
       hash: 7efc9e006c545a07cd27b7bf8f2c4f94653152b7
       body: ""
