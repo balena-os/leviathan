@@ -1,4 +1,18 @@
 - commits:
+    - subject: "client: enable searching multiple apps for worker"
+      hash: 7efc9e006c545a07cd27b7bf8f2c4f94653152b7
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+  version: 2.28.35
+  title: ""
+  date: 2023-10-16T20:28:34.452Z
+- commits:
     - subject: Update core/contracts digest to a06c0cc
       hash: ca4ef2e5af70e8e46edd34f27daa2a45d9fb5cee
       body: |
