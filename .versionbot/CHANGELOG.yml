@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update actions/checkout digest to b4ffde6
+      hash: d04f4cc5cc497173cae45b5538abbc1e21cb7564
+      body: |
+        Update actions/checkout
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Self-hosted Renovate Bot
+      nested: []
+  version: 2.29.2
+  title: ""
+  date: 2023-10-19T11:21:08.816Z
+- commits:
     - subject: Update core/contracts digest to 97f176d
       hash: 72ad2ce2a67767be53aa94b920fc6314e2ae86b5
       body: |
