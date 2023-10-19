@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update core/contracts digest to 97f176d
+      hash: 72ad2ce2a67767be53aa94b920fc6314e2ae86b5
+      body: |
+        Update core/contracts
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Self-hosted Renovate Bot
+      nested: []
+  version: 2.29.1
+  title: ""
+  date: 2023-10-19T08:49:38.251Z
+- commits:
     - subject: "minor: Add Zip Compression support"
       hash: 3fc402a6b4ea7de55a3092454e9682d098fd8a61
       body: ""
