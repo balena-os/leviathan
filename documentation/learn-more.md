@@ -1,11 +1,17 @@
 # Learn More
 
-1. Watch the primer of the automated testing project presented by the team in balena Summit 2021: https://drive.google.com/drive/u/0/folders/1Jjw76PoimYC9H8LAMcXGp106ezxWT35Q
+## Blogs
 
-2. For reference, you can read about Leviathan and testbots from:
+1. [From PR to Release; OS Testing at balena](https://blog.balena.io/from-pr-to-release-os-testing-at-balena/) - The blog post gives a high level rundown of our Hardware in The Loop testing pipeline that we’ve developed to continuously deliver new features, address bugs, and support new device types with balenaOS.
 
-   - Tutorial to run balenaOS tests on testbot: https://docs.google.com/document/d/18TojJ_hLT8ZtX9DEKXKa3I1458xGh32lqt-OU0j6FnM
-   - A old deep dive into Leviathan - https://docs.google.com/document/d/1UiKDVHHp9HUZrBW2kE9FjKwSLb8BTtlDw_FEqyTWHLY/edit?usp=sharing
-   - If you are looking for testbot block, it's WIP here - https://github.com/balena-io-playground/testblockbot
+2. [Maximizing Resources in the Chip Shortage: How balenaOS Testing went Virtual](https://blog.balena.io/maximizing-resources-in-the-chip-shortage-how-balenaos-testing-went-virtual/) - The post is a follow up to the previous post diving deeper into how using QEMU for virtualized testing at balena helped us through the Chip Shortage
 
-3. You would need hardware for running a testbot and for that reach out to us on the [Testbot](https://www.flowdock.com/app/rulemotion/p-testbot) flow. For any queries or questions, this is the place to discuss it.
+## Talks
+
+Vipul Gupta recently presented the topic Testing 100's of OS Images with Jenkins at [CDCon + GitOpsCon 2023](https://sched.co/1Jp87) at Open Source Summit 2023 North America, which talks about the journey Balena takes to build, test and release balenaOS releases from pull requests to production using Autokit and how even you can use it in your work. 
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/Gjp2hgIXhHQ?si=Nzc8FjGS3pudIEJF" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+## Internal materials
+
+Watch the primer of the automated testing project presented by the team in balena Summit 2021: https://drive.google.com/drive/u/0/folders/1Jjw76PoimYC9H8LAMcXGp106ezxWT35Q
