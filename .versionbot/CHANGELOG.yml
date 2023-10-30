@@ -1,4 +1,16 @@
 - commits:
+    - subject: "patch: Update Learn More docs content"
+      hash: 2e4d53c54239eb550c252dc1a6d7eabdb059ed3e
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipulgupta2048@gmail.com>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipulgupta2048@gmail.com>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.29.8
+  title: ""
+  date: 2023-10-30T14:22:19.959Z
+- commits:
     - subject: Update Lock file maintenance
       hash: 7fb3d995abf9949466994affea68419e5ee91ae5
       body: |
