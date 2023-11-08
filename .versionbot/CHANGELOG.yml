@@ -1,4 +1,18 @@
 - commits:
+    - subject: "core: remove request timeout on flashing"
+      hash: 8c8ff58cfd7d2c93cda7735cb48f92556445e053
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+  version: 2.29.10
+  title: ""
+  date: 2023-11-08T10:24:24.736Z
+- commits:
     - subject: Update Lock file maintenance
       hash: ae22f3efcbe5858619bb87acb78e1f9e8001ef90
       body: |
