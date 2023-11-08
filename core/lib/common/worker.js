@@ -121,9 +121,11 @@ module.exports = class Worker {
 				this.logger.log(`Preparing to flash, attempt ${attempt}...`);
 
 				await new Promise(async (resolve, reject) => {
-					const req = rp.post({ uri: `${this.url}/dut/flash` });
+					const req = rp.post({ uri: `${this.url}/dut/flash`, timeout: 0 });
 
 					req.catch((error) => {
+						this.logger.log(`client side error: `)
+						this.logger.log(error.message)
 						reject(error);
 					});
 					req.finally(() => {
