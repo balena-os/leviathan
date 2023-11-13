@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update Lock file maintenance
+      hash: 4699166b073f9a6912b51e2814a38f1c9d8955d7
+      body: |
+        Update
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Self-hosted Renovate Bot
+      nested: []
+  version: 2.29.11
+  title: ""
+  date: 2023-11-13T00:59:30.237Z
+- commits:
     - subject: "core: remove request timeout on flashing"
       hash: 8c8ff58cfd7d2c93cda7735cb48f92556445e053
       body: ""
