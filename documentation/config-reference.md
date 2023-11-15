@@ -33,7 +33,7 @@ Information on properties in `config.js`:
 - **`debug`** is where debugging properties are stored for test runs. Check out {@page Debugging tests in Leviathan | Debugging documentation} for features you can add. 
 - **`image`** is the absolute path to the balenaOS image that is flashed onto the Device Under Test (DUT).  As shown in the example above, `${__dirname}` expands to the absolute path of the `workspace` directory, so you can use it to specify a path relative to `workspace`.
 
-Make sure to rename the image to balena.img. If you provide `balena.img` as your balenaOS image, then Leviathan will compress it for you in `gz` format on runtime. We recommend compressing beforehand, as it saves time. For any reason if your tests download an image already and you don't want to upload an image, then set the `image` property to `false` in config.js 
+Make sure to rename the image to balena.img. If you provide `balena.img` as your balenaOS image, then Leviathan will compress it for you in `gz` format on runtime. We recommend compressing beforehand, as it saves time. For any reason if your tests download an image already and you don't want to upload an image, then set the `image` property to `false` in config.js. Be sure to set `image` to a boolean `false` without a quotes.
 
 For example, in the e2e test suite, if you don't upload an image and set `image: false`, then the test suite will download the image from balenaCloud. This is test specific, not a leviathan feature. 
 
@@ -42,10 +42,10 @@ For example, in the e2e test suite, if you don't upload an image and set `image:
 
 ## Different `workers` configurations available
 
-1. **<UUID>.local** - The last line in the `config.json` above assumes you are on the same network with the testbot worker. Note that on some Linux distributions, the container will not be able to resolve `.local` addresses. If you face this problem until we find a proper solution, you can replace this address with your device's local IP (copy it from the device summary page on balenaCloud).
+1. **http://<IP-ADDRESS>** - To be used when running tests locally. When you have the autokit in the same network as your laptop/computer then the IP address of the autokit can be provided. This will reduce the dependency on balenaCloud public device URL and make the tests run faster.
 
 ```js
-workers: ['http://<short UUID of your testbot in balenaCloud>.local'],
+workers: ['http://<IP address of your testbot as shown in balenaCloud>'],
 ```
 
 2. **Public device URLs** - If the testbot is not on the same network as you, please enable the public URL in balenaCloud and use that in the `workers` array. If multiple URLs are provided, then each URL in the array will run the same test suite listed in the `config.js`.
@@ -73,64 +73,11 @@ workers: ['http://worker'],
 
 Following is an exhaustive list of `config.js` examples which can be used for reference.
 
-#### Running 3 test suites parrallely using workers objects
-
-```js
-module.exports = [{
-        deviceType: "raspberrypi3",
-        suite: `${__dirname}/../suites/os`,
-        config: {
-            networkWired: false,
-            networkWireless: true,
-            downloadVersion: 'latest',
-            balenaApiKey: process.env.BALENACLOUD_API_KEY,
-            balenaApiUrl: 'balena-cloud.com',
-            organization: 'BALENACLOUD_ORG_GOES_HERE',
-        },
-        image: `${__dirname}/balena.img.gz`,
-        workers: {
-            balenaApplication: 'testbot-vipul',
-            apiKey: process.env.BALENACLOUD_API_KEY,
-        },
-    },
-    {
-        deviceType: "raspberrypi3",
-        suite: `${__dirname}/../suites/hup`,
-        config: {
-            networkWired: false,
-            networkWireless: true,
-            downloadVersion: 'latest',
-            balenaApiKey: process.env.BALENACLOUD_API_KEY,
-            balenaApiUrl: 'balena-cloud.com',
-            organization: 'BALENACLOUD_ORG_GOES_HERE',
-        },
-        image: `${__dirname}/balena.img.gz`,
-        workers: {
-            balenaApplication: 'testbot-vipul',
-            apiKey: process.env.BALENACLOUD_API_KEY,
-        }
-    },
-    {
-        deviceType: "raspberrypi3",
-        suite: `${__dirname}/../suites/cloud`,
-        config: {
-            networkWired: false,
-            networkWireless: true,
-            downloadVersion: 'latest',
-            balenaApiKey: process.env.BALENACLOUD_API_KEY,
-            balenaApiUrl: 'balena-cloud.com',
-            organization: 'BALENACLOUD_ORG_GOES_HERE',
-        },
-        image: `${__dirname}/balena.img.gz`,
-        workers: {
-            balenaApplication: 'testbot-vipul',
-            apiKey: process.env.BALENACLOUD_API_KEY,
-        }
-    }]
-```
 <br>
 
 ## Running the same test suite on 2 separate workers
+
+You can swap the `workers` property with any of the alternatives provided above as per your usecase
 
 ```js
 module.exports = [{
