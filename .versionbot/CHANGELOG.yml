@@ -1,4 +1,16 @@
 - commits:
+    - subject: "patch: Add support for local autokit support"
+      hash: 0c9fa8af880987316dbb0ca096ae15522784735b
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipulgupta2048@gmail.com>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipulgupta2048@gmail.com>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.29.14
+  title: ""
+  date: 2023-11-15T19:24:24.674Z
+- commits:
     - subject: Update Lock file maintenance
       hash: 1bd306de3510c8da83b42f87f49905fc532cfaf5
       body: |
