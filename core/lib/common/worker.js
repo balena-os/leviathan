@@ -46,7 +46,7 @@ const once = require('lodash/once');
 const pipeline = Bluebird.promisify(require('stream').pipeline);
 const request = require('request');
 const rp = require('request-promise').defaults({
-    timeout: 30 * 1000
+	timeout: 30 * 1000
 });
 const exec = Bluebird.promisify(require('child_process').exec);
 const spawn = require('child_process').spawn;
@@ -93,17 +93,38 @@ module.exports = class Worker {
 		this.workerUser = 'root';
 		this.sshPrefix = '';
 		this.uuid = '';
+
+		// This checks core + worker are running on the same machine. Example: QEMU
 		this.directConnect = (
 			this.url.includes(`worker`)
 			|| this.url.includes('unix:')
 		);
-		if(!this.directConnect){
-			this.uuid = this.url.match(
-				/https:\/\/([^\.]+)\./,
-			)[1];
-			this.sshPrefix = `host ${this.uuid} `;
-			this.workerUser = this.username;
-		}	
+
+		if (!this.directConnect) {
+			// Regular expression to match URLs starting with http:// followed by an IP address
+			const ipRegex = /http:\/\/(\d+\.\d+\.\d+\.\d+)/;
+
+			// Check if the URL is an IP address
+			const match = this.url.match(ipRegex);
+
+			// If it is balenaCloud URL
+			if (!match) {
+				this.uuid = this.url.match(
+					/https:\/\/([^\.]+)\./,
+				)[1];
+				this.sshPrefix = `host ${this.uuid} `;
+				this.workerUser = this.username;
+			}
+			// If it is local IP
+			else if (match) {
+				const ipAddress = match[1];
+				console.log(`Setting URL as IP address: ${ipAddress}`);
+				this.workerUser = 'root';
+				this.workerPort = 22222;
+				this.workerHost = ipAddress;
+			}
+
+		}
 	}
 
 	/**
@@ -190,7 +211,7 @@ module.exports = class Worker {
 	 */
 	async on() {
 		this.logger.log('Powering on DUT');
-		await doRequest({method: 'POST', uri: `${this.url}/dut/on`});
+		await doRequest({ method: 'POST', uri: `${this.url}/dut/on` });
 		this.logger.log('DUT powered on');
 	}
 
@@ -198,9 +219,9 @@ module.exports = class Worker {
 		this.logger.log('Pulling Serial logs from DUT');
 		// Logs received were encoding 'UTF-16LE', hence need to convert them right here.
 		return Buffer.from(await doRequest(
-				`${this.url}/dut/serial`),
-				'utf-8'
-			).toString();
+			`${this.url}/dut/serial`),
+			'utf-8'
+		).toString();
 	}
 
 	/**
@@ -210,7 +231,7 @@ module.exports = class Worker {
 	 */
 	async off() {
 		this.logger.log('Powering off DUT');
-		await doRequest({method: 'POST', uri: `${this.url}/dut/off`});
+		await doRequest({ method: 'POST', uri: `${this.url}/dut/off` });
 		this.logger.log('DUT powered off');
 	}
 
@@ -219,7 +240,7 @@ module.exports = class Worker {
 	 */
 	async diagnostics() {
 		return JSON.parse(
-			await doRequest({uri: `${this.url}/dut/diagnostics`})
+			await doRequest({ uri: `${this.url}/dut/diagnostics` })
 		);
 	}
 
@@ -309,12 +330,12 @@ module.exports = class Worker {
 	 *
 	 * @category helper
 	 */
-	async executeCommandInHostOS(command, target, retryOptions={}) {
-		if (target === 'serial'){
+	async executeCommandInHostOS(command, target, retryOptions = {}) {
+		if (target === 'serial') {
 			let result = await doRequest({
-				method: 'POST', 
+				method: 'POST',
 				uri: `${this.url}/dut/serial/exec`,
-				body: {cmd:command},
+				body: { cmd: command },
 				json: true
 			});
 			return result
@@ -368,17 +389,17 @@ module.exports = class Worker {
 		}
 	}
 
-	async executeCommandOverSerial(command){
+	async executeCommandOverSerial(command) {
 		let result = await doRequest({
-			method: 'POST', 
+			method: 'POST',
 			uri: `${this.url}/dut/serial/exec`,
-			body: {cmd:command},
+			body: { cmd: command },
 			json: true
 		});
 		return result
 	}
 
-	async executeCommandInWorkerHost(command, retryOptions={}) {
+	async executeCommandInWorkerHost(command, retryOptions = {}) {
 		let config = {
 			host: this.workerHost,
 			port: this.workerPort,
@@ -415,7 +436,7 @@ module.exports = class Worker {
 	}
 
 	// executes command in the worker container
-	async executeCommandInWorker(command, retryOptions={}) {
+	async executeCommandInWorker(command, retryOptions = {}) {
 		return retry(
 			async () => {
 				let containerId = await this.executeCommandInWorkerHost(
