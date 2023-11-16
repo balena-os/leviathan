@@ -45,8 +45,9 @@ const path = require('path');
 const once = require('lodash/once');
 const pipeline = Bluebird.promisify(require('stream').pipeline);
 const request = require('request');
+const splitFile = require('split-file');
 const rp = require('request-promise').defaults({
-    timeout: 30 * 1000
+    timeout: 0
 });
 const exec = Bluebird.promisify(require('child_process').exec);
 const spawn = require('child_process').spawn;
@@ -106,6 +107,7 @@ module.exports = class Worker {
 		}	
 	}
 
+
 	/**
 	 * Flash the provided OS image onto the connected DUT
 	 *
@@ -114,72 +116,100 @@ module.exports = class Worker {
 	 * @category helper
 	 */
 	async flash(imagePath) {
-		let attempt = 0;
-		await retry(
-			async () => {
-				attempt++;
-				this.logger.log(`Preparing to flash, attempt ${attempt}...`);
+		this.logger.log(`Preparing to flash...`);
 
-				await new Promise(async (resolve, reject) => {
-					const req = rp.post({ uri: `${this.url}/dut/flash`, timeout: 0 });
+		// split file up
+		this.logger.log(`Splitting image...`);
+		let files = await splitFile.splitFile(imagePath, 3);
+		console.log(files)
+		let imagePart = 0;
+		for(let file of files){
+			let attempt = 0;
+			imagePart++;
+			await retry(
+				async () => {
+					attempt++;
+					this.logger.log(`Sending image part ${imagePart}, attempt ${attempt}`);
+					await new Promise(async (resolve, reject) => {
+						const req = rp.post({ uri: `${this.url}/sendImage`, timeout: 0 });
 
-					req.catch((error) => {
-						this.logger.log(`client side error: `)
-						this.logger.log(error.message)
-						reject(error);
-					});
-					req.finally(() => {
-						if (lastStatus !== 'done') {
-							reject(new Error('Unexpected end of TCP connection'));
-						}
+						req.catch((error) => {
+							this.logger.log(`client side error: `)
+							this.logger.log(error.message)
+							reject(error);
+						});
 
-						resolve();
-					});
+						req.on('close', (r) => {
+							console.log(`Req closed`)
+							console.log(r)
+						})
 
-					let lastStatus;
-					req.on('data', (data) => {
-						const computedLine = RegExp('(.+?): (.*)').exec(data.toString());
+						req.on('finish', (f) => {
+							console.log(`req finished`)
+							console.log(f)
+						})
 
-						if (computedLine) {
-							if (computedLine[1] === 'error') {
-								req.cancel();
-								reject(new Error(computedLine[2]));
+						req.finally(() => {
+							if (lastStatus !== 'done') {
+								console.log(`Connection ended when last-status was: ${lastStatus}`)
+								reject(new Error('Unexpected end of TCP connection'));
 							}
 
-							if (computedLine[1] === 'progress') {
-								once(() => {
-									this.logger.log('Flashing');
-								});
-								// Hide any errors as the lines we get can be half written
-								const state = JSON.parse(computedLine[2]);
-								if (state != null && isNumber(state.percentage)) {
-									this.logger.status({
-										message: 'Flashing',
-										percentage: state.percentage,
+							resolve();
+						});
+
+						let lastStatus;
+						req.on('data', (data) => {
+							console.log(data.toString())
+							const computedLine = RegExp('(.+?): (.*)').exec(data.toString());
+
+							if (computedLine) {
+								if (computedLine[1] === 'error') {
+									req.cancel();
+									reject(new Error(computedLine[2]));
+								}
+
+								if (computedLine[1] === 'progress') {
+									once(() => {
+										this.logger.log('Flashing');
 									});
+									// Hide any errors as the lines we get can be half written
+									const state = JSON.parse(computedLine[2]);
+									if (state != null && isNumber(state.percentage)) {
+										this.logger.status({
+											message: 'Flashing',
+											percentage: state.percentage,
+										});
+									}
+								}
+
+								if (computedLine[1] === 'status') {
+									lastStatus = computedLine[2];
 								}
 							}
+						});
 
-							if (computedLine[1] === 'status') {
-								lastStatus = computedLine[2];
-							}
-						}
+						pipeline(
+							fs.createReadStream(file),
+							createGzip({ level: 6 }),
+							req,
+						).catch((error) => {
+							console.error('Error in pipeline:', error);
+						});;
 					});
+				},
+				{
+					max_tries: 5,
+					interval: 1000 * 5,
+					throw_original: true,
+				},
+			);
+		}
 
-					pipeline(
-						fs.createReadStream(imagePath),
-						createGzip({ level: 6 }),
-						req,
-					);
-				});
-				this.logger.log('Flash completed');
-			},
-			{
-				max_tries: 5,
-				interval: 1000 * 5,
-				throw_original: true,
-			},
-		);
+		this.logger.log(`Starting Flashing...`);
+		await rp.post({ uri: `${this.url}/dut/flash`, body:{merge: true}, timeout: 0, json: true });
+		this.logger.log('Flash completed');
+		
 	}
 
 
