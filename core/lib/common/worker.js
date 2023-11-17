@@ -135,72 +135,43 @@ module.exports = class Worker {
 	 * @category helper
 	 */
 	async flash(imagePath) {
-		let attempt = 0;
+		this.logger.log(`Gzipping image...`);
+		await exec(`gzip ${imagePath}`)
+
+
+		const TARGET_PATH = '/tmp/os.img.gz';
+		// file is not imagePath.gz
 		await retry(
 			async () => {
-				attempt++;
-				this.logger.log(`Preparing to flash, attempt ${attempt}...`);
-
-				await new Promise(async (resolve, reject) => {
-					const req = rp.post({ uri: `${this.url}/dut/flash`, timeout: 0 });
-
-					req.catch((error) => {
-						this.logger.log(`client side error: `)
-						this.logger.log(error.message)
-						reject(error);
-					});
-					req.finally(() => {
-						if (lastStatus !== 'done') {
-							reject(new Error('Unexpected end of TCP connection'));
-						}
-
-						resolve();
-					});
-
-					let lastStatus;
-					req.on('data', (data) => {
-						const computedLine = RegExp('(.+?): (.*)').exec(data.toString());
-
-						if (computedLine) {
-							if (computedLine[1] === 'error') {
-								req.cancel();
-								reject(new Error(computedLine[2]));
-							}
-
-							if (computedLine[1] === 'progress') {
-								once(() => {
-									this.logger.log('Flashing');
-								});
-								// Hide any errors as the lines we get can be half written
-								const state = JSON.parse(computedLine[2]);
-								if (state != null && isNumber(state.percentage)) {
-									this.logger.status({
-										message: 'Flashing',
-										percentage: state.percentage,
-									});
-								}
-							}
-
-							if (computedLine[1] === 'status') {
-								lastStatus = computedLine[2];
-							}
-						}
-					});
-
-					pipeline(
-						fs.createReadStream(imagePath),
-						createGzip({ level: 6 }),
-						req,
-					);
-				});
-				this.logger.log('Flash completed');
+				this.logger.log(`Sending image ${imagePath}.gz`);
+				try{
+					// arrives at worker as /tmp/imagePathBaseName.gz
+					await this.sendFile(`${imagePath}.gz`, TARGET_PATH, 'worker');
+				}catch(e){
+					console.log(e);
+					throw new Error(`Rysnc error: ${e.message}`)
+				}
 			},
 			{
 				max_tries: 5,
 				interval: 1000 * 5,
-				throw_original: true,
-			},
+				throw_original: true
+			}
+		)
+
+		this.logger.log(`Trying to flash ${TARGET_PATH}`);
+		let res = await rp.post(
+			{ 
+				uri: `${this.url}/dut/flash`, 
+				body: {
+					filename: `${TARGET_PATH}`
+				}, 
+				timeout: 0,
+				json: true 
+			}
 		);
+		console.log(res)
+		
 	}
 
 
@@ -522,7 +493,7 @@ module.exports = class Worker {
 			);
 			// todo : replace with npm package
 			await exec(
-				`rsync -av -e "ssh ${this.workerUser}@${this.workerHost} -p ${this.workerPort} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -q ${this.sshPrefix}balena exec -i" ${filePath} ${containerId}:${destination}`,
+				`rsync -av --partial -e "ssh ${this.workerUser}@${this.workerHost} -p ${this.workerPort} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -q ${this.sshPrefix}balena exec -i" ${filePath} ${containerId}:${destination}`,
 			);
 		} else {
 			let ip = await this.ip(target);
