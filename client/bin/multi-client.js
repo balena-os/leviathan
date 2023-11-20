@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 const { BalenaCloudInteractor } = require('../lib/balena')
+const { testConfig } = require('../lib/config-validator')
 const config = require('../config');
 const coreHost = config.core.host;
 const corePort = config.core.port;
@@ -248,7 +249,12 @@ class NonInteractiveState {
 
 		// Output the final result in the end
 		console.log(`*******  Final Test Result of Leviathan Run  *******`)
-		console.log(nativeFs.readFileSync(`reports/final-result.json`, {encoding:'utf8', flag:'r'}))
+		const finalResult = JSON.parse(nativeFs.readFileSync(`reports/final-result.json`, {encoding:'utf8', flag:'r'}))
+		if (finalResult.length !== 0) {
+			console.log(finalResult)
+		} else {
+			console.log('No tests ran, check for errors .. Quitting')
+		}
 	});
 
 	const signalHandler = once(async (sig) => {
@@ -292,8 +298,6 @@ class NonInteractiveState {
 
 	await ensureDir(yargs.workdir);
 
-	// Blessed setup for pretty terminal output
-
 	let runConfigs = require(yargs.config);
 
 	const validate = ajv.compile(schema);
@@ -307,9 +311,16 @@ class NonInteractiveState {
 	// runConfig needs to be iterable to handle scenarios even when only one config is provided in config.js
 	runConfigs = Array.isArray(runConfigs) ? runConfigs : [runConfigs];
 
+	const validatorResult = await testConfig(runConfigs);
+	if (!validatorResult.verdict) {
+		throw new Error(
+			`Configuration issues -> ${JSON.stringify(validatorResult.errors)}`,
+			);
+		}
+
+	state.info('Configuration Validated ✔️');
 	state.info('Computing Run Queue');
 
-	
 	// Iterates through test jobs and pushes jobs to available testbot workers
 	for (const runConfig of runConfigs) {
 		if (runConfig.workers instanceof Array) {
@@ -326,7 +337,7 @@ class NonInteractiveState {
 		} else if (runConfig.workers instanceof Object) {
 			const balenaCloud = new BalenaCloudInteractor(runConfig.config.balenaApiUrl);
 			await balenaCloud.authenticate(runConfig.config.balenaApiKey);
-			
+
 			const matchingDevices = await balenaCloud.selectDevicesWithDUT(
 				runConfig.workers.balenaApplication,
 				runConfig.deviceType,

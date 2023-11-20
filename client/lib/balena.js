@@ -53,7 +53,12 @@ class BalenaCloudInteractor {
 	 */
 	async authenticate(balenaApiKey) {
 		await this.sdk.auth.loginWithToken(balenaApiKey);
-		console.log(`Logged in with ${await this.sdk.auth.whoami()}'s account on ${this.balenaApiUrl} using balenaSDK`);
+		const username = await this.sdk.auth.whoami()
+		if (username) {
+			console.log(`Logged in with ${await this.sdk.auth.whoami()}'s account on ${this.balenaApiUrl} using balenaSDK`);
+		} else {
+			throw new Error('Failed to authenticate with balenaSDK. Check your API key or balenaCloud API URL address.');
+		}
 	}
 
 	/**
@@ -81,17 +86,8 @@ class BalenaCloudInteractor {
 	}
 
 	/**
+	 * @returns device's public URL if active
 	 * @throws error when public url for the device type is not accessible
-	 */
-	async checkDeviceUrl(device) {
-		const enabled = await this.sdk.models.device.hasDeviceUrl(device.deviceId);
-		if (!enabled) {
-			throw new Error('Worker not publicly available. Panicking...');
-		}
-	}
-
-	/**
-	 * @returns device's public URL
 	 */
 	async resolveDeviceUrl(device) {
 		const deviceUrl = await this.sdk.models.device.getDeviceUrl(device.deviceId)
