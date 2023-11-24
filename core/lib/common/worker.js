@@ -139,7 +139,7 @@ module.exports = class Worker {
 		await exec(`gzip ${imagePath}`)
 
 
-		const TARGET_PATH = '/tmp/os.img.gz';
+		const TARGET_PATH = '/data/os.img.gz';
 		// file is not imagePath.gz
 		await retry(
 			async () => {
