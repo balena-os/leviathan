@@ -178,6 +178,9 @@ module.exports = class BalenaOS {
 			case 'jetson-nano':
 				this.bootPartition = 12;
 				break;
+			case 'jetson-agx-orin-devkit':
+				this.bootPartition = 6;
+				break;
 			case 'rockpi-4b-rk3399':
 				this.bootPartition = 4;
 				break;
