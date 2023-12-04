@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update Lock file maintenance
+      hash: 54dc38c908a7a40a3abe2f360c652e134359f28a
+      body: |
+        Update
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Self-hosted Renovate Bot
+      nested: []
+  version: 2.29.20
+  title: ""
+  date: 2023-12-04T00:52:55.581Z
+- commits:
     - subject: add jetson-agx-orin-devkit resin-boot index
       hash: 2a27941b65cc163899016fddf12339e1073e2e97
       body: ""
