@@ -135,36 +135,40 @@ module.exports = class Worker {
 	 * @category helper
 	 */
 	async flash(imagePath) {
-		this.logger.log(`Gzipping image...`);
-		await exec(`gzip ${imagePath}`)
 
+		// if using remote worker i.e autokit/testbot, send the image over ssh
+		if(!this.directConnect){
+			this.logger.log(`Gzipping image...`);
+			await exec(`gzip ${imagePath}`);
+			imagePath = '/data/os.img.gz'
 
-		const TARGET_PATH = '/data/os.img.gz';
-		// file is not imagePath.gz
-		await retry(
-			async () => {
-				this.logger.log(`Sending image ${imagePath}.gz`);
-				try{
-					// arrives at worker as /tmp/imagePathBaseName.gz
-					await this.sendFile(`${imagePath}.gz`, TARGET_PATH, 'worker');
-				}catch(e){
-					console.log(e);
-					throw new Error(`Rysnc error: ${e.message}`)
+			// file is not imagePath.gz
+			await retry(
+				async () => {
+					this.logger.log(`Sending image ${imagePath}`);
+					try{
+						// arrives at worker as /tmp/imagePathBaseName.gz
+						await this.sendFile(`${imagePath}.gz`, TARGET_PATH, 'worker');
+					}catch(e){
+						console.log(e);
+						throw new Error(`Rysnc error: ${e.message}`)
+					}
+				},
+				{
+					max_tries: 5,
+					interval: 1000 * 5,
+					throw_original: true
 				}
-			},
-			{
-				max_tries: 5,
-				interval: 1000 * 5,
-				throw_original: true
-			}
-		)
+			)
+		} 
 
-		this.logger.log(`Trying to flash ${TARGET_PATH}`);
+		// note: for the qemu case, we are assuming a shared volume between core and worker - this means that any image we want to flash must be in this volume - is it in all our cases?
+		this.logger.log(`Trying to flash ${imagePath}`);
 		let res = await rp.post(
 			{ 
 				uri: `${this.url}/dut/flash`, 
 				body: {
-					filename: `${TARGET_PATH}`
+					filename: `${imagePath}`
 				}, 
 				timeout: 0,
 				json: true 
@@ -498,7 +502,7 @@ module.exports = class Worker {
 		} else {
 			let ip = await this.ip(target);
 			await exec(
-				`rsync -av -e "ssh -p 22222 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -q -i ${this.sshKey}" ${filePath} root@${ip}:${destination}`,
+				`rsync -av -e --partial "ssh -p 22222 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -q -i ${this.sshKey}" ${filePath} root@${ip}:${destination}`,
 			);
 		}
 	}
