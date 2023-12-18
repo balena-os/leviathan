@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update actions/upload-artifact action to v4
+      hash: 574a3002a43599b67507d826ab6f7165fec32d66
+      body: |
+        Update actions/upload-artifact from 3 to 4
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Self-hosted Renovate Bot
+      nested: []
+  version: 2.29.25
+  title: ""
+  date: 2023-12-18T01:58:03.248Z
+- commits:
     - subject: Update Lock file maintenance
       hash: e0fafec6d5a551889c2b9b92887b4ec3714ee36d
       body: |
