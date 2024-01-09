@@ -1,4 +1,18 @@
 - commits:
+    - subject: timeout netcat process
+      hash: 3eee636c92fb352101b62cf6cc04dd799f5c6ae9
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+  version: 2.29.33
+  title: ""
+  date: 2024-01-09T17:35:20.372Z
+- commits:
     - subject: Update Lock file maintenance
       hash: 00fd1164a17d8416f9c2d8fdd85ec4beb9313ac2
       body: |
