@@ -497,7 +497,7 @@ module.exports = class Worker {
 		// this will be torn down at the end of the tests when the core is destroyed
 		let argsClient = [
 			`tcp-listen:${dutPort},reuseaddr,fork`,
-			`system:ssh ${this.workerUser}@${this.workerHost} -p ${this.workerPort} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${this.sshKey} ${this.sshPrefix}/usr/bin/nc localhost ${workerPort}`,
+			`system:ssh ${this.workerUser}@${this.workerHost} -p ${this.workerPort} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${this.sshKey} ${this.sshPrefix}timeout 600 /usr/bin/nc localhost ${workerPort}`,
 		];
 
 		let tunnelProcClient = spawn(`socat`, argsClient);
