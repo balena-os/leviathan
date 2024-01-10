@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update core/contracts digest to 14a10d9
+      hash: bd5f29abd2bbe194df6f7657b69b860f435b1ef7
+      body: |
+        Update core/contracts
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Self-hosted Renovate Bot
+      nested: []
+  version: 2.29.34
+  title: ""
+  date: 2024-01-10T11:32:06.062Z
+- commits:
     - subject: timeout netcat process
       hash: 3eee636c92fb352101b62cf6cc04dd799f5c6ae9
       body: ""
