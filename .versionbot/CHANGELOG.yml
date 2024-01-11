@@ -1,4 +1,18 @@
 - commits:
+    - subject: change to ssh tunnel
+      hash: c15d5183a61e4ed9d437642560c2db071b1d7672
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+  version: 2.29.35
+  title: ""
+  date: 2024-01-11T12:51:52.503Z
+- commits:
     - subject: Update core/contracts digest to 14a10d9
       hash: bd5f29abd2bbe194df6f7657b69b860f435b1ef7
       body: |
