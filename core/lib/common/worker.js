@@ -458,49 +458,24 @@ module.exports = class Worker {
 
 	// creates a tunnel a specified DUT port
 	async createTunneltoDUT(target, dutPort, workerPort) {
-
-		//get containerID of the worker container on the testbot - we must do socat from inside the worker container
-		let containerId = await this.executeCommandInWorkerHost(
-			`balena ps | grep worker | awk '{print $1}'`,
-		);
-
+		// This creates a reverse tunnel to the specified port on the DUT, via the worker - using the balena tunnel forwarding worker port 22222 to localhost:8888
 		let ip = await this.getDutIp(target);
-		let argsWorker = [];
-		argsWorker = argsWorker.concat([
-			`${this.workerUser}@${this.workerHost}`,
+		let argsWorker = [
+			`-L`,
+			`${dutPort}:${ip}:${dutPort}`,
 			`-p`,
-			this.workerPort,
-			'-i',
-			this.sshKey,
+			workerPort,
+			`root@127.0.0.1`,
 			`-o`,
 			`StrictHostKeyChecking=no`,
 			`-o`,
 			`UserKnownHostsFile=/dev/null`,
-		]);
-
-		if (this.sshPrefix !== '') {
-			argsWorker = argsWorker.concat([`host`, this.uuid]);
-		}
-
-		argsWorker = argsWorker.concat([
-			`balena`,
-			`exec`,
-			containerId,
-			`socat`,
-			`tcp-listen:${workerPort},reuseaddr,fork "system:ssh ${ip} -p 22222 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${this.dutSshKey} /usr/bin/nc localhost ${dutPort}"`,
-		]);
-
-		let tunnelProWorker = spawn(`ssh`, argsWorker);
-
-		// setup a listener from this host to worker must be a sub process...
-		// we must give map the same port on this host and the DUT - so the cli can use it
-		// this will be torn down at the end of the tests when the core is destroyed
-		let argsClient = [
-			`tcp-listen:${dutPort},reuseaddr,fork`,
-			`system:ssh ${this.workerUser}@${this.workerHost} -p ${this.workerPort} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${this.sshKey} ${this.sshPrefix}timeout 600 /usr/bin/nc localhost ${workerPort}`,
+			`-i`,
+			this.sshKey,
+			`-N`
 		];
-
-		let tunnelProcClient = spawn(`socat`, argsClient);
+		console.log(argsWorker)
+		let tunnelProWorker = spawn(`ssh`, argsWorker);
 	}
 
 	// create tunnels to relevant DUT ports to we can access them remotely
@@ -511,11 +486,24 @@ module.exports = class Worker {
 				22222, // ssh
 				2375, // engine
 			];
-			let workerPort = 8888;
+
+			// first use balena tunnel to set up a tunnel from the core port 8888 to the worker port 22222
+			// we will then use this to create ssh reverse tunnels to the supervisor and engine ports too
+			const workerPort = 8888;
+			let argsClient = [
+				`tunnel`,
+				this.uuid,
+				`-p`,
+				`22222:${workerPort}`
+			];
+			let tunnelProcClient = spawn(`balena`, argsClient, {stdio: 'inherit'});
+
+			// This short delay is to wait for the balena tunnel to be established
+			await Bluebird.delay(1000*10)
+
 			for (let port of DUT_PORTS) {
 				console.log(`creating tunnel to dut port ${port}...`);
 				await this.createTunneltoDUT(target, port, workerPort);
-				workerPort = workerPort + 1;
 			}
 		} else {
 			// set up route to DUT via the worker ip
