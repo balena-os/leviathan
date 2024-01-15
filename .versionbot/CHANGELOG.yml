@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update Lock file maintenance
+      hash: 526e3b151506e979ad587f31c07aa5734609a796
+      body: |
+        Update
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Self-hosted Renovate Bot
+      nested: []
+  version: 2.29.36
+  title: ""
+  date: 2024-01-15T00:50:36.593Z
+- commits:
     - subject: change to ssh tunnel
       hash: c15d5183a61e4ed9d437642560c2db071b1d7672
       body: ""
