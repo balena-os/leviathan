@@ -23,6 +23,10 @@ services:
       - core
 
   core:
+    device_cgroup_rules:
+      # https://www.kernel.org/doc/Documentation/admin-guide/devices.txt
+      # loopback devices
+      - "b 7:* rmw"
     cap_add:
       - SYS_ADMIN
       - NET_ADMIN
