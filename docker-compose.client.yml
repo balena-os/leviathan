@@ -23,7 +23,9 @@ services:
       - core
 
   core:
-    privileged: true # preload requires docker-in-docker
+    cap_add:
+      - SYS_ADMIN
+      - NET_ADMIN
     build: core
     volumes:
       - core-storage:/data
