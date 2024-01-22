@@ -25,6 +25,8 @@ services:
   core:
     cap_add:
       - SYS_ADMIN
+    device_cgroup_rules:
+      - "b 7:* rmw"
     build: core
     volumes:
       - core-storage:/data
