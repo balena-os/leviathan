@@ -135,6 +135,10 @@ module.exports = class Worker {
 	 * @category helper
 	 */
 	async flash(imagePath) {
+
+		this.logger.log(`Gzipping image...`);
+		await exec(`gzip ${imagePath}`);
+
 		let attempt = 0;
 		await retry(
 			async () => {
@@ -187,9 +191,9 @@ module.exports = class Worker {
 						}
 					});
 
+					// append .gz extension as we zipped it above
 					pipeline(
-						fs.createReadStream(imagePath),
-						createGzip({ level: 6 }),
+						fs.createReadStream(`${imagePath}.gz`),
 						req,
 					);
 				});
