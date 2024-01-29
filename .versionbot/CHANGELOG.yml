@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update balena-os/leviathan-worker to v2.9.29
+      hash: 023256fcb3c4d5ad3c32445e3ca5ab6713e64073
+      body: |
+        Update balena-os/leviathan-worker from 2.9.28 to 2.9.29
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Self-hosted Renovate Bot
+      nested: []
+  version: 2.29.43
+  title: ""
+  date: 2024-01-29T18:31:03.729Z
+- commits:
     - subject: Update Lock file maintenance
       hash: 36e64b2498703a536500d79f7f20bf9a2b35d0f9
       body: |
