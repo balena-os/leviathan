@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update Lock file maintenance
+      hash: aaaa5b9d3cbdc934492b3198be0f589878bb2556
+      body: |
+        Update
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Self-hosted Renovate Bot
+      nested: []
+  version: 2.29.47
+  title: ""
+  date: 2024-02-05T00:45:07.492Z
+- commits:
     - subject: Update core/contracts digest to 75a9764
       hash: 19eb050d554bcec7ad4019b9f56c87cbe9ed980a
       body: |
