@@ -6,6 +6,14 @@ let counter = 1;
 
 async function testConfig(configs) {
   for (const config of configs) {
+    
+    // Don't test configs if development mode is true in config.js
+    // This is useful when developing tests for a new device not on production.
+    if (config.debug.dev === true ) {
+      console.log(`Dev mode is enabled. Skipping config ${counter} from config.js file ... 👍`)
+      return "notest"
+    }
+
     console.log(`Validation config ${counter} from config.js file ...`)
 
     // Setup SDK as per the API URL
@@ -48,10 +56,18 @@ async function testConfig(configs) {
     }
 
     // Add new config validation tests here
+    // try {
+      // Condition to be checked
+      // console.log(`Condition is checked ✅`)
+    // } catch (error) {
+      // console.log(`Condition is not checked ❌`)
+    // }
 
     if (report.errors.length === 0) {
+      // No errors found, continue checking the next config
       report.verdict = true
     } else {
+      // Errors found, return the result of the report
       report.config = config
       return report
     }

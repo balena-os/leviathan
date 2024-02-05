@@ -312,13 +312,16 @@ class NonInteractiveState {
 	runConfigs = Array.isArray(runConfigs) ? runConfigs : [runConfigs];
 
 	const validatorResult = await testConfig(runConfigs);
-	if (!validatorResult.verdict) {
+	if (validatorResult === "notest") {
+		state.info('No config.js validation done in development mode.');
+	} else if (!validatorResult.verdict) {
 		throw new Error(
 			`Configuration issues -> ${JSON.stringify(validatorResult.errors)}`,
 			);
-		}
+	} else {
+		state.info('Configuration Validated ✔️');
+	}
 
-	state.info('Configuration Validated ✔️');
 	state.info('Computing Run Queue');
 
 	// Iterates through test jobs and pushes jobs to available testbot workers

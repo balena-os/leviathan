@@ -8,6 +8,7 @@ To improve workflow and write tests faster on Levaithan, the following debug opt
         globalFailFast: false,
         preserveDownloads: false,
         unstable: ["TITLE OF THE TEST 1", "TITLE OF THE TEST 2"]
+        dev: false,
         // Custom value 
         CUSTOM_OPTION: 'Verycustomindeed',
     },
@@ -19,6 +20,7 @@ The supported debug options available are as follows:
 2. `preserveDownloads`: Persist downloadeded artifacts. Type: `Boolean`. Value: `true` or `false`. Default: `false`.
 3. `globalFailFast`: Exit the entire ongoing test run if a test fails. Type: `Boolean`. Value: `true` or `false`. Default: `false`.
 4. `unstable`: Add titles of the test suite that need to be marked unstable in order to have them skipped from a test suite. Skipped tests are marked as `todo` in the test logs and `skipped` in the test results. Type: `Array`.
+5. `dev`: Run tests in development mode with validation and other checks toggled off. Type: `Boolean`. Value: `true` or `false`. Default: `false`.
 
 You can use `this.suite.options` to access the `CUSTOM_OPTION` property in your test suite.
 
