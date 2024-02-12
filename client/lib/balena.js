@@ -56,6 +56,7 @@ class BalenaCloudInteractor {
 		const username = await this.sdk.auth.whoami()
 		if (username) {
 			console.log(`Logged in with ${await this.sdk.auth.whoami()}'s account on ${this.balenaApiUrl} using balenaSDK`);
+			return this.sdk
 		} else {
 			throw new Error('Failed to authenticate with balenaSDK. Check your API key or balenaCloud API URL address.');
 		}

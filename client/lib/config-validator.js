@@ -1,25 +1,30 @@
-const { getSdk } = require('balena-sdk');
 const fs = require('fs');
+const { BalenaCloudInteractor } = require('./balena')
 
 let report = { verdict: false, errors: [] };
 let counter = 1;
 
 async function testConfig(configs) {
   for (const config of configs) {
+    const balenaCloud = new BalenaCloudInteractor(config.config.balenaApiUrl);
+    const balena = await balenaCloud.authenticate(config.config.balenaApiKey);
     
-    // Don't test configs if development mode is true in config.js
-    // This is useful when developing tests for a new device not on production.
+    /**
+     * Don't test configs if dev mode is true in config.js
+     * This is useful when developing tests for a new device not on production.
+     * 
+     * TO DISABLE VALIDATION, add the following to config.js
+     * 
+     * debug: {
+     *   dev: true // boolean (true/false)
+     * }
+     */ 
     if (config.debug.dev === true ) {
       console.log(`Dev mode is enabled. Skipping config ${counter} from config.js file ... 👍`)
       return "notest"
     }
 
-    console.log(`Validation config ${counter} from config.js file ...`)
-
-    // Setup SDK as per the API URL
-    const balena = getSdk({
-      apiUrl: `https://api.${config.config.balenaApiUrl}`,
-    });
+    console.log(`Validating config ${counter} from config.js file ...`)
 
     // deviceType exists?
     try {
