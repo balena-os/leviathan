@@ -1,4 +1,16 @@
 - commits:
+    - subject: "patch: Authenticate the validator before validation"
+      hash: 03ef1b01b99d921fe99b834001de26d4c760f3b8
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipulgupta2048@gmail.com>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipulgupta2048@gmail.com>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.29.57
+  title: ""
+  date: 2024-02-13T10:45:34.666Z
+- commits:
     - subject: Update balena-os/leviathan-worker to v2.9.36
       hash: 0b7b82ac9044c230b2384c67e2a2f1000e018991
       body: |
