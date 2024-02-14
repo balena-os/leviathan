@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update core/contracts digest to 0c54ce2
+      hash: bfb9b6bd67bf8bfe6a337ebcb439aa7f3852fb5c
+      body: |
+        Update core/contracts
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Self-hosted Renovate Bot
+      nested: []
+  version: 2.29.58
+  title: ""
+  date: 2024-02-14T12:19:16.753Z
+- commits:
     - subject: "patch: Authenticate the validator before validation"
       hash: 03ef1b01b99d921fe99b834001de26d4c760f3b8
       body: ""
