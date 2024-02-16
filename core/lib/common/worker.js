@@ -739,7 +739,8 @@ module.exports = class Worker {
 	async waitForServiceState(serviceName, expectedState, target, waitUntilOptions = [false, 120, 250]) {
 		return utils.waitUntil(
 			async () => {
-				return worker
+				console.log(`Waiting for service ${serviceName} to reach state ${expectedState}`);
+				return this
 					.executeCommandInHostOS(
 						`systemctl is-active ${serviceName} || true`,
 						target,

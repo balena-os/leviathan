@@ -51,7 +51,7 @@ const enableSerialConsole = async (imagePath) => {
 };
 
 module.exports = {
-	title: "Testbot Diagnostics",
+	title: "Autokit Diagnostics x Levaithan e2e tests",
 	run: async function (test) {
 		// The worker class contains methods to interact with the DUT, such as flashing, or executing a command on the device
 		const Worker = this.require("common/worker");
@@ -199,5 +199,17 @@ module.exports = {
 		// 		.worker.archiveLogs(this.id, this.context.get().link);
 		// });
 	},
-	tests: ["./tests/always-fail", "./tests/flash", "./tests/power-cycle", "./tests/serial"],
+
+	tests: [
+		// Worker/Hardware focused tests listed below
+		"./tests/always-fail", 
+		"./tests/flash", 
+		"./tests/power-cycle", 
+
+		// Leviathan Helpers tests listed below
+		"./tests/worker-helper", 
+
+		// Always keep this test last to be executed - it turns off the DUT
+		"./tests/serial"
+	],
 };
