@@ -725,4 +725,35 @@ module.exports = class Worker {
 			this.logger.log(`Couldn't retrieve logs with error: ${e}`);
 		}
 	}
+
+	/**
+	* Wait for a service to reach a certain state. For example: active/inactive
+	*
+	* @param {string} serviceName systemd service to query and wait for
+	* @param {string} expectedState for example: active/inactive
+	* @param {string} target the address of the device to query
+	* @param {string[]} waitUntilOptions optional custom values for waitUntil function. Refer to docs for more info.
+	*
+	* @category helper
+	*/
+	async waitForServiceState(serviceName, expectedState, target, waitUntilOptions = [false, 120, 250]) {
+		return utils.waitUntil(
+			async () => {
+				return worker
+					.executeCommandInHostOS(
+						`systemctl is-active ${serviceName} || true`,
+						target,
+					)
+					.then((serviceStatus) => {
+						return Promise.resolve(serviceStatus === expectedState);
+					})
+					.catch((err) => {
+						Promise.reject(err);
+					});
+			},
+			waitUntilOptions[0],
+			waitUntilOptions[1],
+			waitUntilOptions[2],
+		);
+	}
 };
