@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 	unzip \
 	util-linux \
 	wget \
-	vim \
+	curl \
 	build-essential \
 	make \
 	python && \
