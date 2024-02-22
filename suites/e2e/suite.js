@@ -117,7 +117,7 @@ module.exports = {
 				.sdk.fetchOS(that.suite.options.balenaOS.download.version, that.suite.deviceType.slug)
 			} else if (isUrl(that.suite.options.image)) {
 				console.log(`Downloading image from ${that.suite.options.image}...`)
-				return await that.downloadFromUrl(that.suite.options.image)
+				return await that.downloadFromUrl.downloadFromUrl(that.suite.options.image)
 			} else {
 				return undefined
 			}
