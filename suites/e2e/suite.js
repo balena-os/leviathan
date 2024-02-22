@@ -26,6 +26,17 @@ const supportsBootConfig = (deviceType) => {
 	);
 };
 
+function isUrl(filePath) {
+	let pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
+		'(\\S+\\:\\S+@)?' + // optional user:pass authentication
+		'((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+		'((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+		'(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+		'(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+		'(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+	return !!pattern.test(filePath);
+}
+
 const enableSerialConsole = async (imagePath) => {
 	const bootConfig = await imagefs.interact(imagePath, 1, async (_fs) => {
 		return util
@@ -64,6 +75,7 @@ module.exports = {
 		// The suite contex is an object that is shared across all tests. Setting something into the context makes it accessible by every test
 		this.suite.context.set({
 			utils: this.require("common/utils"),
+			downloadFromUrl: this.require("common/downloadFromUrl"),
 			sshKeyPath: join(homedir(), "id"),
 			sshKeyLabel: this.suite.options.id,
 			sdk: new Balena(this.suite.options.balena.apiUrl, this.getLogger(), this.suite.options.config.sshConfig),
@@ -98,18 +110,26 @@ module.exports = {
 
 		const keys = await this.utils.createSSHKey(this.sshKeyPath);
 
+		async function imagePathFinder(that) {
+			if (that.suite.options.image === false) {
+				return await that.context
+				.get()
+				.sdk.fetchOS(that.suite.options.balenaOS.download.version, that.suite.deviceType.slug)
+			} else if (isUrl(that.suite.options.image)) {
+				console.log(`Downloading image from ${that.suite.options.image}...`)
+				return await that.downloadFromUrl(that.suite.options.image)
+			} else {
+				return undefined
+			}
+		}
+
 		// Create an instance of the balenaOS object, containing information such as device type, and config.json options
 		this.suite.context.set({
 			os: new BalenaOS(
 				{
 					deviceType: this.suite.deviceType.slug,
 					network: this.suite.options.balenaOS.network,
-					image:
-						this.suite.options.image === false
-							? `${await this.context
-									.get()
-									.sdk.fetchOS(this.suite.options.balenaOS.download.version, this.suite.deviceType.slug)}`
-							: undefined,
+					image: await imagePathFinder(this),
 					configJson: {
 						uuid: this.suite.options.balenaOS.config.uuid,
 						os: {

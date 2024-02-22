@@ -40,11 +40,13 @@ function generateChecksum(filePath) {
 module.exports = {
 
   /**
-   * Download a file with `curl` and display download progress.
+   * Download a file with `curl`.
+   * 
    * @param {string} downloadUrl - The URL to download the file from.
    * @param {string[]} otherArgs - Optional arguments to pass to curl.
    *
-   * Context: https://www.jenkins.io/doc/book/system-administration/authenticating-scripted-clients/
+   * @category helper
+   * @remark https://www.jenkins.io/doc/book/system-administration/authenticating-scripted-clients/
    */
   downloadFromUrl: async function (downloadUrl, otherArgs = []) {
     const downloadFileName = new URL(downloadUrl).pathname.split('/').pop()
