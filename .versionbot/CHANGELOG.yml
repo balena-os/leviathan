@@ -1,4 +1,18 @@
 - commits:
+    - subject: ad extra autokit setup information, and basic troubleshooting
+      hash: 8245d549f586330a1805ea4ad998622f735c347b
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+  version: 2.29.62
+  title: ""
+  date: 2024-02-26T11:59:24.765Z
+- commits:
     - subject: Update Lock file maintenance
       hash: c8c6536316c5e96b0bbb59a9eb10fa0fe62fb9c8
       body: |
