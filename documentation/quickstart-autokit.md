@@ -13,26 +13,32 @@ To use the autokit with the leviathan framework, your autokit must be running a 
 
 1. If you don't already have access to a fleet, [create one](https://docs.balena.io/learn/getting-started/raspberrypi3/nodejs/#create-a-fleet)
 2. Navigate to the [leviathan-worker](https://github.com/balena-os/leviathan-worker) repository. Clone it, and from that repository use `balena push` to [push a new release to your fleet](https://docs.balena.io/learn/deploy/deployment/#overview)
-3. [Provision](https://docs.balena.io/learn/deploy/deployment/#overview) your autokit to this fleet. Depending on the device-type of your autokit host, the process may differ. Ensure that you provision the device using the image configured to use **ethernet only**. 
+3. [Provision](https://docs.balena.io/learn/deploy/deployment/#overview) your autokit to this fleet. Depending on the device-type of your autokit host, the process may differ. Ensure that you provision the device using the image configured to use **ethernet only**. We also recommend using a "developement" image at first.
 4. When the device is successfully provisioned on balenaCloud, make sure to enable the public URL for your device.
 5. Add the appropriate environment variables to the device. You may have to adjust these depending on the autokit setup and the device under test. The main ones, relevant to the leviathan-worker are:
    
 | Variable Name | Description | Required |
 | --- | --- | --- |
-| `TESTBOT_DUT_TYPE` | Set to the device type slug of the DUT from the [supported devices](https://github.com/balena-io-hardware/autokit-interface-sw/tree/master/lib/flashing/devices) listed here. If your DUT is not listed, then proceed to choose the device type that resembles the flashing procedure of the DUT. For example, a flashing a sd card and booting process resembles the process of `raspberrypi4-64`. Similarly, for a flasher image use `intel-nuc`. | True |
+| `TESTBOT_DUT_TYPE` | This must be set to the correct flashing procedure for your DUT. Details can be seen here: https://github.com/balena-io-hardware/autokit-interface-sw/tree/master/lib/flashing. For example, a raspberry pi 4 would be `generic-sd-boot` , and a rockpi 4b with internal emmc would be `generic-flasher`. If these generic mechanisms don't cover the use case for your device, a custom flashing procedure must be added. | True |
 | `WORKER_TYPE` | Set to the type of worker you intend to use with Leviathan. In this case, it's an autokit. Hence, set to `autokit`. | True |
-| Autokit Setup Variables | Refer to the [autokit setup variables](https://github.com/balena-os/leviathan-worker/blob/master/lib/workers/autokit.ts#L17) and ensure they are appropriately configured if any hardware differs from the default. Cross-reference these strings with the [autokit feature implementations](https://github.com/balena-io-hardware/autokit-interface-sw/tree/master/lib/features) for more information. |
 
-Any other relevent autokit variables must be set, if the default values aren't appropriate
+Any other relevent autokit variables must be set, if the default values aren't appropriate. Remember to check the readmes inside the relevant implementation folder for additional config vars where needed - for example if selecting `digitalRelay: usbRelay` , check: https://github.com/balena-io-hardware/autokit-interface-sw/tree/master/lib/features/digitalRelay/implementations/usb-relay#configuration
 
 | Variable Name | Description | Default | Required |
 | --- | --- | --- | --- |
 | `WIFI_IF` | The name of the primary WiFi interface of the autokit host. | `wlan0` | No |
 | `WIRED_IF` | The name of the USB-Ethernet interface of the autokit host. This can be found by accessing the autokit host over SSH. | `eth0` | No |
 | `DEV_SERIAL` | The name of the USB-serial interface of the autokit. | `/dev/ttyUSB0` | No |
+| `SD_MUX` | The name of the sd mux of the autokit - reference: https://github.com/balena-io-hardware/autokit-interface-sw/tree/master/lib/features/sd-mux#implementations. If there is no SD mux, due to this being a usb-boot device for example, set `dummySdMux` | `linuxAut` | No |
+| `SERIAL` | The name of the serial cable of the autokit - reference: https://github.com/balena-io-hardware/autokit-interface-sw/tree/master/lib/features/serial#implementations. | `dummySerial` | No |
+| `POWER` | The name of the power relay implementaion of the autokit - reference: https://github.com/balena-io-hardware/autokit-interface-sw/tree/master/lib/features/power#implementations. | `autokitRelay` | No |
+| `DIGITAL_RELAY` | The name of the digital relay implementaions autokit - this is for use when a boot switch, jumper, or other element must be toggled during flashing, for example to put the DUT into "flash" or "recovery" mode -  reference: https://github.com/balena-io-hardware/autokit-interface-sw/tree/master/lib/features/digitalRelay#implementations. | `dummyDigitalRelay` | No |
+| `KEYBOARD` | This is used when a virtual keyboard is attached to the autokit -  reference: https://github.com/balena-io-hardware/autokit-interface-sw/tree/master/lib/features/keyboard#implementations. | `dummyKeyboard` | No |
 
-6. When that the `worker` container on your autokit host has started, the logs in the dashboard should read the message `worker setup completed`. If the container is not starting, the most likely cause could be either the hardware not plugged in correctly, or the needed env vars weren't set up correctly.
-7. Lastly, add a device tag for your autokit in balenaCloud. The tag will be for the key named "DUT" with the value being the slug of the device under test. For example, the following as a balenaCloud device tag.
+
+
+1. When that the `worker` container on your autokit host has started, the logs in the dashboard should read the message `worker setup completed`. If the container is not starting, the most likely cause could be either the hardware not plugged in correctly, or the needed env vars weren't set up correctly.
+2. Lastly, add a device tag for your autokit in balenaCloud. The tag will be for the key named "DUT" with the value being the slug of the device under test. For example, the following as a balenaCloud device tag.
 
 ```
 DUT: raspberrypi3
@@ -45,7 +51,7 @@ Future work will simplify this process to avoid manual configuration of environm
 For your first test run, we will be running the [e2e test suite](https://github.com/balena-os/leviathan/tree/master/suites/e2e). This is a basic testing suite to test your worker configuration and if the setup is correct. Each Levaithan test run needs the following to start testing that the user has to provide:
 
 1. **The test suite you want to run**: [e2e test suite](https://github.com/balena-os/leviathan/tree/master/suites/e2e) (already provided)
-2. **A balenaOS image used to flash, provision and test the DUT**. The test will automatically download an OS image this time. So no need to provide your own image.  
+2. **A balenaOS image used to flash, provision and test the DUT**. Put it in your `leviathan/workspace` folder and gzip it - if you are using a device type that already exists on balena cloud, you can make the test suite automatically download one.
 3. **A test configuration using the `config.js` file**: Let's create one.
 
 ### Build your `config.js` file
@@ -59,21 +65,21 @@ Create your own config.js file
 
 ```js
 module.exports = {
-    deviceType: "raspberrypi3",
+    deviceType: "raspberrypi3", // replace this with your device type slug. A contract must exist for this in the leviathan/core/contracts submodule.
     suite: `${__dirname}/../suites/e2e`,
     config: {
         networkWired: false,
         networkWireless: true,
         downloadVersion: 'latest',
-        balenaApiKey: process.env.BALENACLOUD_API_KEY,
+        balenaApiKey: process.env.BALENACLOUD_API_KEY, // this must be the api key that matches the "organization" property. 
         balenaApiUrl: 'balena-cloud.com',
         organization: process.env.BALENACLOUD_ORG,
     },
     debug: {
         unstable: ["Kill the device under test"],
     }
-    image: false,
-    workers: ['<Public device URL of your autokit>'],
+    image: `${__dirname}/path/to/image`, // can also set image: false to auto download - only if the image is aailable through balena cloud 
+    workers: ['<Public device URL of your autokit>'], // or local ip address of the autokit (recommended)
 }
 ```
 
@@ -106,9 +112,99 @@ This will trigger a build of client and core services using docker-compose and b
 
 A successful run of the e2e test suite without any errors makes sure that your autokit worker is set up correctly and can be used for further tests.
 
+## Troubleshooting
+
+### Config issues
+
+```sh
+Invalid device type: <device-type-without>
+```
+If you see this, then make sure that your `leviathan/core/contracts/contracts/hw.device-type` submodule has the contract for your device type
+
+```
+OS image not found: ENOENT: no such file or directory, access '/usr/src/app/workspace/image.img.gz'
+```
+Make sure your OS image is stored in `leviathan/workspace`.
+
+
+### Flashing issues
+
+When the device fails during flashing - first check: has the correct `TESTBOT_DUT_TYPE` been selected (see above)?
+
+If it has, we need a progression of checks. 
+
+First confirm that the power control is working for the DUT. This can be done:
+
+```sh
+curl -X POST <autokit_ip>/dut/on
+```
+
+and checking that the DUT powers on. If it does, you can turn it back off with 
+
+```sh
+curl -X POST <autokit_ip>/dut/off
+```
+
+If that works, then move on to checking if the SD card is flashed with the image that you wanted to flash to it. You can take the card out and plug it into your laptop and check. 
+
+If it has, then check that the DUT was booting from the SD card - if you have a serial cable attached to the autokit, you can do this:
+
+1. ssh into your autokit with `balena ssh <autokit_uuid> worker`
+2. `apk add screen`
+3. `screen <serial_dev> 115200`
+4. In another ssh session: `usbsdmux /dev/sg0 dut` - this will toggle the MUX to the DUT 
+5. Then `curl -X POST <autokit_ip>/dut/on` to power on the DUT
+6. Check the serial output from the `screen` session is there anything?
+7. If there isn't - then verify the serial configuration is correct
+8. If the serial configuration is correct, there should be some output on the `screen` session - you can see if its failing to boot from the SD card, or if its booting into balena OS. 
+9. if its failing to boot from SD, try another card.
+
+### Manually interacting with the DUT
+
+Powering on and off can be done with: 
+
+```sh
+curl -X POST <autokit_ip>/dut/on
+curl -X POST <autokit_ip>/dut/off
+```
+
+You can manually flash the DUT outside of the test suite with an image of your choice with:
+
+```sh
+curl --data-binary @<your image (must be .gz gzipped)> <autokit_ip or public url>/dut/flash
+```
+
+You can create a wired network for your DUT to connect to with:
+
+```sh
+curl -X POST localhost/dut/network -H 'Content-Type: application/json' -d '{"wired": {"nat":true}}'
+```
+
+You can create a wireless network with:
+
+```sh
+curl -X POST localhost/dut/network -H 'Content-Type: application/json' -d '{"wireless": {"ssid":"<EXAMPLE SSID>", "psk":"<EXAMPLE PSK", "nat": "true"}}'
+```
+
+You can access the DUT via the autokit after setting up one of these networks.
+
+You can find the DUT ip address by ssh'ing into the autokit and checking the `dnsmasq` leasefiles, for example:
+
+```sh
+root@3d57642:~# cat /var/lib/NetworkManager/dnsmasq-enp1s0u1u4u1u1.leases 
+1708607547 d8:3a:dd:4b:6e:0f 10.42.0.248 ef0a7ac 01:d8:3a:dd:4b:6e:0f
+``` 
+
+then from the autokit command line
+
+```sh
+ssh 10.42.0.248 -p 22222
+```
+
+You can view the live HDMI output in your browser with `<autokit_ip or public url>/dut/liveStream`
+
 
 ## Let's run some "real" tests
-
 
 We will start with a test run of the [balenaOS unmanaged testing suite](https://github.com/balena-os/meta-balena/tree/master/tests/suites). To get the tests, clone the [meta-balena](https://github.com/balena-os/meta-balena/) repository. The OS tests are located in the `tests/suites/` directory.
 
