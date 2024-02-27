@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update core/contracts digest to f3ba2ee
+      hash: 2334fd02530b6669a3fb5275421543c0a66bca2f
+      body: |
+        Update core/contracts
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Self-hosted Renovate Bot
+      nested: []
+  version: 2.29.63
+  title: ""
+  date: 2024-02-27T17:34:15.697Z
+- commits:
     - subject: ad extra autokit setup information, and basic troubleshooting
       hash: 8245d549f586330a1805ea4ad998622f735c347b
       body: ""
