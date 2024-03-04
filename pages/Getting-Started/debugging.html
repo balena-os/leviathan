@@ -78,6 +78,7 @@
 <span style="color: #002339">        globalFailFast: </span><span style="color: #174781">false</span><span style="color: #002339">,</span>
 <span style="color: #002339">        preserveDownloads: </span><span style="color: #174781">false</span><span style="color: #002339">,</span>
 <span style="color: #002339">        unstable: [</span><span style="color: #A44185">&quot;TITLE OF THE TEST 1&quot;</span><span style="color: #002339">, </span><span style="color: #A44185">&quot;TITLE OF THE TEST 2&quot;</span><span style="color: #002339">]</span>
+<span style="color: #002339">        dev: </span><span style="color: #174781">false</span><span style="color: #002339">,</span>
 <span style="color: #002339">        </span><span style="color: #357B42">// Custom value </span>
 <span style="color: #002339">        CUSTOM_OPTION: </span><span style="color: #A44185">&#039;Verycustomindeed&#039;</span><span style="color: #002339">,</span>
 <span style="color: #002339">    },</span>
@@ -88,6 +89,7 @@
 					<li><code>preserveDownloads</code>: Persist downloadeded artifacts. Type: <code>Boolean</code>. Value: <code>true</code> or <code>false</code>. Default: <code>false</code>.</li>
 					<li><code>globalFailFast</code>: Exit the entire ongoing test run if a test fails. Type: <code>Boolean</code>. Value: <code>true</code> or <code>false</code>. Default: <code>false</code>.</li>
 					<li><code>unstable</code>: Add titles of the test suite that need to be marked unstable in order to have them skipped from a test suite. Skipped tests are marked as <code>todo</code> in the test logs and <code>skipped</code> in the test results. Type: <code>Array</code>.</li>
+					<li><code>dev</code>: Run tests in development mode with validation and other checks toggled off. Type: <code>Boolean</code>. Value: <code>true</code> or <code>false</code>. Default: <code>false</code>.</li>
 				</ol>
 				<p>You can use <code>this.suite.options</code> to access the <code>CUSTOM_OPTION</code> property in your test suite.</p>
 				<p>Checkout the <a href="https://github.com/balena-os/leviathan/blob/master/workspace/config.example.js">config.example.js</a> file for a complete example.</p>
