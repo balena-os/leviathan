@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update core/contracts digest to 2de3526
+      hash: dbd017ddf87ab36e3f10dfb09c5e82edad3b9703
+      body: |
+        Update core/contracts
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Self-hosted Renovate Bot
+      nested: []
+  version: 2.29.65
+  title: ""
+  date: 2024-03-21T08:29:35.853Z
+- commits:
     - subject: Update Lock file maintenance
       hash: fad1b73fe8752efee01764264b4aecfd88faf584
       body: |
@@ -2605,7 +2618,8 @@
         Instead of retrying to get the DUT IP address 120 times on a 1 seconds
         interval,
 
-        let's reduce it to 30 times because the resolveLocalTarget which we call will
+        let's reduce it to 30 times because the resolveLocalTarget which we call
+        will
 
         timeout too in 15 seconds:
 
@@ -2613,7 +2627,8 @@
         https://github.com/balena-os/leviathan-worker/blob/master/lib/helpers/index.ts#L162
 
 
-        So reducing the retries number to 30 will effectly bring the total combined timeout to a maximum of 8 minutes.
+        So reducing the retries number to 30 will effectly bring the total
+        combined timeout to a maximum of 8 minutes.
       footer:
         Change-type: patch
         change-type: patch
@@ -8325,7 +8340,8 @@
     - body: >-
         Since https://github.com/balena-os/meta-balena/issues/1919 is resolved,
 
-        the previous deactivated persistent logging test is being activated again
+        the previous deactivated persistent logging test is being activated
+        again
 
         in the OS test suite.
 - commits:
@@ -8548,7 +8564,8 @@
         Previous version waas not handling errors reported by the on-device core
         service.
 
-        Also, avoid resetting the test suite in case of the init error in the core.
+        Also, avoid resetting the test suite in case of the init error in the
+        core.
 - version: 1.24.0
 - date: 2020-06-16T08:29:44Z
 - commits:
@@ -8743,7 +8760,8 @@
     - body: >-
         Allows running the client as a docker container.
 
-        Also, introduces the workspace directory that should be used for local/dev runs.
+        Also, introduces the workspace directory that should be used for
+        local/dev runs.
 - version: 1.21.6
 - date: 2020-01-17T13:14:53Z
 - commits:
@@ -10509,7 +10527,8 @@
 
         them we need to maintain the whole tree in memory.
 
-        We need this to be able to specify contracts per test check weather we satisfy them
+        We need this to be able to specify contracts per test check weather we
+        satisfy them
 
         before we run the tests. This also cleans up the test API.
 - commits:
@@ -10968,7 +10987,8 @@
     - body: >-
         This worker expectes a worker API to be exposed on the define URL.
 
-        The definition for this API can be found here: https://github.com/balena-io/leviathan-worker/blob/master/lib/index.ts
+        The definition for this API can be found here:
+        https://github.com/balena-io/leviathan-worker/blob/master/lib/index.ts
 - commits:
     - hash: b0a44dccebc1e78ef79cd6d50c6b51aec593d128
 - commits:
@@ -11039,11 +11059,13 @@
     - body: >-
         New classes: Suite, Teardown.
 
-        The suite is a npm package now, so the work to deal with the npm dependencies
+        The suite is a npm package now, so the work to deal with the npm
+        dependencies
 
         reside in the Suite class.
 
-        The teardown class will collect and run on request the functions registered.
+        The teardown class will collect and run on request the functions
+        registered.
 - commits:
     - hash: d39cae7a58ccbecaf7d3ac94031f1cd9b69b2f30
 - commits:
@@ -11256,7 +11278,8 @@
         Before requesting an SSH connection from the resin-proxy check if we can
         succesfully establish
 
-        a tunnel to the device, only then attempt the SSH con. This allows us to get an HTTP reponse from
+        a tunnel to the device, only then attempt the SSH con. This allows us to
+        get an HTTP reponse from
 
         the socket to establish whether can connect or not.
 - commits:
@@ -11599,7 +11622,8 @@
 
         taken into account by the satisfies function of semver.
 
-        Users can now specify keywords like: 'latest', 'recommended' or 'default'
+        Users can now specify keywords like: 'latest', 'recommended' or
+        'default'
 
         to select the desired version.
 - commits:
@@ -11987,13 +12011,15 @@
         Create OS component which provides the required configuration to run a
         specific OS.
 
-        This class will be closely related (coupled) to the worker class. The flash method in the
+        This class will be closely related (coupled) to the worker class. The
+        flash method in the
 
         worker class will use the OS class to configure the image.
 
         The two interfaces should be kept in sync.
 
-        Because of the move of the download function we changed the way we retrive the filename.
+        Because of the move of the download function we changed the way we
+        retrive the filename.
 - commits:
     - hash: 5844aa6dbd3831b31e3f9e398a59e269ea3f70c9
 - commits:
@@ -12103,7 +12129,8 @@
 
         push back on this until ava cracked.
 
-        Node-tap seems to be a much better fit for this project as it is light-weight and
+        Node-tap seems to be a much better fit for this project as it is
+        light-weight and
 
         highly customizable.
 - version: 1.15.8
@@ -12994,7 +13021,8 @@
         The only reason this project wsa using typescript was for the async /
         await support,
 
-        but this is supported since noce v8.9. We will just use that from now on and move
+        but this is supported since noce v8.9. We will just use that from now on
+        and move
 
         back to javascript.
 - commits:
