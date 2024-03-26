@@ -1,4 +1,16 @@
 - commits:
+    - subject: "minor: Add general FAQ to Leviathan"
+      hash: 2ee9236585807f16959ecbc2f24983b0abe0d8f4
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipulgupta2048@gmail.com>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipulgupta2048@gmail.com>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.30.0
+  title: ""
+  date: 2024-03-26T19:12:11.114Z
+- commits:
     - subject: Update Lock file maintenance
       hash: 427bab2b42a128fa0cb067c99f122d2bc1e743b1
       body: |
