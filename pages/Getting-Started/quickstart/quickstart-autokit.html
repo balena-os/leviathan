@@ -237,64 +237,12 @@
 				<a href="#troubleshooting" id="troubleshooting" style="color: inherit; text-decoration: none;">
 					<h2>Troubleshooting</h2>
 				</a>
-				<a href="#config-issues" id="config-issues" style="color: inherit; text-decoration: none;">
-					<h3>Config issues</h3>
-				</a>
-				<pre><code class="language-sh"><span style="color: #002339">Invalid device type: </span><span style="color: #7B30D0">&lt;</span><span style="color: #002339">device-type-without</span><span style="color: #7B30D0">&gt;</span>
-</code></pre>
-				<p>If you see this, then make sure that your <code>leviathan/core/contracts/contracts/hw.device-type</code> submodule has the contract for your device type</p>
-				<pre><code><span style="color: #2F86D2">OS</span><span style="color: #002339"> </span><span style="color: #2F86D2">image</span><span style="color: #002339"> </span><span style="color: #2F86D2">not</span><span style="color: #002339"> found: ENOENT: </span><span style="color: #2F86D2">no</span><span style="color: #002339"> </span><span style="color: #2F86D2">such</span><span style="color: #002339"> </span><span style="color: #2F86D2">file</span><span style="color: #002339"> </span><span style="color: #2F86D2">or</span><span style="color: #002339"> </span><span style="color: #2F86D2">directory</span><span style="color: #002339">, </span><span style="color: #2F86D2">access</span><span style="color: #002339"> </span><span style="color: #A44185">&#039;/usr/src/app/workspace/image.img.gz&#039;</span>
-</code></pre>
-				<p>Make sure your OS image is stored in <code>leviathan/workspace</code>.</p>
-				<a href="#flashing-issues" id="flashing-issues" style="color: inherit; text-decoration: none;">
-					<h3>Flashing issues</h3>
-				</a>
-				<p>When the device fails during flashing - first check: has the correct <code>TESTBOT_DUT_TYPE</code> been selected (see above)?</p>
-				<p>If it has, we need a progression of checks. </p>
-				<p>First confirm that the power control is working for the DUT. This can be done:</p>
-				<pre><code class="language-sh"><span style="color: #002339">curl -X POST </span><span style="color: #7B30D0">&lt;</span><span style="color: #002339">autokit_ip</span><span style="color: #7B30D0">&gt;</span><span style="color: #002339">/dut/on</span>
-</code></pre>
-				<p>and checking that the DUT powers on. If it does, you can turn it back off with </p>
-				<pre><code class="language-sh"><span style="color: #002339">curl -X POST </span><span style="color: #7B30D0">&lt;</span><span style="color: #002339">autokit_ip</span><span style="color: #7B30D0">&gt;</span><span style="color: #002339">/dut/off</span>
-</code></pre>
-				<p>If that works, then move on to checking if the SD card is flashed with the image that you wanted to flash to it. You can take the card out and plug it into your laptop and check. </p>
-				<p>If it has, then check that the DUT was booting from the SD card - if you have a serial cable attached to the autokit, you can do this:</p>
+				<p>Refer to <a href="../debugging.html">FAQ&#39;s for common issues mentioned below and debug your test setup</a></p>
 				<ol>
-					<li>ssh into your autokit with <code>balena ssh &lt;autokit_uuid&gt; worker</code></li>
-					<li><code>apk add screen</code></li>
-					<li><code>screen &lt;serial_dev&gt; 115200</code></li>
-					<li>In another ssh session: <code>usbsdmux /dev/sg0 dut</code> - this will toggle the MUX to the DUT </li>
-					<li>Then <code>curl -X POST &lt;autokit_ip&gt;/dut/on</code> to power on the DUT</li>
-					<li>Check the serial output from the <code>screen</code> session is there anything?</li>
-					<li>If there isn&#39;t - then verify the serial configuration is correct</li>
-					<li>If the serial configuration is correct, there should be some output on the <code>screen</code> session - you can see if its failing to boot from the SD card, or if its booting into balena OS. </li>
-					<li>if its failing to boot from SD, try another card.</li>
+					<li>Config issues</li>
+					<li>Flashing issues</li>
+					<li>Manually interacting with the DUT</li>
 				</ol>
-				<a href="#manually-interacting-with-the-dut" id="manually-interacting-with-the-dut" style="color: inherit; text-decoration: none;">
-					<h3>Manually interacting with the DUT</h3>
-				</a>
-				<p>Powering on and off can be done with: </p>
-				<pre><code class="language-sh"><span style="color: #002339">curl -X POST </span><span style="color: #7B30D0">&lt;</span><span style="color: #002339">autokit_ip</span><span style="color: #7B30D0">&gt;</span><span style="color: #002339">/dut/on</span>
-<span style="color: #002339">curl -X POST </span><span style="color: #7B30D0">&lt;</span><span style="color: #002339">autokit_ip</span><span style="color: #7B30D0">&gt;</span><span style="color: #002339">/dut/off</span>
-</code></pre>
-				<p>You can manually flash the DUT outside of the test suite with an image of your choice with:</p>
-				<pre><code class="language-sh"><span style="color: #002339">curl --data-binary @</span><span style="color: #7B30D0">&lt;</span><span style="color: #002339">your image (must be .gz gzipped)</span><span style="color: #7B30D0">&gt;</span><span style="color: #002339"> </span><span style="color: #7B30D0">&lt;</span><span style="color: #002339">autokit_ip or public url</span><span style="color: #7B30D0">&gt;</span><span style="color: #002339">/dut/flash</span>
-</code></pre>
-				<p>You can create a wired network for your DUT to connect to with:</p>
-				<pre><code class="language-sh"><span style="color: #002339">curl -X POST localhost/dut/network -H </span><span style="color: #A44185">&#039;Content-Type: application/json&#039;</span><span style="color: #002339"> -d </span><span style="color: #A44185">&#039;{&quot;wired&quot;: {&quot;nat&quot;:true}}&#039;</span>
-</code></pre>
-				<p>You can create a wireless network with:</p>
-				<pre><code class="language-sh"><span style="color: #002339">curl -X POST localhost/dut/network -H </span><span style="color: #A44185">&#039;Content-Type: application/json&#039;</span><span style="color: #002339"> -d </span><span style="color: #A44185">&#039;{&quot;wireless&quot;: {&quot;ssid&quot;:&quot;&lt;EXAMPLE SSID&gt;&quot;, &quot;psk&quot;:&quot;&lt;EXAMPLE PSK&quot;, &quot;nat&quot;: &quot;true&quot;}}&#039;</span>
-</code></pre>
-				<p>You can access the DUT via the autokit after setting up one of these networks.</p>
-				<p>You can find the DUT ip address by ssh&#39;ing into the autokit and checking the <code>dnsmasq</code> leasefiles, for example:</p>
-				<pre><code class="language-sh"><span style="color: #002339">root@3d57642:</span><span style="color: #7B30D0">~</span><span style="color: #357B42"># cat /var/lib/NetworkManager/dnsmasq-enp1s0u1u4u1u1.leases </span>
-<span style="color: #002339">1708607547 d8:3a:dd:4b:6e:0f 10.42.0.248 ef0a7ac 01:d8:3a:dd:4b:6e:0f</span>
-</code></pre>
-				<p>then from the autokit command line</p>
-				<pre><code class="language-sh"><span style="color: #002339">ssh 10.42.0.248 -p 22222</span>
-</code></pre>
-				<p>You can view the live HDMI output in your browser with <code>&lt;autokit_ip or public url&gt;/dut/liveStream</code></p>
 				<a href="#let39s-run-some-quotrealquot-tests" id="let39s-run-some-quotrealquot-tests" style="color: inherit; text-decoration: none;">
 					<h2>Let&#39;s run some &quot;real&quot; tests</h2>
 				</a>
@@ -365,7 +313,7 @@
 						<a href="../writing-tests.html">Writing tests</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../debugging.html">Debugging tests in <wbr>Leviathan</a>
+						<a href="../debugging.html">FAQ</a>
 					</li>
 					<li class=" pp-nav pp-page">
 						<a href="../reference-tips.html">Tips and <wbr>Reference</a>

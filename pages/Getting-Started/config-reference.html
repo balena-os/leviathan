@@ -99,7 +99,7 @@
 					<li><strong><code>balenaApiKey</code></strong> is the balenaCloud API key of the user running the test. You can generate a new <a href="https://docs.balena.io/learn/manage/account/#api-keys">balena API key</a> for this field.</li>
 					<li><strong><code>balenaApiUrl</code></strong> is the balenaCloud environment you are targetting for your test suite. Production is <code>&#39;balena-cloud.com&#39;</code> and staging is <code>&#39;balena-staging.com&#39;</code>.</li>
 					<li><strong><code>organization</code></strong> is the balenaCloud organization where test applications are created for the cloud suite. Add the <code>username</code> of the user who owns the <code>balenaApiKey</code> - otherwise it will lead to authentication errors. You can find the <code>username</code> of the user from the top right section of the dashboard. </li>
-					<li><strong><code>debug</code></strong> is where debugging properties are stored for test runs. Check out <a href="debugging.html">Debugging documentation</a> for features you can add. </li>
+					<li><strong><code>debug</code></strong> is where debugging properties are stored for test runs. Check out {@page Debugging tests in Leviathan | Debugging documentation} for features you can add. </li>
 					<li><strong><code>image</code></strong> is the absolute path to the balenaOS image that is flashed onto the Device Under Test (DUT).  As shown in the example above, <code>${__dirname}</code> expands to the absolute path of the <code>workspace</code> directory, so you can use it to specify a path relative to <code>workspace</code>.</li>
 				</ul>
 				<p>Make sure to rename the image to balena.img. If you provide <code>balena.img</code> as your balenaOS image, then Leviathan will compress it for you in <code>gz</code> format on runtime. We recommend compressing beforehand, as it saves time. For any reason if your tests download an image already and you don&#39;t want to upload an image, then set the <code>image</code> property to <code>false</code> in config.js. Be sure to set <code>image</code> to a boolean <code>false</code> without a quotes.</p>
@@ -319,7 +319,7 @@
 						<a href="writing-tests.html">Writing tests</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="debugging.html">Debugging tests in <wbr>Leviathan</a>
+						<a href="debugging.html">FAQ</a>
 					</li>
 					<li class=" pp-nav pp-page">
 						<a href="reference-tips.html">Tips and <wbr>Reference</a>
