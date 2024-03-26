@@ -1,6 +1,6 @@
 module.exports = [{
   deviceType: process.env.DEVICE_TYPE,
-  suite: `${__dirname}/../suites/e2e`,
+  suite: `${__dirname}/../suites/cloud`,
   config: {
     networkWired: false,
     networkWireless: process.env.WORKER_TYPE === 'qemu' ? false : true,
@@ -8,10 +8,10 @@ module.exports = [{
     balenaApiKey: process.env.ENVIRONMENT === 'balena-machine' ? process.env.BALENAMACHINE_API_KEY : process.env.BALENACLOUD_API_KEY,
     balenaApiUrl: process.env.ENVIRONMENT === 'balena-machine' ? process.env.BALENAMACHINE_API_URL : process.env.BALENACLOUD_API_URL,
     organization: process.env.BALENACLOUD_ORG,
-    sshConfig: {
+    sshConfig: process.env.ENVIRONMENT === 'balena-machine' ? {
 			host: process.env.BALENACLOUD_SSH_URL,
 			port: process.env.BALENACLOUD_SSH_PORT,
-		}
+		} : {}
   },
   image: false,
   debug: {
