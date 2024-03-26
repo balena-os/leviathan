@@ -23,7 +23,13 @@ services:
       - core
 
   core:
-    privileged: true # preload requires docker-in-docker
+    device_cgroup_rules:
+      # https://www.kernel.org/doc/Documentation/admin-guide/devices.txt
+      # loopback devices
+      - "b 7:* rmw"
+    cap_add:
+      - SYS_ADMIN
+      - NET_ADMIN
     build: core
     volumes:
       - core-storage:/data
@@ -32,8 +38,6 @@ services:
       - /var/run # use tmpfs docker-in-docker pid files
       - /var/lib/docker # use tmpfs for docker-in-docker data root
     restart: 'no'
-    devices:
-      - /dev:/dev # required for creating losetup devices during preload
 
 volumes:
   core-storage:
