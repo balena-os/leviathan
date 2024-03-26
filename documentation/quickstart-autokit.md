@@ -114,95 +114,11 @@ A successful run of the e2e test suite without any errors makes sure that your a
 
 ## Troubleshooting
 
-### Config issues
+Refer to {@page FAQ | FAQ's for common issues mentioned below and debug your test setup}
 
-```sh
-Invalid device type: <device-type-without>
-```
-If you see this, then make sure that your `leviathan/core/contracts/contracts/hw.device-type` submodule has the contract for your device type
-
-```
-OS image not found: ENOENT: no such file or directory, access '/usr/src/app/workspace/image.img.gz'
-```
-Make sure your OS image is stored in `leviathan/workspace`.
-
-
-### Flashing issues
-
-When the device fails during flashing - first check: has the correct `TESTBOT_DUT_TYPE` been selected (see above)?
-
-If it has, we need a progression of checks. 
-
-First confirm that the power control is working for the DUT. This can be done:
-
-```sh
-curl -X POST <autokit_ip>/dut/on
-```
-
-and checking that the DUT powers on. If it does, you can turn it back off with 
-
-```sh
-curl -X POST <autokit_ip>/dut/off
-```
-
-If that works, then move on to checking if the SD card is flashed with the image that you wanted to flash to it. You can take the card out and plug it into your laptop and check. 
-
-If it has, then check that the DUT was booting from the SD card - if you have a serial cable attached to the autokit, you can do this:
-
-1. ssh into your autokit with `balena ssh <autokit_uuid> worker`
-2. `apk add screen`
-3. `screen <serial_dev> 115200`
-4. In another ssh session: `usbsdmux /dev/sg0 dut` - this will toggle the MUX to the DUT 
-5. Then `curl -X POST <autokit_ip>/dut/on` to power on the DUT
-6. Check the serial output from the `screen` session is there anything?
-7. If there isn't - then verify the serial configuration is correct
-8. If the serial configuration is correct, there should be some output on the `screen` session - you can see if its failing to boot from the SD card, or if its booting into balena OS. 
-9. if its failing to boot from SD, try another card.
-
-### Manually interacting with the DUT
-
-Powering on and off can be done with: 
-
-```sh
-curl -X POST <autokit_ip>/dut/on
-curl -X POST <autokit_ip>/dut/off
-```
-
-You can manually flash the DUT outside of the test suite with an image of your choice with:
-
-```sh
-curl --data-binary @<your image (must be .gz gzipped)> <autokit_ip or public url>/dut/flash
-```
-
-You can create a wired network for your DUT to connect to with:
-
-```sh
-curl -X POST localhost/dut/network -H 'Content-Type: application/json' -d '{"wired": {"nat":true}}'
-```
-
-You can create a wireless network with:
-
-```sh
-curl -X POST localhost/dut/network -H 'Content-Type: application/json' -d '{"wireless": {"ssid":"<EXAMPLE SSID>", "psk":"<EXAMPLE PSK", "nat": "true"}}'
-```
-
-You can access the DUT via the autokit after setting up one of these networks.
-
-You can find the DUT ip address by ssh'ing into the autokit and checking the `dnsmasq` leasefiles, for example:
-
-```sh
-root@3d57642:~# cat /var/lib/NetworkManager/dnsmasq-enp1s0u1u4u1u1.leases 
-1708607547 d8:3a:dd:4b:6e:0f 10.42.0.248 ef0a7ac 01:d8:3a:dd:4b:6e:0f
-``` 
-
-then from the autokit command line
-
-```sh
-ssh 10.42.0.248 -p 22222
-```
-
-You can view the live HDMI output in your browser with `<autokit_ip or public url>/dut/liveStream`
-
+1. Config issues
+2. Flashing issues
+3. Manually interacting with the DUT
 
 ## Let's run some "real" tests
 
