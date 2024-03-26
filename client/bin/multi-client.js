@@ -390,12 +390,29 @@ class NonInteractiveState {
 					if (status === 'IDLE') {
 						// make sure that the worker being targetted isn't already about to be used by another child process
 						if (!busyWorkers.includes(deviceUrl)) {
-							// Create single client and break from loop to job the job 👍
-							job.workers = deviceUrl;
-							if (!job.array) {
-								job.workerPrefix = device.fileNamePrefix();
+							try {
+								status = await rp.get(new url.URL('/start', deviceUrl).toString());
+								if(status === 'OK') {
+									// Create single client and break from loop to job the job 👍
+									job.workers = deviceUrl;
+									if (!job.array) {
+										job.workerPrefix = device.fileNamePrefix();
+									}
+									break;
+								} else {
+									// if something else has taken it in the small amount of time between identifying it as idle and reserving, go back to waiting
+									state.info(
+										`Worker ${device.tags ? device.tags.DUT : device} already busy...`
+									);
+								}
+							} catch(err){
+								state.info(
+									`Couldn't reserve ${device.tags ? device.tags.DUT : device
+									} worker. Querying ${deviceUrl} and received ${err.name}: ${err.statusCode
+									}`,
+								);
 							}
-							break;
+							
 						}
 					}
 				} catch (err) {
@@ -436,8 +453,6 @@ class NonInteractiveState {
 
 				// after creating child process, add the worker to the busy workers array
 				busyWorkers.push(job.workers);
-
-				let status = await rp.get(new url.URL('/start', deviceUrl).toString());
 
 				// child state
 				children[child.pid] = {
