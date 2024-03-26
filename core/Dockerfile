@@ -9,7 +9,7 @@ ENV DEBIAN_FRONTEND noninteractive
 # https://github.com/balena-io/balena-cli/blob/master/INSTALL-LINUX.md#additional-dependencies
 # hadolint ignore=DL3008
 RUN apt-get update && apt-get install --no-install-recommends -y \
-	bind9-dnsutils \
+	bind9-dnsutils gzip\
 	ca-certificates \
 	docker.io \
 	git \
