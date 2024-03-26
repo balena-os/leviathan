@@ -26,7 +26,7 @@ module.exports = {
 				} catch (err) {
 					throw new Error(`Flashing failed with error: ${err}`);
 				}
-				test.true(true, `${this.os.image.path} should be flashed properly`);
+				test.ok(true, `${this.os.image.path} should be flashed properly`);
 			},
 		},
 	],

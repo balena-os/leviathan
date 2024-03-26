@@ -4,6 +4,16 @@ const { BalenaCloudInteractor } = require('./balena')
 let report = { verdict: false, errors: [] };
 let counter = 1;
 
+function isUrl(filePath) {
+	let pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
+		'(\\S+\\:\\S+@)?' + // optional user:pass authentication
+		'((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+		'((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+		'(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+		'(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+		'(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+	return !!pattern.test(filePath);
+}
 async function testConfig(configs) {
   for (const config of configs) {
     const balenaCloud = new BalenaCloudInteractor(config.config.balenaApiUrl);
@@ -50,6 +60,8 @@ async function testConfig(configs) {
     try {
       if (config.image === false) {
         console.log(`False flag provided, tests would be downloading ${config.deviceType} ${config.config.downloadVersion} image later ✅\n`)
+      } else if (isUrl(config.image)) {
+        console.log(`Image URL provided ✅\n`)
       } else {
         fs.accessSync(config.image, fs.F_OK);
         console.log(`Testing using OS image: #${config.image} ✅\n`)
