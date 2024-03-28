@@ -1,6 +1,6 @@
 module.exports = [{
   deviceType: process.env.DEVICE_TYPE,
-  suite: `${__dirname}/../suites/e2e`,
+  suite: `${__dirname}/../suites/os`,
   config: {
     networkWired: false,
     networkWireless: process.env.WORKER_TYPE === 'qemu' ? false : true,
