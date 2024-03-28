@@ -1,6 +1,6 @@
 module.exports = [{
   deviceType: process.env.DEVICE_TYPE,
-  suite: `${__dirname}/../suites/e2e`,
+  suite: `${__dirname}/../suites/hup`,
   config: {
     networkWired: false,
     networkWireless: process.env.WORKER_TYPE === 'qemu' ? false : true,
@@ -13,7 +13,7 @@ module.exports = [{
 			port: process.env.BALENACLOUD_SSH_PORT,
 		}
   },
-  image: false,
+  image: `${__dirname}/balena-image.docker`,
   debug: {
     unstable: ["Kill the device under test"],
   },
