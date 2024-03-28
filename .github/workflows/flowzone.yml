@@ -76,7 +76,7 @@ jobs:
       
       - name: Download Jenkins balena-image.docker
         run: |
-          curl -C - --fail --connect-timeout 1060 --keepalive-time 1060 -H 'accept-encoding: gzip, deflate' -O --output-dir ${{ env.WORKSPACE }} -u ${{ env.JENKINS_AUTH }} ${{ env.JENKINS_URL }}
+          curl -C - --fail --connect-timeout 1060 --keepalive-time 1060 -H 'accept-encoding: gzip, deflate' -O --output-dir ${{ env.WORKSPACE }} -u ${{ secrets.JENKINS_AUTH }} ${{ secrets.JENKINS_URL }}
 
       - name: Copy suite config
         run: cp -a ${{ env.SUITES }}/config.js ${{ env.WORKSPACE }}/config.js
