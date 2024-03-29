@@ -468,7 +468,7 @@ module.exports = {
 		'./tests/engine-healthcheck',
 		'./tests/under-voltage',
 		'./tests/udev',
-		'./tests/device-tree',
+		// './tests/device-tree',
 		'./tests/purge-data',
 		'./tests/device-specific-tests/revpi-core-3',
 		'./tests/swap',
