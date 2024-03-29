@@ -10,7 +10,7 @@ export
 
 # optional docker-compose args
 BUILDARGS := --progress=plain --parallel --pull
-UPARGS := --force-recreate --remove-orphans
+UPARGS := --force-recreate --remove-orphans --quiet-pull
 
 QEMUCOMPOSEFILE := docker-compose.qemu.yml
 SECUREBOOTCOMPOSEFILE := docker-compose.secureboot.yml
