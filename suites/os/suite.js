@@ -296,6 +296,12 @@ module.exports = {
 				{
 					deviceType: this.suite.deviceType.slug,
 					network: this.suite.options.balenaOS.network,
+					image:
+					this.suite.options.image === false
+						? `${await this.context
+								.get()
+								.cloud.fetchOS(this.suite.options.balenaOS.download.version, this.suite.deviceType.slug)}`
+						: undefined,
 					configJson: {
 						uuid: this.suite.options.balenaOS.config.uuid,
 						os: {
@@ -303,6 +309,7 @@ module.exports = {
 								keys.pubKey
 							],
 						},
+					
 						// Set an API endpoint for the HTTPS time sync service.
 						apiEndpoint: 'https://api.balena-cloud.com',
 						// persistentLogging is managed by the supervisor and only read at first boot
