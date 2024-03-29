@@ -51,16 +51,16 @@ module.exports = {
 								throw new Error(`No ${connection} connection found.`);
 							}
 
-						// 	test.comment(`Attempting to connect to ${URL_TEST} over interface ${iface}`)
-						// 	return this.worker.executeCommandInHostOS(
-						// 		`ping -c 10 -i 0.002 -I ${iface} ${URL_TEST}`,
-						// 		this.link,
-						// 	);
-						// }).then((ping) => {
-						// 	test.ok(
-						// 		ping.includes('10 packets transmitted, 10 packets received'),
-						// 		`${URL_TEST} should respond over ${connection}`,
-						// 	);
+							test.comment(`Attempting to connect to ${URL_TEST} over interface ${iface}`)
+							return this.worker.executeCommandInHostOS(
+								`ping -c 10 -i 0.002 -I ${iface} ${URL_TEST}`,
+								this.link,
+							);
+						}).then((ping) => {
+							test.ok(
+								ping.includes('10 packets transmitted, 10 packets received'),
+								`${URL_TEST} should respond over ${connection}`,
+							);
 						});
 					},
 				};
