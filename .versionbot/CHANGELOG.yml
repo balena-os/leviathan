@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update Lock file maintenance
+      hash: 55b1560c8b3543a0041809f18ee3cf834a054895
+      body: |
+        Update
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Self-hosted Renovate Bot
+      nested: []
+  version: 2.30.1
+  title: ""
+  date: 2024-04-01T00:51:30.207Z
+- commits:
     - subject: "minor: Add general FAQ to Leviathan"
       hash: 2ee9236585807f16959ecbc2f24983b0abe0d8f4
       body: ""
