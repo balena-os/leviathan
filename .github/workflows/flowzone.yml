@@ -45,6 +45,7 @@ jobs:
       QEMU_MEMORY: 1G
       WORKER_TYPE: ${{ matrix.WORKER_TYPE }}
       DEVICE_TYPE: ${{ matrix.DEVICE_TYPE }}
+      JENKINS_URL: https://jenkins.product-os.io/job/yocto-raspberrypi3/9309/artifact/deploy-jenkins/balena-image.docker
 
     defaults:
       run:
@@ -56,18 +57,18 @@ jobs:
       matrix:
         include:
           # ONLY TESTING this image that's why commented the rest
-          - DEVICE_TYPE: genericx86-64-ext
-            WORKER_TYPE: qemu
-            ENVIRONMENT: balena-cloud
+          # - DEVICE_TYPE: genericx86-64-ext
+          #   WORKER_TYPE: qemu
+          #   ENVIRONMENT: balena-cloud
           # - DEVICE_TYPE: generic-amd64
           #   WORKER_TYPE: qemu
           #   ENVIRONMENT: balena-cloud
           # - DEVICE_TYPE: generic-aarch64
           #   WORKER_TYPE: qemu
           #   ENVIRONMENT: balena-machine
-          # - DEVICE_TYPE: raspberrypi3
-          #   WORKER_TYPE: testbot
-          #   ENVIRONMENT: balena-machine
+          - DEVICE_TYPE: raspberrypi3
+            WORKER_TYPE: testbot
+            ENVIRONMENT: balena-machine
 
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
@@ -76,7 +77,7 @@ jobs:
       
       - name: Download Jenkins balena-image.docker
         run: |
-          curl -C - --fail --connect-timeout 1060 --keepalive-time 1060 -H 'accept-encoding: gzip, deflate' -O --output-dir ${{ env.WORKSPACE }} -u ${{ secrets.JENKINS_AUTH }} ${{ secrets.JENKINS_URL }}
+          curl -C - --fail --connect-timeout 1060 --keepalive-time 1060 -H 'accept-encoding: gzip, deflate' -O --output-dir ${{ env.WORKSPACE }} -u ${{ secrets.JENKINS_AUTH }} ${{ env.JENKINS_URL }}
 
       - name: Copy suite config
         run: cp -a ${{ env.SUITES }}/config.js ${{ env.WORKSPACE }}/config.js
