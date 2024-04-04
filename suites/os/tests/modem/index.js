@@ -198,15 +198,15 @@ module.exports = {
 
                     test.comment(`signal-quality: ${modemData.modem.generic['signal-quality'].value}, state: ${modemData.modem.generic.state}`)
 
-                    // ping test endpoint over cellular network interface
-                    let ping;
+                    // curl test endpoint over cellular network interface
+                    let curl;
 
                     await this.utils.waitUntil(async () => {
-                        ping = await this.worker.executeCommandInHostOS(
-                            `ping -4 -c 10 -I ${iface} ${config.network.testUrl}`,
+                        curl = await this.worker.executeCommandInHostOS(
+                            `curl -I -sS --interface ${iface} ${config.network.testUrl} | head -n 1`,
                             this.link,
                         );
-                        return !ping.includes('failed.');
+                        return curl.includes('HTTP/1.1 200 OK');
                     },
                         false,
                         PING_ATTEMPTS,
@@ -217,7 +217,7 @@ module.exports = {
                         });
 
                     test.ok(
-                        ping.includes('10 packets transmitted, 10 packets received'),
+                        curl.includes('HTTP/1.1 200 OK'),
                         `ip address ${config.network.testUrl} should respond over ${iface}`,
                     );
 
@@ -227,7 +227,7 @@ module.exports = {
                             `mmcli -m ${targetAddress} --simple-disconnect && mmcli -m ${targetAddress} --disable`,
                             this.link,
                         );
-                            
+
                         await this.worker.executeCommandInHostOS(
                             `route del -net default netmask 0.0.0.0 dev ${iface}`,
                             this.link,

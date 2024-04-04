@@ -53,12 +53,12 @@ module.exports = {
 
 							test.comment(`Attempting to connect to ${URL_TEST} over interface ${iface}`)
 							return this.worker.executeCommandInHostOS(
-								`ping -c 10 -i 0.002 -I ${iface} ${URL_TEST}`,
+								`curl -I -sS --interface ${iface} ${URL_TEST} | head -n 1`,
 								this.link,
 							);
-						}).then((ping) => {
+						}).then((curl) => {
 							test.ok(
-								ping.includes('10 packets transmitted, 10 packets received'),
+								curl.includes('HTTP/1.1 200 OK'),
 								`${URL_TEST} should respond over ${connection}`,
 							);
 						});

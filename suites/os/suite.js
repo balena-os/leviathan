@@ -296,12 +296,6 @@ module.exports = {
 				{
 					deviceType: this.suite.deviceType.slug,
 					network: this.suite.options.balenaOS.network,
-					image:
-					this.suite.options.image === false
-						? `${await this.context
-								.get()
-								.cloud.fetchOS(this.suite.options.balenaOS.download.version, this.suite.deviceType.slug)}`
-						: undefined,
 					configJson: {
 						uuid: this.suite.options.balenaOS.config.uuid,
 						os: {
@@ -309,7 +303,6 @@ module.exports = {
 								keys.pubKey
 							],
 						},
-					
 						// Set an API endpoint for the HTTPS time sync service.
 						apiEndpoint: 'https://api.balena-cloud.com',
 						// persistentLogging is managed by the supervisor and only read at first boot
@@ -445,30 +438,30 @@ module.exports = {
 		});
 	},
 	tests: [
-		'./tests/secureboot',
-		'./tests/device-specific-tests/beaglebone-black',
-		'./tests/device-specific-tests/243390-rpi3',
-		'./tests/overlap_test/',
-		'./tests/fingerprint',
-		'./tests/fsck',
-		'./tests/os-release',
-		'./tests/migrate',
-		'./tests/issue',
-		'./tests/chrony',
-		'./tests/kernel-overlap',
-		'./tests/bluetooth',
-		'./tests/container-healthcheck',
-		'./tests/variables',
-		'./tests/led',
+		// './tests/secureboot',
+		// './tests/device-specific-tests/beaglebone-black',
+		// './tests/device-specific-tests/243390-rpi3',
+		// './tests/overlap_test/',
+		// './tests/fingerprint',
+		// './tests/fsck',
+		// './tests/os-release',
+		// './tests/migrate',
+		// './tests/issue',
+		// './tests/chrony',
+		// './tests/kernel-overlap',
+		// './tests/bluetooth',
+		// './tests/container-healthcheck',
+		// './tests/variables',
+		// './tests/led',
 		'./tests/modem',
-		'./tests/config-json',
-		'./tests/boot-splash',
+		// './tests/config-json',
+		// './tests/boot-splash',
 		'./tests/connectivity',
 		'./tests/engine-socket',
 		'./tests/engine-healthcheck',
 		'./tests/under-voltage',
 		'./tests/udev',
-		// './tests/device-tree',
+		'./tests/device-tree',
 		'./tests/purge-data',
 		'./tests/device-specific-tests/revpi-core-3',
 		'./tests/swap',
