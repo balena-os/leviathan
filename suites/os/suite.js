@@ -296,6 +296,12 @@ module.exports = {
 				{
 					deviceType: this.suite.deviceType.slug,
 					network: this.suite.options.balenaOS.network,
+					image:
+						this.suite.options.image === false
+							? `${await this.context
+									.get()
+									.sdk.fetchOS(this.suite.options.balenaOS.download.version, this.suite.deviceType.slug)}`
+							: undefined,
 					configJson: {
 						uuid: this.suite.options.balenaOS.config.uuid,
 						os: {
@@ -454,8 +460,8 @@ module.exports = {
 		// './tests/variables',
 		// './tests/led',
 		'./tests/modem',
-		// './tests/config-json',
-		// './tests/boot-splash',
+		'./tests/config-json',
+		'./tests/boot-splash',
 		'./tests/connectivity',
 		'./tests/engine-socket',
 		'./tests/engine-healthcheck',
