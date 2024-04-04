@@ -45,7 +45,7 @@ jobs:
       QEMU_MEMORY: 1G
       WORKER_TYPE: ${{ matrix.WORKER_TYPE }}
       DEVICE_TYPE: ${{ matrix.DEVICE_TYPE }}
-      JENKINS_URL: https://jenkins.product-os.io/job/yocto-raspberrypi3/9309/artifact/deploy-jenkins/balena-image.docker
+      JENKINS_URL: https://jenkins.product-os.io/job/yocto-generic-amd64/5419/artifact/deploy-jenkins/balena-image.docker
 
     defaults:
       run:
@@ -60,15 +60,15 @@ jobs:
           # - DEVICE_TYPE: genericx86-64-ext
           #   WORKER_TYPE: qemu
           #   ENVIRONMENT: balena-cloud
-          # - DEVICE_TYPE: generic-amd64
-          #   WORKER_TYPE: qemu
-          #   ENVIRONMENT: balena-cloud
+          - DEVICE_TYPE: generic-amd64
+            WORKER_TYPE: qemu
+            ENVIRONMENT: balena-cloud
           # - DEVICE_TYPE: generic-aarch64
           #   WORKER_TYPE: qemu
           #   ENVIRONMENT: balena-machine
-          - DEVICE_TYPE: raspberrypi3
-            WORKER_TYPE: testbot
-            ENVIRONMENT: balena-machine
+          # - DEVICE_TYPE: raspberrypi3
+          #   WORKER_TYPE: testbot
+          #   ENVIRONMENT: balena-machine
 
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
