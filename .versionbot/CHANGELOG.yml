@@ -1,4 +1,19 @@
 - commits:
+    - subject: "core/lib/components: Specify Jetson Xavier boot partition indexes"
+      hash: 6388fbbfb04c27fe4a1337d41481d6a55b2f432c
+      body: |
+        so that the config.json can be injected in the right partition
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Alexandru Costache <alexandru@balena.io>
+        signed-off-by: Alexandru Costache <alexandru@balena.io>
+      author: Alexandru Costache
+      nested: []
+  version: 2.30.2
+  title: ""
+  date: 2024-04-04T14:20:05.216Z
+- commits:
     - subject: Update Lock file maintenance
       hash: 55b1560c8b3543a0041809f18ee3cf834a054895
       body: |
