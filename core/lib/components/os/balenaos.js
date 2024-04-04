@@ -178,6 +178,13 @@ module.exports = class BalenaOS {
 			case 'jetson-nano':
 				this.bootPartition = 12;
 				break;
+			case 'jetson-xavier':
+				this.bootPartition = 37;
+				break;
+			case 'jetson-xavier-nx-devkit':
+			case 'jetson-xavier-nx-devkit-emmc':
+				this.bootPartition = 9;
+				break;
 			case 'jetson-agx-orin-devkit':
 				this.bootPartition = 6;
 				break;
