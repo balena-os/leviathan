@@ -300,7 +300,7 @@ module.exports = {
 						this.suite.options.image === false
 							? `${await this.context
 									.get()
-									.sdk.fetchOS(this.suite.options.balenaOS.download.version, this.suite.deviceType.slug)}`
+									.cloud.fetchOS(this.suite.options.balenaOS.download.version, this.suite.deviceType.slug)}`
 							: undefined,
 					configJson: {
 						uuid: this.suite.options.balenaOS.config.uuid,
