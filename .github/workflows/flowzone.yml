@@ -41,8 +41,9 @@ jobs:
       BALENAMACHINE_API_URL: bm.balena-dev.com
       BALENACLOUD_SSH_URL: ssh.devices.bm.balena-dev.com
       BALENACLOUD_SSH_PORT: 222
-      QEMU_CPUS: 1
-      QEMU_MEMORY: 1G
+      # Matches Jenkins QEMU specs but increased RAM by 1G
+      QEMU_CPUS: 4 
+      QEMU_MEMORY: 2G
       WORKER_TYPE: ${{ matrix.WORKER_TYPE }}
       DEVICE_TYPE: ${{ matrix.DEVICE_TYPE }}
 
