@@ -1,0 +1,67 @@
+name: Test Levaithan GH Action
+
+on:
+  pull_request:
+    types: [opened, synchronize, closed]
+    branches: [main, master]
+
+jobs:
+  test_leviathan:
+    runs-on: ubuntu-22.04
+    name: Knock knock! It's Leviathan
+    env:
+      SUITES: ./suites
+      REPORTS: ./reports
+      WORKSPACE: ./workspace
+      BALENACLOUD_ORG: testbot
+      BALENACLOUD_API_KEY: ${{ secrets.BALENA_TOKEN }}
+      BALENACLOUD_APP_NAME: balena/testbot-rig
+      BALENACLOUD_API_URL: balena-cloud.com
+      ENVIRONMENT: ${{ matrix.ENVIRONMENT }}
+      BALENAMACHINE_API_KEY: ${{ secrets.BALENAMACHINE_API_KEY }}
+      BALENAMACHINE_API_URL: bm.balena-dev.com
+      BALENACLOUD_SSH_URL: ssh.devices.bm.balena-dev.com
+      BALENACLOUD_SSH_PORT: 222
+      QEMU_CPUS: 1
+      QEMU_MEMORY: 1G
+      WORKER_TYPE: ${{ matrix.WORKER_TYPE }}
+      DEVICE_TYPE: ${{ matrix.DEVICE_TYPE }}
+      SECUREBOOTS: "fdfd"
+
+    defaults:
+      run:
+        working-directory: .
+        shell: bash --noprofile --norc -eo pipefail -x {0}
+
+     strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - DEVICE_TYPE: genericx86-64-ext
+            WORKER_TYPE: qemu
+            ENVIRONMENT: balena-cloud
+            TEST_SUITE_NAME: e2e
+          # - DEVICE_TYPE: generic-amd64
+          #   WORKER_TYPE: qemu
+          #   ENVIRONMENT: balena-cloud
+          # - DEVICE_TYPE: generic-aarch64
+          #   WORKER_TYPE: qemu
+          #   ENVIRONMENT: balena-machine
+          # - DEVICE_TYPE: raspberrypi3
+          #   WORKER_TYPE: testbot
+          #   ENVIRONMENT: balena-machine
+
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: leviathan
+        uses: balena-os/leviathan/action.yml@composite
+        with:
+          TEST_SUITE_NAME: ${{ matrix.TEST_SUITE_NAME }}
+          DEVICE_TYPE: ${{ matrix.DEVICE_TYPE }}
+          ENVIRONMENT: ${{ matrix.ENVIRONMENT }}
+          WORKER_TYPE: ${{ matrix.WORKER_TYPE }}
+          BALENACLOUD_API_KEY: ${{ secrets.BALENA_TOKEN }}
+          BALENAMACHINE_API_KEY: ${{ secrets.BALENAMACHINE_API_KEY }}
+          
