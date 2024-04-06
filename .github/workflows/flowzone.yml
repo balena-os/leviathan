@@ -20,72 +20,72 @@ jobs:
       (github.event.pull_request.head.repo.full_name != github.repository && github.event_name == 'pull_request_target')
     secrets: inherit
 
-  e2e:
-    needs: [flowzone]
-    if: |
-      ((github.event.pull_request.head.repo.full_name == github.repository && github.event_name == 'pull_request') ||
-      (github.event.pull_request.head.repo.full_name != github.repository && github.event_name == 'pull_request_target')) &&
-      github.event.action != 'closed'
-    runs-on: ubuntu-22.04
+  # e2e:
+  #   needs: [flowzone]
+  #   if: |
+  #     ((github.event.pull_request.head.repo.full_name == github.repository && github.event_name == 'pull_request') ||
+  #     (github.event.pull_request.head.repo.full_name != github.repository && github.event_name == 'pull_request_target')) &&
+  #     github.event.action != 'closed'
+  #   runs-on: ubuntu-22.04
 
-    env:
-      SUITES: ./suites
-      REPORTS: ./reports
-      WORKSPACE: ./workspace
-      BALENACLOUD_ORG: testbot
-      BALENACLOUD_API_KEY: ${{ secrets.BALENA_TOKEN }}
-      BALENACLOUD_APP_NAME: balena/testbot-rig
-      BALENACLOUD_API_URL: balena-cloud.com
-      ENVIRONMENT: ${{ matrix.ENVIRONMENT }}
-      BALENAMACHINE_API_KEY: ${{ secrets.BALENAMACHINE_API_KEY }}
-      BALENAMACHINE_API_URL: bm.balena-dev.com
-      BALENACLOUD_SSH_URL: ssh.devices.bm.balena-dev.com
-      BALENACLOUD_SSH_PORT: 222
-      QEMU_CPUS: 1
-      QEMU_MEMORY: 1G
-      WORKER_TYPE: ${{ matrix.WORKER_TYPE }}
-      DEVICE_TYPE: ${{ matrix.DEVICE_TYPE }}
+  #   env:
+  #     SUITES: ./suites
+  #     REPORTS: ./reports
+  #     WORKSPACE: ./workspace
+  #     BALENACLOUD_ORG: testbot
+  #     BALENACLOUD_API_KEY: ${{ secrets.BALENA_TOKEN }}
+  #     BALENACLOUD_APP_NAME: balena/testbot-rig
+  #     BALENACLOUD_API_URL: balena-cloud.com
+  #     ENVIRONMENT: ${{ matrix.ENVIRONMENT }}
+  #     BALENAMACHINE_API_KEY: ${{ secrets.BALENAMACHINE_API_KEY }}
+  #     BALENAMACHINE_API_URL: bm.balena-dev.com
+  #     BALENACLOUD_SSH_URL: ssh.devices.bm.balena-dev.com
+  #     BALENACLOUD_SSH_PORT: 222
+  #     QEMU_CPUS: 1
+  #     QEMU_MEMORY: 1G
+  #     WORKER_TYPE: ${{ matrix.WORKER_TYPE }}
+  #     DEVICE_TYPE: ${{ matrix.DEVICE_TYPE }}
 
-    defaults:
-      run:
-        working-directory: .
-        shell: bash --noprofile --norc -eo pipefail -x {0}
+  #   defaults:
+  #     run:
+  #       working-directory: .
+  #       shell: bash --noprofile --norc -eo pipefail -x {0}
 
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - DEVICE_TYPE: genericx86-64-ext
-            WORKER_TYPE: qemu
-            ENVIRONMENT: balena-cloud
-          - DEVICE_TYPE: generic-amd64
-            WORKER_TYPE: qemu
-            ENVIRONMENT: balena-cloud
-          - DEVICE_TYPE: generic-aarch64
-            WORKER_TYPE: qemu
-            ENVIRONMENT: balena-machine
-          - DEVICE_TYPE: raspberrypi3
-            WORKER_TYPE: testbot
-            ENVIRONMENT: balena-machine
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       include:
+  #         - DEVICE_TYPE: genericx86-64-ext
+  #           WORKER_TYPE: qemu
+  #           ENVIRONMENT: balena-cloud
+  #         - DEVICE_TYPE: generic-amd64
+  #           WORKER_TYPE: qemu
+  #           ENVIRONMENT: balena-cloud
+  #         - DEVICE_TYPE: generic-aarch64
+  #           WORKER_TYPE: qemu
+  #           ENVIRONMENT: balena-machine
+  #         - DEVICE_TYPE: raspberrypi3
+  #           WORKER_TYPE: testbot
+  #           ENVIRONMENT: balena-machine
 
-    steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
-        with:
-          submodules: true
+  #   steps:
+  #     - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+  #       with:
+  #         submodules: true
 
-      - name: Copy suite config
-        run: cp -a ${{ env.SUITES }}/config.js ${{ env.WORKSPACE }}/config.js
+  #     - name: Copy suite config
+  #       run: cp -a ${{ env.SUITES }}/config.js ${{ env.WORKSPACE }}/config.js
 
-      - name: Build leviathan images
-        run: |
-          make build
+  #     - name: Build leviathan images
+  #       run: |
+  #         make build
 
-      - name: Run test suite
-        run: |
-          make config
-          make test || exit 1
+  #     - name: Run test suite
+  #       run: |
+  #         make config
+  #         make test || exit 1
 
-      - uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4
-        with:
-          name: reports-${{ env.WORKER_TYPE }}-${{ env.DEVICE_TYPE }}
-          path: ${{ env.REPORTS }}
+  #     - uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4
+  #       with:
+  #         name: reports-${{ env.WORKER_TYPE }}-${{ env.DEVICE_TYPE }}
+  #         path: ${{ env.REPORTS }}

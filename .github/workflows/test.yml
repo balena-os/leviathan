@@ -6,7 +6,7 @@ on:
     branches: [main, master]
 
 jobs:
-  test_leviathan:
+  testleviathan:
     runs-on: ubuntu-22.04
     name: Knock knock! It's Leviathan
     env:
@@ -33,7 +33,7 @@ jobs:
         working-directory: .
         shell: bash --noprofile --norc -eo pipefail -x {0}
 
-     strategy:
+    strategy:
       fail-fast: false
       matrix:
         include:
