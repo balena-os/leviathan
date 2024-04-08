@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update core/contracts digest to cb7b222
+      hash: c17d66a976d9e9f0c0cba108e1c972bf12d822fc
+      body: |
+        Update core/contracts
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Self-hosted Renovate Bot
+      nested: []
+  version: 2.30.4
+  title: ""
+  date: 2024-04-08T00:51:21.605Z
+- commits:
     - subject: Update balena-os/leviathan-worker to v2.9.37
       hash: d9209f59fe962434d45dec77c4f3aa0ef5ccdf47
       body: |
