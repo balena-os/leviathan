@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update core/contracts digest to bdc5ec8
+      hash: dd2e237ba8805ba88d98e0ab40c0ce47d22adc6e
+      body: |
+        Update core/contracts
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Self-hosted Renovate Bot
+      nested: []
+  version: 2.30.7
+  title: ""
+  date: 2024-04-11T11:33:17.144Z
+- commits:
     - subject: Update core/contracts digest to 619554d
       hash: 12a9383b4cc99f91f27626995c52b9838bd558a5
       body: |
