@@ -75,12 +75,21 @@ jobs:
         with:
           submodules: true
       
+      # - name: Download Jenkins balena-image.docker
+      #   run: |
+      #     curl -C - --fail --connect-timeout 1060 --keepalive-time 1060 -H 'accept-encoding: gzip, deflate' -O --output-dir ${{ env.WORKSPACE }} ${{ env.JENKINS_URL }}
+      
       - name: Download Jenkins balena-image.docker
         run: |
-          curl -C - --fail --connect-timeout 1060 --keepalive-time 1060 -H 'accept-encoding: gzip, deflate' -O --output-dir ${{ env.WORKSPACE }} -u ${{ secrets.JENKINS_AUTH }} ${{ env.JENKINS_URL }}
-
+          pip install gdown
+          gdown https://drive.google.com/uc?export=download&id=1vfMcxjDz-htX0lEiSqgk0SzVIKu5Nep2
+          
       - name: Copy suite config
-        run: cp -a ${{ env.SUITES }}/config.js ${{ env.WORKSPACE }}/config.js
+        run: |
+          ls -al .
+          mv balena-image.docker ${{ env.WORKSPACE }}
+          ls -al ${{ env.WORKSPACE }}
+          cp -a ${{ env.SUITES }}/config.js ${{ env.WORKSPACE }}/config.js
 
       - name: Build leviathan images
         run: |
