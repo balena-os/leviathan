@@ -82,11 +82,11 @@ jobs:
       - name: Download Jenkins balena-image.docker
         run: |
           pip install gdown
-          gdown https://drive.google.com/uc?export=download&id=1vfMcxjDz-htX0lEiSqgk0SzVIKu5Nep2
+          gdown 1vfMcxjDz-htX0lEiSqgk0SzVIKu5Nep2
+          ls -al .
           
       - name: Copy suite config
         run: |
-          ls -al .
           mv balena-image.docker ${{ env.WORKSPACE }}
           ls -al ${{ env.WORKSPACE }}
           cp -a ${{ env.SUITES }}/config.js ${{ env.WORKSPACE }}/config.js
