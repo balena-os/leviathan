@@ -42,10 +42,9 @@ jobs:
       BALENACLOUD_SSH_URL: ssh.devices.bm.balena-dev.com
       BALENACLOUD_SSH_PORT: 222
       QEMU_CPUS: 4
-      QEMU_MEMORY: 1G
+      QEMU_MEMORY: 2G
       WORKER_TYPE: ${{ matrix.WORKER_TYPE }}
       DEVICE_TYPE: ${{ matrix.DEVICE_TYPE }}
-      JENKINS_URL: https://jenkins.product-os.io/job/yocto-generic-amd64/5419/artifact/deploy-jenkins/balena-image.docker
 
     defaults:
       run:
