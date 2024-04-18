@@ -41,8 +41,8 @@ jobs:
       BALENAMACHINE_API_URL: bm.balena-dev.com
       BALENACLOUD_SSH_URL: ssh.devices.bm.balena-dev.com
       BALENACLOUD_SSH_PORT: 222
-      QEMU_CPUS: 4
-      QEMU_MEMORY: 2G
+      QEMU_CPUS: 3
+      QEMU_MEMORY: 1G
       WORKER_TYPE: ${{ matrix.WORKER_TYPE }}
       DEVICE_TYPE: ${{ matrix.DEVICE_TYPE }}
 
