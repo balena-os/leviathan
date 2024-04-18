@@ -41,7 +41,7 @@ jobs:
       BALENAMACHINE_API_URL: bm.balena-dev.com
       BALENACLOUD_SSH_URL: ssh.devices.bm.balena-dev.com
       BALENACLOUD_SSH_PORT: 222
-      QEMU_CPUS: 2
+      QEMU_CPUS: 4
       QEMU_MEMORY: 1G
       WORKER_TYPE: ${{ matrix.WORKER_TYPE }}
       DEVICE_TYPE: ${{ matrix.DEVICE_TYPE }}
@@ -56,12 +56,12 @@ jobs:
       matrix:
         include:
           # ONLY TESTING this image that's why commented the rest
-          # - DEVICE_TYPE: genericx86-64-ext
-          #   WORKER_TYPE: qemu
-          #   ENVIRONMENT: balena-cloud
-          - DEVICE_TYPE: generic-amd64
+          - DEVICE_TYPE: genericx86-64-ext
             WORKER_TYPE: qemu
             ENVIRONMENT: balena-cloud
+          # - DEVICE_TYPE: generic-amd64
+          #   WORKER_TYPE: qemu
+          #   ENVIRONMENT: balena-cloud
           # - DEVICE_TYPE: generic-aarch64
           #   WORKER_TYPE: qemu
           #   ENVIRONMENT: balena-machine
@@ -81,7 +81,8 @@ jobs:
       - name: Download Jenkins balena-image.docker
         run: |
           pip install gdown
-          gdown 1vfMcxjDz-htX0lEiSqgk0SzVIKu5Nep2
+          # amd64 gdown 1vfMcxjDz-htX0lEiSqgk0SzVIKu5Nep2  
+          gdown 1U95Z6JGH885FzS6yOFxRvb9B7fIeFRar  
           ls -al .
           
       - name: Copy suite config
