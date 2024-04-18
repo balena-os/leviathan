@@ -26,7 +26,7 @@ jobs:
       ((github.event.pull_request.head.repo.full_name == github.repository && github.event_name == 'pull_request') ||
       (github.event.pull_request.head.repo.full_name != github.repository && github.event_name == 'pull_request_target')) &&
       github.event.action != 'closed'
-    runs-on: ["self-hosted","X64"]
+    runs-on: actuated-8cpu-8gb
 
     env:
       SUITES: ./suites
