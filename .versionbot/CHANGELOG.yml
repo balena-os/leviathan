@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update actions/upload-artifact digest to 1746f4a
+      hash: 4872b11fad92f5c8ea60050e21aa63a2bbb1289d
+      body: |
+        Update actions/upload-artifact
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Self-hosted Renovate Bot
+      nested: []
+  version: 2.30.11
+  title: ""
+  date: 2024-04-22T01:55:56.805Z
+- commits:
     - subject: Update Lock file maintenance
       hash: c3225ffd4e4fde06ceaf3ace5778fa8633a72e28
       body: |
