@@ -29,7 +29,7 @@ module.exports = {
 				properties: {
 					workerType: {
 						type: "string",
-						const: "testbot_hat",
+						enum: ["testbot_hat", "autokit"]
 					},
 				},
 			},
