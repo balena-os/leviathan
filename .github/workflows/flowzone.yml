@@ -33,14 +33,7 @@ jobs:
       REPORTS: ./reports
       WORKSPACE: ./workspace
       BALENACLOUD_ORG: testbot
-      BALENACLOUD_API_KEY: ${{ secrets.BALENA_TOKEN }}
       BALENACLOUD_APP_NAME: balena/testbot-rig
-      BALENACLOUD_API_URL: balena-cloud.com
-      ENVIRONMENT: ${{ matrix.ENVIRONMENT }}
-      BALENAMACHINE_API_KEY: ${{ secrets.BALENAMACHINE_API_KEY }}
-      BALENAMACHINE_API_URL: bm.balena-dev.com
-      BALENACLOUD_SSH_URL: ssh.devices.bm.balena-dev.com
-      BALENACLOUD_SSH_PORT: 222
       QEMU_CPUS: 1
       QEMU_MEMORY: 1G
       WORKER_TYPE: ${{ matrix.WORKER_TYPE }}
@@ -57,21 +50,35 @@ jobs:
         include:
           - DEVICE_TYPE: genericx86-64-ext
             WORKER_TYPE: qemu
-            ENVIRONMENT: balena-cloud
+            ENVIRONMENT_URL: balena-cloud.com
           - DEVICE_TYPE: generic-amd64
             WORKER_TYPE: qemu
-            ENVIRONMENT: balena-cloud
+            ENVIRONMENT_URL: balena-cloud.com
           - DEVICE_TYPE: generic-aarch64
             WORKER_TYPE: qemu
-            ENVIRONMENT: balena-machine
+            ENVIRONMENT_URL: bm.balena-dev.com
           - DEVICE_TYPE: raspberrypi3
             WORKER_TYPE: testbot
-            ENVIRONMENT: balena-machine
+            ENVIRONMENT_URL: bm.balena-dev.com
 
     steps:
       - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4
         with:
           submodules: true
+
+      - name: Setup env variables for BalenaCloud
+        if: matrix.ENVIRONMENT_URL == 'balena-cloud.com'
+        run: |
+          echo "BALENACLOUD_API_KEY=${{ secrets.BALENA_TOKEN }}" >> $GITHUB_ENV
+          echo "BALENACLOUD_API_URL=${{ matrix.ENVIRONMENT_URL }}" >> $GITHUB_ENV
+   
+      - name: Setup env variables for BalenaCloud
+        if: matrix.ENVIRONMENT_URL == 'bm.balena-dev.com'
+        run: |
+          echo "BALENACLOUD_API_KEY=${{ secrets.BALENAMACHINE_API_KEY  }}" >> $GITHUB_ENV
+          echo "BALENACLOUD_API_URL=${{ matrix.ENVIRONMENT_URL }}" >> $GITHUB_ENV
+          echo "BALENACLOUD_SSH_URL=ssh.devices.${{ matrix.ENVIRONMENT_URL }}" >> $GITHUB_ENV
+          echo "BALENACLOUD_SSH_PORT=222" >> $GITHUB_ENV
 
       - name: Copy suite config
         run: cp -a ${{ env.SUITES }}/config.js ${{ env.WORKSPACE }}/config.js
