@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update Lock file maintenance
+      hash: ed2e76c3ca10c30f726b7551a634265331243884
+      body: |
+        Update
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Self-hosted Renovate Bot
+      nested: []
+  version: 2.30.16
+  title: ""
+  date: 2024-05-06T14:33:32.489Z
+- commits:
     - subject: "patch: Replace environment switcher in e2e config.js"
       hash: 75f42b3b0a8da9b0507f270c301cb085c77f7225
       body: ""
