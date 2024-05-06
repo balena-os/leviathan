@@ -1,4 +1,16 @@
 - commits:
+    - subject: "patch: Replace environment switcher in e2e config.js"
+      hash: 75f42b3b0a8da9b0507f270c301cb085c77f7225
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipulgupta2048@gmail.com>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipulgupta2048@gmail.com>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.30.15
+  title: ""
+  date: 2024-05-06T13:23:51.937Z
+- commits:
     - subject: Update Lock file maintenance
       hash: 08bf2f6129c3f0c6affadf2fb0e911537918a1ca
       body: |
