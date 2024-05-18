@@ -2,7 +2,7 @@ FROM node:18.16.0-alpine3.16
 WORKDIR /usr/src/app
 
 # hadolint ignore=DL3018
-RUN apk add --no-cache bash git
+RUN apk update && apk upgrade && apk add --no-cache bash git
 
 COPY package* ./
 RUN npm ci
