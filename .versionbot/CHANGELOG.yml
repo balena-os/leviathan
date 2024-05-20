@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update actions/checkout digest to a5ac7e5
+      hash: 3c340b68afb1350d4c70822f8be762d546bcf0c2
+      body: |
+        Update actions/checkout
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Self-hosted Renovate Bot
+      nested: []
+  version: 2.30.22
+  title: ""
+  date: 2024-05-20T14:53:19.824Z
+- commits:
     - subject: Update Lock file maintenance
       hash: 5775a6a6344431666750c6da3bb5fe3339e81f85
       body: |
