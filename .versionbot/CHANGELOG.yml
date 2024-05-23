@@ -1,4 +1,16 @@
 - commits:
+    - subject: "minor: Add leviathan GitHub Action"
+      hash: 7f12b2f4f5aa7b8f1606b6371e9d912d23d05297
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipulgupta2048@gmail.com>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipulgupta2048@gmail.com>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.31.0
+  title: ""
+  date: 2024-05-23T15:51:18.879Z
+- commits:
     - subject: Update actions/checkout digest to a5ac7e5
       hash: 3c340b68afb1350d4c70822f8be762d546bcf0c2
       body: |
