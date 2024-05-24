@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update actions/upload-artifact digest to 6546280
+      hash: 4df25074b0281634fa3a5e16c8ac18b8309fe2ae
+      body: |
+        Update actions/upload-artifact
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Self-hosted Renovate Bot
+      nested: []
+  version: 2.31.3
+  title: ""
+  date: 2024-05-24T11:46:00.261Z
+- commits:
     - subject: Update Pin docker/setup-buildx-action action to d70bba7
       hash: bf08c8334e173fbfd3f2a9140e4f3afc37cd82c4
       body: |
