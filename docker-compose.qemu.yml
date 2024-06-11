@@ -33,5 +33,3 @@ services:
   core:
     depends_on:
       - worker
-    environment:
-      - FLASHER_SECUREBOOT=${FLASHER_SECUREBOOT}

@@ -34,6 +34,9 @@ services:
     restart: 'no'
     devices:
       - /dev:/dev # required for creating losetup devices during preload
+    environment:
+      - FLASHER_SECUREBOOT=${FLASHER_SECUREBOOT}
+    
 
 volumes:
   core-storage:
