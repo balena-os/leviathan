@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update actions/checkout digest to 692973e
+      hash: e3909ff2f7de84e0e737ec80ae7a43e28dc106f9
+      body: |
+        Update actions/checkout
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Self-hosted Renovate Bot
+      nested: []
+  version: 2.31.8
+  title: ""
+  date: 2024-06-14T17:28:40.011Z
+- commits:
     - subject: Update balena-os/leviathan-worker to v2.9.40
       hash: d0f907b4f1c37b3bf9273027adc18e3d385a5150
       body: |
