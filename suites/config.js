@@ -13,7 +13,7 @@ module.exports = [{
 			port: process.env.BALENACLOUD_SSH_PORT,
 		}
   },
-  image: false,
+  image: `https://api.balena-cloud.com/download?deviceType=${process.env.DEVICE_TYPE}`,
   debug: {
     unstable: ["Kill the device under test"],
   },

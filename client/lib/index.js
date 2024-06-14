@@ -26,11 +26,22 @@ async function isGzip(filePath) {
 	return buf[0] === 0x1f && buf[1] === 0x8b && buf[2] === 0x08;
 }
 
+function isUrl(filePath) {
+	let pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
+		'(\\S+\\:\\S+@)?' + // optional user:pass authentication
+		'((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+		'((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+		'(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+		'(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+		'(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+	return !!pattern.test(filePath);
+}
+
 async function isZip(filepath) {
 	const buf = Buffer.alloc(4);
 
 	await fs.read(await fs.open(filepath, 'r'), buf, 0, 4, 0)
-	
+
 	// Referencing ZIP file signatures https://www.garykessler.net/library/file_sigs.html
 	return buf[0] === 0x50 && buf[1] === 0x4B && (buf[2] === 0x03 || buf[2] === 0x05 || buf[2] === 0x07) && (buf[3] === 0x04 || buf[3] === 0x06 || buf[3] === 0x08);
 }
@@ -309,13 +320,13 @@ module.exports = class Client extends PassThrough {
 
 			let heartbeatFailCounter = 0
 			const heartbeat = setInterval(async () => {
-				try{
+				try {
 					await rp.get(`${this.uri}/heartbeat`);
 					heartbeatFailCounter = 0
-				} catch{
+				} catch {
 					console.log(`Failed to ping worker hearbeat: ${heartbeatFailCounter} failures in a row`)
 					heartbeatFailCounter += 1
-					if(heartbeatFailCounter === 10){
+					if (heartbeatFailCounter === 10) {
 						throw new Error(`Lost communication with worker! `)
 					}
 				}
@@ -344,7 +355,7 @@ module.exports = class Client extends PassThrough {
 								case 'image':
 									// [Hack] Upload a fake image if image is false
 									// Remove when https://github.com/balena-os/leviathan/issues/567 is resolved
-									if (suiteConfig.image === false) {
+									if (suiteConfig.image === false || isUrl(suiteConfig.image)) {
 										// Had to create fake image in home directory otherwise
 										// facing a permission issue since client root is read-only
 										const fakeImagePath = '/home/test-balena.img.gz';
