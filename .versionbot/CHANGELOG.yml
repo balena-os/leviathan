@@ -1,4 +1,18 @@
 - commits:
+    - subject: "Docs: Fix endpoint name from s/status/state"
+      hash: dd947ed4a48352fcc5eec2bd83f6a7472af8db2e
+      body: >
+        Fixing the endpoint name in debugging docs that queries state of the
+        autokit at any given time.
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Vipul Gupta
+      nested: []
+  version: 2.31.12
+  title: ""
+  date: 2024-06-19T11:04:59.485Z
+- commits:
     - subject: Update Lock file maintenance
       hash: b590ee109467cf2f980e2313dafe0f20464fc8c2
       body: |
