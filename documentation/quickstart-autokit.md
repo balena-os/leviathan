@@ -114,7 +114,7 @@ A successful run of the e2e test suite without any errors makes sure that your a
 
 ## Troubleshooting
 
-Refer to {@page FAQ | FAQ's for common issues mentioned below and debug your test setup}
+Refer to {@page Debugging FAQ | FAQ's for common issues mentioned below and debug your test setup}
 
 1. Config issues
 2. Flashing issues
