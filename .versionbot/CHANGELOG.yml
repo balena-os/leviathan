@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update balena-os/leviathan-worker to v2.9.41
+      hash: 58b9d5d14c10731f278acac23a4e3a4795c2f80c
+      body: |
+        Update balena-os/leviathan-worker from 2.9.40 to 2.9.41
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Self-hosted Renovate Bot
+      nested: []
+  version: 2.31.13
+  title: ""
+  date: 2024-06-19T14:31:11.330Z
+- commits:
     - subject: "Docs: Fix endpoint name from s/status/state"
       hash: dd947ed4a48352fcc5eec2bd83f6a7472af8db2e
       body: >
