@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>FAQ | Leviathan Helpers</title>
+	<title>Debugging FAQ | Leviathan Helpers</title>
 	<meta name="description" content="Documentation for Leviathan Helpers">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../../assets/css/main.css">
@@ -58,10 +58,10 @@
 					<a href="quickstart.html">Getting-Started</a>
 				</li>
 				<li>
-					<a href="debugging.html">FAQ</a>
+					<a href="debugging.html">Debugging FAQ</a>
 				</li>
 			</ul>
-			<h1>FAQ</h1>
+			<h1>Debugging FAQ</h1>
 		</div>
 	</div>
 </header>
@@ -117,10 +117,10 @@
 				<ol>
 					<li>To check the availability of an autokit manually, you can run the following command:</li>
 				</ol>
-				<pre><code><span style="color: #2F86D2">$</span><span style="color: #002339"> </span><span style="color: #2F86D2">curl</span><span style="color: #002339"> </span><span style="color: #7B30D0">-</span><span style="color: #2F86D2">X</span><span style="color: #002339"> </span><span style="color: #2F86D2">POST</span><span style="color: #002339"> </span><span style="color: #2F86D2">PUBLIC</span><span style="color: #7B30D0">-</span><span style="color: #2F86D2">DEVICE</span><span style="color: #7B30D0">-</span><span style="color: #2F86D2">URL</span><span style="color: #7B30D0">-</span><span style="color: #2F86D2">OF</span><span style="color: #7B30D0">-</span><span style="color: #2F86D2">AUTOKIT</span><span style="color: #7B30D0">/</span><span style="color: #2F86D2">status</span>
+				<pre><code><span style="color: #2F86D2">$</span><span style="color: #002339"> </span><span style="color: #2F86D2">curl</span><span style="color: #002339"> </span><span style="color: #7B30D0">-</span><span style="color: #2F86D2">X</span><span style="color: #002339"> </span><span style="color: #2F86D2">POST</span><span style="color: #002339"> </span><span style="color: #2F86D2">PUBLIC</span><span style="color: #7B30D0">-</span><span style="color: #2F86D2">DEVICE</span><span style="color: #7B30D0">-</span><span style="color: #2F86D2">URL</span><span style="color: #7B30D0">-</span><span style="color: #2F86D2">OF</span><span style="color: #7B30D0">-</span><span style="color: #2F86D2">AUTOKIT</span><span style="color: #7B30D0">/</span><span style="color: #2F86D2">state</span>
 </code></pre>
 				<ol start="2">
-					<li>If the status is IDLE, we can run a short diagnostics test to see if the autokit works correctly. Run the Leviathan e2e test described in this section {@page Getting Started with Autokit Worker  | Start your first test run} on the autokit you want to verify. After completing the Leviathan prerequisites listed above the section, you can create your config.js and add the Public Device URL in the <code>workers</code> section.</li>
+					<li>If the state is IDLE, we can run a short diagnostics test to see if the autokit works correctly. Run the Leviathan e2e test described in this section {@page Getting Started with Autokit Worker  | Start your first test run} on the autokit you want to verify. After completing the Leviathan prerequisites listed above the section, you can create your config.js and add the Public Device URL in the <code>workers</code> section.</li>
 				</ol>
 				<p>If the test completes without any errors, then the autokit should be ready to run the tests. </p>
 				<a href="#config-issues-when-running-tests" id="config-issues-when-running-tests" style="color: inherit; text-decoration: none;">
@@ -138,13 +138,13 @@
 				<ol>
 					<li>The wrong fleet or device type was being targeted. Check the test configuration present in the test logs.</li>
 					<li>If not, check the balenaCloud fleet and check the <code>DUT</code> tag of the autokit devices in the fleet containing the device type slug. If you don&#39;t find a <code>DUT</code> tag matching the slug, then the worker doesn&#39;t exist. </li>
-					<li>If you find a device, check the status of the autokit by running the following command.</li>
+					<li>If you find a device, check the state of the autokit by running the following command.</li>
 				</ol>
-				<pre><code><span style="color: #2F86D2">$</span><span style="color: #002339"> </span><span style="color: #2F86D2">curl</span><span style="color: #002339"> </span><span style="color: #7B30D0">-</span><span style="color: #2F86D2">X</span><span style="color: #002339"> </span><span style="color: #2F86D2">POST</span><span style="color: #002339"> </span><span style="color: #2F86D2">PUBLIC</span><span style="color: #7B30D0">-</span><span style="color: #2F86D2">DEVICE</span><span style="color: #7B30D0">-</span><span style="color: #2F86D2">URL</span><span style="color: #7B30D0">-</span><span style="color: #2F86D2">OF</span><span style="color: #7B30D0">-</span><span style="color: #2F86D2">AUTOKIT</span><span style="color: #7B30D0">/</span><span style="color: #2F86D2">status</span>
+				<pre><code><span style="color: #2F86D2">$</span><span style="color: #002339"> </span><span style="color: #2F86D2">curl</span><span style="color: #002339"> </span><span style="color: #7B30D0">-</span><span style="color: #2F86D2">X</span><span style="color: #002339"> </span><span style="color: #2F86D2">POST</span><span style="color: #002339"> </span><span style="color: #2F86D2">PUBLIC</span><span style="color: #7B30D0">-</span><span style="color: #2F86D2">DEVICE</span><span style="color: #7B30D0">-</span><span style="color: #2F86D2">URL</span><span style="color: #7B30D0">-</span><span style="color: #2F86D2">OF</span><span style="color: #7B30D0">-</span><span style="color: #2F86D2">AUTOKIT</span><span style="color: #7B30D0">/</span><span style="color: #2F86D2">state</span>
 </code></pre>
 				<ol start="4">
-					<li>If the status is BUSY, then the device is running tests for another job. </li>
-					<li>If the status is IDLE, then the device is available to run the tests but is still unable to take up the test job. Refer to <a href="#recovering-the-autokit">Recovering the Autokit</a> section.</li>
+					<li>If the state is BUSY, then the device is running tests for another job. </li>
+					<li>If the state is IDLE, then the device is available to run the tests but is still unable to take up the test job. Refer to <a href="#recovering-the-autokit">Recovering the Autokit</a> section.</li>
 				</ol>
 				<a href="#flashing-issues" id="flashing-issues" style="color: inherit; text-decoration: none;">
 					<h2>Flashing issues</h2>
@@ -257,7 +257,7 @@
 						<a href="writing-tests.html">Writing tests</a>
 					</li>
 					<li class="current pp-nav pp-page">
-						<a href="debugging.html">FAQ</a>
+						<a href="debugging.html">Debugging FAQ</a>
 					</li>
 					<li class=" pp-nav pp-page">
 						<a href="reference-tips.html">Tips and <wbr>Reference</a>
