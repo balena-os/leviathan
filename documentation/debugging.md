@@ -52,10 +52,10 @@ Testing with autokit requires several components to work together. All steps in 
 1. To check the availability of an autokit manually, you can run the following command:
 
 ```
-$ curl -X POST PUBLIC-DEVICE-URL-OF-AUTOKIT/status
+$ curl -X POST PUBLIC-DEVICE-URL-OF-AUTOKIT/state
 ```
 
-2. If the status is IDLE, we can run a short diagnostics test to see if the autokit works correctly. Run the Leviathan e2e test described in this section {@page Getting Started with Autokit Worker  | Start your first test run} on the autokit you want to verify. After completing the Leviathan prerequisites listed above the section, you can create your config.js and add the Public Device URL in the `workers` section.  
+2. If the state is IDLE, we can run a short diagnostics test to see if the autokit works correctly. Run the Leviathan e2e test described in this section {@page Getting Started with Autokit Worker  | Start your first test run} on the autokit you want to verify. After completing the Leviathan prerequisites listed above the section, you can create your config.js and add the Public Device URL in the `workers` section.  
 
 If the test completes without any errors, then the autokit should be ready to run the tests. 
 
@@ -81,14 +81,14 @@ No device could be found for this device type slug in the Autokit fleet you spec
 
 1. The wrong fleet or device type was being targeted. Check the test configuration present in the test logs.
 2. If not, check the balenaCloud fleet and check the `DUT` tag of the autokit devices in the fleet containing the device type slug. If you don't find a `DUT` tag matching the slug, then the worker doesn't exist. 
-3. If you find a device, check the status of the autokit by running the following command. 
+3. If you find a device, check the state of the autokit by running the following command. 
 
 ```
-$ curl -X POST PUBLIC-DEVICE-URL-OF-AUTOKIT/status
+$ curl -X POST PUBLIC-DEVICE-URL-OF-AUTOKIT/state
 ```
 
-4. If the status is BUSY, then the device is running tests for another job. 
-5. If the status is IDLE, then the device is available to run the tests but is still unable to take up the test job. Refer to [Recovering the Autokit](#recovering-the-autokit) section. 
+4. If the state is BUSY, then the device is running tests for another job. 
+5. If the state is IDLE, then the device is available to run the tests but is still unable to take up the test job. Refer to [Recovering the Autokit](#recovering-the-autokit) section. 
 
 
 ## Flashing issues

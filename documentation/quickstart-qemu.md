@@ -74,6 +74,8 @@ make local-test
 
 This will trigger a build of client and core services using docker-compose and begin the test. The logs by various componenet will start streaming on the terminal. Wait for the test scenario to finish and check the device logs on the dashboard in the meantime. 
 
+> Refer to {@page Debugging FAQ | FAQ's for common issues mentioned below and debug your test setup}
+
 A successful run of the e2e test suite without any errors makes sure that your QEMU worker is set up correctly and can be used for further tests.
 
 ## Let's run some "real" tests
