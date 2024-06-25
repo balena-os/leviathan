@@ -24,6 +24,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 	vim \
 	build-essential \
 	make \
+	gzip \
 	python && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*
