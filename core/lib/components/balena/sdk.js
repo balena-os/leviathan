@@ -339,13 +339,23 @@ module.exports = class BalenaSDK {
 	 *
 	 * @category helper
 	 */
-	async fetchOS(versionOrRange = 'latest', deviceType, osType = 'default') {
-		// normalize the version string/range, supports 'latest', 'recommended', etc
-		const balenaSdkProd = getSdk({
-			apiUrl: "https://api.balena-cloud.com",
+	async fetchOS(versionOrRange = 'latest', deviceType, osType = 'default', balenaDownloadApiUrl, balenaDownloadApiKey) {
+		const balenaDownloadSdk = getSdk({
+			apiUrl: balenaDownloadApiUrl ? balenaDownloadApiUrl : "https://api.balena-cloud.com",
 		});
+		
+		if (balenaDownloadApiKey) {
+			await balenaDownloadSdk.auth.loginWithToken(balenaDownloadApiKey)
+			const username = await this.sdk.auth.whoami()
+			if (username) {
+				console.log(`Downloading with ${await this.sdk.auth.whoami()}'s account on ${this.balenaApiUrl} using balenaSDK`);
+			} else {
+				throw new Error('Failed to authenticate with balenaSDK. Check your API key or balenaCloud API URL address.');
+			}
+		}
 
-		let version = await balenaSdkProd.models.os.getMaxSatisfyingVersion(
+		// normalize the version string/range, supports 'latest', 'recommended', etc
+		let version = await balenaDownloadSdk.models.os.getMaxSatisfyingVersion(
 			deviceType,
 			versionOrRange,
 			osType,
@@ -369,7 +379,7 @@ module.exports = class BalenaSDK {
 			);
 
 			return await new Promise(async (resolve, reject) => {
-				await balenaSdkProd.models.os.download(
+				await balenaDownloadSdk.models.os.download(
 					deviceType,
 					version,
 					function (error, stream) {
