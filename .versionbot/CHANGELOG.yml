@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update docker/setup-buildx-action digest to 4fd8129
+      hash: c7d16dc7200e15f5f233b42d928b93ad2ec5421b
+      body: |
+        Update docker/setup-buildx-action
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Self-hosted Renovate Bot
+      nested: []
+  version: 2.31.16
+  title: ""
+  date: 2024-07-04T08:59:03.246Z
+- commits:
     - subject: "patch: Remove internal presentation link to testbot"
       hash: 6c463f8b491d0888da8f945e67267768837c61c1
       body: ""
