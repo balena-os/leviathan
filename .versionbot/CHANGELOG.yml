@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update actions/upload-artifact digest to 0b2256b
+      hash: 634605505991815b37365613d3f65462b7f7f117
+      body: |
+        Update actions/upload-artifact
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Self-hosted Renovate Bot
+      nested: []
+  version: 2.31.17
+  title: ""
+  date: 2024-07-05T16:35:55.914Z
+- commits:
     - subject: Update docker/setup-buildx-action digest to 4fd8129
       hash: c7d16dc7200e15f5f233b42d928b93ad2ec5421b
       body: |
