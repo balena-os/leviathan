@@ -385,9 +385,12 @@ class NonInteractiveState {
 						deviceUrl = device;
 					}
 					let status = await rp.get(
-						new url.URL('/state', deviceUrl).toString(),
+						new url.URL('/start', deviceUrl).toString(),
 					);
-					if (status === 'IDLE') {
+					// A response of OK indicates that the worker was IDLE - and now it is reserved
+					// This should avoid race conditions where multiple test jobs are trying to use the same pool of workers
+					// As whatever job reaches it first with the /start endpoint, it immediately gets set to "BUSY"
+					if (status === 'OK') {
 						// make sure that the worker being targetted isn't already about to be used by another child process
 						if (!busyWorkers.includes(deviceUrl)) {
 							// Create single client and break from loop to job the job 👍
@@ -436,8 +439,6 @@ class NonInteractiveState {
 
 				// after creating child process, add the worker to the busy workers array
 				busyWorkers.push(job.workers);
-
-				let status = await rp.get(new url.URL('/start', deviceUrl).toString());
 
 				// child state
 				children[child.pid] = {
