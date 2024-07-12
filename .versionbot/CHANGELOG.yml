@@ -1,4 +1,30 @@
 - commits:
+    - subject: "client: use /start endpoint of worker to reserve worker if IDLE
+        immediately"
+      hash: 41b535e9ad160a6c663cf39137da562b4843829a
+      body: >
+        There is a problem where if the multiple jobs are running at the same
+        time, all waiting for a worker to be IDLE, multiple jobs start using the
+        worker at the same time. The reason was that first, the state of the
+        worker is polled using /state - then, after some delay, it is reserved
+        using the /start endpoint. Problem 1 was that there is a delay between
+        checking and reserving - leading to a window of time where another job
+        could do the same thing. Problem 2 is that once /start was used, there
+        was nothing to stop the client from continuing, even if the worker was
+        BUSY. This commit forgoes the /state endpoint, and just skips to trying
+        /start - if the worker is IDLE, its instanly reserved, if its BUSY, the
+        reponse is actually checked and nothing happens.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+  version: 2.31.18
+  title: ""
+  date: 2024-07-12T09:25:30.846Z
+- commits:
     - subject: Update actions/upload-artifact digest to 0b2256b
       hash: 634605505991815b37365613d3f65462b7f7f117
       body: |
