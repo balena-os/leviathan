@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update core/contracts digest to 773c77c
+      hash: 2e512d7f1aac17346613962564293e78a0ecd971
+      body: |
+        Update core/contracts
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Self-hosted Renovate Bot
+      nested: []
+  version: 2.31.19
+  title: ""
+  date: 2024-07-12T10:30:54.239Z
+- commits:
     - subject: "client: use /start endpoint of worker to reserve worker if IDLE
         immediately"
       hash: 41b535e9ad160a6c663cf39137da562b4843829a
