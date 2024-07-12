@@ -257,26 +257,19 @@ module.exports = class Worker {
 		return doRequest({ method: 'POST', uri: `${this.url}/proxy`, body: proxy, json: true });
 	}
 
+	// the default doRequest parameters lead to 5 retries
+	// the /dut/ip endpoint takes around 10s to scan on the worker side
+	// setting tries to 50 here leads to 50*([default doRequest interval = 2] + ~10) = 600s/10 mins
 	async getDutIp(
 		target,
-		timeout = {
-			interval: 1000,
-			tries: 30,
-		},
+		tries = 50
 	) {
-		return retry(
-			() => {
-				return doRequest({
-					uri: `${this.url}/dut/ip`,
-					body: { target },
-					json: true,
-				});
-			},
-			{
-				max_tries: timeout.tries,
-				interval: timeout.interval,
-				throw_original: true,
-			},
+		return doRequest({
+			uri: `${this.url}/dut/ip`,
+			body: { target },
+			json: true,
+		},
+		tries
 		);
 	}
 
