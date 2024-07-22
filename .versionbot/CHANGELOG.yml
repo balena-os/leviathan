@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update docker/setup-buildx-action digest to aa33708
+      hash: dda330bb67cff678a5b7758f31ebf53bbc58886c
+      body: |
+        Update docker/setup-buildx-action
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Self-hosted Renovate Bot
+      nested: []
+  version: 2.31.21
+  title: ""
+  date: 2024-07-22T10:33:23.487Z
+- commits:
     - subject: Update core/contracts digest to 17b44ca
       hash: c889b407e4ad56080c98850022def0d122108863
       body: |
