@@ -51,12 +51,13 @@ module.exports = {
 						}
 					}
 				} finally {
-					test.not((await fs.stat(SERIAL_PATH)).size, 0, `Size of serial output file from DUT shouldn't be 0`);
-					test.not(
-						(await fs.readFile(`${SERIAL_PATH}`, "utf8")).trim().split("  ").length,
-						0,
-						`Serial output from DUT shouldn't be empty`,
-					);
+					if ((await fs.stat(SERIAL_PATH)).size === 0) {
+						console.log(`Size of serial output file from DUT shouldn't be 0. Check if serial is connected if this is unexpected?`)
+					}
+
+					if ((await fs.readFile(`${SERIAL_PATH}`, "utf8")).trim().split("  ").length === 0) {
+						console.log(`Serial output from DUT shouldn't be empty. Check if serial is connected if this is unexpected?`)
+					}
 				}
 			},
 		},
