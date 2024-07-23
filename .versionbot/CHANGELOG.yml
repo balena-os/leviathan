@@ -1,4 +1,16 @@
 - commits:
+    - subject: "patch: Add migration & secureboot options to e2e test suite"
+      hash: 7abd1e4f8483b2a5704c5f4e0b1f974e0fafc762
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipulgupta2048@gmail.com>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipulgupta2048@gmail.com>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.31.22
+  title: ""
+  date: 2024-07-23T13:00:12.436Z
+- commits:
     - subject: Update docker/setup-buildx-action digest to aa33708
       hash: dda330bb67cff678a5b7758f31ebf53bbc58886c
       body: |
