@@ -1,4 +1,23 @@
 - commits:
+    - subject: "core: remove nested retries in getDutIp function"
+      hash: fc8a48737153dc528a005f4d963e0f3f54426aae
+      body: >
+        the function that was being used to fetch the DUT ip from the worker had
+        nested retries that led to 30x5 = 150 retries, and timeouts taking ~40
+        mins in the case the DUT wasn't reachable (autokit setup fault, device
+        not booting, problem during flashing). This removes the nested retries
+        and reduces the retries to 50 /  ~ 10mins
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+  version: 2.31.23
+  title: ""
+  date: 2024-07-23T13:24:35.947Z
+- commits:
     - subject: "patch: Add migration & secureboot options to e2e test suite"
       hash: 7abd1e4f8483b2a5704c5f4e0b1f974e0fafc762
       body: ""
