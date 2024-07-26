@@ -169,16 +169,26 @@ module.exports = class Worker {
 
 		// note: for the qemu case, we are assuming a shared volume between core and worker - this means that any image we want to flash must be in this volume - is it in all our cases?
 		this.logger.log(`Trying to flash ${TARGET_PATH}`);
-		let res = await rp.post(
-			{ 
-				uri: `${this.url}/dut/flashFromFile`, 
-				body: {
-					filename: TARGET_PATH
-				}, 
-				timeout: 0,
-				json: true 
-			}
-		);		
+		await new Promise(async (resolve, reject) => {
+			let res = rp.post(
+				{ 
+					uri: `${this.url}/dut/flashFromFile`, 
+					body: {
+						filename: TARGET_PATH
+					}, 
+					timeout: 0,
+					json: true 
+				}
+			);
+
+			req.on('data', (data) => {
+				this.logger.log(data.toString());
+			});
+
+			req.finally(() => {
+				resolve();
+			});		
+		});
 	}
 
 
