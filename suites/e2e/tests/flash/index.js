@@ -24,7 +24,7 @@ module.exports = {
 			run: async function (test) {
 				try {
 					await this.worker.off(); // Ensure DUT is off before starting tests
-					await exec('dd if=/dev/urandom of=temp_1GB_file bs=1g count=1')
+					await exec('dd if=/dev/urandom of=temp_1GB_file bs=1G count=1')
 					console.log(`file created ${await exec(`du -h temp_1GB_file`)}`)
 					await this.worker.flash('temp_1GB_file');
 				} catch (err) {
