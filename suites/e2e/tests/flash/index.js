@@ -13,6 +13,8 @@
  */
 
 "use strict";
+const Bluebird = require('bluebird');
+const exec = Bluebird.promisify(require('child_process').exec);
 
 module.exports = {
 	title: "Flashing tests",
@@ -22,7 +24,9 @@ module.exports = {
 			run: async function (test) {
 				try {
 					await this.worker.off(); // Ensure DUT is off before starting tests
-					await this.worker.flash(this.os.image.path);
+					await exec('dd if=/dev/urandom of=temp_1GB_file bs=1g count=1')
+					console.log(`file created ${await exec(`du -h temp_1GB_file`)}`)
+					await this.worker.flash('temp_1GB_file');
 				} catch (err) {
 					throw new Error(`Flashing failed with error: ${err}`);
 				}
