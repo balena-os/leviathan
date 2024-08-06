@@ -8,17 +8,17 @@ async function testConfig(configs) {
   for (const config of configs) {
     const balenaCloud = new BalenaCloudInteractor(config.config.balenaApiUrl);
     const balena = await balenaCloud.authenticate(config.config.balenaApiKey);
-    
+
     /**
      * Don't test configs if dev mode is true in config.js
      * This is useful when developing tests for a new device not on production.
-     * 
+     *
      * TO DISABLE VALIDATION, add the following to config.js
-     * 
+     *
      * debug: {
      *   dev: true // boolean (true/false)
      * }
-     */ 
+     */
     if (config.debug.dev === true ) {
       console.log(`Dev mode is enabled. Skipping config ${counter} from config.js file ... 👍`)
       return "notest"
@@ -57,6 +57,18 @@ async function testConfig(configs) {
     } catch (e) {
       console.log(`OS image not found: ${e.message} ❌\n`)
       report.errors.push({ image: `OS image not found. Check path. ${e.message}` })
+      report.verdict = false
+    }
+
+    // artifact path exists?
+    try {
+      if (config.artifacts) {
+        fs.accessSync(`${__dirname}/../suites/${config.artifacts}`, fs.F_OK);
+        console.log(`Artifacts path exists: ${config.suite} ✅`)
+      }
+    } catch (e) {
+      console.log(`Tests not found: ${e.message} ❌`)
+      report.errors.push({ artifact: `Artifacts not found in the suites/ folder, check path. ${e.message}` })
       report.verdict = false
     }
 
