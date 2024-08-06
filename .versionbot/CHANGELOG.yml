@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update actions/upload-artifact digest to 834a144
+      hash: 6a81dc37849f6290f104e3bbb95bc8b60f240ab5
+      body: |
+        Update actions/upload-artifact
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.31.25
+  title: ""
+  date: 2024-08-06T15:54:52.299Z
+- commits:
     - subject: Update core/contracts digest to 6d69a05
       hash: 02819efbdc5ca46918d80ec2b23c18274995629b
       body: |
