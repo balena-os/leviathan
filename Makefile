@@ -78,7 +78,7 @@ build: $(DOCKERCOMPOSE) ## Build the required images
 	$(DOCKERCOMPOSE) build $(BUILDARGS)
 
 test: $(DOCKERCOMPOSE) build ## Run the test suites
-	$(DOCKERCOMPOSE) up $(UPARGS) --exit-code-from client
+	$(DOCKERCOMPOSE) up $(UPARGS) --abort-on-container-exit
 
 local-test: ## Alias for 'make test WORKER_TYPE=qemu'
 	$(MAKE) test WORKER_TYPE=qemu
