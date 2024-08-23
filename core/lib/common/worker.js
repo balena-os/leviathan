@@ -144,11 +144,11 @@ module.exports = class Worker {
 				await new Promise(async (resolve, reject) => {
 					const req = rp.post({ uri: `${this.url}/dut/flash`, timeout: 0 });
 
-					req.catch((error) => {
-						this.logger.log(`client side error: `)
-						this.logger.log(error.message)
-						reject(error);
+					req.on('error', (error) => {
+						this.logger.log('Core side error when trying to send image to worker');
+						reject(new Error('Error while sending image to worker'));
 					});
+	
 					req.finally(() => {
 						if (lastStatus !== 'done') {
 							reject(new Error('Unexpected end of TCP connection'));
@@ -191,7 +191,7 @@ module.exports = class Worker {
 						fs.createReadStream(imagePath),
 						createGzip({ level: 6 }),
 						req,
-					);
+					).catch(reject(new Error('Failed to flash DUT')));
 				});
 				this.logger.log('Flash completed');
 			},
