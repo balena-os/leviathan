@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update balena-os/leviathan-worker to v2.9.43
+      hash: 47bf1a79a6935e7c99430266f67d90f0f0155256
+      body: |
+        Update balena-os/leviathan-worker from 2.9.41 to 2.9.43
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.31.28
+  title: ""
+  date: 2024-08-29T18:44:20.177Z
+- commits:
     - subject: Update docker/setup-buildx-action digest to 988b5a0
       hash: e6b3ef176fbadff3adeb317158d8be96c635092a
       body: |
