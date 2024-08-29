@@ -487,7 +487,7 @@ module.exports = class Worker {
 				`tunnel`,
 				this.uuid,
 				`-p`,
-				`22222:${workerPort}`
+				`22222:127.0.0.1:${workerPort}`
 			];
 			let tunnelProcClient = spawn(`balena`, argsClient, {stdio: 'inherit'});
 
