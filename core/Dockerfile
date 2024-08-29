@@ -28,8 +28,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*
 
-ARG BALENA_CLI_REF="v16.1.0"
-ARG BALENA_CLI_VERSION="16.1.0"
+ARG BALENA_CLI_REF="v17.0.0"
+ARG BALENA_CLI_VERSION="17.0.0"
 
 # Install balena-cli via standlone zip, only compatible with glibc (not alpine/musl)
 RUN if [ "$(uname -m)" = "arm64" ] || [ "$(uname -m)" = "aarch64" ] ; \
