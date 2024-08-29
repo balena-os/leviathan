@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update docker/setup-buildx-action digest to 988b5a0
+      hash: e6b3ef176fbadff3adeb317158d8be96c635092a
+      body: |
+        Update docker/setup-buildx-action
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.31.27
+  title: ""
+  date: 2024-08-29T17:37:31.318Z
+- commits:
     - subject: specify ipv4 localhost for balena tunnel
       hash: 26d159fb88c3455975a048aa70bfeaad530d6330
       body: ""
