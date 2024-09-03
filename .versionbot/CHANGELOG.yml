@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update balena-io/balena-cli to v19.0.2
+      hash: 37461510767eeabbf8e9c20fe7b93a3ffc1ede7d
+      body: |
+        Update balena-io/balena-cli from 19.0.1 to 19.0.2
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.31.32
+  title: ""
+  date: 2024-09-03T15:32:37.054Z
+- commits:
     - subject: Update actions/upload-artifact digest to 5076954
       hash: bbcc990c22373d8e04ebca6d20c36e500cee96ed
       body: |
