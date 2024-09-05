@@ -1,4 +1,18 @@
 - commits:
+    - subject: Always upload reports, especially when tests fail
+      hash: c09fee58e73b0717726d5c3d381574cb12eadd83
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.31.34
+  title: ""
+  date: 2024-09-05T20:56:32.116Z
+- commits:
     - subject: Update balena-io/balena-cli to v19.0.3
       hash: b321cbdc50680242d6e4e61b0ae7b044593ddb75
       body: |
