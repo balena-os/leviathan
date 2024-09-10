@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update balena-io/balena-cli to v19.0.5
+      hash: c174e083809828878a0c4ffff762e9f559accfe4
+      body: |
+        Update balena-io/balena-cli from 19.0.3 to 19.0.5
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.31.35
+  title: ""
+  date: 2024-09-10T15:33:10.681Z
+- commits:
     - subject: Always upload reports, especially when tests fail
       hash: c09fee58e73b0717726d5c3d381574cb12eadd83
       body: ""
