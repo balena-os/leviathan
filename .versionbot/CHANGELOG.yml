@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update balena-io/balena-cli to v19.0.7
+      hash: 23b1c74ae99df11d669829f17d59e0ca3be47760
+      body: |
+        Update balena-io/balena-cli from 19.0.5 to 19.0.7
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.31.38
+  title: ""
+  date: 2024-09-12T14:36:50.579Z
+- commits:
     - subject: Update balena-os/leviathan-worker to v2.9.45
       hash: 0dc026dca2f747f842c1409a13f47cea9b9d04a9
       body: |
