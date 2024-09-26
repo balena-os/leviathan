@@ -41,3 +41,4 @@ services:
 volumes:
   core-storage:
   reports-storage:
+  qemu:
