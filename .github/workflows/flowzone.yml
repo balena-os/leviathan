@@ -66,13 +66,14 @@ jobs:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
         with:
           submodules: true
+          persist-credentials: false
 
       - name: Setup env variables for BalenaCloud
         if: matrix.ENVIRONMENT_URL == 'balena-cloud.com'
         run: |
           echo "BALENACLOUD_API_KEY=${{ secrets.BALENA_TOKEN }}" >> $GITHUB_ENV
           echo "BALENACLOUD_API_URL=${{ matrix.ENVIRONMENT_URL }}" >> $GITHUB_ENV
-   
+
       - name: Setup env variables for BalenaCloud
         if: matrix.ENVIRONMENT_URL == 'bm.balena-dev.com'
         run: |
@@ -85,7 +86,7 @@ jobs:
         run: cp -a ${{ env.SUITES }}/config.js ${{ env.WORKSPACE }}/config.js
 
       - name: Leviathan build + test
-        uses: ./ 
+        uses: ./
         env:
           BALENACLOUD_API_KEY: ${{ env.BALENACLOUD_API_KEY }}
           BALENACLOUD_API_URL: ${{ env.BALENACLOUD_API_URL }}
