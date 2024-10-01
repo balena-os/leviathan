@@ -66,12 +66,13 @@ jobs:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
         with:
           submodules: true
+          persistent-credentials: false
 
       - name: Copy suite config
         run: cp -a ${{ env.SUITES }}/config.js ${{ env.WORKSPACE }}/config.js
 
       - name: Leviathan build + test
-        uses: ./ 
+        uses: ./
         env:
           BALENACLOUD_API_KEY: ${{ secrets.BALENA_API_TEST_KEY }}
           BALENACLOUD_API_URL: ${{ vars.BALENA_HOST || matrix.ENVIRONMENT_URL }}
