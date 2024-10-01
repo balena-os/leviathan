@@ -4,3 +4,4 @@ bin/*.log
 
 node_modules/
 build/
+.git/
