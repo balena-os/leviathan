@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update core/contracts digest to 1fb0b0c
+      hash: 92c249e93ea3f1cd2dc8b09b05c1031f643fa268
+      body: |
+        Update core/contracts
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.31.46
+  title: ""
+  date: 2024-10-03T16:33:04.116Z
+- commits:
     - subject: add .git to dockerignore
       hash: f67d5611247197f63e7798b1516218f361dcb3f7
       body: ""
