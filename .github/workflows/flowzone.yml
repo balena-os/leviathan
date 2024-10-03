@@ -5,9 +5,9 @@ on:
     types: [opened, synchronize, closed]
     branches: [main, master]
   # allow external contributions to use secrets within trusted code
-  pull_request_target:
-    types: [opened, synchronize, closed]
-    branches: [main, master]
+  # pull_request_target:
+  #   types: [opened, synchronize, closed]
+  #   branches: [main, master]
 
 jobs:
   flowzone:
@@ -18,6 +18,7 @@ jobs:
     if: |
       (github.event.pull_request.head.repo.full_name == github.repository && github.event_name == 'pull_request') ||
       (github.event.pull_request.head.repo.full_name != github.repository && github.event_name == 'pull_request_target')
+
     secrets: inherit
 
   e2e:
@@ -27,6 +28,7 @@ jobs:
       (github.event.pull_request.head.repo.full_name != github.repository && github.event_name == 'pull_request_target')) &&
       github.event.action != 'closed'
     runs-on: ubuntu-22.04
+    environment: ${{ matrix.ENVIRONMENT_URL }}
 
     env:
       SUITES: ./suites
@@ -35,8 +37,6 @@ jobs:
       LEVIATHAN_ROOT: ./
       BALENACLOUD_ORG: testbot
       BALENACLOUD_APP_NAME: balena/testbot-rig
-      QEMU_CPUS: 1
-      QEMU_MEMORY: 1G
       WORKER_TYPE: ${{ matrix.WORKER_TYPE }}
       DEVICE_TYPE: ${{ matrix.DEVICE_TYPE }}
 
@@ -66,39 +66,26 @@ jobs:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
         with:
           submodules: true
-
-      - name: Setup env variables for BalenaCloud
-        if: matrix.ENVIRONMENT_URL == 'balena-cloud.com'
-        run: |
-          echo "BALENACLOUD_API_KEY=${{ secrets.BALENA_TOKEN }}" >> $GITHUB_ENV
-          echo "BALENACLOUD_API_URL=${{ matrix.ENVIRONMENT_URL }}" >> $GITHUB_ENV
-   
-      - name: Setup env variables for BalenaCloud
-        if: matrix.ENVIRONMENT_URL == 'bm.balena-dev.com'
-        run: |
-          echo "BALENACLOUD_API_KEY=${{ secrets.BALENAMACHINE_API_KEY  }}" >> $GITHUB_ENV
-          echo "BALENACLOUD_API_URL=${{ matrix.ENVIRONMENT_URL }}" >> $GITHUB_ENV
-          echo "BALENACLOUD_SSH_URL=ssh.devices.${{ matrix.ENVIRONMENT_URL }}" >> $GITHUB_ENV
-          echo "BALENACLOUD_SSH_PORT=222" >> $GITHUB_ENV
+          persistent-credentials: false
 
       - name: Copy suite config
         run: cp -a ${{ env.SUITES }}/config.js ${{ env.WORKSPACE }}/config.js
 
       - name: Leviathan build + test
-        uses: ./ 
+        uses: ./
         env:
-          BALENACLOUD_API_KEY: ${{ env.BALENACLOUD_API_KEY }}
-          BALENACLOUD_API_URL: ${{ env.BALENACLOUD_API_URL }}
-          BALENACLOUD_APP_NAME: ${{ env.BALENACLOUD_APP_NAME }}
-          BALENACLOUD_ORG: ${{ env.BALENACLOUD_ORG }}
-          BALENACLOUD_SSH_PORT: ${{ env.BALENACLOUD_SSH_PORT }}
-          BALENACLOUD_SSH_URL: ${{ env.BALENACLOUD_SSH_URL }}
+          BALENACLOUD_API_KEY: ${{ secrets.BALENA_API_TEST_KEY }}
+          BALENACLOUD_API_URL: ${{ vars.BALENA_HOST || matrix.ENVIRONMENT_URL }}
+          BALENACLOUD_SSH_PORT: ${{ vars.BALENACLOUD_SSH_PORT }}
+          BALENACLOUD_SSH_URL: ${{ vars.BALENACLOUD_SSH_URL }}
           DEVICE_TYPE: ${{ matrix.DEVICE_TYPE }}
-          LEVIATHAN_ROOT: ${{ env.LEVIATHAN_ROOT }}
+          WORKER_TYPE: ${{ matrix.WORKER_TYPE }}
           QEMU_CPUS: 1
           QEMU_MEMORY: "1G"
+          TEST_SUITE: e2e
+          BALENACLOUD_APP_NAME: ${{ env.BALENACLOUD_APP_NAME }}
+          BALENACLOUD_ORG: ${{ env.BALENACLOUD_ORG }}
+          LEVIATHAN_ROOT: ${{ env.LEVIATHAN_ROOT }}
           REPORTS: ${{ env.REPORTS }}
           SUITES: ${{ env.SUITES }}
-          WORKER_TYPE: ${{ matrix.WORKER_TYPE }}
           WORKSPACE: ${{ env.WORKSPACE }}
-          TEST_SUITE: e2e
