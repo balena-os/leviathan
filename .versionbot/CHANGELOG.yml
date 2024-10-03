@@ -1,4 +1,30 @@
 - commits:
+    - subject: add .git to dockerignore
+      hash: f67d5611247197f63e7798b1516218f361dcb3f7
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+    - subject: remove pull request target trigger from workflows
+      hash: d3fbb311a9e602ce2ed2e8073b6228dd9c13dd42
+      body: >
+        This will block external contributions - but right now we aren't really
+        getting any anyway.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+  version: 2.31.45
+  title: ""
+  date: 2024-10-03T15:47:50.285Z
+- commits:
     - subject: Update balena-io/balena-cli to v19.0.11
       hash: 2824ed421ede89a422157bae190ce00d1443548e
       body: |
