@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update balena-io/balena-cli to v19.0.13
+      hash: 1d7483d08118632d302c1797e3ee67c84dbcf935
+      body: |
+        Update balena-io/balena-cli from 19.0.11 to 19.0.13
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.31.48
+  title: ""
+  date: 2024-10-03T18:34:06.132Z
+- commits:
     - subject: Update docker/setup-buildx-action digest to 8026d2b
       hash: 22ce1f283f4a9a21ad648cf89b0b35767d236530
       body: |
