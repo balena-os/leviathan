@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update ubuntu to v24
+      hash: 50fb50ae3f0a80116e392e33962c7b430e631f77
+      body: |
+        Update ubuntu from 22.04 to 24.04
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.31.50
+  title: ""
+  date: 2024-10-04T09:34:18.914Z
+- commits:
     - subject: Update docker/setup-buildx-action digest to c47758b
       hash: 11f62cd9d67252ae4efd6a59011e988dc06782ce
       body: |
