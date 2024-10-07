@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update actions/upload-artifact digest to 604373d
+      hash: 9dad57269d0016bb2a8e06d098923205e4e626be
+      body: |
+        Update actions/upload-artifact
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.31.51
+  title: ""
+  date: 2024-10-07T16:37:31.362Z
+- commits:
     - subject: Update ubuntu to v24
       hash: 50fb50ae3f0a80116e392e33962c7b430e631f77
       body: |
