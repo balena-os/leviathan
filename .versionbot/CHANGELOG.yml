@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update actions/checkout digest to eef6144
+      hash: 486a37fa55077267e9d2bebaef9d9fdb7cbf6b43
+      body: |
+        Update actions/checkout
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.31.53
+  title: ""
+  date: 2024-10-08T15:35:10.306Z
+- commits:
     - subject: Update balena-io/balena-cli to v19.0.17
       hash: 2f8cfd61761fbb0b0ea12a038d25fb71f98facd2
       body: |
