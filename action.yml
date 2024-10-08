@@ -40,7 +40,7 @@ runs:
         echo "#### Skipped Tests" >> $GITHUB_STEP_SUMMARY
         jq -r '.[0].tests | to_entries[] | select(.value == "skipped") | .key' ${REPORTS}/final-result.json >> $GITHUB_STEP_SUMMARY
 
-    - uses: actions/upload-artifact@604373da6381bf24206979c74d06a550515601b9 # v4
+    - uses: actions/upload-artifact@84480863f228bb9747b473957fcc9e309aa96097 # v4
       if: always()
       with:
         name: reports-${{ env.WORKER_TYPE }}-${{ env.DEVICE_TYPE }}-${{ env.TEST_SUITE }}
