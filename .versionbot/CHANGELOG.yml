@@ -1,4 +1,21 @@
 - commits:
+    - subject: "compose: map qemu volume into worker"
+      hash: 2e1669d6f34df4930fb9511a0edd52e7cc050ee7
+      body: |
+        This volume is used to share qemu's QMP socket between the worker and
+        core containers, allowing tests to connect, receive events from, and
+        control qemu.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Joseph Kogut <joseph@balena.io>
+        signed-off-by: Joseph Kogut <joseph@balena.io>
+      author: Joseph Kogut
+      nested: []
+  version: 2.31.56
+  title: ""
+  date: 2024-10-09T05:09:41.584Z
+- commits:
     - subject: Update actions/upload-artifact digest to 8448086
       hash: 4eb9e7b49a0a56d4ad899479a9989d3fa6429cf1
       body: |
