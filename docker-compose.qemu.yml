@@ -18,6 +18,7 @@ services:
     volumes:
       - "core-storage:/data"
       - "reports-storage:/reports"
+      - "qemu:/run/qemu/"
     environment:
       - UDEV=0
       - WORKER_TYPE=qemu
@@ -31,5 +32,7 @@ services:
     restart: 'no'
 
   core:
+    volumes:
+      - "qemu:/run/qemu"
     depends_on:
       - worker
