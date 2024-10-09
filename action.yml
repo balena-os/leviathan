@@ -40,10 +40,22 @@ runs:
         echo "#### Skipped Tests" >> $GITHUB_STEP_SUMMARY
         jq -r '.[0].tests | to_entries[] | select(.value == "skipped") | .key' ${REPORTS}/final-result.json >> $GITHUB_STEP_SUMMARY
 
-    - uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4
+    - name: Generate artifact name
+      shell: bash
+      id: report-name
+      run: |
+        if [ "$QEMU_SECUREBOOT" -eq 1 ]; then
+          SB="-sb"
+        else
+          SB=""
+        fi
+
+        echo "reportName=reports-${{ env.WORKER_TYPE }}-${{ env.DEVICE_TYPE }}-${{ env.TEST_SUITE }}${SB}" >>"${GITHUB_OUTPUT}"
+
+    - uses: actions/upload-artifact@84480863f228bb9747b473957fcc9e309aa96097 # v4
       if: always()
       with:
-        name: reports-${{ env.WORKER_TYPE }}-${{ env.DEVICE_TYPE }}-${{ env.TEST_SUITE }}
+        name: ${{ steps.report-name.outputs.reportName }}
         path: ${{ env.REPORTS }}
 
     - name: Teardown
