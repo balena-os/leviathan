@@ -1,4 +1,20 @@
 - commits:
+    - subject: add secureboot identifier into report name
+      hash: 7ca3cb281f0aae1b0b0ee5e157081fa5a7109098
+      body: >
+        This is to avoid calshes of artifact names when running a test matrix
+        with the secureboot option enabled
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: Ryan Cooke
+      nested: []
+  version: 2.31.59
+  title: ""
+  date: 2024-10-10T18:06:05.535Z
+- commits:
     - subject: Update core/contracts digest to 5ac053b
       hash: c40cc096fd39c13321cca04efce98944f725ee34
       body: |
