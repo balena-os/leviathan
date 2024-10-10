@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update core/contracts digest to 5ac053b
+      hash: c40cc096fd39c13321cca04efce98944f725ee34
+      body: |
+        Update core/contracts
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.31.58
+  title: ""
+  date: 2024-10-10T15:33:51.355Z
+- commits:
     - subject: Update actions/upload-artifact digest to b4b15b8
       hash: 7bc68fe8c3ef8c699b708e3b241ceaec3134c9d2
       body: |
