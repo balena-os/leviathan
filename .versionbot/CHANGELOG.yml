@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update actions/upload-artifact digest to b4b15b8
+      hash: 7bc68fe8c3ef8c699b708e3b241ceaec3134c9d2
+      body: |
+        Update actions/upload-artifact
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.31.57
+  title: ""
+  date: 2024-10-10T14:35:54.037Z
+- commits:
     - subject: "compose: map qemu volume into worker"
       hash: 2e1669d6f34df4930fb9511a0edd52e7cc050ee7
       body: |
