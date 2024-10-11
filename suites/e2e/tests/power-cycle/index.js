@@ -61,7 +61,7 @@ module.exports = {
 			title: "Is the DUT reachable?",
 			run: async function (test) {
 				await this.worker.on();
-				await this.worker.addSSHKey(this.sshKeyPath);
+				// await this.worker.addSSHKey(this.sshKeyPath);
 
 				// create tunnels
 				await test.resolves(
