@@ -42,6 +42,7 @@ runs:
 
     - name: Generate artifact name
       shell: bash
+      if: always()
       id: report-name
       run: |
         if [ "$QEMU_SECUREBOOT" -eq 1 ]; then
