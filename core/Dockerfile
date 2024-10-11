@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   rm -rf /var/lib/apt/lists/*
 
 # renovate: datasource=github-releases depName=balena-io/balena-cli
-ARG BALENA_CLI_VERSION=v19.0.18
+ARG BALENA_CLI_VERSION=v19.0.20
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
