@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update balena-io/balena-cli to v19.16.0
+      hash: 6b53a5af4bd9cb758ae28a3b595d1effd7d96b82
+      body: |
+        Update balena-io/balena-cli from 19.0.18 to 19.16.0
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.31.61
+  title: ""
+  date: 2024-11-20T15:54:30.635Z
+- commits:
     - subject: "add if: always() to report name generation"
       hash: e928381e026e729a4de4bdb75a74c9ea462ca03c
       body: |
@@ -3798,21 +3811,14 @@
     - subject: "core: Reduce to 30 the retries number when trying to get the IP
         address of the DUT"
       hash: 02b270e1c55429c7316a9c65f70362185bbe3aec
-      body: >
-        Instead of retrying to get the DUT IP address 120 times on a 1 seconds
-        interval,
-
-        let's reduce it to 30 times because the resolveLocalTarget which we call
-        will
-
+      body: |
+        Instead of retrying to get the DUT IP address 120 times on a 1 seconds interval,
+        let's reduce it to 30 times because the resolveLocalTarget which we call will
         timeout too in 15 seconds:
-
 
         https://github.com/balena-os/leviathan-worker/blob/master/lib/helpers/index.ts#L162
 
-
-        So reducing the retries number to 30 will effectly bring the total
-        combined timeout to a maximum of 8 minutes.
+        So reducing the retries number to 30 will effectly bring the total combined timeout to a maximum of 8 minutes.
       footer:
         Change-type: patch
         change-type: patch
@@ -5142,11 +5148,9 @@
 - commits:
     - subject: Fix links to balenaOS downloads
       hash: d27cbcfd18779fe4fc250913a30daef6b6010e09
-      body: >
+      body: |
         They were previously being rendered as relative to the documentation
-
         page, like
-
         `https://balena-os.github.io/leviathan/pages/Getting-Started/quickstart/balena.io/os`.
       footer:
         Signed-off-by: Leandro Motta Barros <leandro@balena.io>
@@ -5535,9 +5539,8 @@
 - commits:
     - subject: Enable nested changelogs when this project is consumed
       hash: 357fe8d3cf427750c0cbe079ab1924ed50a2752b
-      body: >
+      body: |
         Following process outlined here (restricted access):
-
         https://jel.ly.fish/pattern-enable-nested-changelogs-repos-consuming-repo-cf7bcc8
       footer:
         Change-type: patch
@@ -7191,21 +7194,14 @@
 - commits:
     - subject: "qemu: switch to emulated pflash to support UEFI vars"
 - commits:
-    - body: >-
+    - body: |-
         QEMU is able to optionally use OVMF firmware, built from Tianocore edk2,
-
         to support UEFI. QEMU can be told to load OVMF firmware using a number
-
         of methods, not all of which fully support persistent UEFI variables,
-
         such as are required by secure boot.
-
         Switch from using the -bios flag to fully emulated pflash to load OVMF,
-
         including support for persistent UEFI variables. Also switch from the pc
-
         machine to q35, which is required for fully emulated pflash.
-
         https://github.com/tianocore/edk2/blob/e1e7306b54147e65cb7347b060e94f336d4a82d2/OvmfPkg/README#L65
 - version: 1.30.7
 - date: 2021-11-29T23:59:36Z
