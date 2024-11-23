@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update balena-os/leviathan-worker to v2.9.50
+      hash: 53f09c362c19fc010065841707727effcc5d2aa6
+      body: |
+        Update balena-os/leviathan-worker from 2.9.47 to 2.9.50
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.31.65
+  title: ""
+  date: 2024-11-23T20:34:16.707Z
+- commits:
     - subject: Update core/contracts digest to 88fb8ad
       hash: 0652731d7054fbe8431c9a8e4c7eadc9dc5164b1
       body: |
