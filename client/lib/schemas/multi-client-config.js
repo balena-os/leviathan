@@ -20,6 +20,9 @@ const innerSchema = {
 		image: {
 			type: ['string', 'boolean'],
 		},
+		artifacts: {
+			type: 'string',
+		},
 		workers: {
 			oneOf: [
 				{
