@@ -9,7 +9,7 @@ endif
 export
 
 # optional docker-compose args
-BUILDARGS := --progress=plain --parallel --pull
+BUILDARGS := --progress=plain --parallel --pull --build-arg WORKER_VERSION --build-arg BALENA_ARCH
 UPARGS := --force-recreate --remove-orphans
 
 QEMUCOMPOSEFILE := docker-compose.qemu.yml

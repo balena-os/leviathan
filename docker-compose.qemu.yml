@@ -2,7 +2,7 @@ version: "2"
 
 services:
   worker:
-    image: bh.cr/balena/leviathan-worker-${BALENA_ARCH:-amd64}/${WORKER_REF:-2.9.50}
+    build: worker
     device_cgroup_rules:
       # https://www.kernel.org/doc/Documentation/admin-guide/devices.txt
       # loopback devices
