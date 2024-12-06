@@ -1,4 +1,18 @@
 - commits:
+    - subject: Make leviathan worker ref configurable via env var
+      hash: ad7e4369929b6dfe2b78467e1b188738642bdea2
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: Ryan Cooke
+      nested: []
+  version: 2.31.67
+  title: ""
+  date: 2024-12-06T23:12:09.629Z
+- commits:
     - subject: Update core/contracts digest to 474ab2d
       hash: 8faa54c6388d41797667a2d2bc51a9b4a8ebad1c
       body: |
