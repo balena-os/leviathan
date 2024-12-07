@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update balena-io/balena-cli to v20.0.9
+      hash: 089823393a02e0883a84e77ce53ee8254c141b35
+      body: |
+        Update balena-io/balena-cli from 20.0.7 to 20.0.9
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.31.68
+  title: ""
+  date: 2024-12-07T01:09:56.227Z
+- commits:
     - subject: Make leviathan worker ref configurable via env var
       hash: ad7e4369929b6dfe2b78467e1b188738642bdea2
       body: ""
