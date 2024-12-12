@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update balena-io/balena-cli to v20.1.0
+      hash: 8f2efe31f565c8d83d13a70556038c8205a37dbe
+      body: |
+        Update balena-io/balena-cli from 20.0.9 to 20.1.0
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.31.70
+  title: ""
+  date: 2024-12-12T14:36:37.767Z
+- commits:
     - subject: "os/balenaos: Update Xavier and Xavier NX boot partitions for JP5"
       hash: 0055ae3fd3ec51301ad7905a8e883bfbfd3bf105
       body: ""
