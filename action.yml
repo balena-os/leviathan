@@ -53,7 +53,7 @@ runs:
 
         echo "reportName=reports-${{ env.WORKER_TYPE }}-${{ env.DEVICE_TYPE }}-${{ env.TEST_SUITE }}${SB}" >>"${GITHUB_OUTPUT}"
 
-    - uses: actions/upload-artifact@84480863f228bb9747b473957fcc9e309aa96097 # v4
+    - uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4
       if: always()
       with:
         name: ${{ steps.report-name.outputs.reportName }}
