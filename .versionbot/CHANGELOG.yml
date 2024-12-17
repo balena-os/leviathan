@@ -1,4 +1,22 @@
 - commits:
+    - subject: Enable selection of workers with locked DUT in secureboot tests
+      hash: 92972900c54a2f0ea9a1b7e41f83adc6c32cafe0
+      body: >
+        This will make the client look for workers with a "DUT: <deviceType>-sb"
+        tag if FLASHER_SECUREBOOT=1 when starting tests. This is to enable
+        differentiation between locked and unlocked DUTs for device types that
+        support secureboot.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: Ryan Cooke
+      nested: []
+  version: 2.31.71
+  title: ""
+  date: 2024-12-17T11:11:15.435Z
+- commits:
     - subject: Update balena-io/balena-cli to v20.1.0
       hash: 8f2efe31f565c8d83d13a70556038c8205a37dbe
       body: |
