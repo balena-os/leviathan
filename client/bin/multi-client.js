@@ -341,9 +341,13 @@ class NonInteractiveState {
 			const balenaCloud = new BalenaCloudInteractor(runConfig.config.balenaApiUrl);
 			await balenaCloud.authenticate(runConfig.config.balenaApiKey);
 
+			// If FLASHER_SECUREBOOT env var is set, assume we are doing a test with a locked device
+			// Ensure that locked devices in the worker fleet have a "DUT: <deviceType>-sb" tag
+			const workerTag = ['1', 'true'].includes(process.env.FLASHER_SECUREBOOT) ? `${runConfig.deviceType}-sb` : runConfig.deviceType;
+
 			const matchingDevices = await balenaCloud.selectDevicesWithDUT(
 				runConfig.workers.balenaApplication,
-				runConfig.deviceType,
+				workerTag,
 			);
 
 			//  Throw an error if no matching workers are found.
