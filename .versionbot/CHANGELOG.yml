@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update actions/upload-artifact digest to 6f51ac0
+      hash: 695be0565fd7d6e1be7cea5ed83ff6febe02a1ae
+      body: |
+        Update actions/upload-artifact
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.31.72
+  title: ""
+  date: 2024-12-18T00:11:58.435Z
+- commits:
     - subject: Enable selection of workers with locked DUT in secureboot tests
       hash: 92972900c54a2f0ea9a1b7e41f83adc6c32cafe0
       body: >
