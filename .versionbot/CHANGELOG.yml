@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update docker/setup-buildx-action digest to 6524bf6
+      hash: 4157efa263e7c545933c7c8ca6d3ecac5cc189f5
+      body: |
+        Update docker/setup-buildx-action
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.31.74
+  title: ""
+  date: 2024-12-19T02:01:02.721Z
+- commits:
     - subject: Update core/contracts digest to 9383b36
       hash: 3229a8f75ad3c6610ba72d6a0edb446d6b875cf1
       body: |
