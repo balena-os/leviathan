@@ -1,4 +1,21 @@
 - commits:
+    - subject: "lib/components/os: Add SRD3 JP4 and JP5 device type boot partition
+        indexes"
+      hash: db7fdad6e920295cf3200ca3309fde65dd5c039f
+      body: |
+        The JP5 device-type uses the same boot partition index as the
+        jetson-xavier on JP5.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Alexandru Costache <alexandru@balena.io>
+        signed-off-by: Alexandru Costache <alexandru@balena.io>
+      author: Alexandru Costache
+      nested: []
+  version: 2.31.76
+  title: ""
+  date: 2024-12-19T14:11:20.112Z
+- commits:
     - subject: Update balena-io/balena-cli to v20.1.2
       hash: 15e18d79118af19c0362decc13b9c9b692d49ca9
       body: |
