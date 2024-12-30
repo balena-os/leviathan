@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update core/contracts digest to 8bd5651
+      hash: a336cde18c85bd8c01a8bdebbe8a7f6ef0c311be
+      body: |
+        Update core/contracts
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.31.77
+  title: ""
+  date: 2024-12-30T10:17:33.420Z
+- commits:
     - subject: "lib/components/os: Add SRD3 JP4 and JP5 device type boot partition
         indexes"
       hash: db7fdad6e920295cf3200ca3309fde65dd5c039f
