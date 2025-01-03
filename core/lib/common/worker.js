@@ -458,7 +458,7 @@ module.exports = class Worker {
 			`${dutPort}:${ip}:${dutPort}`,
 			`-p`,
 			workerPort,
-			`root@127.0.0.1`,
+			`${this.username}@127.0.0.1`,
 			`-o`,
 			`StrictHostKeyChecking=no`,
 			`-o`,
