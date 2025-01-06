@@ -1,4 +1,21 @@
 - commits:
+    - subject: "core: ssh tunnels: fix auth errors when worker is in prod mode"
+      hash: 24c37653a0adba4295200384d3eb3ad35b363ed9
+      body: >
+        When the worker is in production mode, ssh auth when creating the
+        reverse tunnel to tunnel though it to the DUT failed. Using BC username
+        auth with BC registered keys fixes it
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: rcooke-warwick
+      nested: []
+  version: 2.31.78
+  title: ""
+  date: 2025-01-06T17:34:37.088Z
+- commits:
     - subject: Update core/contracts digest to 8bd5651
       hash: a336cde18c85bd8c01a8bdebbe8a7f6ef0c311be
       body: |
