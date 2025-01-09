@@ -1,4 +1,14 @@
 - commits:
+    - subject: "patch: Add retention & compression to Leviathan action artifacts"
+      hash: 00573208b857067c1471dcaaac6d77e7bcc4754e
+      body: ""
+      footer: {}
+      author: Vipul Gupta
+      nested: []
+  version: 2.31.82
+  title: ""
+  date: 2025-01-09T14:06:23.177Z
+- commits:
     - subject: Update core/contracts digest to b7d2bb8
       hash: 43eb721f7e6955c6f94e9d44ee9e07b0f6f4c141
       body: |
