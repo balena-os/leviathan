@@ -1,4 +1,18 @@
 - commits:
+    - subject: "lib/components: Add partition index for Jetson TX2 NX types"
+      hash: 3db19db2746a55855b6601f37f791f5d7e6e5487
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Alexandru Costache <alexandru@balena.io>
+        signed-off-by: Alexandru Costache <alexandru@balena.io>
+      author: Alexandru Costache
+      nested: []
+  version: 2.31.84
+  title: ""
+  date: 2025-01-23T08:13:42.965Z
+- commits:
     - subject: Update balena-io/balena-cli to v20.2.1
       hash: 247459b21aa26c329a474677c47d504b5b62fb2a
       body: |
