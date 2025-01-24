@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update core/contracts digest to cde8b88
+      hash: 4aad7b4af4fed4fc54ceb874330c0e8b2a86b70e
+      body: |
+        Update core/contracts
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.31.85
+  title: ""
+  date: 2025-01-24T18:32:12.098Z
+- commits:
     - subject: "lib/components: Add partition index for Jetson TX2 NX types"
       hash: 3db19db2746a55855b6601f37f791f5d7e6e5487
       body: ""
