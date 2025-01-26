@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update actions/upload-artifact digest to 65c4c4a
+      hash: 41ecb3c5112bc5b2b6d8e63dabb05fbf558c9df1
+      body: |
+        Update actions/upload-artifact
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.31.87
+  title: ""
+  date: 2025-01-26T14:28:56.808Z
+- commits:
     - subject: Fix extractVersion renovate template
       hash: fc005a800f77b29dae553ef38d45ef705a011dbf
       body: ""
