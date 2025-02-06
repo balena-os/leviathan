@@ -88,11 +88,19 @@ module.exports = class Worker {
 		this.sshKey = sshKey;
 		this.dutSshKey = `/tmp/id`;
 		this.logger = logger;
-		this.workerHost = sshConfig.host || 'ssh.balena-devices.com'
-		this.workerPort = sshConfig.port || 22;
+		this.proxySshConfig = {
+			host: sshConfig.host || 'ssh.balena-devices.com',
+			port: sshConfig.port || 22
+		}
+		// unless over-ridden by local IP communication to worker, by deafult use the proxy to SSH into worker
+		this.workerHost = this.proxySshConfig.host
+		this.workerPort = this.proxySshConfig.port
+		// Port on the worker used for port forwarding
+		this.workerTunnelPort = 8888
 		this.workerUser = 'root';
 		this.sshPrefix = '';
 		this.uuid = '';
+		this.localConnect = false;
 
 		// This checks core + worker are running on the same machine. Example: QEMU
 		this.directConnect = (
@@ -121,7 +129,9 @@ module.exports = class Worker {
 				console.log(`Setting URL as IP address: ${ipAddress}`);
 				this.workerUser = 'root';
 				this.workerPort = 22222;
+				this.workerTunnelPort = 22222;
 				this.workerHost = ipAddress;
+				this.localConnect = true
 			}
 
 		}
@@ -345,11 +355,11 @@ module.exports = class Worker {
 				};
 			} else {
 				config = {
-					host: this.workerHost,
-					port: this.workerPort,
+					host: this.proxySshConfig.host,
+					port: this.proxySshConfig.port,
 					username: this.username,
 				};
-				console.log('local ssh attempt')
+				console.log('SSH attempt to DUT over proxy: ')
 				console.log(config)
 				command = `host ${target} ${command}`;
 			}
@@ -451,14 +461,16 @@ module.exports = class Worker {
 
 	// creates a tunnel a specified DUT port
 	async createTunneltoDUT(target, dutPort, workerPort) {
-		// This creates a reverse tunnel to the specified port on the DUT, via the worker - using the balena tunnel forwarding worker port 22222 to localhost:8888
+		let tunnelIp = this.localConnect ? this.workerHost : '127.0.0.1';
+
+		// This creates a reverse tunnel to the specified port on the DUT, via the worker
 		let ip = await this.getDutIp(target);
 		let argsWorker = [
 			`-L`,
 			`${dutPort}:${ip}:${dutPort}`,
 			`-p`,
 			workerPort,
-			`${this.username}@127.0.0.1`,
+			`${this.username}@${tunnelIp}`,
 			`-o`,
 			`StrictHostKeyChecking=no`,
 			`-o`,
@@ -480,23 +492,24 @@ module.exports = class Worker {
 				2375, // engine
 			];
 
-			// first use balena tunnel to set up a tunnel from the core port 8888 to the worker port 22222
-			// we will then use this to create ssh reverse tunnels to the supervisor and engine ports too
-			const workerPort = 8888;
-			let argsClient = [
-				`tunnel`,
-				this.uuid,
-				`-p`,
-				`22222:127.0.0.1:${workerPort}`
-			];
-			let tunnelProcClient = spawn(`balena`, argsClient, {stdio: 'inherit'});
+			// If we are connecting to the worker over balena cloud proxy, and not local ip, then use balena tunnel to tunnel to worker
+			// This makes the worker SSH port accessible to the core
+			if(!this.localConnect){
+				let argsClient = [
+					`tunnel`,
+					this.uuid,
+					`-p`,
+					`22222:127.0.0.1:${this.workerTunnelPort}`
+				];
+				let tunnelProcClient = spawn(`balena`, argsClient, {stdio: 'inherit'});
+			}
 
 			// This short delay is to wait for the balena tunnel to be established
 			await Bluebird.delay(1000*10)
 
 			for (let port of DUT_PORTS) {
 				console.log(`creating tunnel to dut port ${port}...`);
-				await this.createTunneltoDUT(target, port, workerPort);
+				await this.createTunneltoDUT(target, port, this.workerTunnelPort);
 			}
 		} else {
 			// set up route to DUT via the worker ip
