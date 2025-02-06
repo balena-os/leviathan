@@ -1,4 +1,21 @@
 - commits:
+    - subject: Fix running tests over local worker IP
+      hash: 0a642b8a0e21f9740ae8982f99da3506d62253a3
+      body: >
+        This has been broken since splitting the core from the worker - fixing
+        it enables running tests with a local worker without the VPN, much
+        faster and avoids VPN file transfer issues
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: Ryan Cooke
+      nested: []
+  version: 2.31.88
+  title: ""
+  date: 2025-02-06T14:35:10.115Z
+- commits:
     - subject: Update actions/upload-artifact digest to 65c4c4a
       hash: 41ecb3c5112bc5b2b6d8e63dabb05fbf558c9df1
       body: |
