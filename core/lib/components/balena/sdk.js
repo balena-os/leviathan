@@ -342,7 +342,7 @@ module.exports = class BalenaSDK {
 	async fetchOS(versionOrRange = 'latest', deviceType, osType = 'default') {
 		// normalize the version string/range, supports 'latest', 'recommended', etc
 		const balenaSdkProd = getSdk({
-			apiUrl: "https://api.balena-cloud.com",
+			apiUrl: this.suite.options.balena.apiUrl,
 		});
 
 		let version = await balenaSdkProd.models.os.getMaxSatisfyingVersion(
@@ -350,6 +350,8 @@ module.exports = class BalenaSDK {
 			versionOrRange,
 			osType,
 		);
+
+		this.logger.log(`Downloading balenaOS version ${version} for device type ${deviceType}`);
 
 		// variant is deprecated in recent balenaOS releases but
 		// if prod variant is still present after being normalized, replace it with dev
