@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update actions/upload-artifact digest to ea165f8
+      hash: 0f7d4f09cd41c30c1aea88845e59395159f26a1b
+      body: |
+        Update actions/upload-artifact
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.31.91
+  title: ""
+  date: 2025-03-19T18:34:55.180Z
+- commits:
     - subject: Update balena-io/balena-cli to v20.2.7
       hash: 451d57f30bf1e8b16b0a1bdacd9d0bd12b848b38
       body: |
