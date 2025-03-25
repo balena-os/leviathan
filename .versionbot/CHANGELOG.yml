@@ -1,4 +1,24 @@
 - commits:
+    - subject: Extend selection of devices to run secureboot tests
+      hash: 4885a0abb6cb379218bcf2ffcd51e1b6a1693cd9
+      body: >
+        When FLASHER_SECUREBOOT=1 select only devices that have a
+        `deviceType-sb`
+
+        tag, taking into account the device type name could already have a `-sb`
+
+        suffix.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Alex Gonzalez <alexg@balena.io>
+        signed-off-by: Alex Gonzalez <alexg@balena.io>
+      author: Alex Gonzalez
+      nested: []
+  version: 2.31.94
+  title: ""
+  date: 2025-03-25T10:41:19.499Z
+- commits:
     - subject: Update balena-io/balena-cli to v20.2.10
       hash: 83586a4f5f1a6d4c8afeecae4f0fac4862fdef61
       body: |
