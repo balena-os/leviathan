@@ -347,6 +347,7 @@ class NonInteractiveState {
 				? (!runConfig.deviceType.endsWith("-sb") ? `${runConfig.deviceType}-sb` : runConfig.deviceType)
 				: runConfig.deviceType;
 
+			state.info(`Looking for workers in ${runConfig.workers.balenaApplication} with tag: ${workerTag}`);
 			const matchingDevices = await balenaCloud.selectDevicesWithDUT(
 				runConfig.workers.balenaApplication,
 				workerTag,
@@ -355,7 +356,7 @@ class NonInteractiveState {
 			//  Throw an error if no matching workers are found.
 			if (matchingDevices.length === 0) {
 				throw new Error(
-					`No workers found for deviceType: ${runConfig.deviceType}`,
+					`No workers found for worker tag: ${workerTag}`,
 				);
 			}
 
