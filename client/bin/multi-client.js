@@ -343,7 +343,9 @@ class NonInteractiveState {
 
 			// If FLASHER_SECUREBOOT env var is set, assume we are doing a test with a locked device
 			// Ensure that locked devices in the worker fleet have a "DUT: <deviceType>-sb" tag
-			const workerTag = ['1', 'true'].includes(process.env.FLASHER_SECUREBOOT) ? `${runConfig.deviceType}-sb` : runConfig.deviceType;
+			const workerTag = ['1', 'true'].includes(process.env.FLASHER_SECUREBOOT)
+				? (!runConfig.deviceType.endsWith("-sb") ? `${runConfig.deviceType}-sb` : runConfig.deviceType)
+				: runConfig.deviceType;
 
 			const matchingDevices = await balenaCloud.selectDevicesWithDUT(
 				runConfig.workers.balenaApplication,
