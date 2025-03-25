@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update balena-io/balena-cli to v21
+      hash: cb8172a1cc6b5357ef2965418de0f7e43f128c6f
+      body: |
+        Update balena-io/balena-cli from 20.2.10 to 21.1.0
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.31.95
+  title: ""
+  date: 2025-03-25T12:35:47.604Z
+- commits:
     - subject: Extend selection of devices to run secureboot tests
       hash: 4885a0abb6cb379218bcf2ffcd51e1b6a1693cd9
       body: >
