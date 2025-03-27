@@ -1,4 +1,19 @@
 - commits:
+    - subject: Improve device selection logs
+      hash: 6513668024b0c32e0bbb0e73f002f56fee8a1faf
+      body: |
+        Print fleets and worker tag used for device selection.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Alex Gonzalez <alexg@balena.io>
+        signed-off-by: Alex Gonzalez <alexg@balena.io>
+      author: Alex Gonzalez
+      nested: []
+  version: 2.31.96
+  title: ""
+  date: 2025-03-27T16:34:07.013Z
+- commits:
     - subject: Update balena-io/balena-cli to v21
       hash: cb8172a1cc6b5357ef2965418de0f7e43f128c6f
       body: |
