@@ -19,7 +19,7 @@
 	},
 	"dependencies": {
 		"ajv": "^6.12.6",
-		"balena-sdk": "^16.45.1",
+		"balena-sdk": "^21.3.0",
 		"bluebird": "^3.7.2",
 		"bluebird-retry": "^0.11.0",
 		"fs-extra": "^11.1.0",
