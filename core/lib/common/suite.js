@@ -81,6 +81,7 @@ module.exports = class Suite {
 	constructor(suiteOptions, suiteConfig) {
 		this.suitePath = suiteOptions.suitePath;
 		this.image = suiteOptions.imagePath;
+		this.kernelHeaders = suiteOptions.kernelHeadersPath;
 		this.deviceTypeSlug = suiteOptions.deviceType;
 		this.workerAddress = suiteOptions.workerAddress;
 		this.rootPath = path.join(__dirname, '..');

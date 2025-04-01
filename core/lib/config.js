@@ -7,7 +7,8 @@ module.exports = {
     uploads: {
       image: '/data/os.img',
       config: '/data/config.json',
-      suite: '/data/suite'
+      suite: '/data/suite',
+      kernelHeaders: '/data/kernel_modules_headers.tar.gz',
     }
   }
 };
