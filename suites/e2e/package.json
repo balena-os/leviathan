@@ -1,8 +1,8 @@
 {
 	"dependencies": {
-		"balena-image-fs": "^7.0.6",
+		"assert": "^2.0.0",
+		"balena-image-fs": "^7.5.1",
 		"bluebird": "^3.5.3",
-		"fs-extra": "^8.1.0",
-		"assert": "^2.0.0"
+		"fs-extra": "^8.1.0"
 	}
 }
