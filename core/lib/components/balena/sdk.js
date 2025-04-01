@@ -108,7 +108,7 @@ module.exports = class BalenaSDK {
 					`host -s ${device} source /etc/profile ; ${command}`,
 					{
 						host: this.sshConfig.host,
-						username: await this.balena.auth.whoami(),
+						username: (await this.balena.auth.whoami()).username,
 						port: this.sshConfig.port,
 					},
 				);
@@ -144,15 +144,15 @@ module.exports = class BalenaSDK {
 		);
 
 		await this.balena.models.application.create({
-			name,
-			deviceType,
+			name: name,
+			deviceType: deviceType,
 		});
 
 		if (appConfig.delta) {
 			this.logger.log(
 				appConfig.delta === '1' ? 'Enabling delta' : 'Disabling delta',
 			);
-			await this.balena.setAppConfigVariable(
+			await balena.models.application.configVar.set(
 				name,
 				'RESIN_SUPERVISOR_DELTA',
 				appConfig.delta,
