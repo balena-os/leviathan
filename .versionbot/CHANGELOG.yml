@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update balena-os/leviathan-worker to v2.9.58
+      hash: 154a4ad9587f3d7bb262f5ae412da9e4a0a11b22
+      body: |
+        Update balena-os/leviathan-worker from 2.9.57 to 2.9.58
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.31.97
+  title: ""
+  date: 2025-04-01T17:58:10.260Z
+- commits:
     - subject: Improve device selection logs
       hash: 6513668024b0c32e0bbb0e73f002f56fee8a1faf
       body: |
