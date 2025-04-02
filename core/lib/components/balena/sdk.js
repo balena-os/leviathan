@@ -369,34 +369,32 @@ module.exports = class BalenaSDK {
 			);
 
 			return await new Promise(async (resolve, reject) => {
-				await balenaSdkProd.models.os.download(
-					deviceType,
-					version,
-					function (error, stream) {
-						if (error) {
-							fs.unlink(path, () => {
-								// Ignore.
-							});
-							reject(`Image download failed: ${error}`);
+				balenaSdkProd.models.os.download({
+					deviceType: deviceType,
+					version: version,
+				}).then(function (stream) {
+					// Shows progress of image download
+					let progress = 0;
+					stream.on('progress', (data) => {
+						if (data.percentage >= progress + 10) {
+							console.log(
+								`Downloading balenaOS image: ${toInteger(data.percentage) + '%'
+								}`,
+							);
+							progress = data.percentage;
 						}
-						// Shows progress of image download
-						let progress = 0;
-						stream.on('progress', (data) => {
-							if (data.percentage >= progress + 10) {
-								console.log(
-									`Downloading balenaOS image: ${toInteger(data.percentage) + '%'
-									}`,
-								);
-								progress = data.percentage;
-							}
-						});
-						stream.pipe(fs.createWriteStream(path));
-						stream.on('finish', () => {
-							console.log(`Download Successful: ${path}`);
-							resolve(path);
-						});
-					},
-				);
+					});
+					stream.pipe(fs.createWriteStream(path));
+					stream.on('finish', () => {
+						console.log(`Download Successful: ${path}`);
+						resolve(path);
+					});
+				});
+			}).catch(() => {
+				fs.unlink(path, () => {
+					// Ignore.
+				});
+				reject(`Image download failed: ${error}`);
 			});
 		};
 		return retry(downloadLatestOS, { max_tries: 3, interval: 500 });
