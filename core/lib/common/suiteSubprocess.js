@@ -67,6 +67,7 @@ async function createJsonSummary(suite) {
 				suitePath: config.leviathan.uploads.suite,
 				deviceType: suiteConfig.deviceType,
 				imagePath: config.leviathan.uploads.image,
+				kernelHeadersPath: config.leviathan.uploads.kernelHeaders,
 			},
 			suiteConfig
 		);

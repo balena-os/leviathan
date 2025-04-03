@@ -72,6 +72,7 @@ async function setup() {
 			if (await pathExists(artifact.path)) {
 				const stat = await fs.stat(artifact.path);
 
+				console.log(`Hit upload for artifact path: ${artifact.path}`);
 				if (stat.isFile()) {
 					hash = await md5(artifact.path);
 				}
