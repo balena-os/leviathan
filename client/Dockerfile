@@ -1,4 +1,4 @@
-FROM node:18.16.0-alpine3.16
+FROM node:22.14.0-alpine
 WORKDIR /usr/src/app
 
 # hadolint ignore=DL3018
