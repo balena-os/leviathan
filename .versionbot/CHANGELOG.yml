@@ -1,4 +1,18 @@
 - commits:
+    - subject: Add kernel headers artifacts
+      hash: f15ad5e91cd22ba03193a7dd53512324a09ce87e
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Alex Gonzalez <alexg@balena.io>
+        signed-off-by: Alex Gonzalez <alexg@balena.io>
+      author: Alex Gonzalez
+      nested: []
+  version: 2.31.103
+  title: ""
+  date: 2025-04-08T13:01:01.819Z
+- commits:
     - subject: Update core/contracts digest to 34033e6
       hash: ae8c5539e6df98f2ed8b87ae9b9e712825be3ac5
       body: |
