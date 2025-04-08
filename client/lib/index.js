@@ -341,9 +341,20 @@ module.exports = class Client extends PassThrough {
 									artifact.path = makePath(suiteConfig.suite);
 									artifact.type = 'isDirectory';
 									break;
+								case 'kernelHeaders':
+									if (suiteConfig.kernelHeaders !== undefined) {
+										artifact.path = makePath(suiteConfig.kernelHeaders);
+										artifact.type = 'isFile';
+									} else {
+									  this.log(`No kernelHeaders defined in config`);
+										const fakeHeadersPath = '/home/test-headers';
+										await fs.writeFile(fakeHeadersPath, '');
+										artifact.path = makePath(fakeHeadersPath);
+										artifact.type = 'isFile';
+									}
+									break;
 								case 'image':
 									// [Hack] Upload a fake image if image is false
-									// Remove when https://github.com/balena-os/leviathan/issues/567 is resolved
 									if (suiteConfig.image === false) {
 										// Had to create fake image in home directory otherwise
 										// facing a permission issue since client root is read-only

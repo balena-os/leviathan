@@ -167,6 +167,7 @@ module.exports = class BalenaOS {
 					: options.image,
 			path: join(config.leviathan.downloads, `image-${id()}`),
 		};
+		this.kernelHeaders = config.leviathan.uploads.kernelHeaders;
 		this.configJson = options.configJson || {};
 		this.contract = {
 			network: mapValues(this.network, (value) => {
