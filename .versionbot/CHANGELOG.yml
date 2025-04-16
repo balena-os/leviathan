@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update balena-os/leviathan-worker to v2.9.59
+      hash: 3664862394cf24a370ae3679d2fba9517c1bf7de
+      body: |
+        Update balena-os/leviathan-worker from 2.9.58 to 2.9.59
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.31.104
+  title: ""
+  date: 2025-04-16T11:21:05.396Z
+- commits:
     - subject: Add kernel headers artifacts
       hash: f15ad5e91cd22ba03193a7dd53512324a09ce87e
       body: ""
