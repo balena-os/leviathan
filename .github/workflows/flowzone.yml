@@ -66,7 +66,7 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
           submodules: true
-          persistent-credentials: false
+          persist-credentials: false
 
       - name: Copy suite config
         run: cp -a ${{ env.SUITES }}/config.js ${{ env.WORKSPACE }}/config.js
