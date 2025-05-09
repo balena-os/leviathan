@@ -3,6 +3,7 @@ version: "2"
 services:
   client:
     build: ./client
+    image: ghcr.io/balena-os/leviathan:${CLIENT_TAG:-latest-client}
     volumes:
       - "${WORKSPACE:-./workspace}:/usr/src/app/workspace:ro"
       - "${REPORTS:-./workspace/reports}:/usr/src/app/reports:rw"
@@ -25,8 +26,9 @@ services:
       - core
 
   core:
-    privileged: true # preload requires docker-in-docker
     build: core
+    image: ghcr.io/balena-os/leviathan:${CORE_TAG:-latest-core}
+    privileged: true # preload requires docker-in-docker
     volumes:
       - core-storage:/data
       - reports-storage:/reports
@@ -38,7 +40,6 @@ services:
       - /dev:/dev # required for creating losetup devices during preload
     environment:
       - FLASHER_SECUREBOOT=${FLASHER_SECUREBOOT}
-    
 
 volumes:
   core-storage:
