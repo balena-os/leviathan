@@ -21,8 +21,8 @@ runs:
       shell: bash
       run: |
         make config
-        make build
-        make test
+        make pull || make build
+        make test NOBUILD=y
 
     - name: Create Summary
       if: always()
