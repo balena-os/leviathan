@@ -1,27 +1,38 @@
 name: 'Leviathan Action'
 description: 'Test your software directly on hardware using the Levaithan Testing framework'
+inputs:
+  compose-build:
+    description: 'Build the core and client docker images'
+    required: false
+    default: 'false'
 runs:
   using: "composite"
   steps:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@b5ca514318bd6ebac0fb2aedd5d36ec1b5c232a2 # v3
 
-    - name: (Virtual) Leviathan build & test
-      working-directory: ${{ env.LEVIATHAN_ROOT }}/
-      if: env.WORKER_TYPE == 'qemu'
+    - name: Build Docker Images
+      if: inputs.compose-build == 'true'
       shell: bash
       run: |
+        make printenv
         make config
         make build
-        make local-test QEMU_SECUREBOOT=${QEMU_SECUREBOOT} FLASHER_SECUREBOOT=${FLASHER_SECUREBOOT}
 
-    - name: (Autokit) Leviathan build & test
+    - name: Leviathan build & test
       working-directory: ${{ env.LEVIATHAN_ROOT }}/
-      if: env.WORKER_TYPE == 'testbot' || env.WORKER_TYPE == 'autokit'
       shell: bash
+      env:
+        WORKER_TYPE: ${{ env.WORKER_TYPE }}
+        DEVICE_TYPE: ${{ env.DEVICE_TYPE }}
+        QEMU_MEMORY: ${{ env.QEMU_MEMORY }}
+        QEMU_INTERNAL_STORAGE: ${{ env.QEMU_INTERNAL_STORAGE }}
+        QEMU_SECUREBOOT: ${{ env.QEMU_SECUREBOOT }}
+        FLASHER_SECUREBOOT: ${{ env.FLASHER_SECUREBOOT }}
+        NOBUILD: y
       run: |
+        make printenv
         make config
-        make build
         make test
 
     - name: Create Summary
@@ -44,6 +55,11 @@ runs:
       shell: bash
       if: always()
       id: report-name
+      env:
+        WORKER_TYPE: ${{ env.WORKER_TYPE }}
+        DEVICE_TYPE: ${{ env.DEVICE_TYPE }}
+        TEST_SUITE: ${{ env.TEST_SUITE }}
+        QEMU_SECUREBOOT: ${{ env.QEMU_SECUREBOOT }}
       run: |
         if [ "$QEMU_SECUREBOOT" -eq 1 ]; then
           SB="-sb"

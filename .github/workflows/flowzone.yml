@@ -73,6 +73,7 @@ jobs:
         with:
           submodules: true
           persist-credentials: false
+          fetch-tags: true
 
       - name: Copy suite config
         run: cp -a ${{ env.SUITES }}/config.js ${{ env.WORKSPACE }}/config.js

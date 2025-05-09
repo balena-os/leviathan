@@ -8,6 +8,7 @@ endif
 export
 
 # optional docker-compose args
+PULLARGS := --include-deps --policy=always
 BUILDARGS := --progress=plain --parallel --pull --build-arg WORKER_VERSION --build-arg BALENA_ARCH
 UPARGS := --force-recreate --remove-orphans
 
@@ -49,6 +50,20 @@ else
 DOCKER_COMPOSE := $(shell command -v docker-compose 2>&1)
 endif
 
+ifneq ($(NOBUILD),)
+UPARGS += --no-build --pull=missing
+else
+UPARGS += --build
+endif
+
+# Get the current git ref for the client and core image tags.
+# Include dirty state if there are uncommitted changes.
+GIT_REF ?= $(shell git describe HEAD)
+ifeq ($(GIT_REF),)
+# Shallow checkouts via GHA often do not include tags, so use the commit hash
+GIT_REF = build-$(shell git rev-parse HEAD)$(shell git diff --quiet || echo "-dirty")
+endif
+
 help: ## Print help message
 	@echo -e "$$(grep -hE '^\S+:.*##' $(MAKEFILE_LIST) | sed -e 's/:.*##\s*/:/' -e 's/^\(.\+\):\(.*\)/\\x1b[36m\1\\x1b[m:\2/' | column -c2 -t -s :)"
 
@@ -82,10 +97,13 @@ check-prereqs: check-docker check-compose
 config: check-prereqs ## Print flattened docker-compose definition
 	$(DOCKER_COMPOSE) config
 
+pull: check-prereqs ## Pull the required images
+	$(DOCKER_COMPOSE) pull $(PULLARGS)
+
 build: check-prereqs ## Build the required images
 	$(DOCKER_COMPOSE) build $(BUILDARGS)
 
-test: build ## Run the test suites
+test: ## Run the test suites
 	$(DOCKER_COMPOSE) up $(UPARGS) --exit-code-from client
 
 local-test: ## Alias for 'make test WORKER_TYPE=qemu'
@@ -104,6 +122,6 @@ down: stop ## Alias for 'make stop'
 
 clean: stop ## Alias for 'make stop'
 
-.PHONY: help config build testbot qemu test local-test stop down clean
+.PHONY: help check-prereqs check-compose check-docker config pull build testbot qemu test local-test stop down clean
 
 .DEFAULT_GOAL = help
