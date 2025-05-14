@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update core/contracts digest to 417aec2
+      hash: 69146ce0f994f8ecf302d20ab3dde162c0144dc2
+      body: |
+        Update core/contracts
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.31.108
+  title: ""
+  date: 2025-05-14T16:38:33.326Z
+- commits:
     - subject: Update balena-io/balena-cli to v21.1.11
       hash: 88a3a2e7b6a5aafcb63314d5682d9ddc2c97c829
       body: |
