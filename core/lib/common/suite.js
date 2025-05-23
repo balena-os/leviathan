@@ -106,6 +106,7 @@ module.exports = class Suite {
 				},
 				download: {
 					version: suiteConfig.config.downloadVersion,
+					imageType: suiteConfig.config.downloadImageType,
 				},
 				network: {
 					wired: suiteConfig.config.networkWired,
