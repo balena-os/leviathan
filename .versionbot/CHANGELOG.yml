@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update Lock file maintenance
+      hash: 2992f6dcdb1433fc923f299ee037d2c851dac4ba
+      body: |
+        Update 
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.32.1
+  title: ""
+  date: 2025-05-23T20:29:49.880Z
+- commits:
     - subject: Remove custom compose binary installation from Make
       hash: efcf8422d597ba297d0b4be23a809555aacf78f3
       body: |
