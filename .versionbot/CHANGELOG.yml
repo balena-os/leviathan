@@ -1,4 +1,19 @@
 - commits:
+    - subject: Remove custom compose binary installation from Make
+      hash: efcf8422d597ba297d0b4be23a809555aacf78f3
+      body: |
+        Instead just check the installed version of compose for compatibility.
+      footer:
+        Change-type: minor
+        change-type: minor
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.32.0
+  title: ""
+  date: 2025-05-23T17:11:23.196Z
+- commits:
     - subject: Update balena-io/balena-cli to v21.1.14
       hash: 012da90fd1b65de61e2eb14d84367bd4323ee831
       body: |
