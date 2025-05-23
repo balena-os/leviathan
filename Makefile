@@ -1,4 +1,3 @@
-
 # if there is an .env file ensure the make args and env vars take priority
 # and then import all vars from the file
 ifneq (,$(wildcard .env))
@@ -9,6 +8,7 @@ endif
 export
 
 # optional docker-compose args
+PULLARGS := --include-deps --policy=always
 BUILDARGS := --progress=plain --parallel --pull --build-arg WORKER_VERSION --build-arg BALENA_ARCH
 UPARGS := --force-recreate --remove-orphans
 
@@ -44,26 +44,25 @@ COMPOSE_DOCKER_CLI_BUILD := 0
 DOCKER_BUILDKIT := 0
 DOCKERD_EXTRA_ARGS :=
 
-# BUILD_TAG is a unique Jenkins environment variable
-ifneq ($(BUILD_TAG),)
-COMPOSE_PROJECT_NAME := $(BUILD_TAG)
-endif
-
-DOCKERCOMPOSE := ./bin/docker-compose
-
-# install docker-compose as a run script
-# we require a specific release version that correctly supports device_cgroup_rules for the qemu worker
-# see https://github.com/docker/compose/issues/9059
-$(DOCKERCOMPOSE):
-	mkdir -p $(shell dirname "$@")
-ifeq ($(shell uname -m),arm64)
-	curl -fsSL "https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-$(shell uname -s | tr '[:upper:]' '[:lower:]')-aarch64" -o $@
+ifeq ($(shell command -v docker-compose),)
+DOCKER_COMPOSE := $(shell command -v docker 2>&1) compose
 else
-	curl -fsSL "https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-$(shell uname -s | tr '[:upper:]' '[:lower:]')-$(shell uname -m)" -o $@
+DOCKER_COMPOSE := $(shell command -v docker-compose 2>&1)
 endif
-	chmod +x $@
 
-.NOTPARALLEL: $(DOCKERCOMPOSE)
+ifneq ($(NOBUILD),)
+UPARGS += --no-build --pull=missing
+else
+UPARGS += --build
+endif
+
+# Get the current git ref for the client and core image tags.
+# Include dirty state if there are uncommitted changes.
+GIT_REF ?= $(shell git describe HEAD)
+ifeq ($(GIT_REF),)
+# Shallow checkouts via GHA often do not include tags, so use the commit hash
+GIT_REF = build-$(shell git rev-parse HEAD)$(shell git diff --quiet || echo "-dirty")
+endif
 
 help: ## Print help message
 	@echo -e "$$(grep -hE '^\S+:.*##' $(MAKEFILE_LIST) | sed -e 's/:.*##\s*/:/' -e 's/^\(.\+\):\(.*\)/\\x1b[36m\1\\x1b[m:\2/' | column -c2 -t -s :)"
@@ -71,14 +70,41 @@ help: ## Print help message
 printenv:
 	@printenv
 
-config: $(DOCKERCOMPOSE) ## Print flattened docker-compose definition
-	$(DOCKERCOMPOSE) config
+check-docker: ## Check that docker is running
+	@docker info > /dev/null 2>&1
 
-build: $(DOCKERCOMPOSE) ## Build the required images
-	$(DOCKERCOMPOSE) build $(BUILDARGS)
+# https://github.com/docker/compose/issues/9059
+check-compose: ## Check that docker compose 2.3.3 or later is installed
+	@$(DOCKER_COMPOSE) version | awk '{ \
+		version = $$NF; \
+		sub(/^v/, "", version); \
+		sub(/-.*$$/, "", version); \
+		split(version, ver, "."); \
+		major = ver[1]; \
+		minor = ver[2]; \
+		patch = ver[3]; \
+		print "INFO: Detected docker compose version " major "." minor "." patch; \
+		if (major != 2 || (minor > 3 || (minor == 3 && patch >= 3))) { \
+			exit 0; \
+		} else { \
+			print "Error: docker compose version must be 2.3.3 or later"; \
+			exit 1; \
+		} \
+	}'
 
-test: $(DOCKERCOMPOSE) build ## Run the test suites
-	$(DOCKERCOMPOSE) up $(UPARGS) --exit-code-from client
+check-prereqs: check-docker check-compose
+
+config: check-prereqs ## Print flattened docker-compose definition
+	$(DOCKER_COMPOSE) config
+
+pull: check-prereqs ## Pull the required images
+	$(DOCKER_COMPOSE) pull $(PULLARGS)
+
+build: check-prereqs ## Build the required images
+	$(DOCKER_COMPOSE) build $(BUILDARGS)
+
+test: ## Run the test suites
+	$(DOCKER_COMPOSE) up $(UPARGS) --exit-code-from client
 
 local-test: ## Alias for 'make test WORKER_TYPE=qemu'
 	$(MAKE) test WORKER_TYPE=qemu
@@ -89,13 +115,13 @@ qemu: ## Alias for 'make test WORKER_TYPE=qemu'
 testbot:## Alias for 'make test WORKER_TYPE=testbot'
 	$(MAKE) test WORKER_TYPE=testbot
 
-stop: $(DOCKERCOMPOSE) ## Stop and remove any existing containers and volumes
-	-$(DOCKERCOMPOSE) down --remove-orphans --rmi all --volumes
+stop: check-prereqs ## Stop and remove any existing containers and volumes
+	$(DOCKER_COMPOSE) down --remove-orphans --rmi all --volumes
 
 down: stop ## Alias for 'make stop'
 
 clean: stop ## Alias for 'make stop'
 
-.PHONY: help config build testbot qemu test local-test stop down clean
+.PHONY: help check-prereqs check-compose check-docker config pull build testbot qemu test local-test stop down clean
 
 .DEFAULT_GOAL = help
