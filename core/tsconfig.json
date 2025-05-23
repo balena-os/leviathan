@@ -27,14 +27,14 @@
   "typedocOptions": {
     "name": "Leviathan Helpers",
     "entryPoints": ["lib/common", "lib/components"],
+    "entryPointStrategy":  "expand",
     "out": "../docs/",
-    "theme": "pages-plugin",
     "excludeExternals": true,
     "excludePrivate": true,
     "excludeProtected": true,
     // "excludeNotDocumented": true,
     "categorizeByGroup": true,
     "categoryOrder": ["helper", "*"],
-    "highlightTheme": "slack-ochin",
+    "lightHighlightTheme": "slack-ochin",
   }
 }

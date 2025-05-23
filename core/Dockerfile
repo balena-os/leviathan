@@ -26,7 +26,7 @@ RUN ARCH="$(dpkg --print-architecture | sed 's/amd/x/')" && \
   balena version
 
 # The standalone balena-cli package is currently glibc only (no alpine/musl support)
-FROM node:14.19.3-bullseye-slim AS base
+FROM node:22.14.0-bullseye-slim AS base
 
 WORKDIR /usr/app
 

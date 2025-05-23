@@ -108,7 +108,7 @@ module.exports = class BalenaSDK {
 					`host -s ${device} source /etc/profile ; ${command}`,
 					{
 						host: this.sshConfig.host,
-						username: await this.balena.auth.whoami(),
+						username: (await this.balena.auth.whoami()).username,
 						port: this.sshConfig.port,
 					},
 				);
@@ -144,15 +144,15 @@ module.exports = class BalenaSDK {
 		);
 
 		await this.balena.models.application.create({
-			name,
-			deviceType,
+			name: name,
+			deviceType: deviceType,
 		});
 
 		if (appConfig.delta) {
 			this.logger.log(
 				appConfig.delta === '1' ? 'Enabling delta' : 'Disabling delta',
 			);
-			await this.balena.setAppConfigVariable(
+			await balena.models.application.configVar.set(
 				name,
 				'RESIN_SUPERVISOR_DELTA',
 				appConfig.delta,
@@ -369,34 +369,32 @@ module.exports = class BalenaSDK {
 			);
 
 			return await new Promise(async (resolve, reject) => {
-				await balenaSdkProd.models.os.download(
-					deviceType,
-					version,
-					function (error, stream) {
-						if (error) {
-							fs.unlink(path, () => {
-								// Ignore.
-							});
-							reject(`Image download failed: ${error}`);
+				balenaSdkProd.models.os.download({
+					deviceType: deviceType,
+					version: version,
+				}).then(function (stream) {
+					// Shows progress of image download
+					let progress = 0;
+					stream.on('progress', (data) => {
+						if (data.percentage >= progress + 10) {
+							console.log(
+								`Downloading balenaOS image: ${toInteger(data.percentage) + '%'
+								}`,
+							);
+							progress = data.percentage;
 						}
-						// Shows progress of image download
-						let progress = 0;
-						stream.on('progress', (data) => {
-							if (data.percentage >= progress + 10) {
-								console.log(
-									`Downloading balenaOS image: ${toInteger(data.percentage) + '%'
-									}`,
-								);
-								progress = data.percentage;
-							}
-						});
-						stream.pipe(fs.createWriteStream(path));
-						stream.on('finish', () => {
-							console.log(`Download Successful: ${path}`);
-							resolve(path);
-						});
-					},
-				);
+					});
+					stream.pipe(fs.createWriteStream(path));
+					stream.on('finish', () => {
+						console.log(`Download Successful: ${path}`);
+						resolve(path);
+					});
+				});
+			}).catch(() => {
+				fs.unlink(path, () => {
+					// Ignore.
+				});
+				reject(`Image download failed: ${error}`);
 			});
 		};
 		return retry(downloadLatestOS, { max_tries: 3, interval: 500 });
