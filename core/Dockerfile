@@ -13,16 +13,15 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   rm -rf /var/lib/apt/lists/*
 
 # renovate: datasource=github-releases depName=balena-io/balena-cli
-ARG BALENA_CLI_VERSION=v21.1.14
+ARG BALENA_CLI_VERSION=v22.0.0
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Install balena-cli via standlone zip
 RUN ARCH="$(dpkg --print-architecture | sed 's/amd/x/')" && \
-  curl -fsSL -o balena-cli.zip "https://github.com/balena-io/balena-cli/releases/download/${BALENA_CLI_VERSION}/balena-cli-${BALENA_CLI_VERSION}-linux-${ARCH}-standalone.zip" && \
-  unzip balena-cli.zip && \
-  cp -a balena-cli /usr/local/lib/balena-cli && \
-  ln -sf /usr/local/lib/balena-cli/balena /usr/local/bin/balena && \
+  curl -fsSL "https://github.com/balena-io/balena-cli/releases/download/${BALENA_CLI_VERSION}/balena-cli-${BALENA_CLI_VERSION}-linux-${ARCH}-standalone.tar.gz" | tar -xzf - && \
+  cp -a balena /usr/local/lib/balena && \
+  ln -sf /usr/local/lib/balena/bin/balena /usr/local/bin/balena && \
   balena version
 
 # The standalone balena-cli package is currently glibc only (no alpine/musl support)
@@ -56,8 +55,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/*
 
-COPY --from=balena-cli /usr/local/lib/balena-cli /usr/local/lib/balena-cli
-COPY --from=balena-cli /usr/local/bin/balena /usr/local/bin/balena
+COPY --from=balena-cli /usr/local/lib/balena /usr/local/lib/balena
+RUN ln -sf /usr/local/lib/balena/bin/balena /usr/local/bin/balena
 
 RUN balena version
 
