@@ -1,4 +1,23 @@
 - commits:
+    - subject: "Core: enable specifying image type with fetchOS function"
+      hash: 087330312d9bb3b9a7e699c52353e43095eb94f9
+      body: >
+        This is for use with device types where the default artifact
+        (downloadable via the dashboard) is not the artifact we're testing with
+        - e.g we need the flasher to automate provisioning, but the customer is
+        using a raw image. For the cases where the custom board can not be
+        automatically flashed any other way
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: Ryan Cooke
+      nested: []
+  version: 2.32.6
+  title: ""
+  date: 2025-06-04T13:52:08.704Z
+- commits:
     - subject: Update balena-io/balena-cli to v22.0.5
       hash: f5edac94452ed429a3efe63ade50a9e2bffc2a95
       body: |
