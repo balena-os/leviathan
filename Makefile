@@ -8,6 +8,7 @@ endif
 export
 
 # optional docker-compose args
+PULLARGS := --include-deps --policy=always
 BUILDARGS := --progress=plain --parallel --pull --build-arg WORKER_VERSION --build-arg BALENA_ARCH
 UPARGS := --force-recreate --remove-orphans
 
@@ -49,6 +50,10 @@ else
 DOCKER_COMPOSE := $(shell command -v docker-compose 2>&1)
 endif
 
+PROJECT_REF := $(shell jq -r '.version' package.json)
+CORE_TAG ?= v$(PROJECT_REF)-core
+CLIENT_TAG ?= v$(PROJECT_REF)-client
+
 help: ## Print help message
 	@echo -e "$$(grep -hE '^\S+:.*##' $(MAKEFILE_LIST) | sed -e 's/:.*##\s*/:/' -e 's/^\(.\+\):\(.*\)/\\x1b[36m\1\\x1b[m:\2/' | column -c2 -t -s :)"
 
@@ -56,36 +61,63 @@ printenv:
 	@printenv
 
 check-docker: ## Check that docker is running
-	@docker info > /dev/null 2>&1
+	$(info Checking that docker is running...)
+ifeq ($(shell docker info > /dev/null 2>&1; echo $$?),1)
+	$(error docker is not running)
+endif
+
+check-compose: ## Check that docker compose is installed
+	$(info Checking that docker compose is installed...)
+ifeq ($(shell command -v $(DOCKER_COMPOSE) 2>/dev/null),)
+	$(error docker compose is not installed)
+endif
+
+check-jq: ## Check that jq is installed
+	$(info Checking that jq is installed...)
+ifeq ($(shell command -v jq 2>/dev/null),)
+	$(error jq is not installed)
+endif
 
 # https://github.com/docker/compose/issues/9059
-check-compose: ## Check that docker compose 2.3.3 or later is installed
-	@$(DOCKER_COMPOSE) version | awk '{ \
-		version = $$NF; \
-		sub(/^v/, "", version); \
-		sub(/-.*$$/, "", version); \
-		split(version, ver, "."); \
-		major = ver[1]; \
-		minor = ver[2]; \
-		patch = ver[3]; \
-		print "INFO: Detected docker compose version " major "." minor "." patch; \
-		if (major != 2 || (minor > 3 || (minor == 3 && patch >= 3))) { \
-			exit 0; \
-		} else { \
-			print "Error: docker compose version must be 2.3.3 or later"; \
-			exit 1; \
-		} \
-	}'
+# Extract and parse docker compose version
+COMPOSE_VERSION_RAW := $(shell $(DOCKER_COMPOSE) version 2>/dev/null | awk '{print $$NF}' | head -1)
+COMPOSE_VERSION_CLEAN := $(shell echo "$(COMPOSE_VERSION_RAW)" | sed 's/^v//' | sed 's/-.*//')
+COMPOSE_VERSION_PARTS := $(subst ., ,$(COMPOSE_VERSION_CLEAN))
+COMPOSE_MAJOR := $(word 1,$(COMPOSE_VERSION_PARTS))
+COMPOSE_MINOR := $(word 2,$(COMPOSE_VERSION_PARTS))
+COMPOSE_PATCH := $(word 3,$(COMPOSE_VERSION_PARTS))
 
-check-prereqs: check-docker check-compose
+check-compose-version: ## Check that docker compose 2.3.3 or later is installed
+	$(info Detected docker compose version: $(COMPOSE_MAJOR).$(COMPOSE_MINOR).$(COMPOSE_PATCH))
+ifeq ($(COMPOSE_MAJOR),)
+	$(error Unable to detect docker compose version)
+endif
+ifeq ($(shell test $(COMPOSE_MAJOR) -lt 2; echo $$?),0)
+	$(error Docker compose version must be 2.3.3 or later, found $(COMPOSE_MAJOR).$(COMPOSE_MINOR).$(COMPOSE_PATCH))
+endif
+ifeq ($(COMPOSE_MAJOR),2)
+ifeq ($(shell test $(COMPOSE_MINOR) -lt 3; echo $$?),0)
+	$(error Docker compose version must be 2.3.3 or later, found $(COMPOSE_MAJOR).$(COMPOSE_MINOR).$(COMPOSE_PATCH))
+endif
+ifeq ($(COMPOSE_MINOR),3)
+ifeq ($(shell test $(COMPOSE_PATCH) -lt 3; echo $$?),0)
+	$(error Docker compose version must be 2.3.3 or later, found $(COMPOSE_MAJOR).$(COMPOSE_MINOR).$(COMPOSE_PATCH))
+endif
+endif
+endif
+
+check-prereqs: check-docker check-compose check-compose-version check-jq
 
 config: check-prereqs ## Print flattened docker-compose definition
 	$(DOCKER_COMPOSE) config
 
+pull: check-prereqs ## Pull the required images
+	$(DOCKER_COMPOSE) pull $(PULLARGS)
+
 build: check-prereqs ## Build the required images
 	$(DOCKER_COMPOSE) build $(BUILDARGS)
 
-test: build ## Run the test suites
+test: ## Run the test suites
 	$(DOCKER_COMPOSE) up $(UPARGS) --exit-code-from client
 
 local-test: ## Alias for 'make test WORKER_TYPE=qemu'
@@ -104,6 +136,6 @@ down: stop ## Alias for 'make stop'
 
 clean: stop ## Alias for 'make stop'
 
-.PHONY: help config build testbot qemu test local-test stop down clean
+.PHONY: help check-prereqs check-compose check-docker config pull build testbot qemu test local-test stop down clean
 
 .DEFAULT_GOAL = help
