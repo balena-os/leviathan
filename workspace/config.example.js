@@ -20,6 +20,9 @@ module.exports = [
 
 			// For tests that need a specific balenaOS version to be downloaded. Default: latest
 			downloadVersion: 'latest',
+			// For tests that need a specific balenaOS image type to be downladed. Default: default image type available from balena Clouc
+			// Can be set to one of ['raw', 'flasher'], don't define if distinction is not needed.
+			// downloadImageType: 'flasher',
 
 			// Needed the provision the DUT to a balenaCloud fleet
 			balenaApiKey: process.env.BALENACLOUD_API_KEY,
