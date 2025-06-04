@@ -38,6 +38,7 @@ Make sure to rename the image to balena.img. If you provide `balena.img` as your
 For example, in the e2e test suite, if you don't upload an image and set `image: false`, then the test suite will download the image from balenaCloud. This is test specific, not a leviathan feature. 
 
 - **`downloadVersion`**: If you intend to download a balenaOS version for your tests, then you can use the property to specify the balenaOS version semver. The `fetchOS` helper will use this property to find and download the balenaOS image. 
+- **`downloadImageType`**: If you intend to download a balenaOS image type for your tests, that isn't the default image type when downloading from balena cloud. Can be set to `raw` or `flasher`, and the `fetchOS` helper will use this property to download the specified image type. Leave undefined if you want to use the deafult.
 - **`workers`** is the property where we specify precisely where the test suites will be executed on and what type of workers are going to be used. You can specify this in multiple ways as per your requirements: 
 
 ## Different `workers` configurations available

@@ -333,13 +333,14 @@ module.exports = class BalenaSDK {
 	 *
 	 * @param versionOrRange The semver compatible balenaOS version that will be downloaded, example: `2.80.3+rev1`. Default value: `latest` where latest development variant of balenaOS will be downloaded.
 	 * @param deviceType The device type for which balenaOS needs to be downloaded
+	 * @param imageType Can be one of 'flasher', 'raw' or an empty string / null / undefined if wanting to use the default artifact
 	 * @param osType Can be one of 'default', 'esr' or null to include all types
 	 * @remark Stores the downloaded image in `leviathan.downloads` directory,
 	 * @throws Rejects promise if download fails. Retries thrice to download an image before giving up.
 	 *
 	 * @category helper
 	 */
-	async fetchOS(versionOrRange = 'latest', deviceType, osType = 'default') {
+	async fetchOS(versionOrRange = 'latest', deviceType, imageType='', osType = 'default') {
 		// normalize the version string/range, supports 'latest', 'recommended', etc
 		const balenaSdkProd = getSdk({
 			apiUrl: "https://api.balena-cloud.com",
@@ -368,11 +369,20 @@ module.exports = class BalenaSDK {
 				`Fetching balenaOS version ${version}, attempt ${attempt}...`,
 			);
 
+			const downloadOpts = {
+				deviceType: deviceType,
+				version: version,
+			}
+
+			// If image type is not defined, or the env variable in the client isn't set
+			// this value will be falsy - so we won't use the imageType arg with os.download - meaning we get the default artifact
+			if(imageType){
+				console.log(`Downloading non-default OS artifact: ${imageType}`)
+				downloadOpts['imageType'] = imageType;
+			}
+
 			return await new Promise(async (resolve, reject) => {
-				balenaSdkProd.models.os.download({
-					deviceType: deviceType,
-					version: version,
-				}).then(function (stream) {
+				balenaSdkProd.models.os.download(downloadOpts).then(function (stream) {
 					// Shows progress of image download
 					let progress = 0;
 					stream.on('progress', (data) => {
