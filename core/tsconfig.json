@@ -36,5 +36,13 @@
     "categorizeByGroup": true,
     "categoryOrder": ["helper", "*"],
     "lightHighlightTheme": "slack-ochin",
+    "projectDocuments": [
+        "../documentation/quickstart.md",
+        "../documentation/config-reference.md",
+        "../documentation/writing-tests.md",
+        "../documentation/debugging.md",
+        "../documentation/reference-tips.md",
+        "../documentation/learn-more.md"
+    ]
   }
 }
