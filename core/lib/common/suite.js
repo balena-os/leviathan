@@ -77,7 +77,17 @@ function cleanObject(object) {
 	}
 }
 
+/**
+ * Test suite lifecycle management class
+ * 
+ * @category helper
+ */
 module.exports = class Suite {
+	/**
+	 * Creates a new Suite instance
+	 * @param {object} suiteOptions - Suite configuration options
+	 * @param {object} suiteConfig - Suite configuration
+	 */
 	constructor(suiteOptions, suiteConfig) {
 		this.suitePath = suiteOptions.suitePath;
 		this.image = suiteOptions.imagePath;
@@ -130,7 +140,15 @@ module.exports = class Suite {
 
 		// State
 		this.context = new Context();
+		/**
+		 * Setup task queue for suite initialization tasks
+		 * @type {TaskQueue}
+		 */
 		this.setup = new Setup();
+		/**
+		 * Teardown task queue for suite cleanup tasks
+		 * @type {Teardown}
+		 */
 		this.teardown = new Teardown();
 		this.state = new State();
 		this.passing = null;

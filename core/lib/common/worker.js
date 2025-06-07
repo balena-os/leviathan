@@ -327,7 +327,7 @@ module.exports = class Worker {
 	 *
 	 * @param {string | Array} command command to be executed on the DUT, arrays are joined by spaces
 	 * @param {string} target local UUID of the DUT, example:`${UUID}.local`
-	 * @param {{"interval": number, "tries": number}} timeout object containing details of how many times the
+	 * @param {{"interval": number, "tries": number}} retryOptions object containing details of how many times the
 	 * command needs to be retried and the intervals between each command execution
 	 * @returns {string} Output of the command that was exected on hostOS of the DUT
 	 *
@@ -678,7 +678,7 @@ module.exports = class Worker {
 	/**
 	 * Fetches OS version available on the DUT's `/etc/os-release` file
 	 *
-	 * @remark This method works entirely on the device though.
+	 * @remarks This method works entirely on the device though.
 	 * @param {string} target
 	 * @returns {string} returns OS version
 	 * @category helper
@@ -703,7 +703,7 @@ module.exports = class Worker {
 	/**
 	 * Helper to archive the output of a HostOS command stored inside a file.
 	 *
-	 * @remark the default command that runs is `journalctl --no-pager --no-hostname -a -b all`
+	 * @remarks the default command that runs is `journalctl --no-pager --no-hostname -a -b all`
 	 * @param {string} title The name of the directory in which logs will be archived. Usuallly
 	 * this value is the name of the test suite (Available in the test using `this.id`)
 	 * @param {string} target local UUID of the DUT, example:`${UUID}.local`

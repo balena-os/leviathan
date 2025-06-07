@@ -134,7 +134,7 @@ module.exports = class BalenaSDK {
 	 *
 	 * @param {string} name Name of the application that needs to be created
 	 * @param {string} deviceType The device type for which application needs to be created
-	 * @param {object} config specify configuration needed for the application
+	 * @param {object} appConfig specify configuration needed for the application
 	 *
 	 * @category helper
 	 */
@@ -335,7 +335,7 @@ module.exports = class BalenaSDK {
 	 * @param deviceType The device type for which balenaOS needs to be downloaded
 	 * @param imageType Can be one of 'flasher', 'raw' or an empty string / null / undefined if wanting to use the default artifact
 	 * @param osType Can be one of 'default', 'esr' or null to include all types
-	 * @remark Stores the downloaded image in `leviathan.downloads` directory,
+	 * @remarks Stores the downloaded image in `leviathan.downloads` directory,
 	 * @throws Rejects promise if download fails. Retries thrice to download an image before giving up.
 	 *
 	 * @category helper

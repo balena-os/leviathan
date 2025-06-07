@@ -214,7 +214,7 @@ module.exports = class BalenaOS {
 	/**
 	 * Prepares the received image/artifact to be used - either unzipping it or moving it to the Leviathan working directory
 	 *
-	 * @remark Leviathan creates a temporary working directory that can referenced using `config.leviathan.downloads)`
+	 * @remarks Leviathan creates a temporary working directory that can referenced using `config.leviathan.downloads)`
 	 *
 	 * @category helper
 	 */

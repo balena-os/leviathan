@@ -25,7 +25,7 @@
     "contracts/"
   ],
   "typedocOptions": {
-    "name": "Leviathan Helpers",
+    "name": "Leviathan",
     "entryPoints": ["lib/common", "lib/components"],
     "entryPointStrategy":  "expand",
     "out": "../docs/",
