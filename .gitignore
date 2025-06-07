@@ -17,3 +17,6 @@ bin/
 
 # ignore private contracts 
 core/contracts/private-contracts
+
+# ignore generated docs
+docs/ 
