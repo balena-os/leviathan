@@ -1,4 +1,18 @@
 - commits:
+    - subject: "core/lib: Specify partition indexes for Jetson Nano eMMC and JN30B Nano"
+      hash: 38dfbc2013e438ffc7b6d2df54ec889c1be3afc3
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Alexandru Costache <alexandru@balena.io>
+        signed-off-by: Alexandru Costache <alexandru@balena.io>
+      author: Alexandru
+      nested: []
+  version: 2.32.7
+  title: ""
+  date: 2025-06-09T09:28:56.518Z
+- commits:
     - subject: "Core: enable specifying image type with fetchOS function"
       hash: 087330312d9bb3b9a7e699c52353e43095eb94f9
       body: >
