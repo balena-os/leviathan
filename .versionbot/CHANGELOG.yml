@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update balena-io/balena-cli to v22.0.6
+      hash: 9b97e276d7c143b33a5744bcbdebee3e560c2b98
+      body: |
+        Update balena-io/balena-cli from 22.0.5 to 22.0.6
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.32.8
+  title: ""
+  date: 2025-06-09T10:31:47.585Z
+- commits:
     - subject: "core/lib: Specify partition indexes for Jetson Nano eMMC and JN30B Nano"
       hash: 38dfbc2013e438ffc7b6d2df54ec889c1be3afc3
       body: ""
