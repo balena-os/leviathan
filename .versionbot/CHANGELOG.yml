@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update Lock file maintenance
+      hash: d277c85c9a0601573486eefc5fc1c2219dd61c6c
+      body: |
+        Update 
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.33.1
+  title: ""
+  date: 2025-06-10T20:46:22.016Z
+- commits:
     - subject: "minor: Upgrade Typedoc to v0.26.11"
       hash: fcb51606c3936b16488abe765baff97686547515
       body: ""
