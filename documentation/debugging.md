@@ -55,7 +55,7 @@ Testing with autokit requires several components to work together. All steps in 
 $ curl -X POST PUBLIC-DEVICE-URL-OF-AUTOKIT/state
 ```
 
-2. If the state is IDLE, we can run a short diagnostics test to see if the autokit works correctly. Run the Leviathan e2e test described in this section {@page Getting Started with Autokit Worker  | Start your first test run} on the autokit you want to verify. After completing the Leviathan prerequisites listed above the section, you can create your config.js and add the Public Device URL in the `workers` section.  
+2. If the state is IDLE, we can run a short diagnostics test to see if the autokit works correctly. Run the Leviathan e2e test described in this section [Start your first test run](quickstart-autokit.md) on the autokit you want to verify. After completing the Leviathan prerequisites listed above the section, you can create your config.js and add the Public Device URL in the `workers` section.  
 
 If the test completes without any errors, then the autokit should be ready to run the tests. 
 
@@ -194,7 +194,7 @@ Please do log the following issues as you see them on https://github.com/balena-
 
 ## Write new tests or contribute to an existing test suite?
 
-Leviathan is an open-source project, and we welcome contributions. If you want to add a new test suite or contribute to an existing one, start by {@page Writing tests | writing your first test}. For reference, check the existing balenaOS operating system suite in the [meta-balena](https://github.com/balena-os/meta-balena/tree/master/tests/suites) repository
+Leviathan is an open-source project, and we welcome contributions. If you want to add a new test suite or contribute to an existing one, start by [writing your first test](writing-tests.md). For reference, check the existing balenaOS operating system suite in the [meta-balena](https://github.com/balena-os/meta-balena/tree/master/tests/suites) repository
 
 ## Debugging tests interactively in Leviathan
 

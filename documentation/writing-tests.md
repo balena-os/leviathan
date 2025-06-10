@@ -90,4 +90,4 @@ More examples of test logic can be seen here: https://github.com/balena-os/meta-
 
 A new test suite can be created using the folder structure described at the start of this document. A new folder in the suites folder will be the start of the new suite. After you are finished writing the test suite, add the path of the test suite to the `suite` property in your `workspace/config.js`
 
-Check out some tips and references for {@page Tips and Reference | writing better tests} with Leviathan.
+Check out some tips and references for [writing better tests](reference-tips.md) with Leviathan.

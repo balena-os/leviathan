@@ -1,3 +1,12 @@
+---
+title: quickstart
+category: Getting Started
+children:
+    - ../documentation/quickstart-autokit.md
+    - ../documentation/quickstart-qemu.md
+    - ../documentation/quickstart-testbot.md
+---
+
 # Quick start guides
 
 Leviathan allows for running tests on a device controlled by a worker. A worker is a component on which your tests actually runs. It can be both real hardware or virtualised environments. Leviathan is designed to work with multiple workers. 
@@ -16,6 +25,6 @@ Leviathan allows for running tests on a device controlled by a worker. A worker 
 
 Select which type of worker you want to use:
 
-1. {@page Testbot worker | Testbot worker} - Connect an actual device to your testbot and test on it
-2. {@page Autokit worker | Autokit worker} - Connect an actual device to your autokit and test on it
-3. {@page QEMU worker | QEMU worker} - Create a virtual device and run tests on that that.
+1. [Autokit worker](quickstart-autokit.md) - Connect an actual device to your autokit and test on it
+2. [QEMU worker](quickstart-qemu.md) - Create a virtual device and run tests on that.
+3. [Testbot worker](quickstart-testbot.md) - Connect an actual device to your testbot and test on it

@@ -17,7 +17,13 @@ The high-level overview of the leviathan architecture can be found [here](./docu
 
 ## Getting Started
 
-Leviathan allows for running tests on a device controlled by a worker. A worker is a component that provides an interface to a device under test (DUT). The worker can be either real hardware or a virtualised environment. Leviathan is designed to work with multiple workers. At the moment, leviathan supports [testbot][quickstart-testbot](deprecated), [autokit][quickstart-autokit] and [qemu][quickstart-qemu] workers. Learn more about [Leviathan](https://balena-os.github.io/leviathan/pages/Getting-Started/learn-more.html).
+Leviathan allows for running tests on a device controlled by a worker. A worker is a component that provides an interface to a device under test (DUT). The worker can be either real hardware or a virtualised environment. Leviathan is designed to work with multiple workers. At the moment, leviathan supports the following workers: 
+
+1. [autokit][quickstart-autokit]
+2. [qemu][quickstart-qemu]
+3. testbot (deprecated)
+
+Learn more about [Leviathan](https://balena-os.github.io/leviathan/pages/Getting-Started/learn-more.html).
 
 ### Clone the repository
 

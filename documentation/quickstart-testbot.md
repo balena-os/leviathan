@@ -5,7 +5,7 @@ This is a quick start guide for using the leviathan framework with the testbot w
 ## As a prerequisite
 
 1. Make sure you have built your testbot using the following [guide](https://github.com/balena-io/testbot-hardware/blob/master/documentation/getting-started.md)
-2. Go through the steps listed on the {@page Quickstart | Quickstart Page}
+2. Go through the steps listed on the [Quickstart Page](quickstart.md)
 
 ## Start your first test run
 
@@ -15,7 +15,7 @@ A balenaOS image that is used to flash and provision the device under test will 
 
 ### Build your `config.js` file
 
-The `config.js` file is the master configuration file for your test run. The testbot runs and configures your device under test (DUT) accordingly with the settings provided in the `config.js` file. To know more about each property, refer to the {@page Config.js Reference | Config.js reference}.
+The `config.js` file is the master configuration file for your test run. The testbot runs and configures your device under test (DUT) accordingly with the settings provided in the `config.js` file. To know more about each property, refer to the [Config.js reference](config-reference.md).
 
 To get started, 
 
@@ -100,8 +100,8 @@ That's the end of the quick start guide, you successfully setup your testbot wor
 
 ## Where do you go from here?
 
-1. Start by {@page Writing tests | writing your first test}.
-2. To know more about `config.js` and its properties, refer to {@page Config.js Reference | Config.js reference}.
-3. To understand the bigger picture about the project read/watch these {@page Links, and more links | resources}.
-4. Some tips and references for {@page Tips and Reference | writing better tests} with Leviathan.
+1. Start by [writing your first test](writing-tests.md).
+2. To know more about `config.js` and its properties, refer to [Config.js reference](config-reference.md).
+3. To understand the bigger picture about the project read/watch these [resources](learn-more.md).
+4. Some tips and references for [writing better tests](reference-tips.md) with Leviathan.
 5. Check out the source for tests that you ran, [e2e test suite](https://github.com/balena-os/leviathan/tree/master/suites).

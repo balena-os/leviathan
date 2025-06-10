@@ -30,7 +30,7 @@ Information on properties in `config.js`:
 - **`balenaApiKey`** is the balenaCloud API key of the user running the test. You can generate a new [balena API key](https://docs.balena.io/learn/manage/account/#api-keys) for this field.
 - **`balenaApiUrl`** is the balenaCloud environment you are targetting for your test suite. Production is `'balena-cloud.com'` and staging is `'balena-staging.com'`.
 - **`organization`** is the balenaCloud organization where test applications are created for the cloud suite. Add the `username` of the user who owns the `balenaApiKey` - otherwise it will lead to authentication errors. You can find the `username` of the user from the top right section of the dashboard. 
-- **`debug`** is where debugging properties are stored for test runs. Check out {@page Debugging tests in Leviathan | Debugging documentation} for features you can add. 
+- **`debug`** is where debugging properties are stored for test runs. Check out [Debugging documentation](debugging.md) for features you can add. 
 - **`image`** is the absolute path to the balenaOS image that is flashed onto the Device Under Test (DUT).  As shown in the example above, `${__dirname}` expands to the absolute path of the `workspace` directory, so you can use it to specify a path relative to `workspace`.
 
 Make sure to rename the image to balena.img. If you provide `balena.img` as your balenaOS image, then Leviathan will compress it for you in `gz` format on runtime. We recommend compressing beforehand, as it saves time. For any reason if your tests download an image already and you don't want to upload an image, then set the `image` property to `false` in config.js. Be sure to set `image` to a boolean `false` without a quotes.

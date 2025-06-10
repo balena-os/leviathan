@@ -5,7 +5,7 @@ This is a quick start guide for using the leviathan framework with the autokit w
 ## As a prerequisite
 
 1. Make sure you have built your autokit using the following [guide](https://github.com/balena-io-hardware/autokit-assembly-doc)
-2. Go through the steps listed on the {@page Quickstart | Quickstart Page}
+2. Go through the steps listed on the [Quickstart Page](quickstart.md)
 
 ## Provision your autokit into a leviathan-worker fleet
 
@@ -56,7 +56,7 @@ For your first test run, we will be running the [e2e test suite](https://github.
 
 ### Build your `config.js` file
 
-The `config.js` file is the master configuration file for your test run. Leviathan runs and configures your device under test (DUT) according to the settings configured under `config.js` file. To know more about each property, refer to the {@page Config.js Reference | Config.js reference}.
+The `config.js` file is the master configuration file for your test run. Leviathan runs and configures your device under test (DUT) according to the settings configured under `config.js` file. To know more about each property, refer to the [Config.js reference](config-reference.md).
 
 Create your own config.js file
 
@@ -83,7 +83,7 @@ module.exports = {
 }
 ```
 
-Ensure that you fill all fields in the `config.js` file before proceeding. Refer to the {@page Config.js Reference | Config.js reference} for more information
+Ensure that you fill all fields in the `config.js` file before proceeding. Refer to the [Config.js reference](config-reference.md) for more information
 
 You can either modify the `config.js` file or provide values using environment variables. To provide values of environment variables easily, you can create a `.env` file in the root of the leviathan directory. Use the format below as boilerplate. 
 
@@ -98,7 +98,7 @@ BALENACLOUD_API_KEY=SAMPLEKEYuhfuwehfewiuf[...]LLJA
 BALENACLOUD_ORG=g_username_of_the_user
 ```
 
-Refer to the {@page Config.js Reference | Environment Variables Reference} for more values you can specify.
+Refer to the [Environment Variables Reference](config-reference.md) for more values you can specify.
 
 ### Start the run
 
@@ -114,7 +114,7 @@ A successful run of the e2e test suite without any errors makes sure that your a
 
 ## Troubleshooting
 
-Refer to {@page Debugging FAQ | FAQ's for common issues mentioned below and debug your test setup}
+Refer to the [FAQ section for common issues and debugging your test setup](debugging.md).
 
 1. Config issues
 2. Flashing issues
@@ -159,8 +159,8 @@ That's the end of the quick start guide, you successfully setup your autokit wor
 
 ## Where do you go from here?
 
-1. Start by {@page Writing tests | writing your first test}.
-2. To know more about `config.js` and its properties, refer to {@page Config.js Reference | Config.js reference}.
-3. To understand the bigger picture about the project read/watch these {@page Links, and more links | resources}.
-4. Some tips and references for {@page Tips and Reference | writing better tests} with Leviathan.
+1. Start by [writing your first test](writing-tests.md).
+2. To know more about `config.js` and its properties, refer to [Config.js reference](config-reference.md).
+3. To understand the bigger picture about the project read/watch these [resources](learn-more.md).
+4. Some tips and references for [writing better tests](reference-tips.md) with Leviathan.
 5. Check out the source for tests that you ran, [e2e test suite](https://github.com/balena-os/leviathan/tree/master/suites).

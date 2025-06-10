@@ -31,9 +31,9 @@
 	},
 	"devDependencies": {
 		"@balena/lint": "^6.2.1",
-		"typedoc": "0.25.10",
-		"typedoc-plugin-pages-fork": "^0.0.1",
-		"typescript": "^4.9.4"
+		"typedoc": "0.26.11",
+		"typescript": "^4.9.4",
+		"typedoc-plugin-redirect": "1.2.0"
 	},
 	"engines": {
 		"node": "~22.14.0"

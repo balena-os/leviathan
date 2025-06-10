@@ -2,7 +2,7 @@
 
 This is a quick start guide for using the Leviathan testing framework with a virtualized QEMU Device Under Test (DUT) called the QEMU worker. This workflow is particularly helpful for debugging, faster tester runs than actual hardware or if you don't have hardware on hand. 
 
-Before beginning, make sure you completed the Leviathan pre-requisted listed on the {@page Quickstart | Quickstart Page}.
+Before beginning, make sure you completed the Leviathan pre-requisted listed on the [Quickstart Page](quickstart.md).
 
 ## Start your first test run
 
@@ -20,7 +20,7 @@ sudo modprobe tun
 
 ### Build your `config.js` file
 
-The config.js file is the master configuration file for your test runs in leviathan. The QEMU worker spins up and configures your device under test (DUT) according to the settings provided in the `config.js` file. To know more about each property, refer to the {@page Config.js Reference | Config.js reference}.
+The config.js file is the master configuration file for your test runs in leviathan. The QEMU worker spins up and configures your device under test (DUT) according to the settings provided in the `config.js` file. To know more about each property, refer to the [Config.js reference](config-reference.md).
 
 Create your own config.js file
 
@@ -47,7 +47,7 @@ module.exports = {
 };
 ```
 
-Ensure that you fill all fields in the `config.js` file before proceeding. Refer to the {@page Config.js Reference | Config.js reference} for more information
+Ensure that you fill all fields in the `config.js` file before proceeding. Refer to the [Config.js reference](config-reference.md) for more information
 
 You can either modify the `config.js` file or provide values using environment variables. To provide values of environment variables easily, you can create a `.env` file in the root of the leviathan directory. Use the format below as boilerplate.
 
@@ -61,7 +61,7 @@ BALENACLOUD_API_KEY=SAMPLEKEYuhfuwehfewiuf[...]LLJA
 BALENACLOUD_ORG=g_username_of_the_user
 ```
 
-Refer to the {@page Config.js Reference | Environment Variables Reference} for more values you can specify.
+Refer to the [Environment Variables Reference](config-reference.md) for more values you can specify.
 
 
 ### Start the run
@@ -74,7 +74,7 @@ make local-test
 
 This will trigger a build of client and core services using docker-compose and begin the test. The logs by various componenet will start streaming on the terminal. Wait for the test scenario to finish and check the device logs on the dashboard in the meantime. 
 
-> Refer to {@page Debugging FAQ | FAQ's for common issues mentioned below and debug your test setup}
+> Refer to [FAQ's for common issues mentioned below and debug your test setup](debugging.md)
 
 A successful run of the e2e test suite without any errors makes sure that your QEMU worker is set up correctly and can be used for further tests.
 
@@ -114,10 +114,10 @@ That's the end of the quick start guide, you successfully setup your QEMU worker
 
 ## Where do you go from here?
 
-1. Start by {@page Writing tests | writing your first test}.
-2. To know more about `config.js` and its properties, refer to {@page Config.js Reference | Config.js reference}.
-3. To understand the bigger picture about the project read/watch these {@page Links, and more links | resources}.
-4. Some tips and references for {@page Tips and Reference | writing better tests} with Leviathan.
+1. Start by [writing your first test](writing-tests.md).
+2. To know more about `config.js` and its properties, refer to [Config.js reference](config-reference.md).
+3. To understand the bigger picture about the project read/watch these [resources](learn-more.md).
+4. Some tips and references for [writing better tests](reference-tips.md) with Leviathan.
 5. Check out the source for tests that you ran, [e2e test suite](https://github.com/balena-os/leviathan/tree/master/suites).
 
 ## Advanced

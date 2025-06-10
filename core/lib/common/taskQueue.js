@@ -69,6 +69,10 @@ const isFunction = require('lodash/isFunction');
 const noop = require('lodash/noop');
 const Bluebird = require('bluebird');
 
+/**
+ * A queue of tasks to be carried out at a certain part of the suite or test.
+ * @class TaskQueue
+ */
 class TaskQueue {
 	constructor() {
 		this.tasks = new Map();
@@ -109,6 +113,12 @@ class TaskQueue {
 	}
 }
 
+/**
+ * A TaskQueue used to maintain a list of tasks to execute at the end of the
+ * suite or test. These will execute regardless of passing or failing.
+ * @class Teardown
+ * @extends TaskQueue
+ */
 class Teardown extends TaskQueue {
 	constructor() {
 		super();
@@ -128,12 +138,13 @@ class Teardown extends TaskQueue {
 
 module.exports = {
 	/**
-	 * @type TaskQueue
+	 * A queue of tasks to be carried out at a certain part of the suite or test.
 	 */
 	Setup: TaskQueue,
 
 	/**
-	 * @type Teardown
+	 * A TaskQueue used to maintain a list of tasks to execute at the end of the
+	 * suite or test. These will execute regardless of passing or failing.
 	 */
 	Teardown: Teardown,
 };

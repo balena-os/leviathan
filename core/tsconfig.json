@@ -1,9 +1,6 @@
 {
   "compilerOptions": {
-    "typeRoots": [
-      "typings",
-      "node_modules/@types"
-    ],
+    "typeRoots": ["typings", "node_modules/@types"],
     "module": "commonjs",
     "target": "es2019",
     "allowJs": true,
@@ -20,21 +17,93 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true
   },
-  "exclude": [
-    "node_modules/**",
-    "contracts/"
-  ],
+  "exclude": ["node_modules/**", "contracts/"],
   "typedocOptions": {
-    "name": "Leviathan Helpers",
+    "name": "Leviathan",
     "entryPoints": ["lib/common", "lib/components"],
-    "entryPointStrategy":  "expand",
+    "entryPointStrategy": "expand",
     "out": "../docs/",
     "excludeExternals": true,
     "excludePrivate": true,
     "excludeProtected": true,
     // "excludeNotDocumented": true,
     "categorizeByGroup": true,
+    "plugin": ["typedoc-plugin-redirect"],
+    "redirects": {
+      // Current live website structure redirects
+      "/pages/Getting-Started/quickstart/quickstart-testbot.html": "documents/quickstart.quickstart_testbot.html",
+      "/pages/Getting-Started/quickstart/quickstart-qemu.html": "documents/quickstart.quickstart_qemu.html",
+      "/pages/Getting-Started/quickstart/quickstart-autokit.html": "documents/quickstart.quickstart_autokit.html",
+      "/pages/Getting-Started/learn-more.html": "documents/learn_more.html",
+      "/pages/Getting-Started/quickstart.html": "documents/quickstart.html",
+      "/pages/Getting-Started/config-reference.html": "documents/config_reference.html",
+      "/pages/Getting-Started/debugging.html": "documents/debugging.html",
+      "/pages/Getting-Started/writing-tests.html": "documents/writing_tests.html",
+      "/pages/Getting-Started/reference-tips.html": "documents/reference_tips.html",
+
+      // Documentation file redirects from old GitHub Pages structure
+      "/documentation/quickstart.html": "documents/quickstart.html",
+      "/documentation/quickstart-autokit.html": "documents/quickstart.quickstart_autokit.html",
+      "/documentation/quickstart-qemu.html": "documents/quickstart.quickstart_qemu.html",
+      "/documentation/quickstart-testbot.html": "documents/quickstart.quickstart_testbot.html",
+      "/documentation/config-reference.html": "documents/config_reference.html",
+      "/documentation/debugging.html": "documents/debugging.html",
+      "/documentation/writing-tests.html": "documents/writing_tests.html",
+      "/documentation/reference-tips.html": "documents/reference_tips.html",
+      "/documentation/learn-more.html": "documents/learn_more.html",
+      "/documentation/architecture.md": "media/architecture.html",
+
+      // Old direct file name redirects (avoiding conflicts with existing files)
+      "/quickstart-autokit.html": "documents/quickstart.quickstart_autokit.html",
+      "/quickstart-qemu.html": "documents/quickstart.quickstart_qemu.html",
+      "/quickstart-testbot.html": "documents/quickstart.quickstart_testbot.html",
+      "/config-reference.html": "documents/config_reference.html",
+      "/reference-tips.html": "documents/reference_tips.html",
+      "/learn-more.html": "documents/learn_more.html",
+
+      // Common legacy patterns with docs prefix
+      "/docs/quickstart.html": "documents/quickstart.html",
+      "/docs/config-reference.html": "documents/config_reference.html",
+      "/docs/debugging.html": "documents/debugging.html",
+      "/docs/writing-tests.html": "documents/writing_tests.html",
+      "/docs/reference-tips.html": "documents/reference_tips.html",
+      "/docs/learn-more.html": "documents/learn_more.html",
+
+      // API documentation redirects (using legacy prefix to avoid conflicts)
+      "/legacy/api/": "modules.html",
+      "/legacy/modules/": "modules.html",
+      "/legacy/classes/": "modules.html",
+
+      // Specific legacy API module redirects
+      "/legacy/api/suite.html": "classes/Suite.export_.html",
+      "/legacy/api/test.html": "classes/Test.export_.html",
+      "/legacy/api/context.html": "classes/Context.export_.html",
+      "/legacy/api/state.html": "classes/State.export_.html",
+      "/legacy/api/worker.html": "classes/Leviathan_Worker_helpers.export_.html",
+      "/legacy/api/balena-sdk.html": "classes/balenaSDK_helpers.export_.html",
+      "/legacy/api/balena-cli.html": "classes/balenaCLI_helpers.export_.html",
+      "/legacy/api/balena-os.html": "classes/balenaOS_helpers.export_.html",
+
+      // Old module paths to new module paths
+      "/old/modules/suite.html": "modules/Suite.html",
+      "/old/modules/test.html": "modules/Test.html",
+      "/old/modules/context.html": "modules/Context.html",
+      "/old/modules/state.html": "modules/State.html",
+      "/old/modules/taskqueue.html": "modules/TaskQueue.html",
+      "/old/modules/archiver.html": "modules/Archiver.html",
+
+      // Root README redirect
+      "/README.html": "documents/quickstart.html"
+    },
     "categoryOrder": ["helper", "*"],
     "lightHighlightTheme": "slack-ochin",
+    "projectDocuments": [
+      "../documentation/quickstart.md",
+      "../documentation/config-reference.md",
+      "../documentation/writing-tests.md",
+      "../documentation/debugging.md",
+      "../documentation/reference-tips.md",
+      "../documentation/learn-more.md"
+    ]
   }
 }
