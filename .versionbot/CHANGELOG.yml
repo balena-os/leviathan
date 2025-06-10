@@ -1,4 +1,16 @@
 - commits:
+    - subject: "minor: Upgrade Typedoc to v0.26.11"
+      hash: fcb51606c3936b16488abe765baff97686547515
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipulgupta2048@gmail.com>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipulgupta2048@gmail.com>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 2.33.0
+  title: ""
+  date: 2025-06-10T16:59:15.659Z
+- commits:
     - subject: Update balena-os/leviathan-worker to v2.9.60
       hash: 2c44681c4132a2115dc7448ff0cdfe1800fb01db
       body: |
