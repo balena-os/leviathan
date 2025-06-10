@@ -4,22 +4,28 @@ on:
   pull_request:
     types: [opened, synchronize, closed]
     branches: [main, master]
-  # allow external contributions to use secrets within trusted code
-  # pull_request_target:
-  #   types: [opened, synchronize, closed]
-  #   branches: [main, master]
+
+permissions:
+  contents: read
+  packages: write # Allow Flowzone to publish to ghcr.io
 
 jobs:
   flowzone:
     name: Flowzone
     uses: product-os/flowzone/.github/workflows/flowzone.yml@master
-    # prevent duplicate workflows and only allow one `pull_request` or `pull_request_target` for
-    # internal or external contributions respectively
+    # prevent duplicate workflow executions for pull_request and pull_request_target
     if: |
-      (github.event.pull_request.head.repo.full_name == github.repository && github.event_name == 'pull_request') ||
-      (github.event.pull_request.head.repo.full_name != github.repository && github.event_name == 'pull_request_target')
-
+      (
+        github.event.pull_request.head.repo.full_name == github.repository &&
+        github.event_name == 'pull_request'
+      ) || (
+        github.event.pull_request.head.repo.full_name != github.repository &&
+        github.event_name == 'pull_request_target'
+      )
     secrets: inherit
+    with:
+      docker_images: ghcr.io/${{ github.repository }}
+      bake_targets: client,core
 
   e2e:
     needs: [flowzone]
@@ -39,6 +45,9 @@ jobs:
       BALENACLOUD_APP_NAME: balena/testbot-rig
       WORKER_TYPE: ${{ matrix.WORKER_TYPE }}
       DEVICE_TYPE: ${{ matrix.DEVICE_TYPE }}
+      # Used to pull pre-built client and core images
+      CLIENT_TAG: build-${{ github.event.pull_request.head.sha }}-client
+      CORE_TAG: build-${{ github.event.pull_request.head.sha }}-core
 
     defaults:
       run:
@@ -63,10 +72,13 @@ jobs:
             ENVIRONMENT_URL: bm.balena-dev.com
 
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      # https://github.com/actions/checkout
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
           submodules: true
           persist-credentials: false
+          fetch-tags: true
 
       - name: Copy suite config
         run: cp -a ${{ env.SUITES }}/config.js ${{ env.WORKSPACE }}/config.js
