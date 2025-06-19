@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update docker/setup-buildx-action digest to e468171
+      hash: 485edfb5ce584c44b104dc24e3aea28b8eb6c5ea
+      body: |
+        Update docker/setup-buildx-action
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.33.5
+  title: ""
+  date: 2025-06-19T12:52:06.923Z
+- commits:
     - subject: Update balena-io/balena-cli to v22.1.1
       hash: b92156046845a298521ddf21d1174a98394ccdb5
       body: |
