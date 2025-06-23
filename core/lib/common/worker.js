@@ -154,17 +154,25 @@ module.exports = class Worker {
 				await new Promise(async (resolve, reject) => {
 					const req = rp.post({ uri: `${this.url}/dut/flash`, timeout: 0 });
 
+					// Catch an error via a ECONNRESET or connection related error
 					req.catch((error) => {
-						this.logger.log(`client side error: `)
-						this.logger.log(error.message)
+						this.logger.log(`Client side connection error: ${error.message} `)
 						reject(error);
 					});
-					req.finally(() => {
+
+					// Handle the end of the request stream
+					req.on('end', () => {
+						// If the last message from the worker wasn't "done" then the connection was terminated prematurely
 						if (lastStatus !== 'done') {
 							reject(new Error('Unexpected end of TCP connection'));
 						}
-
 						resolve();
+					});
+
+					// Stream 'error' event listener for the request stream itself
+					req.on('error', (error) => {
+						this.logger.log(`Request stream error: ${error.message}`);
+						reject(error);
 					});
 
 					let lastStatus;
