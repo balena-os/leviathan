@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update Lock file maintenance
+      hash: 22cc9f3e4f6149f745b8881ae402ff2d298361a9
+      body: |
+        Update 
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.33.6
+  title: ""
+  date: 2025-06-23T01:04:00.788Z
+- commits:
     - subject: Update docker/setup-buildx-action digest to e468171
       hash: 485edfb5ce584c44b104dc24e3aea28b8eb6c5ea
       body: |
