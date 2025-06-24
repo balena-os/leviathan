@@ -156,7 +156,7 @@ module.exports = class Worker {
 
 					// Catch an error via a ECONNRESET or connection related error
 					req.catch((error) => {
-						this.logger.log(`Client side connection error: ${error.message} `)
+						this.logger.log(`Client side connection error: ${error.message}`)
 						reject(error);
 					});
 
@@ -178,6 +178,9 @@ module.exports = class Worker {
 					let lastStatus;
 					req.on('data', (data) => {
 						const computedLine = RegExp('(.+?): (.*)').exec(data.toString());
+
+						// FOr debugging
+						this.logger.log(data.toString())
 
 						if (computedLine) {
 							if (computedLine[1] === 'error') {
@@ -205,11 +208,16 @@ module.exports = class Worker {
 						}
 					});
 
-					pipeline(
-						fs.createReadStream(imagePath),
-						createGzip({ level: 6 }),
-						req,
-					);
+					try{
+						pipeline(
+							fs.createReadStream(imagePath),
+							createGzip({ level: 6 }),
+							req,
+						)
+					}catch(error){
+						this.logger.log(`Pipeline error: ${error.message}`);
+						reject(error); // Reject the outer Promise here
+					}
 				});
 				this.logger.log('Flash completed');
 			},
