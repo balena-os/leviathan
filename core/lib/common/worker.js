@@ -179,9 +179,6 @@ module.exports = class Worker {
 					req.on('data', (data) => {
 						const computedLine = RegExp('(.+?): (.*)').exec(data.toString());
 
-						// FOr debugging
-						this.logger.log(data.toString())
-
 						if (computedLine) {
 							if (computedLine[1] === 'error') {
 								req.cancel();
@@ -193,12 +190,16 @@ module.exports = class Worker {
 									this.logger.log('Flashing');
 								});
 								// Hide any errors as the lines we get can be half written
-								const state = JSON.parse(computedLine[2]);
-								if (state != null && isNumber(state.percentage)) {
-									this.logger.status({
-										message: 'Flashing',
-										percentage: state.percentage,
-									});
+								try{
+									const state = JSON.parse(computedLine[2]);
+									if (state != null && isNumber(state.percentage)) {
+										this.logger.status({
+											message: 'Flashing',
+											percentage: state.percentage,
+										});
+									}
+								} catch (error){
+									this.logger.log(`Error while parsing messages from worker`)
 								}
 							}
 
