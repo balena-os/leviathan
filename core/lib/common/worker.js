@@ -179,6 +179,8 @@ module.exports = class Worker {
 					req.on('data', (data) => {
 						const computedLine = RegExp('(.+?): (.*)').exec(data.toString());
 
+						this.logger.log(data.toString());
+
 						if (computedLine) {
 							if (computedLine[1] === 'error') {
 								req.cancel();
@@ -210,7 +212,7 @@ module.exports = class Worker {
 					});
 
 					try{
-						pipeline(
+						await pipeline(
 							fs.createReadStream(imagePath),
 							createGzip({ level: 6 }),
 							req,
