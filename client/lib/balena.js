@@ -91,7 +91,8 @@ class BalenaCloudInteractor {
 	 * @throws error when public url for the device type is not accessible
 	 */
 	async resolveDeviceUrl(device) {
-		const deviceUrl = await this.sdk.models.device.getDeviceUrl(device.deviceId)
+		let deviceUrl = await this.sdk.models.device.getDeviceUrl(device.deviceId)
+		deviceUrl = deviceUrl.replace('https', 'http');
 		if (Object.keys(deviceUrl).length === 0 && deviceUrl.constructor === Object) {
 			throw new Error(`Public Device URL not found for device ${device.deviceId}`)
 		}

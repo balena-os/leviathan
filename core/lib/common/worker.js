@@ -118,7 +118,7 @@ module.exports = class Worker {
 			// If it is balenaCloud URL
 			if (!match) {
 				this.uuid = this.url.match(
-					/https:\/\/([^\.]+)\./,
+					/http:\/\/([^\.]+)\./,
 				)[1];
 				this.sshPrefix = `host ${this.uuid} `;
 				this.workerUser = this.username;
