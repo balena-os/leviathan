@@ -149,67 +149,59 @@ module.exports = class Worker {
 		await retry(
 			async () => {
 				attempt++;
-				this.logger.log(`Preparing to flash, attempt ${attempt}...`);
+				this.logger.log(`Sending image to worker, attempt ${attempt}...`);
+				// Send image to worker
+				const req = rp.post({ uri: `${this.url}/dut/sendImage`, timeout: 0 });
 
-				await new Promise(async (resolve, reject) => {
-					const req = rp.post({ uri: `${this.url}/dut/flash`, timeout: 0 });
-
-					req.catch((error) => {
-						this.logger.log(`client side error: `)
-						this.logger.log(error.message)
-						reject(error);
-					});
-					req.finally(() => {
-						if (lastStatus !== 'done') {
-							reject(new Error('Unexpected end of TCP connection'));
-						}
-
-						resolve();
-					});
-
-					let lastStatus;
-					req.on('data', (data) => {
-						const computedLine = RegExp('(.+?): (.*)').exec(data.toString());
-
-						if (computedLine) {
-							if (computedLine[1] === 'error') {
-								req.cancel();
-								reject(new Error(computedLine[2]));
-							}
-
-							if (computedLine[1] === 'progress') {
-								once(() => {
-									this.logger.log('Flashing');
-								});
-								// Hide any errors as the lines we get can be half written
-								const state = JSON.parse(computedLine[2]);
-								if (state != null && isNumber(state.percentage)) {
-									this.logger.status({
-										message: 'Flashing',
-										percentage: state.percentage,
-									});
-								}
-							}
-
-							if (computedLine[1] === 'status') {
-								lastStatus = computedLine[2];
-							}
-						}
-					});
-
-					pipeline(
+				// if sending fails, will recieve a 500 code from the worker so should reject
+				try {
+					await pipeline(
 						fs.createReadStream(imagePath),
 						createGzip({ level: 6 }),
 						req,
 					);
-				});
-				this.logger.log('Flash completed');
+				} catch (e) {
+					throw new Error(e.message)
+				}
 			},
 			{
 				max_tries: 5,
 				interval: 1000 * 5,
 				throw_original: true,
 			},
+		);
+
+		this.logger.log(`Image sent to worker successfully`);
+
+		// Initiate flashing process on the worker
+		await doRequest({ method: 'POST', uri: `${this.url}/dut/flashImage`});
+
+		// Now wait for worker to flash DUT - poll the worker to check
+		await retry(
+			async () => {
+				this.logger.log(`Checking if DUT is flashed...`);
+				// check flashing state
+				let flashState = await doRequest({ uri: `${this.url}/dut/flashState` });
+				
+				switch(flashState){
+					case "DONE":
+						this.logger.log('Flashing completed!');
+						return
+					case "PENDING":
+						this.logger.log('Flashing in progress...');
+						throw new Error('Flashing in progress...');
+					case "ERROR":
+						this.logger.log('Error flashing DUT, retrying...');
+						// if there was an error, retry the flash
+						await doRequest({ method: 'POST', uri: `${this.url}/dut/flashImage`});
+						throw new Error('Error while flashing DUT, retrying...');
+				}
+			},
+			{
+				max_tries: 10,
+				interval: 1000 * 5,
+				backoff: 2, //exponential backoff, factor of 2 - results in checks in 5s, 10s, 20s, 40s, 1m20, 2m40 etc...
+			}
 		);
 	}
 
