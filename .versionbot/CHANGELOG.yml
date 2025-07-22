@@ -1,4 +1,32 @@
 - commits:
+    - subject: Prefer image pull when running from GitHub Actions
+      hash: 1c15e8ec3d28ef11972835195209f260e13e3e7b
+      body: |
+        The default 'make test' behaviour still includes a local build but when
+        running as part of CI/CD it should pull by default.
+      footer:
+        Change-type: minor
+        change-type: minor
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+    - subject: Publish core and client docker images to ghcr.io
+      hash: 9974eb05f120b3b79efb64e133a05f454df7fdb0
+      body: |
+        We want to allow image reuse at test time and avoid
+        always building from scratch.
+      footer:
+        Change-type: minor
+        change-type: minor
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.34.0
+  title: ""
+  date: 2025-07-22T15:50:16.616Z
+- commits:
     - subject: Update Lock file maintenance
       hash: ed1a6486bb4af8d15c9235d36bb2c9175bfb206f
       body: |
