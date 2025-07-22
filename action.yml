@@ -1,27 +1,45 @@
 name: 'Leviathan Action'
 description: 'Test your software directly on hardware using the Levaithan Testing framework'
+
 runs:
   using: "composite"
   steps:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3
 
-    - name: (Virtual) Leviathan build & test
+    - name: Pull helper images
+      id: pull-helper-images
+      continue-on-error: true
       working-directory: ${{ env.LEVIATHAN_ROOT }}/
-      if: env.WORKER_TYPE == 'qemu'
       shell: bash
       run: |
+        make printenv
         make config
-        make build
-        make local-test QEMU_SECUREBOOT=${QEMU_SECUREBOOT} FLASHER_SECUREBOOT=${FLASHER_SECUREBOOT}
+        make pull
 
-    - name: (Autokit) Leviathan build & test
+    - name: Build helper images
+      if: steps.pull-helper-images.outcome == 'failure'
       working-directory: ${{ env.LEVIATHAN_ROOT }}/
-      if: env.WORKER_TYPE == 'testbot' || env.WORKER_TYPE == 'autokit'
       shell: bash
       run: |
+        make printenv
         make config
         make build
+
+    - name: Leviathan build & test
+      working-directory: ${{ env.LEVIATHAN_ROOT }}/
+      shell: bash
+      env:
+        # TODO: Expose these as action inputs instead of environment variables
+        WORKER_TYPE: ${{ env.WORKER_TYPE }}
+        DEVICE_TYPE: ${{ env.DEVICE_TYPE }}
+        QEMU_MEMORY: ${{ env.QEMU_MEMORY }}
+        QEMU_INTERNAL_STORAGE: ${{ env.QEMU_INTERNAL_STORAGE }}
+        QEMU_SECUREBOOT: ${{ env.QEMU_SECUREBOOT }}
+        FLASHER_SECUREBOOT: ${{ env.FLASHER_SECUREBOOT }}
+      run: |
+        make printenv
+        make config
         make test
 
     - name: Create Summary
@@ -44,6 +62,12 @@ runs:
       shell: bash
       if: always()
       id: report-name
+      env:
+        # TODO: Expose these as action inputs instead of environment variables
+        WORKER_TYPE: ${{ env.WORKER_TYPE }}
+        DEVICE_TYPE: ${{ env.DEVICE_TYPE }}
+        TEST_SUITE: ${{ env.TEST_SUITE }}
+        QEMU_SECUREBOOT: ${{ env.QEMU_SECUREBOOT }}
       run: |
         if [ "$QEMU_SECUREBOOT" -eq 1 ]; then
           SB="-sb"
