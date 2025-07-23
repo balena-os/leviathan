@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update core/contracts digest to fc76558
+      hash: e76d47a39268b0b6e5b138c61c01d65d151fda19
+      body: |
+        Update core/contracts
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.34.2
+  title: ""
+  date: 2025-07-23T08:37:54.214Z
+- commits:
     - subject: Update balena-os/leviathan-worker to v2.10.0
       hash: a2aa0eb3b9580c56981263d8e974388d4376de4e
       body: |
