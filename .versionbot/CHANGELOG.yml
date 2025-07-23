@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update balena-os/leviathan-worker to v2.10.0
+      hash: a2aa0eb3b9580c56981263d8e974388d4376de4e
+      body: |
+        Update balena-os/leviathan-worker from 2.9.60 to 2.10.0
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.34.1
+  title: ""
+  date: 2025-07-23T08:07:52.398Z
+- commits:
     - subject: Prefer image pull when running from GitHub Actions
       hash: 1c15e8ec3d28ef11972835195209f260e13e3e7b
       body: |
