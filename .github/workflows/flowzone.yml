@@ -33,7 +33,7 @@ jobs:
       ((github.event.pull_request.head.repo.full_name == github.repository && github.event_name == 'pull_request') ||
       (github.event.pull_request.head.repo.full_name != github.repository && github.event_name == 'pull_request_target')) &&
       github.event.action != 'closed'
-    runs-on: ubuntu-24.04
+    runs-on: ${{ fromJSON( matrix.runs_on ) }}
     environment: ${{ matrix.ENVIRONMENT_URL }}
 
     env:
@@ -61,15 +61,23 @@ jobs:
           - DEVICE_TYPE: genericx86-64-ext
             WORKER_TYPE: qemu
             ENVIRONMENT_URL: balena-cloud.com
+            runs_on: >
+              ["self-hosted", "X64", "kvm"]
           - DEVICE_TYPE: generic-amd64
             WORKER_TYPE: qemu
             ENVIRONMENT_URL: balena-cloud.com
+            runs_on: >
+              ["self-hosted", "X64", "kvm"]
           - DEVICE_TYPE: generic-aarch64
             WORKER_TYPE: qemu
             ENVIRONMENT_URL: bm.balena-dev.com
+            runs_on: >
+              ["self-hosted", "X64"]
           - DEVICE_TYPE: raspberrypi3
             WORKER_TYPE: testbot
             ENVIRONMENT_URL: bm.balena-dev.com
+            runs_on: >
+              ["ubuntu-24.04"]
 
     steps:
       # https://github.com/actions/checkout
