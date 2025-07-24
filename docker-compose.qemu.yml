@@ -2,7 +2,11 @@ version: "2"
 
 services:
   worker:
-    build: worker
+    build:
+      context: worker
+      dockerfile: Dockerfile
+      args:
+        BALENA_ARCH: ${BALENA_ARCH}
     device_cgroup_rules:
       # https://www.kernel.org/doc/Documentation/admin-guide/devices.txt
       # loopback devices
