@@ -1,4 +1,23 @@
 - commits:
+    - subject: Ensure we always pass the BALENA_ARCH worker build arg
+      hash: 45b97d1f907a69123c41407c48e49ab11d19c44c
+      body: |
+        'docker compose up' will build any missing images,
+        but does not accept build-args from the command line
+
+        instead, we want to always inherit some build args
+        from the environment via docker compose substitution
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.35.1
+  title: ""
+  date: 2025-07-24T18:51:48.786Z
+- commits:
     - subject: "Core: worker: use polling to track flashing"
       hash: be6971bb77cf11fd6051797b772631e3c955530b
       body: >
