@@ -9,7 +9,7 @@ export
 
 # optional docker-compose args
 PULLARGS := --include-deps --policy=always
-BUILDARGS := --progress=plain --parallel --pull --build-arg WORKER_VERSION --build-arg BALENA_ARCH
+BUILDARGS := --progress=plain --parallel --pull
 UPARGS := --force-recreate --remove-orphans
 
 QEMUCOMPOSEFILE := docker-compose.qemu.yml
