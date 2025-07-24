@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update balena-io/balena-cli to v22.1.4
+      hash: 72192e00754a9101b2b307182227988cc3081a10
+      body: |
+        Update balena-io/balena-cli from 22.1.1 to 22.1.4
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.34.4
+  title: ""
+  date: 2025-07-24T10:33:19.249Z
+- commits:
     - subject: "tests/e2e: switch to self hosted runners"
       hash: bb79590f0a1b56044c351625a36ca08902a7b027
       body: >
