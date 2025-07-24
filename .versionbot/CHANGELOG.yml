@@ -1,4 +1,21 @@
 - commits:
+    - subject: "Core: worker: use polling to track flashing"
+      hash: be6971bb77cf11fd6051797b772631e3c955530b
+      body: >
+        Switch to worker endpoints that allow for initiation -> polling to flash
+        the DUT - reducing drastically the amount of time the socket over public
+        URL needs to remain open
+      footer:
+        Change-type: minor
+        change-type: minor
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: Ryan Cooke
+      nested: []
+  version: 2.35.0
+  title: ""
+  date: 2025-07-24T12:06:06.767Z
+- commits:
     - subject: Update balena-io/balena-cli to v22.1.4
       hash: 72192e00754a9101b2b307182227988cc3081a10
       body: |
