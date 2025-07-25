@@ -32,6 +32,8 @@ services:
     volumes:
       - core-storage:/data
       - reports-storage:/reports
+      # Private device types must checkout the private contracts repo to ./core/private-contracts
+      - ./core/private-contracts:/usr/app/private-contracts:ro
     tmpfs:
       - /var/run # use tmpfs docker-in-docker pid files
       - /var/lib/docker # use tmpfs for docker-in-docker data root
