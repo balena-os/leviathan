@@ -58,6 +58,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 COPY --from=balena-cli /usr/local/lib/balena /usr/local/lib/balena
 RUN ln -sf /usr/local/lib/balena/bin/balena /usr/local/bin/balena
 
+# hadolint ignore=DL3059
 RUN balena version
 
 COPY package*.json ./
