@@ -21,5 +21,9 @@
   "private": true,
   "versionist": {
     "publishedAt": "2025-07-24T18:51:49.329Z"
+  },
+  "dependencies": {
+    "balena-sdk": "^21.7.4",
+    "tap": "^21.1.0"
   }
 }

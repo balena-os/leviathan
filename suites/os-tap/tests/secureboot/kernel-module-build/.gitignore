@@ -1,0 +1,9 @@
+*.ko
+*.dwo
+*.o
+*.symvers
+*.order
+.*
+!.github
+!.gitignore
+*.mod.c

@@ -1,0 +1,10 @@
+{
+    "network": {
+        "apn": "soracom.io",
+        "ipType": "ipv4",
+        "user": "sora",
+        "password": "sora",
+        "testUrl": "ipv4.google.com"
+    },
+    "skip": []
+}

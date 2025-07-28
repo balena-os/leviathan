@@ -1,0 +1,17 @@
+{
+	"dependencies": {
+		"@balena/node-qmp": "^0.0.6",
+		"balena-image-fs": "^7.5.1",
+		"bluebird": "^3.7.2",
+		"bluebird-retry": "^0.11.0",
+		"dockerode": "^2.5.8",
+		"fs-extra": "^8.1.0",
+		"jpeg-js": "^0.3.6",
+		"lodash": "^4.17.11",
+		"mz": "^2.7.0",
+		"request": "^2.88.0",
+		"request-promise": "^4.2.4",
+		"semver": "^7.3.8",
+		"tar-stream": "^2.1.0"
+	}
+}
