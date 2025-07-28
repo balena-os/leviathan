@@ -1,4 +1,23 @@
 - commits:
+    - subject: Bind mount private contracts in the core service
+      hash: ba51cc72a4ccf098af5d969ed8d7aeb08e009755
+      body: |
+        These contracts used to be copied to the core service at build
+        time if private device types cloned the repo before running test suites.
+
+        However, since switching to pre-built images by default we need to
+        manually mount private contracts to the core service.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.35.3
+  title: ""
+  date: 2025-07-28T11:33:30.510Z
+- commits:
     - subject: Update Lock file maintenance
       hash: 2d66ad92dced0d8e34a3b6b588ed4ad961c11cf8
       body: |
