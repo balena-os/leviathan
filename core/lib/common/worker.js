@@ -40,15 +40,18 @@ const retry = require('bluebird-retry');
 const utils = require('../common/utils');
 const archiver = require('../common/archiver');
 const isNumber = require('lodash/isNumber');
-const { fs } = require('mz');
+const fs = require('fs');
 const path = require('path');
 const once = require('lodash/once');
-const pipeline = Bluebird.promisify(require('stream').pipeline);
+const { pipeline } = require('node:stream/promises');
+
 const request = require('request');
 const rp = require('request-promise').defaults({
 	timeout: 30 * 1000
 });
-const exec = Bluebird.promisify(require('child_process').exec);
+
+const util = require('node:util');
+const exec = util.promisify(require('child_process').exec);
 const spawn = require('child_process').spawn;
 const { createGzip, createGunzip } = require('zlib');
 const tar = require('tar-fs');
@@ -145,29 +148,47 @@ module.exports = class Worker {
 	 * @category helper
 	 */
 	async flash(imagePath) {
+		const GZIP_PATH = 'os.img.gz';
+		// gzip image before making the send request. This is to minimise the time the public URL socket must be open, and saves time during any retries.
+		this.logger.log(`Gzipping OS image...`);
+		await pipeline(
+			fs.createReadStream(imagePath),
+			createGzip({ level: 6 }),
+			fs.createWriteStream(GZIP_PATH)		
+		);
+
 		let attempt = 0;
 		await retry(
 			async () => {
 				attempt++;
 				this.logger.log(`Sending image to worker, attempt ${attempt}...`);
 				// Send image to worker
-				const req = rp.post({ uri: `${this.url}/dut/sendImage`, timeout: 0 });
 
-				// if sending fails, will recieve a 500 code from the worker so should reject
-				try {
-					await pipeline(
-						fs.createReadStream(imagePath),
-						createGzip({ level: 6 }),
-						req,
-					);
-				} catch (e) {
-					throw new Error(e.message)
+				try{
+						const res = await fetch(`${this.url}/dut/sendImage`, {
+						method: 'POST',
+						body: fs.createReadStream(GZIP_PATH),
+						headers: {
+							'Content-Type': 'application/octet-stream',
+							'Content-Encoding': 'gzip'
+						},
+						duplex: 'half'
+					});
+
+					if (!res.ok) {
+						const errorBody = await res.text();
+						throw new Error(`HTTP error! Status: ${res.status}, Body: ${errorBody}`);
+					}
+					
+				} catch(e) {
+					throw new Error(e);
 				}
 			},
 			{
 				max_tries: 5,
-				interval: 1000 * 5,
+				interval: 1000 * 10,
 				throw_original: true,
+				backoff: 2, //exponential backoff factor of 2 - results in retries at 10s, 20s, 40s, 1m20, 2m40
 			},
 		);
 
@@ -508,7 +529,7 @@ module.exports = class Worker {
 			console.log(`Getting ip of dut`)
 			let dutIp = await this.ip(target);
 			console.log(`getting ip of worker`)
-			let workerIp = await exec(`dig +short worker`);
+			let workerIp = (await exec(`dig +short worker`)).stdout;
 			console.log(`ip route add ${dutIp} via ${workerIp}`)
 			// If the route already exists, do not throw an error
 			try {
