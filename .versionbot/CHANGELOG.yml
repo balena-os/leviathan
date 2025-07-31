@@ -1,4 +1,18 @@
 - commits:
+    - subject: "Core: worker: update flashing method to use native fetch API"
+      hash: 8f5ce43de3c268a6191c843f019aba8c1c78d8e4
+      body: ""
+      footer:
+        Change-type: minor
+        change-type: minor
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: Ryan Cooke
+      nested: []
+  version: 2.36.0
+  title: ""
+  date: 2025-07-31T08:44:28.779Z
+- commits:
     - subject: Bind mount private contracts in the core service
       hash: ba51cc72a4ccf098af5d969ed8d7aeb08e009755
       body: |
