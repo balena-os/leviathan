@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update balena-io/balena-cli to v22.1.5
+      hash: 35b591e8499f9624e3c29f2bd807478761b7cfd0
+      body: |
+        Update balena-io/balena-cli from 22.1.4 to 22.1.5
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.36.1
+  title: ""
+  date: 2025-08-01T15:40:24.613Z
+- commits:
     - subject: "Core: worker: update flashing method to use native fetch API"
       hash: 8f5ce43de3c268a6191c843f019aba8c1c78d8e4
       body: ""
