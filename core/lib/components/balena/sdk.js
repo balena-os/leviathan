@@ -398,11 +398,17 @@ module.exports = class BalenaSDK {
 
 				// Without the timeout, if the connection dies mid download, the function will hang. 
 				// The download stream doesn't seem to emit an error event in the case of ECONNRESET
-				// 5 minutes is a fair timeout here, as usually if nothing goes wrong the download will be < 1 minute
+				// 2 minutes with no new data is a fair timeout here, as usually if nothing goes wrong the download will be < 1 minute
 				const timeout = setTimeout(() => {
 					console.log('Download stream timed out');
 					downloadStream.destroy(new Error('Download stream timed out'));
-				}, 1000*60*5);
+				}, 1000*60*2);
+
+				// reset the timer if the data has been recieved, as it signals that the connection is still alive, just slow
+				// This is to account for very poor network conditions, or very large image sizes
+				downloadStream.on('data', () => {
+					timeout.refresh()
+				})
 			
 				const writeStream = fs.createWriteStream(path);
 				await pipeline(downloadStream, writeStream);
