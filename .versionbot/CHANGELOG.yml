@@ -1,4 +1,21 @@
 - commits:
+    - subject: "Core: sdk: Fix error handling on fetchOS function"
+      hash: d020caee0283f5bf69f6a016396c6ee82ab14ce6
+      body: >
+        The exsiting error handling and retry logic no longer works after
+        updating to node 22, leading to the core crashing in the case of a
+        failed attempt to download the OS image in the hup suite
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: Ryan Cooke
+      nested: []
+  version: 2.36.2
+  title: ""
+  date: 2025-08-01T16:50:54.699Z
+- commits:
     - subject: Update balena-io/balena-cli to v22.1.5
       hash: 35b591e8499f9624e3c29f2bd807478761b7cfd0
       body: |
