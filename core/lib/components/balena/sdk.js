@@ -53,6 +53,7 @@ const flatMapDeep = require('lodash/flatMapDeep');
 const fs = require('fs');
 const { join } = require('path');
 const util = require('util');
+const { pipeline } = require('node:stream/promises');
 const retry = require('bluebird-retry');
 const utils = require('../../common/utils');
 const { spawn } = require('child_process')
@@ -346,6 +347,7 @@ module.exports = class BalenaSDK {
 			apiUrl: "https://api.balena-cloud.com",
 		});
 
+		// TODO: Catch a connection error here if it happens - although it doesn't seem to very often
 		let version = await balenaSdkProd.models.os.getMaxSatisfyingVersion(
 			deviceType,
 			versionOrRange,
@@ -381,32 +383,47 @@ module.exports = class BalenaSDK {
 				downloadOpts['imageType'] = imageType;
 			}
 
-			return await new Promise(async (resolve, reject) => {
-				balenaSdkProd.models.os.download(downloadOpts).then(function (stream) {
-					// Shows progress of image download
-					let progress = 0;
-					stream.on('progress', (data) => {
-						if (data.percentage >= progress + 10) {
-							console.log(
-								`Downloading balenaOS image: ${toInteger(data.percentage) + '%'
-								}`,
-							);
-							progress = data.percentage;
-						}
-					});
-					stream.pipe(fs.createWriteStream(path));
-					stream.on('finish', () => {
-						console.log(`Download Successful: ${path}`);
-						resolve(path);
-					});
+			try {
+				const downloadStream = await balenaSdkProd.models.os.download(downloadOpts);
+				let progress = 0;
+				downloadStream.on('progress', (data) => {
+					if (data.percentage >= progress + 10) {
+						console.log(
+							`Downloading balenaOS image: ${toInteger(data.percentage) + '%'
+							}`,
+						);
+						progress = data.percentage;
+					}
 				});
-			}).catch(() => {
-				fs.unlink(path, () => {
-					// Ignore.
-				});
-				reject(`Image download failed: ${error}`);
-			});
+
+				// Without the timeout, if the connection dies mid download, the function will hang. 
+				// The download stream doesn't seem to emit an error event in the case of ECONNRESET
+				// 5 minutes is a fair timeout here, as usually if nothing goes wrong the download will be < 1 minute
+				const timeout = setTimeout(() => {
+					console.log('Download stream timed out');
+					downloadStream.destroy(new Error('Download stream timed out'));
+				}, 1000*60*5);
+			
+				const writeStream = fs.createWriteStream(path);
+				await pipeline(downloadStream, writeStream);
+
+				console.log(`Download Successful: ${path}`);
+				clearTimeout(timeout);
+				return path;
+			} catch (e) {
+				try {
+					console.log('Image download failed, cleaning up incomplete file...');
+					// Deleting incomplete file
+					fs.unlinkSync(path)
+					console.log(`Deleted ${path}`);
+				} catch (unlinkError){
+					 console.log(unlinkError.message);
+        		}
+				//Throw error if promise rejection is caught to retry
+				throw new Error(e)
+			}
 		};
-		return retry(downloadLatestOS, { max_tries: 3, interval: 500 });
+		// Use exponential backoff in the case of transient connectivity issues - 5s, 15s, 45s
+		return retry(downloadLatestOS, { max_tries: 3, interval: 5000, backoff: 3 });
 	}
 };
