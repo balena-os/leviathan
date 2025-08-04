@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update Lock file maintenance
+      hash: fc8d8e3dfcb0c50b341e15f0b98f347321fdd0e5
+      body: |
+        Update 
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.36.3
+  title: ""
+  date: 2025-08-04T01:10:51.893Z
+- commits:
     - subject: "Core: sdk: Fix error handling on fetchOS function"
       hash: d020caee0283f5bf69f6a016396c6ee82ab14ce6
       body: >
