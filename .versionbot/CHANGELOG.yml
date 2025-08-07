@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update balena-os/leviathan-worker to v2.10.1
+      hash: 6282cdb39064dff4a228c543c2c91998b7978ff6
+      body: |
+        Update balena-os/leviathan-worker from 2.10.0 to 2.10.1
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.36.7
+  title: ""
+  date: 2025-08-07T03:17:49.599Z
+- commits:
     - subject: Update balena-io/balena-cli to v22.2.2
       hash: f08d8678d79beda2e0c7630a8ae7cd2b1c42521e
       body: |
