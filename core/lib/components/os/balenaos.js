@@ -177,12 +177,13 @@ module.exports = class BalenaOS {
 
 		switch (this.deviceType) {
 			case 'jetson-nano':
-      case 'jetson-nano-emmc':
-      case 'jn30b-nano':
+			case 'jetson-nano-emmc':
+ 			case 'jn30b-nano':
 				this.bootPartition = 12;
 				break;
 			case 'jetson-tx2-nx-devkit':
 			case 'wbt-tx2-nx':
+			case (this.deviceType.match(/ka.*-tx2-nx$/) || {}).input:
 				this.bootPartition = 24;
 				break;
 			case 'srd3-xavier':
