@@ -1,4 +1,18 @@
 - commits:
+    - subject: "core/lib: Specify partition index for a TX2 NX based device type"
+      hash: e99700cb8d5c097e6d2b97229a80a8357248ebfd
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Alexandru Costache <alexandru@balena.io>
+        signed-off-by: Alexandru Costache <alexandru@balena.io>
+      author: Alexandru
+      nested: []
+  version: 2.36.14
+  title: ""
+  date: 2025-08-11T10:09:16.146Z
+- commits:
     - subject: Update balena-os/leviathan-worker to v2.10.3
       hash: d2e7994b9f352df00b952ab17abf2835d18c979c
       body: |
