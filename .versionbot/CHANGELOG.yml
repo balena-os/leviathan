@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update actions/checkout digest to 08eba0b
+      hash: 1a6458dfeaa64423a3683dd81370ba61d1116d8b
+      body: |
+        Update actions/checkout
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.36.15
+  title: ""
+  date: 2025-08-11T12:50:07.778Z
+- commits:
     - subject: "core/lib: Specify partition index for a TX2 NX based device type"
       hash: e99700cb8d5c097e6d2b97229a80a8357248ebfd
       body: ""
