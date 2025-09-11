@@ -1,4 +1,19 @@
 - commits:
+    - subject: "Core: worker: remove exponential backoff on flash status check"
+      hash: 047b3521068ff1019e970033f5de5108bc2f1cb6
+      body: |
+        the exponential backoff was unessessary and was wasting too much time
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: Ryan Cooke
+      nested: []
+  version: 2.36.32
+  title: ""
+  date: 2025-09-11T10:09:59.850Z
+- commits:
     - subject: Update balena-io/balena-cli to v22.4.3
       hash: b0c023c65a39b91dec8aece33d392c5b38fedac9
       body: |
