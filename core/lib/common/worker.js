@@ -219,9 +219,8 @@ module.exports = class Worker {
 				}
 			},
 			{
-				max_tries: 10,
-				interval: 1000 * 5,
-				backoff: 2, //exponential backoff, factor of 2 - results in checks in 5s, 10s, 20s, 40s, 1m20, 2m40 etc...
+				max_tries: 30,
+				interval: 1000 * 25,
 			}
 		);
 	}
