@@ -219,7 +219,7 @@ module.exports = class Worker {
 				}
 			},
 			{
-				max_tries: 30,
+				max_tries: 60,
 				interval: 1000 * 25,
 			}
 		);
