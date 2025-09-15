@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update balena-io/balena-cli to v22.4.4
+      hash: 6e686b6c6f822ffb85baec539b9f1f640b96aefa
+      body: |
+        Update balena-io/balena-cli from 22.4.3 to 22.4.4
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.36.35
+  title: ""
+  date: 2025-09-15T15:28:10.898Z
+- commits:
     - subject: "worker: extend total flashing timeout to 25 minutes"
       hash: 14f4119c37326f4f1bc1c2c5e5df243b6819d945
       body: |
