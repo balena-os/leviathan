@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update Lock file maintenance
+      hash: b6ed3bdab84a58bdadf56d9236254ed6d7ae4d45
+      body: |
+        Update 
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.36.33
+  title: ""
+  date: 2025-09-15T01:08:01.080Z
+- commits:
     - subject: "Core: worker: remove exponential backoff on flash status check"
       hash: 047b3521068ff1019e970033f5de5108bc2f1cb6
       body: |
