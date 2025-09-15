@@ -1,4 +1,28 @@
 - commits:
+    - subject: "worker: extend total flashing timeout to 25 minutes"
+      hash: 14f4119c37326f4f1bc1c2c5e5df243b6819d945
+      body: |
+        The total flashing time used to be:
+
+        30 tries × 25 seconds = 750 seconds (12.5 minutes)
+
+        This used to be on the limit of timeout for slowish SD cards and secure
+        boot flashers that need to boot and re-program
+
+        It's now double that time:
+
+        60 tries × 25 seconds = 1,500 seconds (25 minutes)
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Alex Gonzalez <alexg@balena.io>
+        signed-off-by: Alex Gonzalez <alexg@balena.io>
+      author: Alex Gonzalez
+      nested: []
+  version: 2.36.34
+  title: ""
+  date: 2025-09-15T09:54:47.218Z
+- commits:
     - subject: Update Lock file maintenance
       hash: b6ed3bdab84a58bdadf56d9236254ed6d7ae4d45
       body: |
