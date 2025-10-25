@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update actions/upload-artifact action to v5
+      hash: ebe9249cea7074f384efc0b47c9c03cecf4ae03e
+      body: |
+        Update actions/upload-artifact from 4 to 5
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.36.56
+  title: ""
+  date: 2025-10-25T00:59:58.363Z
+- commits:
     - subject: Update balena-io/balena-cli to v22.4.15
       hash: c76ba33a932e25f4936698134976d04fc0b2c396
       body: |
