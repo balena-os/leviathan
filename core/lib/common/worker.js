@@ -172,7 +172,8 @@ module.exports = class Worker {
 							'Content-Type': 'application/octet-stream',
 							'Content-Encoding': 'gzip'
 						},
-						duplex: 'half'
+						duplex: 'half',
+						signal: AbortSignal.timeout(1000*60*10), // setting 10 minute abort - hoping this overrides the default 5 minute one
 					});
 
 					if (!res.ok) {
