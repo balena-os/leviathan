@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update actions/checkout digest to 8e8c483
+      hash: 1ed496e0785aa3c6c9fb67f5edb924f05ac38319
+      body: |
+        Update actions/checkout
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.36.70
+  title: ""
+  date: 2025-12-06T00:59:37.406Z
+- commits:
     - subject: Update balena-os/leviathan-worker to v2.10.17
       hash: 9e307a2b5d3423729502a057beae1e3985fba66c
       body: |
