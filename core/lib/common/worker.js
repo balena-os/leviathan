@@ -195,8 +195,16 @@ module.exports = class Worker {
 		this.logger.log(`Image sent to worker successfully`);
 
 		// Initiate flashing process on the worker
-		await doRequest({ method: 'POST', uri: `${this.url}/dut/flashImage`});
-
+		const res = await doRequest({ method: 'POST', uri: `${this.url}/dut/flashImage`});
+		// set timeout tries based on response from worker - otherwise leave at default of 60 
+		let timeoutTries = 60;
+		try{ 
+			timeoutTries = Number(JSON.parse(res).timeoutTries)
+		} catch (e){
+			this.logger.log(`Using default number of flashing status checks...`)
+		}
+		this.logger.log(`Requested flashing of DUT, will check status ${timeoutTries} times before timing out...`)
+	
 		// Now wait for worker to flash DUT - poll the worker to check
 		await retry(
 			async () => {
@@ -219,7 +227,7 @@ module.exports = class Worker {
 				}
 			},
 			{
-				max_tries: 60,
+				max_tries: timeoutTries,
 				interval: 1000 * 25,
 			}
 		);
