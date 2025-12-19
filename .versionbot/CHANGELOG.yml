@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update balena-os/leviathan-worker to v2.10.20
+      hash: ceb7c8821ce44300169c59953e8f986d5ddd0452
+      body: |
+        Update balena-os/leviathan-worker from 2.10.18 to 2.10.20
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.36.76
+  title: ""
+  date: 2025-12-19T10:49:13.465Z
+- commits:
     - subject: "Core: worker: enable configurable flashing timeout"
       hash: fb6228264bcda7fc0be5c0db4ece37ee85089b87
       body: >
