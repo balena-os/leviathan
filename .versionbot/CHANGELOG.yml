@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update docker/setup-buildx-action digest to 8d2750c
+      hash: 53c1b3b7c93bd7f7f76220ce3b6cbcec88b7d342
+      body: |
+        Update docker/setup-buildx-action
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.36.77
+  title: ""
+  date: 2025-12-20T01:10:28.074Z
+- commits:
     - subject: Update balena-os/leviathan-worker to v2.10.20
       hash: ceb7c8821ce44300169c59953e8f986d5ddd0452
       body: |
