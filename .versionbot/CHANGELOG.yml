@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update actions/checkout digest to de0fac2
+      hash: 91755a73f22aba07a30a4d98ae9a54a238cd6154
+      body: |
+        Update actions/checkout
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.36.88
+  title: ""
+  date: 2026-02-07T01:16:49.329Z
+- commits:
     - subject: Update balena-os/leviathan-worker to v2.10.24
       hash: e4755da76f4ba6b251e9c5e859c8581f36fcffda
       body: |
