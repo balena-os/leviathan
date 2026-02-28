@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update actions/upload-artifact action to v7
+      hash: 7d2cb2e908f0035fe21da5eeb69e5b8626b94944
+      body: |
+        Update actions/upload-artifact from 6 to 7
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.36.95
+  title: ""
+  date: 2026-02-28T01:11:13.190Z
+- commits:
     - subject: Update balena-os/leviathan-worker to v2.10.27
       hash: a533ecf928b7ecc528491a76fe59733fbc5808ea
       body: |
