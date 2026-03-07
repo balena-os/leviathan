@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update docker/setup-buildx-action action to v4
+      hash: 37c171f8292611acc86a6ebf9a664f64b134b46b
+      body: |
+        Update docker/setup-buildx-action from 3 to 4
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.36.98
+  title: ""
+  date: 2026-03-07T03:29:41.922Z
+- commits:
     - subject: Update Lock file maintenance
       hash: e3904eb90cccd56f77b6d08fd771e6f8e3106888
       body: |
