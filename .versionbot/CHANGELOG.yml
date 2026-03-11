@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update core/contracts digest to ab2042b
+      hash: 9844b0bc7ed924da85ae18e1b36bc4e3f36f3c8e
+      body: |
+        Update core/contracts
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.36.101
+  title: ""
+  date: 2026-03-11T08:56:26.364Z
+- commits:
     - subject: Update core/contracts digest to 73054ac
       hash: 73abc9499c4b37ff48a09bde7726f95463d27455
       body: |
