@@ -1,4 +1,18 @@
 - commits:
+    - subject: "core/contracts: Update submodule to v2.0.142"
+      hash: a950ff11b6676135a00f246e4268123c13d26e22
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Alexandru Costache <alexandru@balena.io>
+        signed-off-by: Alexandru Costache <alexandru@balena.io>
+      author: Alexandru Costache
+      nested: []
+  version: 2.36.102
+  title: ""
+  date: 2026-04-10T10:18:35.246Z
+- commits:
     - subject: Update core/contracts digest to ab2042b
       hash: 9844b0bc7ed924da85ae18e1b36bc4e3f36f3c8e
       body: |
