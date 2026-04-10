@@ -42,7 +42,7 @@ jobs:
       WORKSPACE: ./workspace
       LEVIATHAN_ROOT: ./
       BALENACLOUD_ORG: testbot
-      BALENACLOUD_APP_NAME: balena/testbot-rig
+      BALENACLOUD_APP_NAME: balena/testbot-rig-aarch64
       WORKER_TYPE: ${{ matrix.WORKER_TYPE }}
       DEVICE_TYPE: ${{ matrix.DEVICE_TYPE }}
       # Used to pull pre-built client and core images
@@ -66,10 +66,10 @@ jobs:
             ENVIRONMENT_URL: balena-cloud.com
           - DEVICE_TYPE: generic-aarch64
             WORKER_TYPE: qemu
-            ENVIRONMENT_URL: bm.balena-dev.com
+            ENVIRONMENT_URL: balena-cloud.com
           - DEVICE_TYPE: raspberrypi3
             WORKER_TYPE: testbot
-            ENVIRONMENT_URL: bm.balena-dev.com
+            ENVIRONMENT_URL: balena-cloud.com
 
     steps:
       # https://github.com/actions/checkout
