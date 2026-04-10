@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update Lock file maintenance
+      hash: 8194a3c017cd0a86356e4a5e91e46801f02abc97
+      body: |
+        Update 
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.36.103
+  title: ""
+  date: 2026-04-10T11:33:28.387Z
+- commits:
     - subject: "core/contracts: Update submodule to v2.0.142"
       hash: a950ff11b6676135a00f246e4268123c13d26e22
       body: ""
