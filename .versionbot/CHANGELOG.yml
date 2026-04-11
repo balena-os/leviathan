@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update actions/upload-artifact digest to 043fb46
+      hash: 62e14d3058fe31d156aff97853942f9dbaea9db5
+      body: |
+        Update actions/upload-artifact
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.36.105
+  title: ""
+  date: 2026-04-11T01:39:14.274Z
+- commits:
     - subject: Update balena-os/leviathan-worker to v2.10.30
       hash: a8200231aa037f4bf9ddb4e7e6693527558be4ae
       body: |
