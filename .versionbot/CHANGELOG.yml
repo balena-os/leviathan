@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update core/contracts digest to 7c3bf64
+      hash: e24bce4eabaae877a5e9497dd8e5777bf10c66bf
+      body: |
+        Update core/contracts
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.36.108
+  title: ""
+  date: 2026-04-22T09:23:40.879Z
+- commits:
     - subject: Update Lock file maintenance
       hash: fc31934417d90ee46827e6c75c028022c420922f
       body: |
