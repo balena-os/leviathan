@@ -89,10 +89,15 @@ module.exports = {
 				)
 
 				// we want to waitUntil here as the supervisor may take some time to come online.
+				// /ping is unauthenticated and unconditional, so it passes whenever the
+				// supervisor process is up. /v1/healthy includes a connectivity check
+				// that requires the device to be actively reporting state to balena-cloud,
+				// which the DUT in this suite never does (provisioned in local mode and
+				// not registered to a fleet).
 				await test.resolves(
 					this.utils.waitUntil(async () => {
 						const healthy = await this.worker.executeCommandInHostOS(
-							`curl --max-time 10 "localhost:48484/v1/healthy"`,
+							`curl --max-time 10 "localhost:48484/ping"`,
 							this.link
 						)
 						return (healthy === 'OK')
