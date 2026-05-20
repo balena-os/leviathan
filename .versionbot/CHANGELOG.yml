@@ -1,4 +1,43 @@
 - commits:
+    - subject: "e2e: probe supervisor /ping instead of /v1/healthy"
+      hash: 8d1d5e8b554e0b63ed1320244543e4d114393436
+      body: >
+        balena-supervisor v17.6.26 fixed an inverted boolean in the connectivity
+
+        healthcheck (balena-os/balena-supervisor@22e4d646), so /v1/healthy now
+
+        correctly returns 500 when the device isn't actively reporting state to
+
+        balena-cloud. The QEMU DUT in this suite is provisioned in local mode
+        and
+
+        isn't registered to a fleet, so the supervisor never establishes that
+
+        report, deviceState.connected stays false, and the post-fix supervisor
+
+        honestly reports unhealthy. This has blocked every leviathan-worker PR
+
+        since 2026-04-30.
+
+
+        /ping is what this test actually wants: unauthenticated, no internal
+
+        checks, returns "OK" if the supervisor process is up. meta-balena did
+
+        the same thing in tests/suites/cloud/suite.js after hitting this on
+
+        2026-04-22 (balena-os/meta-balena@6afa76bd).
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 2.36.110
+  title: ""
+  date: 2026-05-20T18:40:21.433Z
+- commits:
     - subject: Update Lock file maintenance
       hash: 70f8357cca3a4a73911c2e049be08c570a0e2bfb
       body: |
