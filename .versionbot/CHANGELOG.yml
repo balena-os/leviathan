@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update balena-io/balena-cli to v25
+      hash: 21225003a53c571f4c4d1d3396dca862f8ad4703
+      body: |
+        Update balena-io/balena-cli from 22.5.5 to 25.1.6
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.36.111
+  title: ""
+  date: 2026-05-21T13:58:26.221Z
+- commits:
     - subject: "e2e: probe supervisor /ping instead of /v1/healthy"
       hash: 8d1d5e8b554e0b63ed1320244543e4d114393436
       body: >
