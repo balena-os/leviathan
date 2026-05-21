@@ -154,7 +154,7 @@ module.exports = class Worker {
 		await pipeline(
 			fs.createReadStream(imagePath),
 			createGzip({ level: 6 }),
-			fs.createWriteStream(GZIP_PATH)		
+			fs.createWriteStream(GZIP_PATH)
 		);
 
 		let attempt = 0;
@@ -179,7 +179,7 @@ module.exports = class Worker {
 						const errorBody = await res.text();
 						throw new Error(`HTTP error! Status: ${res.status}, Body: ${errorBody}`);
 					}
-					
+
 				} catch(e) {
 					throw new Error(e);
 				}
@@ -196,22 +196,22 @@ module.exports = class Worker {
 
 		// Initiate flashing process on the worker
 		const res = await doRequest({ method: 'POST', uri: `${this.url}/dut/flashImage`});
-		// set timeout tries based on response from worker - otherwise leave at default of 60 
+		// set timeout tries based on response from worker - otherwise leave at default of 60
 		let timeoutTries = 60;
-		try{ 
+		try{
 			timeoutTries = Number(JSON.parse(res).timeoutTries)
 		} catch (e){
 			this.logger.log(`Using default number of flashing status checks...`)
 		}
 		this.logger.log(`Requested flashing of DUT, will check status ${timeoutTries} times before timing out...`)
-	
+
 		// Now wait for worker to flash DUT - poll the worker to check
 		await retry(
 			async () => {
 				this.logger.log(`Checking if DUT is flashed...`);
 				// check flashing state
 				let flashState = await doRequest({ uri: `${this.url}/dut/flashState` });
-				
+
 				switch(flashState){
 					case "DONE":
 						this.logger.log('Flashing completed!');
@@ -516,6 +516,7 @@ module.exports = class Worker {
 			// This makes the worker SSH port accessible to the core
 			if(!this.localConnect){
 				let argsClient = [
+					`device`,
 					`tunnel`,
 					this.uuid,
 					`-p`,
