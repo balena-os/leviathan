@@ -1,4 +1,21 @@
 - commits:
+    - subject: "core/lib: Make Protected Management Frames (PMF) support optional /
+        disabled when creating the wifi connection profile"
+      hash: 2f56cc2c38b830a81492ddec574b91644953e16e
+      body: |
+        We have a case where not setting this to optional will cause issues
+        when authenticating to an AP created by the worker (a RPi 4 worker).
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Florin Sarbu <florin@balena.io>
+        signed-off-by: Florin Sarbu <florin@balena.io>
+      author: Florin Sarbu
+      nested: []
+  version: 2.36.112
+  title: ""
+  date: 2026-06-10T14:29:15.175Z
+- commits:
     - subject: Update balena-io/balena-cli to v25
       hash: 21225003a53c571f4c4d1d3396dca862f8ad4703
       body: |
