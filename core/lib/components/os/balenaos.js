@@ -115,6 +115,7 @@ const injectNetworkConfiguration = async (image, configuration, partition = 1) =
 			'[wifi-security]',
 			'auth-alg=open',
 			'key-mgmt=wpa-psk',
+			'pmf=1',
 			`psk=${configuration.wireless.psk}`,
 		]);
 	}
