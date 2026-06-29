@@ -164,15 +164,32 @@ module.exports = class Worker {
 				this.logger.log(`Sending image to worker, attempt ${attempt}...`);
 				// Send image to worker
 
-				try{
+				try {
+						// Check if the file actually exists before doing anything else
+						if (!fs.existsSync(GZIP_PATH)) {
+						    this.logger.log(`CRITICAL ERROR: The file ${GZIP_PATH} was not found at path: ${process.cwd()}/${GZIP_PATH}`);
+						}
+
+						const fileStats = fs.statSync(GZIP_PATH);
+						const zippedSizeInBytes = fileStats.size;
+
+						this.logger.log(`Calculated stream size: ${zippedSizeInBytes} bytes. Forcing Content-Length header.`);
+
+						const fileStream = fs.createReadStream(GZIP_PATH, {
+						    highWaterMark: 256 * 1024 // 256KB chunks (perfect throttle management for Cloudlink)
+						});
+
 						const res = await fetch(`${this.url}/dut/sendImage`, {
 						method: 'POST',
-						body: fs.createReadStream(GZIP_PATH),
+						body: fileStream,
 						headers: {
 							'Content-Type': 'application/octet-stream',
-							'Content-Encoding': 'gzip'
+							'Content-Encoding': 'gzip',
+							'Content-Length': zippedSizeInBytes.toString(),
+							'Connection': 'keep-alive'
 						},
-						duplex: 'half'
+						duplex: 'half',
+						timeout: 600000
 					});
 
 					if (!res.ok) {
@@ -181,6 +198,8 @@ module.exports = class Worker {
 					}
 
 				} catch(e) {
+					// Log the exact error causing the try block to fail
+					this.logger.log(`Failed inside try block during attempt ${attempt}. Error: ${e.message}`);
 					throw new Error(e);
 				}
 			},
