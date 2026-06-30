@@ -27,7 +27,6 @@ services:
 
   core:
     build: core
-    image: ghcr.io/balena-os/leviathan:${CORE_TAG:-latest-core}
     privileged: true # preload requires docker-in-docker
     volumes:
       - core-storage:/data
