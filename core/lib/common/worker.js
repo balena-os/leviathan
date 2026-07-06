@@ -161,26 +161,61 @@ module.exports = class Worker {
 		await retry(
 			async () => {
 				attempt++;
-				this.logger.log(`Sending image to worker, attempt ${attempt}...`);
+				this.logger.log(`Beginning segmented transfer to worker, attempt ${attempt}...`);
 				// Send image to worker
 
 				try{
-						const res = await fetch(`${this.url}/dut/sendImage`, {
-						method: 'POST',
-						body: fs.createReadStream(GZIP_PATH),
+					// size of the chunk to be sent over Cloudlink can be specified with an env var in the worker dashboard (or default to 40 MiB)
+					const handshakeRes = await fetch(`${this.url}/dut/sendImage/chunkSize`, {
+						method: 'GET',
 						headers: {
-							'Content-Type': 'application/octet-stream',
-							'Content-Encoding': 'gzip'
-						},
-						duplex: 'half'
+							'Accept': 'application/json'
+						}
 					});
 
-					if (!res.ok) {
-						const errorBody = await res.text();
-						throw new Error(`HTTP error! Status: ${res.status}, Body: ${errorBody}`);
+					if (!handshakeRes.ok) {
+						const badStatusText = await handshakeRes.text();
+						throw new Error(`Handshake failed with status ${handshakeRes.status}: ${badStatusText}`);
 					}
 
+					const { chunkMiB } = await handshakeRes.json();
+					this.logger.log(`Worker requested segment size: ${chunkMiB} MiB.`);
+					const CHUNK_SIZE = chunkMiB * 1024 * 1024;
+
+					const wholeFileBuffer = fs.readFileSync(GZIP_PATH);
+					const totalBytes = wholeFileBuffer.length;
+					const totalChunks = Math.ceil(totalBytes / CHUNK_SIZE);
+
+					this.logger.log(`Splitting ${totalBytes} bytes into ${totalChunks} chunks.`);
+
+					for (let i = 0; i < totalChunks; i++) {
+						const start = i * CHUNK_SIZE;
+						const end = Math.min(start + CHUNK_SIZE, totalBytes);
+						const chunkSlice = wholeFileBuffer.subarray(start, end);
+
+						this.logger.log(`Uploading chunk [${i + 1}/${totalChunks}] (${chunkSlice.length} bytes)...`);
+
+						const res = await fetch(`${this.url}/dut/sendImage`, {
+							method: 'POST',
+							body: chunkSlice,
+							headers: {
+								'Content-Type': 'application/octet-stream',
+								'x-chunk-index': i.toString(),
+								'x-total-chunks': totalChunks.toString(),
+								'Content-Length': chunkSlice.length.toString(),
+								'Connection': 'keep-alive'
+							},
+							duplex: 'half'
+						});
+
+						if (!res.ok) {
+							const errorMsg = await res.text();
+							throw new Error(`Chunk ${i} failed. Proxy trace: ${errorMsg}`);
+						}
+					}
+					this.logger.log(`Segmented image delivery completely verified!`);
 				} catch(e) {
+					this.logger.log(`Failed inside try block during attempt ${attempt}. Error: ${e.message}`);
 					throw new Error(e);
 				}
 			},
