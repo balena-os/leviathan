@@ -32,7 +32,7 @@
 	"devDependencies": {
 		"@balena/lint": "^6.2.1",
 		"typedoc": "0.26.11",
-		"typescript": "^4.9.4",
+		"typescript": "4.9.5",
 		"typedoc-plugin-redirect": "1.2.0"
 	},
 	"engines": {
