@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update Pin dependencies
+      hash: 5537646dc477be9cfbc625732ee3505dbb09b5f6
+      body: |
+        Update alpine
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.36.114
+  title: ""
+  date: 2026-07-14T03:57:00.771Z
+- commits:
     - subject: Update balena-os/leviathan-worker to v2.10.35
       hash: 22f6b08c504f610ff41cebb1250f072d38a8ae10
       body: |
