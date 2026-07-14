@@ -1,4 +1,4 @@
-FROM debian:bullseye-slim AS balena-cli
+FROM debian:bullseye-slim@sha256:cba95a21c96c1f5fc2470081829363eed57706634f7dc26e8c6712934303d57a AS balena-cli
 
 WORKDIR /tmp
 
@@ -25,7 +25,7 @@ RUN ARCH="$(dpkg --print-architecture | sed 's/amd/x/')" && \
   balena version
 
 # The standalone balena-cli package is currently glibc only (no alpine/musl support)
-FROM node:22.14.0-bullseye-slim AS base
+FROM node:22.14.0-bullseye-slim@sha256:73a9dfbb6c761aebdf4666cce2627635a30d1d4c20f67ff642d01b8f09e709a3 AS base
 
 WORKDIR /usr/app
 

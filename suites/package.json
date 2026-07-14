@@ -4,16 +4,16 @@
 		"lint": "eslint --fix -c ./.eslintrc.* e2e"
 	},
 	"devDependencies": {
-		"eslint": "^8.46.0",
-		"eslint-config-prettier": "^9.0.0",
-		"eslint-config-standard": "^17.1.0",
-		"eslint-plugin-import": "^2.28.0",
-		"eslint-plugin-jsdoc": "^46.4.6",
-		"eslint-plugin-lodash": "^7.4.0",
-		"eslint-plugin-node": "^11.1.0",
-		"eslint-plugin-prettier": "^5.0.0",
-		"eslint-plugin-promise": "^6.1.1",
-		"prettier": "^3.0.1"
+		"eslint": "8.57.1",
+		"eslint-config-prettier": "9.1.2",
+		"eslint-config-standard": "17.1.0",
+		"eslint-plugin-import": "2.32.0",
+		"eslint-plugin-jsdoc": "46.10.1",
+		"eslint-plugin-lodash": "7.4.0",
+		"eslint-plugin-node": "11.1.0",
+		"eslint-plugin-prettier": "5.5.5",
+		"eslint-plugin-promise": "6.6.0",
+		"prettier": "3.8.3"
 	},
 	"dependencies": {}
 }
