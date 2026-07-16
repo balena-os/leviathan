@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update core/contracts digest to a4ab96e
+      hash: 1d08e06becceab517b3bf59785506374f89680a6
+      body: |
+        Update core/contracts
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.36.115
+  title: ""
+  date: 2026-07-16T15:30:43.032Z
+- commits:
     - subject: Update Pin dependencies
       hash: 5537646dc477be9cfbc625732ee3505dbb09b5f6
       body: |
