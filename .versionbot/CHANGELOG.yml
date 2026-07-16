@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update alpine Docker tag to v3.18.12
+      hash: 74674b09da2cc584e568525c18f60f53a0fce6c9
+      body: |
+        Update alpine from 3.18.2 to 3.18.12
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.36.116
+  title: ""
+  date: 2026-07-16T18:07:12.467Z
+- commits:
     - subject: Update core/contracts digest to a4ab96e
       hash: 1d08e06becceab517b3bf59785506374f89680a6
       body: |
