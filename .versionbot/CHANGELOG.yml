@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update balena-io/balena-cli to v25.1.10
+      hash: 98875d087a325e946954d7d7333041d27950e004
+      body: |
+        Update balena-io/balena-cli from 25.1.6 to 25.1.10
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.36.118
+  title: ""
+  date: 2026-07-23T20:24:06.164Z
+- commits:
     - subject: "core/lib/common/worker.js: improve reliability of segmented image
         upload"
       hash: 4f74158ead6a155486fe3b1bc1a6db18e7b8ad16
