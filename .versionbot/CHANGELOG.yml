@@ -1,4 +1,60 @@
 - commits:
+    - subject: "core/lib/common/worker.js: improve reliability of segmented image
+        upload"
+      hash: 4f74158ead6a155486fe3b1bc1a6db18e7b8ad16
+      body: >
+        Requests to the worker go over the balenaCloud proxy tunnel, which can
+        stall a
+
+        socket silently instead of erroring it out, and neither the chunk
+        handshake
+
+        nor the chunk uploads had any timeout to catch that. Adds an abort-based
+
+        timeout to every request, retries the handshake itself instead of only
+
+        individual chunks, fails fast on non-retryable 4xx responses instead of
+
+        wasting minutes retrying them, and guards against a degenerate chunk
+        size
+
+        turning into an endless loop of empty uploads.
+
+
+        Chunks are now read via fs.createReadStream per attempt instead of
+        buffering
+
+        a whole chunk-sized region in memory. Content-Length is set explicitly,
+        since
+
+        fetch can't measure a stream's length up front the way it can for a
+        Buffer,
+
+        and the worker requires it. Each chunk attempt gets a flat 5-minute
+        timeout
+
+        rather than a per-progress idle timeout - fetch has no way to observe
+        real
+
+        network write progress for a streamed body, only how fast the chunk can
+        be
+
+        read off local disk, which finishes long before a slow upload actually
+
+        completes. A flat cap avoids that mismatch entirely by not trying to
+
+        interpret progress at all.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: guille-vega <guillermo.vega@balena.io>
+        signed-off-by: guille-vega <guillermo.vega@balena.io>
+      author: guille-vega
+      nested: []
+  version: 2.36.117
+  title: ""
+  date: 2026-07-23T18:49:48.174Z
+- commits:
     - subject: Update alpine Docker tag to v3.18.12
       hash: 74674b09da2cc584e568525c18f60f53a0fce6c9
       body: |
