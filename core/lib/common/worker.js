@@ -157,76 +157,135 @@ module.exports = class Worker {
 			fs.createWriteStream(GZIP_PATH)
 		);
 
-		let attempt = 0;
-		await retry(
+		// Requests to the worker go over the balenaCloud proxy tunnel, which can stall a socket
+		// silently instead of erroring it out. Without an explicit timeout a stalled request hangs
+		// forever instead of being retried, so every fetch below is bounded with an abort timeout.
+		const fetchWithTimeout = async (url, options, timeoutMs) => {
+			const controller = new AbortController();
+			const timeout = setTimeout(() => controller.abort(), timeoutMs);
+			try {
+				return await fetch(url, { ...options, signal: controller.signal });
+			} finally {
+				clearTimeout(timeout);
+			}
+		};
+
+		// A 4xx means the worker rejected the request itself (bad auth, bad request, etc) - that
+		// won't change if we send the exact same thing again, so don't burn minutes retrying it.
+		// 408/429 and 5xx are the server telling us to try again, and anything that never got a
+		// response at all (timeout/network drop) is always worth retrying.
+		const isRetryableStatus = status => status >= 500 || status === 408 || status === 429;
+		const causeOf = e => (e instanceof retry.StopError && e.err instanceof Error ? e.err : e);
+
+		// Size of the chunk to be sent over Cloudlink can be specified with an env var in the worker
+		// dashboard (or default to 40 MiB). The handshake goes over the same flaky proxy connection
+		// as the chunk uploads, so it gets the same retry treatment rather than failing the whole
+		// flash on the first hiccup.
+		const { chunkMiB } = await retry(
 			async () => {
-				attempt++;
-				this.logger.log(`Beginning segmented transfer to worker, attempt ${attempt}...`);
-				// Send image to worker
-
-				try{
-					// size of the chunk to be sent over Cloudlink can be specified with an env var in the worker dashboard (or default to 40 MiB)
-					const handshakeRes = await fetch(`${this.url}/dut/sendImage/chunkSize`, {
-						method: 'GET',
-						headers: {
-							'Accept': 'application/json'
-						}
-					});
-
-					if (!handshakeRes.ok) {
-						const badStatusText = await handshakeRes.text();
-						throw new Error(`Handshake failed with status ${handshakeRes.status}: ${badStatusText}`);
+				const handshakeRes = await fetchWithTimeout(`${this.url}/dut/sendImage/chunkSize`, {
+					method: 'GET',
+					headers: {
+						'Accept': 'application/json'
 					}
+				}, 30 * 1000);
 
-					const { chunkMiB } = await handshakeRes.json();
-					this.logger.log(`Worker requested segment size: ${chunkMiB} MiB.`);
-					const CHUNK_SIZE = chunkMiB * 1024 * 1024;
+				if (!handshakeRes.ok) {
+					const badStatusText = await handshakeRes.text();
+					const err = new Error(`Handshake failed with status ${handshakeRes.status}: ${badStatusText}`);
+					throw isRetryableStatus(handshakeRes.status) ? err : new retry.StopError(err);
+				}
 
-					const wholeFileBuffer = fs.readFileSync(GZIP_PATH);
-					const totalBytes = wholeFileBuffer.length;
-					const totalChunks = Math.ceil(totalBytes / CHUNK_SIZE);
+				return handshakeRes.json();
+			},
+			{
+				max_tries: 5,
+				interval: 1000 * 5,
+				throw_original: true,
+				backoff: 2,
+			}
+		);
 
-					this.logger.log(`Splitting ${totalBytes} bytes into ${totalChunks} chunks.`);
+		this.logger.log(`Worker requested segment size: ${chunkMiB} MiB.`);
+		const chunkSize = chunkMiB * 1024 * 1024;
+		// Guard against a malformed/zero chunk size turning into an endless loop of empty uploads.
+		if (!Number.isFinite(chunkSize) || chunkSize <= 0) {
+			throw new Error(`Worker returned an invalid chunk size: ${chunkMiB} MiB.`);
+		}
 
-					for (let i = 0; i < totalChunks; i++) {
-						const start = i * CHUNK_SIZE;
-						const end = Math.min(start + CHUNK_SIZE, totalBytes);
-						const chunkSlice = wholeFileBuffer.subarray(start, end);
+		const totalBytes = fs.statSync(GZIP_PATH).size;
+		const totalChunks = Math.ceil(totalBytes / chunkSize);
 
-						this.logger.log(`Uploading chunk [${i + 1}/${totalChunks}] (${chunkSlice.length} bytes)...`);
+		this.logger.log(`Splitting ${totalBytes} bytes into ${totalChunks} chunks.`);
 
-						const res = await fetch(`${this.url}/dut/sendImage`, {
+		// Generous enough to cover a full chunk transfer over a slow link, short enough that a
+		// stalled connection gets aborted and retried instead of hanging for the rest of the job.
+		// A per-progress idle timeout was tried here instead of this flat cap, but fetch has no
+		// way to observe real network write progress for a streamed body - only how fast we can
+		// read the chunk off local disk, which finishes long before a slow upload actually
+		// completes. That made the idle timeout fire on connections that were still genuinely
+		// transferring data, just slowly. A flat cap doesn't have that problem: it doesn't try to
+		// interpret progress at all, it just bounds the whole attempt.
+		const CHUNK_TIMEOUT_MS = 5 * 60 * 1000;
+
+		// Sequentially process each segment index
+		for (let i = 0; i < totalChunks; i++) {
+			const start = i * chunkSize;
+			const chunkLength = Math.min(chunkSize, totalBytes - start);
+
+			let chunkAttempt = 0;
+
+			// Isolated chunk-level retry to safely absorb individual fetch drops without
+			// re-uploading earlier, already-successful chunks.
+			await retry(
+				async () => {
+					chunkAttempt++;
+					this.logger.log(`Uploading chunk [${i + 1}/${totalChunks}] (${chunkLength} bytes), attempt ${chunkAttempt}...`);
+
+					// Streams can only be consumed once, so every attempt (including retries) needs
+					// its own fresh read of this chunk's byte range off disk. Streaming avoids
+					// holding a whole chunk-sized buffer in memory the way reading it up front would.
+					const chunkStream = fs.createReadStream(GZIP_PATH, { start, end: start + chunkLength - 1 });
+
+					try {
+						// fetch can't see a stream's total length up front, so it falls back to
+						// chunked transfer-encoding unless we set Content-Length ourselves - and the
+						// worker requires it (411s a request without one).
+						const res = await fetchWithTimeout(`${this.url}/dut/sendImage`, {
 							method: 'POST',
-							body: chunkSlice,
+							body: chunkStream,
 							headers: {
 								'Content-Type': 'application/octet-stream',
 								'x-chunk-index': i.toString(),
 								'x-total-chunks': totalChunks.toString(),
-								'Content-Length': chunkSlice.length.toString(),
-								'Connection': 'keep-alive'
+								'Content-Length': chunkLength.toString(),
 							},
 							duplex: 'half'
-						});
+						}, CHUNK_TIMEOUT_MS);
 
 						if (!res.ok) {
 							const errorMsg = await res.text();
-							throw new Error(`Chunk ${i} failed. Proxy trace: ${errorMsg}`);
+							const err = new Error(`Chunk ${i + 1} failed with status ${res.status}. Proxy trace: ${errorMsg}`);
+							throw isRetryableStatus(res.status) ? err : new retry.StopError(err);
 						}
+					} catch(e) {
+						chunkStream.destroy();
+						const cause = causeOf(e);
+						const reason = cause.name === 'AbortError' ? `timed out after ${CHUNK_TIMEOUT_MS}ms` : cause.message;
+						this.logger.log(`Chunk ${i + 1} upload attempt ${chunkAttempt} failed: ${reason}`);
+						throw e;
 					}
-					this.logger.log(`Segmented image delivery completely verified!`);
-				} catch(e) {
-					this.logger.log(`Failed inside try block during attempt ${attempt}. Error: ${e.message}`);
-					throw new Error(e);
+				},
+				{
+					max_tries: 5,
+					interval: 1000 * 10,
+					throw_original: true,
+					backoff: 2, // Exponential backoff results in individual chunk retries at 10s, 20s, 40s...
 				}
-			},
-			{
-				max_tries: 5,
-				interval: 1000 * 10,
-				throw_original: true,
-				backoff: 2, //exponential backoff factor of 2 - results in retries at 10s, 20s, 40s, 1m20, 2m40
-			},
-		);
+			);
+		}
 
+		this.logger.log(`Segmented image delivery completely verified!`);
 		this.logger.log(`Image sent to worker successfully`);
 
 		// Initiate flashing process on the worker
