@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update balena-os/leviathan-worker to v2.10.41
+      hash: e5c16f9c9356eb6dbe83a75e619445f4944c0841
+      body: |
+        Update balena-os/leviathan-worker from 2.10.40 to 2.10.41
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.36.120
+  title: ""
+  date: 2026-07-24T01:30:01.349Z
+- commits:
     - subject: Update balena-os/leviathan-worker to v2.10.40
       hash: f97103115bf88ac4c56fa901d44f79f62d8fecbf
       body: |
