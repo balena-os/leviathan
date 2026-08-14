@@ -205,7 +205,10 @@ module.exports = class BalenaOS {
 				this.bootPartition = 4;
 				break;
 			case '243390-rpi3':
-				this.network.wireless.interfaceName = 'interface-name=wlan0';
+				if (this.network?.wireless) {
+					this.network.wireless.interfaceName = 'interface-name=wlan0';
+				}
+				break;
 			default:
 				this.bootPartition = 1;
 		}
