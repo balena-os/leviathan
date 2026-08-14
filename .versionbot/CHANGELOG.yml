@@ -1,4 +1,18 @@
 - commits:
+    - subject: "Core: worker: fix error with custom DT"
+      hash: 0c91241eb7be4a12fec38d5922d0b872977b143c
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Ryan Cooke <ryan@balena.io>
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+      author: Ryan Cooke
+      nested: []
+  version: 2.36.121
+  title: ""
+  date: 2026-08-14T22:12:01.578Z
+- commits:
     - subject: Update balena-os/leviathan-worker to v2.10.41
       hash: e5c16f9c9356eb6dbe83a75e619445f4944c0841
       body: |
