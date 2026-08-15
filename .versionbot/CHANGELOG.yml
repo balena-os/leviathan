@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update core/contracts digest to 410a252
+      hash: 8a21458fb5fd4dafdb707807dbf8c280e639abe9
+      body: |
+        Update core/contracts
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.36.123
+  title: ""
+  date: 2026-08-15T01:41:19.777Z
+- commits:
     - subject: Update alpine Docker tag to v3.24.1
       hash: 4f2b145b0cfeede1cc8711015794b6c9cccd390a
       body: |
