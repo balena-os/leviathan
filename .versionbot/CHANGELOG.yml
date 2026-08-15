@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update debian:bullseye-slim Docker digest to f313b4b
+      hash: 6f3ff3ca4c85254bb08941b74b1e91953f4a9f7e
+      body: |
+        Update debian
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.36.124
+  title: ""
+  date: 2026-08-15T03:01:13.603Z
+- commits:
     - subject: Update core/contracts digest to 410a252
       hash: 8a21458fb5fd4dafdb707807dbf8c280e639abe9
       body: |
