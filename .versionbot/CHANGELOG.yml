@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update alpine Docker tag to v3.24.1
+      hash: 4f2b145b0cfeede1cc8711015794b6c9cccd390a
+      body: |
+        Update alpine from 3.18.12 to 3.24.1
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.36.122
+  title: ""
+  date: 2026-08-15T00:05:18.689Z
+- commits:
     - subject: "Core: worker: fix error with custom DT"
       hash: 0c91241eb7be4a12fec38d5922d0b872977b143c
       body: ""
