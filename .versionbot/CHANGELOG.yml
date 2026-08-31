@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update docker/dockerfile:1 Docker digest to ecfaec9
+      hash: fc64fb88bbb075153064a80145255e1df46817c2
+      body: |
+        Update docker/dockerfile
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.36.125
+  title: ""
+  date: 2026-08-31T18:47:38.756Z
+- commits:
     - subject: Update debian:bullseye-slim Docker digest to f313b4b
       hash: 6f3ff3ca4c85254bb08941b74b1e91953f4a9f7e
       body: |
