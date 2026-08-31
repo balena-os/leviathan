@@ -209,6 +209,11 @@ module.exports = class BalenaOS {
 					this.network.wireless.interfaceName = 'interface-name=wlan0';
 				}
 				break;
+      case (this.deviceType.match(/^imx8m.*16a1$/) || {}).input:
+        if (this.network?.wireless) {
+					this.network.wireless.interfaceName = 'interface-name=mlan0';
+				}
+				break;
 			default:
 				this.bootPartition = 1;
 		}
