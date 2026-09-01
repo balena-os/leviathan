@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update balena-io/balena-cli to v25.2.6
+      hash: eec3527a72122438afc5a3c33e19f540ba4cf3fa
+      body: |
+        Update balena-io/balena-cli from 25.1.10 to 25.2.6
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.36.130
+  title: ""
+  date: 2026-09-01T15:00:10.320Z
+- commits:
     - subject: Update debian:bullseye-slim Docker digest to e5b6442
       hash: b66da6609226bd658c82a52dd6874de712e0b503
       body: |
