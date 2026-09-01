@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update debian:bullseye-slim Docker digest to e5b6442
+      hash: b66da6609226bd658c82a52dd6874de712e0b503
+      body: |
+        Update debian
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.36.129
+  title: ""
+  date: 2026-09-01T13:01:41.531Z
+- commits:
     - subject: Update flowzonify to v0.4.2
       hash: 9758f79bf7a641855e31e223f3cd1652a923a7ca
       body: |
