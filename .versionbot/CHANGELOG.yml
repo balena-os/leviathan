@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update flowzonify to v0.4.2
+      hash: 9758f79bf7a641855e31e223f3cd1652a923a7ca
+      body: |
+        Update flowzonify from 0.0.0 to 0.4.2
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.36.128
+  title: ""
+  date: 2026-09-01T12:07:02.931Z
+- commits:
     - subject: Update core/contracts digest to 93b3001
       hash: 7dbf89eccf51f79c8877a6c42a9f836d9c7ea510
       body: |
