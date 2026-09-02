@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update Node.js
+      hash: 17b2e1ed1544c90d8d63d97c8ff0edef7474a9c7
+      body: |
+        Update node from 22.14.0 to 22.23.2
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+      nested: []
+  version: 2.36.132
+  title: ""
+  date: 2026-09-02T20:19:30.667Z
+- commits:
     - subject: Update actions/checkout action to v7
       hash: 7c0b1f2bd84b4b3d08b28c566ed1156234d7d56a
       body: |
