@@ -5,6 +5,25 @@ WORKDIR /tmp
 ENV DEBCONF_NONINTERACTIVE_SEEN=true
 ENV DEBIAN_FRONTEND=noninteractive
 
+# bullseye LTS ended 2026-08-31 and packages are being deleted from the live
+# mirrors while the index still advertises them, so apt 404s mid-build.
+# archive.debian.org is no use here: it is frozen at point release 11.11, whose
+# libc6-dev/libssl-dev pin exact runtime versions older than the ones this image
+# already has installed, so they cannot be co-installed.
+# The snapshot archive matching this image tag is consistent by construction,
+# because the image was built from it. The base image ships both sets of lines
+# in /etc/apt/sources.list, so flipping which are commented takes the timestamp
+# from the image and stays correct when the base tag is bumped. The grep fails
+# the build if a future base image stops shipping snapshot lines.
+# Snapshot Release files are historical, so their Valid-Until has passed.
+# See meta-balena#3938.
+RUN sed -i -E \
+	-e 's|^deb +http://deb\.debian\.org|# &|' \
+	-e 's|^# *(deb +http://snapshot\.debian\.org)|\1|' \
+	/etc/apt/sources.list \
+	&& grep -q '^deb http://snapshot\.debian\.org' /etc/apt/sources.list \
+	&& printf 'Acquire::Check-Valid-Until "false";\nAcquire::Retries "3";\n' > /etc/apt/apt.conf.d/99snapshot
+
 # hadolint ignore=DL3008
 RUN apt-get update && apt-get install --no-install-recommends -y \
   ca-certificates \
@@ -26,6 +45,25 @@ RUN ARCH="$(dpkg --print-architecture | sed 's/amd/x/')" && \
 
 # The standalone balena-cli package is currently glibc only (no alpine/musl support)
 FROM node:22.23.2-bullseye-slim@sha256:5736e7ef1f3f2109be7ef8aea0cbdf931804aee9a18c6760507b8ded078b25a9 AS base
+
+# bullseye LTS ended 2026-08-31 and packages are being deleted from the live
+# mirrors while the index still advertises them, so apt 404s mid-build.
+# archive.debian.org is no use here: it is frozen at point release 11.11, whose
+# libc6-dev/libssl-dev pin exact runtime versions older than the ones this image
+# already has installed, so they cannot be co-installed.
+# The snapshot archive matching this image tag is consistent by construction,
+# because the image was built from it. The base image ships both sets of lines
+# in /etc/apt/sources.list, so flipping which are commented takes the timestamp
+# from the image and stays correct when the base tag is bumped. The grep fails
+# the build if a future base image stops shipping snapshot lines.
+# Snapshot Release files are historical, so their Valid-Until has passed.
+# See meta-balena#3938.
+RUN sed -i -E \
+	-e 's|^deb +http://deb\.debian\.org|# &|' \
+	-e 's|^# *(deb +http://snapshot\.debian\.org)|\1|' \
+	/etc/apt/sources.list \
+	&& grep -q '^deb http://snapshot\.debian\.org' /etc/apt/sources.list \
+	&& printf 'Acquire::Check-Valid-Until "false";\nAcquire::Retries "3";\n' > /etc/apt/apt.conf.d/99snapshot
 
 WORKDIR /usr/app
 
