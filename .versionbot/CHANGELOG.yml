@@ -1,4 +1,18 @@
 - commits:
+    - subject: "core/contracts: Update to v2.0.150"
+      hash: 18fd631e06246b8194fc5af204094aea3d9a6c19
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Alexandru Costache <alexandru@balena.io>
+        signed-off-by: Alexandru Costache <alexandru@balena.io>
+      author: Alexandru Costache
+      nested: []
+  version: 2.36.133
+  title: ""
+  date: 2026-09-22T06:46:24.856Z
+- commits:
     - subject: Update Node.js
       hash: 17b2e1ed1544c90d8d63d97c8ff0edef7474a9c7
       body: |
