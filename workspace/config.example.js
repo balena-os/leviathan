@@ -37,7 +37,11 @@ module.exports = [
 		// https://balena-os.github.io/leviathan/pages/Getting-Started/config-reference.html#different-workers-configurations-available
 		workers: {
 			balenaApplication: 'testbot-personal',
-			apiKey: process.env.BALENACLOUD_API_KEY
+			apiKey: process.env.BALENACLOUD_API_KEY,
+			// Optional. Set both when the rig fleet lives on another environment than the
+			// DUT, for example a production rig driving a device managed by staging.
+			// Both default to the balenaApiUrl and balenaApiKey above.
+			// apiUrl: 'balena-cloud.com',
 		},
 
 		debug: {

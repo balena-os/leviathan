@@ -338,8 +338,12 @@ class NonInteractiveState {
 				});
 			});
 		} else if (runConfig.workers instanceof Object) {
-			const balenaCloud = new BalenaCloudInteractor(runConfig.config.balenaApiUrl);
-			await balenaCloud.authenticate(runConfig.config.balenaApiKey);
+			// The worker fleet can live on a different environment than the DUT, so a
+			// production rig can drive a device managed by staging.
+			const workerApiUrl = runConfig.workers.apiUrl || runConfig.config.balenaApiUrl;
+			const workerApiKey = runConfig.workers.apiKey || runConfig.config.balenaApiKey;
+			const balenaCloud = new BalenaCloudInteractor(workerApiUrl);
+			await balenaCloud.authenticate(workerApiKey);
 
 			// If FLASHER_SECUREBOOT env var is set, assume we are doing a test with a locked device
 			// Ensure that locked devices in the worker fleet have a "DUT: <deviceType>-sb" tag
@@ -347,7 +351,7 @@ class NonInteractiveState {
 				? (!runConfig.deviceType.endsWith("-sb") ? `${runConfig.deviceType}-sb` : runConfig.deviceType)
 				: runConfig.deviceType;
 
-			state.info(`Looking for workers in ${runConfig.workers.balenaApplication} with tag: ${workerTag}`);
+			state.info(`Looking for workers in ${runConfig.workers.balenaApplication} on ${workerApiUrl} with tag: ${workerTag}`);
 			const matchingDevices = await balenaCloud.selectDevicesWithDUT(
 				runConfig.workers.balenaApplication,
 				workerTag,
