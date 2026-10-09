@@ -48,6 +48,9 @@ const innerSchema = {
 						apiKey: {
 							type: 'string',
 						},
+						apiUrl: {
+							type: 'string',
+						},
 					},
 					required: ['apiKey', 'balenaApplication'],
 				},
