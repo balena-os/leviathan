@@ -1,4 +1,18 @@
 - commits:
+    - subject: "core/contracts: Update to v2.0.151"
+      hash: 29495b3b6effeee3eba7eb818ee6aa7c134d8346
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Alexandru Costache <alexandru@balena.io>
+        signed-off-by: Alexandru Costache <alexandru@balena.io>
+      author: Alexandru Costache
+      nested: []
+  version: 2.36.134
+  title: ""
+  date: 2026-11-05T13:20:08.264Z
+- commits:
     - subject: "core/contracts: Update to v2.0.150"
       hash: 18fd631e06246b8194fc5af204094aea3d9a6c19
       body: ""
