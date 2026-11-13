@@ -1,4 +1,44 @@
 - commits:
+    - subject: "core: worker: Keep the DUT port forwards alive"
+      hash: c794dfc25e5b78a31d258b206a45e4bdc19ab7c4
+      body: |
+        The SSH port forwards to the supervisor, SSH and engine ports of the DUT
+        are opened once and used for the whole suite, but they send no
+        keepalives. If anything on the path to the worker closes idle
+        connections, a forward is closed while a test waits, for example during
+        a reboot or a hostapp update, and nothing opens it again, so every later
+        command fails until the test times out.
+
+        Send a keepalive every 15 seconds, and give up after 3 missed replies.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: guille-vega <guillermo.vega@balena.io>
+        signed-off-by: guille-vega <guillermo.vega@balena.io>
+      author: guille-vega
+      nested: []
+    - subject: "core: utils: Keep SSH sessions through the proxy alive"
+      hash: 4478147b596bf7690cd895e3a9a52288dd2ce175
+      body: |
+        The balenaCloud SSH proxy now closes sessions that are idle for 30
+        seconds, since the idle timeout it was configured with is applied (see
+        https://github.com/balena-io/sshproxy/pull/352). executeCommandOverSSH()
+        sent a keepalive every 50 minutes (10000 * 60 * 5 ms, not the 5 minutes
+        the comment said), so a command that prints nothing for 30 seconds, such
+        as a long wait on the DUT, is now disconnected before it finishes.
+
+        Send a keepalive every 10 seconds instead.
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: guille-vega <guillermo.vega@balena.io>
+        signed-off-by: guille-vega <guillermo.vega@balena.io>
+      author: guille-vega
+      nested: []
+  version: 2.36.135
+  title: ""
+  date: 2026-11-13T13:41:13.265Z
+- commits:
     - subject: "core/contracts: Update to v2.0.151"
       hash: 29495b3b6effeee3eba7eb818ee6aa7c134d8346
       body: ""
