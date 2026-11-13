@@ -39,7 +39,8 @@ const getSSHClientDisposer = (config) => {
 				assignIn(
 					{
 						agent: process.env.SSH_AUTH_SOCK,
-						keepaliveInterval: 10000 * 60 * 5, // 5 minute interval
+						// The balenaCloud SSH proxy closes sessions that are idle for 30 seconds
+						keepaliveInterval: 10 * 1000,
 					},
 					conf,
 				),
