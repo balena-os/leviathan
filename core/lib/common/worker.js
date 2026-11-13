@@ -589,6 +589,12 @@ module.exports = class Worker {
 			`StrictHostKeyChecking=no`,
 			`-o`,
 			`UserKnownHostsFile=/dev/null`,
+			// The forward stays open for the whole suite and can be idle for minutes,
+			// so send keepalives to stop the path to the worker from dropping it
+			`-o`,
+			`ServerAliveInterval=15`,
+			`-o`,
+			`ServerAliveCountMax=3`,
 			`-i`,
 			this.sshKey,
 			`-N`
